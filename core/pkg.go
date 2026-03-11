@@ -2,11 +2,11 @@ package main
 
 import (
 	constructpkg "core/modules/construct/pkg"
+	"core/modules/definitions"
+	"core/modules/definitions/pkg"
 	"core/modules/fpslogger/pkg"
 	"core/modules/generation/pkg"
 	"core/modules/loading/pkg"
-	"core/modules/registry"
-	"core/modules/registry/pkg"
 	"core/modules/settings"
 	"core/modules/settings/pkg"
 	"core/modules/tile"
@@ -162,7 +162,7 @@ func getDic() ioc.Dic {
 		renderpkg.Package(),
 		textpkg.Package(
 			func(c ioc.Dic) text.FontFamilyComponent {
-				asset := ioc.Get[registry.Assets](c).FontAsset
+				asset := ioc.Get[definitions.Assets](c).FontAsset
 				return text.FontFamilyComponent{FontFamily: asset}
 			},
 			text.FontSizeComponent{FontSize: 16},
@@ -247,7 +247,7 @@ func getDic() ioc.Dic {
 		fpsloggerpkg.Package(),
 
 		gamescenes.Package(),
-		registrypkg.Package(),
+		definitionspkg.Package(),
 
 		creditsscene.Package(),
 		gamescene.Package(),

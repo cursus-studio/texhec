@@ -2,10 +2,10 @@ package gamescenes
 
 import (
 	"core/modules/construct"
+	"core/modules/definitions"
 	"core/modules/fpslogger"
 	"core/modules/generation"
 	"core/modules/loading"
-	"core/modules/registry"
 	"core/modules/settings"
 	"core/modules/tile"
 	"core/modules/ui"
@@ -49,7 +49,7 @@ type World struct {
 
 	// game
 	Construct  construct.Service  `inject:"1"`
-	GameAssets registry.Assets    `inject:"1"`
+	GameAssets definitions.Assets `inject:"1"`
 	Tile       tile.Service       `inject:"1"`
 	Generation generation.Service `inject:"1"`
 	Ui         ui.Service         `inject:"1"`

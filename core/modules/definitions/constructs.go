@@ -1,4 +1,4 @@
-package registry
+package definitions
 
 import "core/modules/construct"
 

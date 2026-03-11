@@ -1,8 +1,8 @@
-package registrypkg
+package definitionspkg
 
 import (
 	"core/modules/construct"
-	"core/modules/registry"
+	"core/modules/definitions"
 	"core/modules/tile"
 	"engine/modules/assets"
 	"engine/modules/collider"
@@ -65,28 +65,28 @@ func (pkg) Register(b ioc.Builder) {
 	})
 
 	// register assets
-	ioc.RegisterSingleton(b, func(c ioc.Dic) registry.Assets {
+	ioc.RegisterSingleton(b, func(c ioc.Dic) definitions.Assets {
 		logger := ioc.Get[logger.Logger](c)
 		assetsService := ioc.Get[assets.Service](c)
 
-		gameAssets := registry.Assets{}
+		gameAssets := definitions.Assets{}
 		logger.Warn(assetsService.InitializeProperties(&gameAssets))
 		return gameAssets
 	})
 
 	ioc.WrapService(b, func(c ioc.Dic, s tile.TileAssets) {
-		gameAssets := ioc.Get[registry.Assets](c)
+		gameAssets := ioc.Get[definitions.Assets](c)
 		assets := datastructures.NewSparseArray[tile.ID, assets.ID]()
-		assets.Set(registry.TileSand, gameAssets.Tiles.Sand)
-		assets.Set(registry.TileMountain, gameAssets.Tiles.Mountain)
-		assets.Set(registry.TileGrass, gameAssets.Tiles.Grass)
-		assets.Set(registry.TileWater, gameAssets.Tiles.Water)
+		assets.Set(definitions.TileSand, gameAssets.Tiles.Sand)
+		assets.Set(definitions.TileMountain, gameAssets.Tiles.Mountain)
+		assets.Set(definitions.TileGrass, gameAssets.Tiles.Grass)
+		assets.Set(definitions.TileWater, gameAssets.Tiles.Water)
 		s.AddType(assets)
 	})
 
 	ioc.WrapService(b, func(c ioc.Dic, s construct.Service) {
-		gameAssets := ioc.Get[registry.Assets](c)
-		s.RegisterConstruct(registry.ConstructFarm, construct.NewBlueprint(gameAssets.Constructs.Farm))
+		gameAssets := ioc.Get[definitions.Assets](c)
+		s.RegisterConstruct(definitions.ConstructFarm, construct.NewBlueprint(gameAssets.Constructs.Farm))
 	})
 
 	//
@@ -96,10 +96,10 @@ func (pkg) Register(b ioc.Builder) {
 	// animations
 
 	ioc.WrapService(b, func(c ioc.Dic, b transition.EasingService) {
-		b.Set(registry.LinearEasingFunction, func(t transition.Progress) transition.Progress {
+		b.Set(definitions.LinearEasingFunction, func(t transition.Progress) transition.Progress {
 			return t
 		})
-		b.Set(registry.MyEasingFunction, func(t transition.Progress) transition.Progress {
+		b.Set(definitions.MyEasingFunction, func(t transition.Progress) transition.Progress {
 			const n1 = 7.5625
 			const d1 = 2.75
 
@@ -116,7 +116,7 @@ func (pkg) Register(b ioc.Builder) {
 				return n1*t*t + 0.984375
 			}
 		})
-		b.Set(registry.EaseOutElastic, func(t transition.Progress) transition.Progress {
+		b.Set(definitions.EaseOutElastic, func(t transition.Progress) transition.Progress {
 			const c1 float64 = 10
 			const c2 float64 = .75
 			const c3 float64 = (2 * math.Pi) / 3

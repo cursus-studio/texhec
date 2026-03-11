@@ -2,7 +2,7 @@ package internal
 
 import (
 	"core/modules/construct"
-	"core/modules/registry"
+	"core/modules/definitions"
 	"core/modules/tile"
 	"engine"
 	"engine/modules/render"
@@ -16,8 +16,8 @@ import (
 
 type service struct {
 	engine.World `inject:"1"`
-	Tile         tile.Service    `inject:"1"`
-	GameAssets   registry.Assets `inject:"1"`
+	Tile         tile.Service       `inject:"1"`
+	GameAssets   definitions.Assets `inject:"1"`
 
 	dirtySet ecs.DirtySet
 

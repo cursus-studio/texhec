@@ -1,7 +1,7 @@
 package systems
 
 import (
-	"core/modules/registry"
+	"core/modules/definitions"
 	"core/modules/ui"
 	"engine"
 	"engine/modules/assets"
@@ -19,7 +19,7 @@ import (
 type UpdateBgEvent struct{}
 
 type System struct {
-	GameAssets   registry.Assets `inject:"1"`
+	GameAssets   definitions.Assets `inject:"1"`
 	engine.World `inject:"1"`
 	Ui           ui.Service `inject:"1"`
 

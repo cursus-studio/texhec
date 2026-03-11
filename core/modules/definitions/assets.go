@@ -1,4 +1,4 @@
-package registry
+package definitions
 
 import "engine/modules/assets"
 
