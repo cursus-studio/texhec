@@ -39,11 +39,3 @@ func TestWrongInput(t *testing.T) {
 		t.Errorf("unexpected err \"%v\"", err)
 	}
 }
-
-func TestDoubleRegister(t *testing.T) {
-	s := NewSetup()
-	err := s.Service.Register("tag", func(structTagValue string) ecs.EntityID { return 0 })
-	if !errors.Is(err, registry.ErrAlreadyRegistered) {
-		t.Errorf("expected err \"%v\", got \"%v\"", registry.ErrAlreadyRegistered, err)
-	}
-}

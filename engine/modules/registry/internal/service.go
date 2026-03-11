@@ -3,32 +3,42 @@ package internal
 import (
 	"engine/modules/registry"
 	"engine/services/ecs"
+	"engine/services/logger"
+	"errors"
+	"fmt"
 	"reflect"
+
+	"github.com/ogiusek/ioc/v2"
 )
 
 type service struct {
+	Logger      logger.Logger `inject:"1"`
 	tags        []string
 	handlers    []func(string) ecs.EntityID
 	presentTags map[string]any
 }
 
-func NewService() registry.Service {
+func NewService(c ioc.Dic) registry.Service {
 	return &service{
+		Logger:      ioc.Get[logger.Logger](c),
 		tags:        nil,
 		handlers:    nil,
 		presentTags: make(map[string]any),
 	}
 }
 
-func (s *service) Register(structTagKey string, handler func(structTagValue string) ecs.EntityID) error {
+func (s *service) Register(structTagKey string, handler func(structTagValue string) ecs.EntityID) {
 	if _, ok := s.presentTags[structTagKey]; ok {
-		return registry.ErrAlreadyRegistered
+		s.Logger.Warn(errors.Join(
+			fmt.Errorf("already registered struct tag key"),
+			fmt.Errorf("struct tag is already registered \"%v\"", structTagKey),
+		))
+		return
 	}
 
 	s.presentTags[structTagKey] = nil
 	s.tags = append(s.tags, structTagKey)
 	s.handlers = append(s.handlers, handler)
-	return nil
 }
 
 func (s *service) Populate(structPointer any) error {

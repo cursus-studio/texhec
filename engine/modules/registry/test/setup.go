@@ -3,7 +3,10 @@ package test
 import (
 	"engine/modules/registry"
 	registrypkg "engine/modules/registry/pkg"
+	"engine/services/clock"
 	"engine/services/ecs"
+	"engine/services/logger"
+	"time"
 
 	"github.com/ogiusek/ioc/v2"
 )
@@ -19,8 +22,15 @@ type TagValueComponent struct {
 
 func NewSetup() Setup {
 	b := ioc.NewBuilder()
-	ecs.Package().Register(b)
-	registrypkg.Package().Register(b)
+	pkgs := []ioc.Pkg{
+		clock.Package(time.RFC3339Nano),
+		logger.Package(true, func(c ioc.Dic, message string) { print(message) }),
+		ecs.Package(),
+		registrypkg.Package(),
+	}
+	for _, pkg := range pkgs {
+		pkg.Register(b)
+	}
 	ioc.WrapService(b, func(c ioc.Dic, registry registry.Service) {
 		world := ioc.Get[ecs.World](c)
 		registry.Register("tag", func(structTagValue string) ecs.EntityID {

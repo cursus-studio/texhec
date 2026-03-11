@@ -16,6 +16,6 @@ func Package() ioc.Pkg {
 
 func (pkg) Register(b ioc.Builder) {
 	ioc.RegisterSingleton(b, func(c ioc.Dic) registry.Service {
-		return internal.NewService()
+		return internal.NewService(c)
 	})
 }
