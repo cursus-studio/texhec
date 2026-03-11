@@ -97,11 +97,11 @@ func (pkg) Register(b ioc.Builder) {
 
 	// animations
 
-	ioc.WrapService(b, func(c ioc.Dic, b transition.EasingService) {
-		b.Set(definitions.LinearEasingFunction, func(t transition.Progress) transition.Progress {
+	transitions := map[string]func(t transition.Progress) transition.Progress{
+		"linear": func(t transition.Progress) transition.Progress {
 			return t
-		})
-		b.Set(definitions.MyEasingFunction, func(t transition.Progress) transition.Progress {
+		},
+		"my easing": func(t transition.Progress) transition.Progress {
 			const n1 = 7.5625
 			const d1 = 2.75
 
@@ -117,8 +117,8 @@ func (pkg) Register(b ioc.Builder) {
 				t -= 2.625 / d1
 				return n1*t*t + 0.984375
 			}
-		})
-		b.Set(definitions.EaseOutElastic, func(t transition.Progress) transition.Progress {
+		},
+		"ease out elastic": func(t transition.Progress) transition.Progress {
 			const c1 float64 = 10
 			const c2 float64 = .75
 			const c3 float64 = (2 * math.Pi) / 3
@@ -133,6 +133,20 @@ func (pkg) Register(b ioc.Builder) {
 				math.Sin((x*c1-c2)*c3) +
 				1
 			return transition.Progress(x)
+		},
+	}
+
+	ioc.WrapService(b, func(c ioc.Dic, b registry.Service) {
+		b.Register("transition", func(structTagValue string) ecs.EntityID {
+			world := ioc.Get[ecs.World](c)
+			transitionService := ioc.Get[transition.Service](c)
+			easing, ok := transitions[structTagValue]
+			if !ok {
+				easing = func(t transition.Progress) transition.Progress { return t }
+			}
+			entity := world.NewEntity()
+			transitionService.EasingFunction().Set(entity, transition.NewEasingFunction(easing))
+			return entity
 		})
 	})
 }
