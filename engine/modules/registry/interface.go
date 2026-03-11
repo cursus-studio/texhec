@@ -16,3 +16,9 @@ type Service interface {
 	// can return ErrExpectedPointerToAStruct
 	Populate(any) error
 }
+
+func GetRegistry[Registry any](s Service) (Registry, error) {
+	var r Registry
+	err := s.Populate(&r)
+	return r, err
+}
