@@ -1,7 +1,6 @@
 package construct
 
 import (
-	"engine/modules/assets"
 	"engine/modules/grid"
 	"engine/services/ecs"
 )
@@ -24,7 +23,7 @@ func NewCoords(coords grid.Coords) CoordsComponent { return CoordsComponent{coor
 //
 
 type Blueprint struct {
-	Texture assets.ID
+	Texture ecs.EntityID
 	// Size int
 
 	// complexity 1:
@@ -38,7 +37,7 @@ type Blueprint struct {
 	// other features like defense
 }
 
-func NewBlueprint(texture assets.ID) Blueprint {
+func NewBlueprint(texture ecs.EntityID) Blueprint {
 	return Blueprint{Texture: texture}
 }
 

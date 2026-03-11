@@ -41,24 +41,22 @@ func (s *service) Register(structTagKey string, handler func(structTagValue stri
 	s.handlers = append(s.handlers, handler)
 }
 
-func (s *service) Populate(structPointer any) error {
-	v := reflect.ValueOf(structPointer)
-	if v.Kind() != reflect.Pointer || v.Elem().Kind() != reflect.Struct {
-		return registry.ErrExpectedPointerToAStruct
-	}
-
-	v = v.Elem()
+func (s *service) populateValue(v reflect.Value) error {
 	t := v.Type()
-
 	var err error
 
 fieldLoop:
 	for i := range t.NumField() {
+		fieldValue := v.Field(i)
 		fieldType := t.Field(i)
 		if fieldType.Type != reflect.TypeFor[ecs.EntityID]() {
+			if fieldType.Type.Kind() == reflect.Struct {
+				if e := s.populateValue(fieldValue); e != nil {
+					err = e
+				}
+			}
 			continue
 		}
-		fieldValue := v.Field(i)
 		for tagIndex, tagName := range s.tags {
 			tagValue, ok := fieldType.Tag.Lookup(tagName)
 			if !ok {
@@ -73,4 +71,13 @@ fieldLoop:
 	}
 
 	return err
+}
+
+func (s *service) Populate(structPointer any) error {
+	v := reflect.ValueOf(structPointer)
+	if v.Kind() != reflect.Pointer || v.Elem().Kind() != reflect.Struct {
+		return registry.ErrExpectedPointerToAStruct
+	}
+
+	return s.populateValue(v.Elem())
 }

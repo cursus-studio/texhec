@@ -42,7 +42,7 @@ func NewTileRenderSystemRegister(c ioc.Dic) *TileRenderSystemRegister {
 	return s
 }
 
-func (service *TileRenderSystemRegister) AddType(addedAssets datastructures.SparseArray[tile.ID, assets.ID]) {
+func (service *TileRenderSystemRegister) AddType(addedAssets datastructures.SparseArray[tile.ID, ecs.EntityID]) {
 	for _, assetIndex := range addedAssets.GetIndices() {
 		id := uint32(service.ids.Size())
 		service.ids.Set(assetIndex, id)

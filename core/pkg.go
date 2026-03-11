@@ -37,6 +37,7 @@ import (
 	"engine/modules/noise/pkg"
 	"engine/modules/record"
 	"engine/modules/record/pkg"
+	"engine/modules/registry/pkg"
 	"engine/modules/render"
 	"engine/modules/render/pkg"
 	"engine/modules/scene/pkg"
@@ -233,6 +234,7 @@ func getDic() ioc.Dic {
 			return config
 		}()),
 		recordpkg.Package(),
+		registrypkg.Package(),
 		smoothpkg.Package(func() smoothpkg.Config {
 			config := smoothpkg.NewConfig()
 			smoothpkg.SmoothComponent[render.ColorComponent](config)

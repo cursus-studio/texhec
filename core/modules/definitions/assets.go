@@ -1,6 +1,8 @@
 package definitions
 
-import "engine/modules/assets"
+import (
+	"engine/services/ecs"
+)
 
 // asset ID should be a number.
 // asset path and its dispatcher should be pointed by id.
@@ -11,33 +13,33 @@ type Assets struct {
 	Constructs ConstructAssets
 	Units      UnitAssets
 
-	ExampleAudio assets.ID `path:"audio.wav"`
+	ExampleAudio ecs.EntityID `path:"audio.wav"`
 
-	Blank          assets.ID `path:"blank texture"`
-	SquareMesh     assets.ID `path:"square mesh"`
-	SquareCollider assets.ID `path:"square collider"`
-	FontAsset      assets.ID `path:"font1.ttf"`
+	Blank          ecs.EntityID `path:"blank texture"`
+	SquareMesh     ecs.EntityID `path:"square mesh"`
+	SquareCollider ecs.EntityID `path:"square collider"`
+	FontAsset      ecs.EntityID `path:"font1.ttf"`
 }
 
 type HudAssets struct {
-	Btn         assets.ID `path:"hud/btn.png-trim"`
-	Cursor      assets.ID `path:"hud/cursor.png-trim"`
-	Settings    assets.ID `path:"hud/settings.png-trim"`
-	Background1 assets.ID `path:"hud/bg1.gif-trim"`
-	Background2 assets.ID `path:"hud/bg2.gif-trim"`
+	Btn         ecs.EntityID `path:"hud/btn.png-trim"`
+	Cursor      ecs.EntityID `path:"hud/cursor.png-trim"`
+	Settings    ecs.EntityID `path:"hud/settings.png-trim"`
+	Background1 ecs.EntityID `path:"hud/bg1.gif-trim"`
+	Background2 ecs.EntityID `path:"hud/bg2.gif-trim"`
 }
 
 type TileAssets struct {
-	Grass    assets.ID `path:"tiles/grass.biom"`
-	Sand     assets.ID `path:"tiles/sand.biom"`
-	Mountain assets.ID `path:"tiles/mountain.biom"`
-	Water    assets.ID `path:"tiles/water.biom"`
+	Grass    ecs.EntityID `path:"tiles/grass.biom"`
+	Sand     ecs.EntityID `path:"tiles/sand.biom"`
+	Mountain ecs.EntityID `path:"tiles/mountain.biom"`
+	Water    ecs.EntityID `path:"tiles/water.biom"`
 }
 
 type ConstructAssets struct {
-	Farm assets.ID `path:"constructs/farm.png"`
+	Farm ecs.EntityID `path:"constructs/farm.png"`
 }
 
 type UnitAssets struct {
-	Tank assets.ID `path:"units/tank.png"`
+	Tank ecs.EntityID `path:"units/tank.png"`
 }

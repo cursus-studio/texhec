@@ -59,9 +59,9 @@ func (pkg pkg) Register(b ioc.Builder) {
 	})
 
 	ioc.WrapService(b, func(c ioc.Dic, b assets.Extensions) {
-		b.Register("biom", func(path assets.Path) (any, error) {
+		b.Register("biom", func(path assets.PathComponent) (assets.Asset, error) {
 			images := [6][]image.Image{}
-			directory, _ := strings.CutSuffix(string(path), ".biom")
+			directory, _ := strings.CutSuffix(path.Path, ".biom")
 
 			for i := range 6 {
 				tileDir := fmt.Sprintf("%v/%v", directory, i+1)

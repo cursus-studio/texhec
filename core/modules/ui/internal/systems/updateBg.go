@@ -30,7 +30,7 @@ type System struct {
 	bgTimePerFrame time.Duration
 	bgTexture      int
 
-	backgrounds       []assets.ID
+	backgrounds       []ecs.EntityID
 	backgroundsFrames []int
 }
 
@@ -48,7 +48,7 @@ func NewSystem(c ioc.Dic, bgTimePerFrame time.Duration) ui.System {
 		s.bgTimePerFrame = bgTimePerFrame
 		s.bgTexture = 0
 
-		s.backgrounds = []assets.ID{
+		s.backgrounds = []ecs.EntityID{
 			s.GameAssets.Hud.Background2,
 			s.GameAssets.Hud.Background1,
 			s.GameAssets.Hud.Background1,

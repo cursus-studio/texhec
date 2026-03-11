@@ -146,8 +146,8 @@ func (pkg pkg) Register(b ioc.Builder) {
 			drawer.DrawString(text)
 			return img
 		}
-		b.Register("ttf", func(id assets.Path) (any, error) {
-			source, err := os.ReadFile(string(id))
+		b.Register("ttf", func(id assets.PathComponent) (assets.Asset, error) {
+			source, err := os.ReadFile(id.Path)
 			if err != nil {
 				return nil, err
 			}
