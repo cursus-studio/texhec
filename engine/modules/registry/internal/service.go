@@ -2,6 +2,7 @@ package internal
 
 import (
 	"engine/modules/registry"
+	"engine/modules/uuid"
 	"engine/services/ecs"
 	"engine/services/logger"
 	"errors"
@@ -12,8 +13,10 @@ import (
 )
 
 type service struct {
-	Logger      logger.Logger `inject:"1"`
-	World       ecs.World     `inject:"1"`
+	Logger logger.Logger `inject:"1"`
+	World  ecs.World     `inject:"1"`
+	UUID   uuid.Service  `inject:"1"`
+
 	tags        []string
 	handlers    []func(ecs.EntityID, string)
 	presentTags map[string]any
@@ -57,6 +60,7 @@ func (s *service) populateValue(v reflect.Value) error {
 
 		entity := s.World.NewEntity()
 		fieldValue.Set(reflect.ValueOf(entity))
+		s.UUID.Component().Set(entity, uuid.New(s.UUID.NewUUID()))
 
 		for tagIndex, tagName := range s.tags {
 			tagValue, ok := fieldType.Tag.Lookup(tagName)
