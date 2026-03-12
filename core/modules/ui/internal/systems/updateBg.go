@@ -19,7 +19,7 @@ import (
 type UpdateBgEvent struct{}
 
 type System struct {
-	GameAssets   definitions.Assets `inject:"1"`
+	GameAssets   definitions.Definitions `inject:"1"`
 	engine.World `inject:"1"`
 	Ui           ui.Service `inject:"1"`
 

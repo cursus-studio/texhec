@@ -66,17 +66,17 @@ func (pkg) Register(b ioc.Builder) {
 	})
 
 	// register assets
-	ioc.RegisterSingleton(b, func(c ioc.Dic) definitions.Assets {
+	ioc.RegisterSingleton(b, func(c ioc.Dic) definitions.Definitions {
 		logger := ioc.Get[logger.Logger](c)
 		registryService := ioc.Get[registry.Service](c)
 
-		gameAssets, err := registry.GetRegistry[definitions.Assets](registryService)
+		gameAssets, err := registry.GetRegistry[definitions.Definitions](registryService)
 		logger.Warn(err)
 		return gameAssets
 	})
 
 	ioc.WrapService(b, func(c ioc.Dic, s tile.TileAssets) {
-		gameAssets := ioc.Get[definitions.Assets](c)
+		gameAssets := ioc.Get[definitions.Definitions](c)
 		assets := datastructures.NewSparseArray[tile.ID, ecs.EntityID]()
 		assets.Set(definitions.TileSand, gameAssets.Tiles.Sand)
 		assets.Set(definitions.TileMountain, gameAssets.Tiles.Mountain)

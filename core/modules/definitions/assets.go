@@ -8,11 +8,11 @@ import (
 // asset ID should be a number.
 // asset path and its dispatcher should be pointed by id.
 // and this approach should be used by every registry
-type Assets struct {
-	Hud        HudAssets
-	Tiles      TileAssets
-	Constructs ConstructAssets
-	Units      UnitAssets
+type Definitions struct {
+	Hud        Hud
+	Tiles      Tiles
+	Constructs Constructs
+	Units      Units
 
 	Transitions Transitions
 
@@ -24,7 +24,7 @@ type Assets struct {
 	FontAsset      ecs.EntityID `path:"font1.ttf"`
 }
 
-type HudAssets struct {
+type Hud struct {
 	Btn         ecs.EntityID `path:"hud/btn.png-trim"`
 	Cursor      ecs.EntityID `path:"hud/cursor.png-trim"`
 	Settings    ecs.EntityID `path:"hud/settings.png-trim"`
@@ -32,19 +32,19 @@ type HudAssets struct {
 	Background2 ecs.EntityID `path:"hud/bg2.gif-trim"`
 }
 
-type TileAssets struct {
+type Tiles struct {
 	Grass    ecs.EntityID `path:"tiles/grass.biom"`
 	Sand     ecs.EntityID `path:"tiles/sand.biom"`
 	Mountain ecs.EntityID `path:"tiles/mountain.biom"`
 	Water    ecs.EntityID `path:"tiles/water.biom"`
 }
 
-type ConstructAssets struct {
+type Constructs struct {
 	// Farm ecs.EntityID `path:"constructs/farm.png" construct:"farm"`
 	Farm ecs.EntityID `path:"constructs/farm.png"`
 }
 
-type UnitAssets struct {
+type Units struct {
 	Tank ecs.EntityID `path:"units/tank.png"`
 }
 

@@ -14,8 +14,8 @@ import (
 
 type service struct {
 	engine.World `inject:"1"`
-	Tile         tile.Service       `inject:"1"`
-	GameAssets   definitions.Assets `inject:"1"`
+	Tile         tile.Service            `inject:"1"`
+	GameAssets   definitions.Definitions `inject:"1"`
 
 	dirtySet ecs.DirtySet
 

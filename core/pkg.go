@@ -163,7 +163,7 @@ func getDic() ioc.Dic {
 		renderpkg.Package(),
 		textpkg.Package(
 			func(c ioc.Dic) text.FontFamilyComponent {
-				asset := ioc.Get[definitions.Assets](c).FontAsset
+				asset := ioc.Get[definitions.Definitions](c).FontAsset
 				return text.FontFamilyComponent{FontFamily: asset}
 			},
 			text.FontSizeComponent{FontSize: 16},
