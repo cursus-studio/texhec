@@ -61,7 +61,7 @@ func (s *audioService) QueueEndless(channel audio.Channel, asset ecs.EntityID) e
 	if err != nil {
 		return err
 	}
-	if _, err := audioAsset.Chunk().PlayTimed(int(channel), 0, -1); err != nil {
+	if _, err := audioAsset.Chunk().PlayTimed(int(channel), -1, -1); err != nil {
 		return err
 	}
 	return nil
@@ -74,7 +74,7 @@ func (s *audioService) Queue(channel audio.Channel, asset ecs.EntityID) error {
 	if err != nil {
 		return err
 	}
-	if _, err := audioAsset.Chunk().PlayTimed(int(channel), 1, -1); err != nil {
+	if _, err := audioAsset.Chunk().PlayTimed(int(channel), 0, -1); err != nil {
 		return err
 	}
 	return nil
