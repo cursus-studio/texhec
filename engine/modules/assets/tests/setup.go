@@ -5,6 +5,7 @@ import (
 	assetspkg "engine/modules/assets/pkg"
 	"engine/modules/registry"
 	registrypkg "engine/modules/registry/pkg"
+	uuidpkg "engine/modules/uuid/pkg"
 	"engine/services/clock"
 	"engine/services/ecs"
 	"engine/services/logger"
@@ -26,6 +27,7 @@ func NewSetup() setup {
 		logger.Package(true, func(c ioc.Dic, message string) { print(message) }),
 		registrypkg.Package(),
 		ecs.Package(),
+		uuidpkg.Package(),
 		assetspkg.Package(""),
 	} {
 		pkg.Register(b)
