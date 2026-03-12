@@ -39,8 +39,7 @@ type Tiles struct {
 }
 
 type Constructs struct {
-	// Farm ecs.EntityID `path:"constructs/farm.png" construct:"farm"`
-	Farm ecs.EntityID `path:"constructs/farm.png"`
+	Farm ecs.EntityID `path:"constructs/farm.png" construct:"farm"`
 }
 
 type Units struct {
