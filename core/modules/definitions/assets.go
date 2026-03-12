@@ -1,7 +1,6 @@
 package definitions
 
 import (
-	"core/modules/construct"
 	"core/modules/tile"
 	"engine/services/ecs"
 )
@@ -41,6 +40,7 @@ type TileAssets struct {
 }
 
 type ConstructAssets struct {
+	// Farm ecs.EntityID `path:"constructs/farm.png" construct:"farm"`
 	Farm ecs.EntityID `path:"constructs/farm.png"`
 }
 
@@ -53,11 +53,6 @@ type Transitions struct {
 	MyEasing       ecs.EntityID `transition:"my easing"`
 	EaseOutElastic ecs.EntityID `transition:"ease out elastic"`
 }
-
-const (
-	_ construct.ID = iota
-	ConstructFarm
-)
 
 const (
 	// this has to be changed before using saving

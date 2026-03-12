@@ -1,7 +1,6 @@
 package definitionspkg
 
 import (
-	"core/modules/construct"
 	"core/modules/definitions"
 	"core/modules/tile"
 	"engine/modules/assets"
@@ -84,11 +83,6 @@ func (pkg) Register(b ioc.Builder) {
 		assets.Set(definitions.TileGrass, gameAssets.Tiles.Grass)
 		assets.Set(definitions.TileWater, gameAssets.Tiles.Water)
 		s.AddType(assets)
-	})
-
-	ioc.WrapService(b, func(c ioc.Dic, s construct.Service) {
-		gameAssets := ioc.Get[definitions.Assets](c)
-		s.RegisterConstruct(definitions.ConstructFarm, construct.NewBlueprint(gameAssets.Constructs.Farm))
 	})
 
 	//
