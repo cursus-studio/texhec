@@ -2,6 +2,7 @@ package tilerenderer
 
 import (
 	"core/modules/tile"
+	"engine/services/ecs"
 	"engine/services/graphics/vao/vbo"
 	"unsafe"
 
@@ -21,7 +22,7 @@ func Package() ioc.Pkg {
 
 func (pkg pkg) Register(b ioc.Builder) {
 	ioc.RegisterSingleton(b, func(c ioc.Dic) tile.SystemRenderer {
-		return NewTileRenderSystemRegister(c)
+		return ecs.NewSystemRegister(func() error { return NewSystem(c) })
 	})
 
 	ioc.RegisterSingleton(b, func(c ioc.Dic) vbo.VBOFactory[tile.ID] {
