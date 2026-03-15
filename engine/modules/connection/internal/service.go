@@ -3,6 +3,7 @@ package internal
 import (
 	"encoding/binary"
 	"engine/modules/connection"
+	"engine/modules/hierarchy"
 	"engine/services/codec"
 	"engine/services/datastructures"
 	"engine/services/ecs"
@@ -17,9 +18,10 @@ import (
 type service struct {
 	EventsBuilder events.Builder `inject:"1"`
 
-	World  ecs.World     `inject:"1"`
-	Codec  codec.Codec   `inject:"1"`
-	Logger logger.Logger `inject:"1"`
+	World     ecs.World         `inject:"1"`
+	Codec     codec.Codec       `inject:"1"`
+	Logger    logger.Logger     `inject:"1"`
+	Hierarchy hierarchy.Service `inject:"1"`
 
 	listenersDirtySet ecs.DirtySet
 	listeners         datastructures.Set[net.Listener]
@@ -115,9 +117,7 @@ func (s *service) Host(addr string) error {
 	if err != nil {
 		return err
 	}
-
 	s.AddListener(s.World.NewEntity(), listener)
-
 	return nil
 }
 
@@ -152,6 +152,7 @@ func (s *service) AddListener(entity ecs.EntityID, rawListener net.Listener) {
 				break
 			}
 			clientEntity := s.World.NewEntity()
+			s.Hierarchy.SetParent(clientEntity, entity)
 			s.AddConnection(clientEntity, rawConn)
 		}
 		if comp, ok := s.listenersArray.Get(entity); ok && comp.Listener() == rawListener {
