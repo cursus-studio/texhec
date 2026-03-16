@@ -53,9 +53,8 @@ type Service interface {
 	Component() ecs.ComponentsArray[ConnectionComponent]
 	Listener() ecs.ComponentsArray[ListenerComponent]
 
-	Host(addr string, conn func(ConnectionComponent)) (ListenerComponent, error)
-	Connect(addr string) (ConnectionComponent, error)
-	MockConnectionPair() (c1, c2 ConnectionComponent)
+	Host(addr string) error
+	Connect(addr string) error
 
 	TransferConnection(fromEntity, toEntity ecs.EntityID) error
 }

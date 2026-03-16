@@ -3,10 +3,10 @@ package internal
 import (
 	"encoding/binary"
 	"engine/modules/connection"
+	"engine/modules/hierarchy"
 	"engine/services/codec"
 	"engine/services/datastructures"
 	"engine/services/ecs"
-	"engine/services/frames"
 	"engine/services/logger"
 	"io"
 	"net"
@@ -18,9 +18,10 @@ import (
 type service struct {
 	EventsBuilder events.Builder `inject:"1"`
 
-	World  ecs.World     `inject:"1"`
-	Codec  codec.Codec   `inject:"1"`
-	Logger logger.Logger `inject:"1"`
+	World     ecs.World         `inject:"1"`
+	Codec     codec.Codec       `inject:"1"`
+	Logger    logger.Logger     `inject:"1"`
+	Hierarchy hierarchy.Service `inject:"1"`
 
 	listenersDirtySet ecs.DirtySet
 	listeners         datastructures.Set[net.Listener]
@@ -32,35 +33,31 @@ type service struct {
 }
 
 func NewService(c ioc.Dic) connection.Service {
-	t := ioc.GetServices[*service](c)
-	t.listenersDirtySet = ecs.NewDirtySet()
-	t.listeners = datastructures.NewSet[net.Listener]()
-	t.listenersArray = ecs.GetComponentsArray[connection.ListenerComponent](t.World)
+	s := ioc.GetServices[*service](c)
+	s.listenersDirtySet = ecs.NewDirtySet()
+	s.listeners = datastructures.NewSet[net.Listener]()
+	s.listenersArray = ecs.GetComponentsArray[connection.ListenerComponent](s.World)
 
-	t.connectionDirtySet = ecs.NewDirtySet()
-	t.connections = datastructures.NewSet[connection.Conn]()
-	t.connectionArray = ecs.GetComponentsArray[connection.ConnectionComponent](t.World)
+	s.connectionDirtySet = ecs.NewDirtySet()
+	s.connections = datastructures.NewSet[connection.Conn]()
+	s.connectionArray = ecs.GetComponentsArray[connection.ConnectionComponent](s.World)
 
-	events.Listen(t.EventsBuilder, func(frames.FrameEvent) {
-		t.BeforeConnectionGet()
-	})
+	s.listenersArray.AddDirtySet(s.listenersDirtySet)
+	s.listenersArray.OnUpsert(s.BeforeListenerGet)
 
-	t.listenersArray.AddDirtySet(t.listenersDirtySet)
-	t.listenersArray.BeforeGet(t.BeforeListenerGet)
+	s.connectionArray.AddDirtySet(s.connectionDirtySet)
+	s.connectionArray.OnUpsert(s.BeforeConnectionGet)
 
-	t.connectionArray.AddDirtySet(t.connectionDirtySet)
-	t.connectionArray.BeforeGet(t.BeforeConnectionGet)
-
-	return t
+	return s
 }
 
-func (t *service) BeforeListenerGet() {
-	if entities := t.connectionDirtySet.Get(); len(entities) == 0 {
+func (s *service) BeforeListenerGet(ecs.EntityID) {
+	if entities := s.connectionDirtySet.Get(); len(entities) == 0 {
 		return
 	}
 	present := datastructures.NewSet[net.Listener]()
-	for _, entity := range t.listenersArray.GetEntities() {
-		comp, ok := t.listenersArray.Get(entity)
+	for _, entity := range s.listenersArray.GetEntities() {
+		comp, ok := s.listenersArray.Get(entity)
 		if !ok {
 			continue
 		}
@@ -71,23 +68,23 @@ func (t *service) BeforeListenerGet() {
 		present.Add(conn)
 	}
 
-	for _, listener := range t.listeners.Get() {
+	for _, listener := range s.listeners.Get() {
 		_, ok := present.GetIndex(listener)
 		if ok {
 			continue
 		}
-		t.listeners.RemoveElements(listener)
+		s.listeners.RemoveElements(listener)
 		_ = listener.Close()
 	}
 }
 
-func (t *service) BeforeConnectionGet() {
-	if entities := t.connectionDirtySet.Get(); len(entities) == 0 {
+func (s *service) BeforeConnectionGet(ecs.EntityID) {
+	if entities := s.connectionDirtySet.Get(); len(entities) == 0 {
 		return
 	}
 	present := datastructures.NewSet[connection.Conn]()
-	for _, entity := range t.connectionArray.GetEntities() {
-		comp, ok := t.connectionArray.Get(entity)
+	for _, entity := range s.connectionArray.GetEntities() {
+		comp, ok := s.connectionArray.Get(entity)
 		if !ok {
 			continue
 		}
@@ -98,80 +95,83 @@ func (t *service) BeforeConnectionGet() {
 		present.Add(conn)
 	}
 
-	for _, connection := range t.connections.Get() {
+	for _, connection := range s.connections.Get() {
 		_, ok := present.GetIndex(connection)
 		if ok {
 			continue
 		}
-		t.connections.RemoveElements(connection)
+		s.connections.RemoveElements(connection)
 		_ = connection.Close()
 	}
 }
 
-func (t *service) Component() ecs.ComponentsArray[connection.ConnectionComponent] {
-	return t.connectionArray
+func (s *service) Component() ecs.ComponentsArray[connection.ConnectionComponent] {
+	return s.connectionArray
 }
-func (t *service) Listener() ecs.ComponentsArray[connection.ListenerComponent] {
-	return t.listenersArray
+func (s *service) Listener() ecs.ComponentsArray[connection.ListenerComponent] {
+	return s.listenersArray
 }
 
-func (t *service) Host(addr string, onConn func(connection.ConnectionComponent)) (connection.ListenerComponent, error) {
+func (s *service) Host(addr string) error {
 	listener, err := net.Listen("tcp", addr)
 	if err != nil {
-		return connection.ListenerComponent{}, err
+		return err
 	}
-	t.listeners.Add(listener)
-	go func() {
-		for {
-			rawConn, err := listener.Accept()
-			if err != nil {
-				break
-			}
-			conn := t.NewConnection(rawConn)
-			t.connections.Add(conn)
-			connComp := connection.NewConnection(conn)
-			onConn(connComp)
-		}
-		_ = listener.Close()
-	}()
-	return connection.NewListener(listener), nil
-}
-
-func (t *service) Connect(addr string) (connection.ConnectionComponent, error) {
-	rawConn, err := net.Dial("tcp", addr)
-	if err != nil {
-		return connection.ConnectionComponent{}, err
-	}
-	conn := t.NewConnection(rawConn)
-	t.connections.Add(conn)
-	connComp := connection.NewConnection(conn)
-	return connComp, nil
-}
-
-func (t *service) MockConnectionPair() (connection.ConnectionComponent, connection.ConnectionComponent) {
-	rawC1, rawC2 := net.Pipe()
-	c1, c2 := t.NewConnection(rawC1), t.NewConnection(rawC2)
-	t.connections.Add(c1)
-	t.connections.Add(c2)
-	comp1, comp2 := connection.NewConnection(c1), connection.NewConnection(c2)
-	return comp1, comp2
-}
-
-func (t *service) TransferConnection(entityFrom, entityTo ecs.EntityID) error {
-	comp, ok := t.connectionArray.Get(entityFrom)
-	if !ok {
-		return nil
-	}
-	t.connectionArray.Remove(entityFrom)
-	t.connectionArray.Set(entityTo, comp)
+	s.AddListener(s.World.NewEntity(), listener)
 	return nil
 }
 
-func (s *service) NewConnection(rawConn net.Conn) connection.Conn {
-	messages := make(chan any)
-	go func() {
-		defer close(messages)
+func (s *service) Connect(addr string) error {
+	rawConn, err := net.Dial("tcp", addr)
+	if err != nil {
+		return err
+	}
+	s.AddConnection(s.World.NewEntity(), rawConn)
+	return nil
+}
 
+func (s *service) TransferConnection(entityFrom, entityTo ecs.EntityID) error {
+	comp, ok := s.connectionArray.Get(entityFrom)
+	if !ok {
+		return nil
+	}
+	s.connectionArray.Remove(entityFrom)
+	s.connectionArray.Set(entityTo, comp)
+	return nil
+}
+
+func (s *service) AddListener(entity ecs.EntityID, rawListener net.Listener) {
+	s.listeners.Add(rawListener)
+	comp := connection.NewListener(rawListener)
+	s.listenersArray.Set(entity, comp)
+
+	go func() {
+		for {
+			rawConn, err := rawListener.Accept()
+			if err != nil {
+				break
+			}
+			clientEntity := s.World.NewEntity()
+			s.Hierarchy.SetParent(clientEntity, entity)
+			s.AddConnection(clientEntity, rawConn)
+		}
+		if comp, ok := s.listenersArray.Get(entity); ok && comp.Listener() == rawListener {
+			s.World.RemoveEntity(entity)
+		}
+
+		_ = rawListener.Close()
+	}()
+}
+
+func (s *service) AddConnection(entity ecs.EntityID, rawConn net.Conn) {
+	conn := &conn{
+		service:  s,
+		conn:     rawConn,
+		messages: make(chan any),
+	}
+	comp := connection.NewConnection(conn)
+	s.connectionArray.Set(entity, comp)
+	go func() {
 		for {
 			messageLengthInBytes := make([]byte, 4)
 			if _, err := io.ReadFull(rawConn, messageLengthInBytes); err != nil {
@@ -190,14 +190,12 @@ func (s *service) NewConnection(rawConn net.Conn) connection.Conn {
 			}
 			// f.logger.Info(fmt.Sprintf("received '***' type '%v'", reflect.TypeOf(message).String()))
 
-			messages <- message
+			conn.messages <- message
 		}
-
+		if connComp, ok := s.connectionArray.Get(entity); ok && connComp.Conn() == conn {
+			s.World.RemoveEntity(entity)
+		}
+		close(conn.messages)
 		_ = rawConn.Close()
 	}()
-	return &conn{
-		service:  s,
-		conn:     rawConn,
-		messages: messages,
-	}
 }
