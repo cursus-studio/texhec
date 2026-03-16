@@ -4,6 +4,7 @@ import (
 	"encoding/binary"
 	"engine/modules/connection"
 	connectionpkg "engine/modules/connection/pkg"
+	hierarchypkg "engine/modules/hierarchy/pkg"
 	"engine/services/clock"
 	"engine/services/codec"
 	"engine/services/ecs"
@@ -38,6 +39,7 @@ func NewSetup() Setup {
 		clock.Package(time.RFC3339Nano),
 		ecs.Package(),
 		codec.Package(),
+		hierarchypkg.Package(),
 		connectionpkg.Package(),
 	} {
 		pkg.Register(b)
