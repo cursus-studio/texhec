@@ -17,15 +17,17 @@ type service struct {
 	Tile         tile.Service            `inject:"1"`
 	GameAssets   definitions.Definitions `inject:"1"`
 
+	layer    float32
 	dirtySet ecs.DirtySet
 
 	constructs      ecs.ComponentsArray[construct.ConstructComponent]
 	constructCoords ecs.ComponentsArray[construct.CoordsComponent]
 }
 
-func NewService(c ioc.Dic) construct.Service {
+func NewService(c ioc.Dic, layer float32) construct.Service {
 	s := ioc.GetServices[*service](c)
 
+	s.layer = layer
 	s.dirtySet = ecs.NewDirtySet()
 
 	s.constructs = ecs.GetComponentsArray[construct.ConstructComponent](s)
@@ -56,7 +58,7 @@ func (s *service) BeforeGet() {
 		}
 
 		pos := s.Tile.GetPos(coords.Coords)
-		pos.Pos[2] += 1
+		pos.Pos[2] = s.layer
 		s.Render.Mesh().Set(entity, render.NewMesh(s.GameAssets.SquareMesh))
 		s.Render.Texture().Set(entity, render.NewTexture(construct.Construct))
 

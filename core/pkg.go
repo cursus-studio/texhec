@@ -13,6 +13,7 @@ import (
 	"core/modules/tile/pkg"
 	"core/modules/ui"
 	"core/modules/ui/pkg"
+	unitpkg "core/modules/unit/pkg"
 	gamescenes "core/scenes"
 	creditsscene "core/scenes/credits"
 	gamescene "core/scenes/game"
@@ -143,7 +144,8 @@ func getDic() ioc.Dic {
 		gtexture.Package(),
 		texturearray.Package(),
 		tilepkg.Package(),
-		constructpkg.Package(),
+		constructpkg.Package(2),
+		unitpkg.Package(3),
 		generationpkg.Package(),
 		uipkg.Package(
 			time.Millisecond*300, // animation duration

@@ -1,8 +1,8 @@
-package constructpkg
+package unitpkg
 
 import (
-	"core/modules/construct"
-	"core/modules/construct/internal"
+	"core/modules/unit"
+	"core/modules/unit/internal"
 
 	"github.com/ogiusek/ioc/v2"
 )
@@ -16,7 +16,7 @@ func Package(layer float32) ioc.Pkg {
 }
 
 func (pkg pkg) Register(b ioc.Builder) {
-	ioc.RegisterSingleton(b, func(c ioc.Dic) construct.Service {
+	ioc.RegisterSingleton(b, func(c ioc.Dic) unit.Service {
 		return internal.NewService(c, pkg.layer)
 	})
 }
