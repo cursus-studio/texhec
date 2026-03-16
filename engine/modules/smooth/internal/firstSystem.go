@@ -10,7 +10,7 @@ import (
 	"github.com/ogiusek/ioc/v2"
 )
 
-func NewFirstSystem[Component transition.Lerp[Component]](c ioc.Dic) smooth.StartSystem {
+func NewFirstSystem[Component transition.LerpConstraint[Component]](c ioc.Dic) smooth.StartSystem {
 	return ecs.NewSystemRegister(func() error {
 		s := ioc.GetServices[*system[Component]](c)
 		events.Listen(s.EventsBuilder, func(tick frames.TickEvent) {

@@ -3,6 +3,8 @@ package transition
 import (
 	"engine/services/ecs"
 	"time"
+
+	"golang.org/x/exp/constraints"
 )
 
 type System ecs.SystemRegister
@@ -14,21 +16,25 @@ type Service interface {
 
 //
 
-type Lerp[Component any] interface {
+type LerpConstraint[Component any] interface {
 	Lerp(Component, float32) Component
+}
+
+func Lerp[Number, T constraints.Float](a, b Number, t T) Number {
+	return a*Number(1-t) + b*Number(t)
 }
 
 //
 
 type Progress float32
 
-type TransitionComponent[Component Lerp[Component]] struct {
+type TransitionComponent[Component LerpConstraint[Component]] struct {
 	From, To Component
 	Progress,
 	Duration time.Duration
 }
 
-func NewTransition[Component Lerp[Component]](
+func NewTransition[Component LerpConstraint[Component]](
 	from, to Component,
 	duration time.Duration,
 ) TransitionComponent[Component] {
@@ -43,12 +49,12 @@ func NewTransition[Component Lerp[Component]](
 //
 
 // saves transition component
-type TransitionEvent[Component Lerp[Component]] struct {
+type TransitionEvent[Component LerpConstraint[Component]] struct {
 	Entity    ecs.EntityID
 	Component TransitionComponent[Component]
 }
 
-func NewTransitionEvent[Component Lerp[Component]](
+func NewTransitionEvent[Component LerpConstraint[Component]](
 	entity ecs.EntityID,
 	from, to Component,
 	duration time.Duration,

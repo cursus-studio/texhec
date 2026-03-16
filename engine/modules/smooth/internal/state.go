@@ -9,7 +9,7 @@ import (
 	"github.com/ogiusek/ioc/v2"
 )
 
-type Service[Component transition.Lerp[Component]] struct {
+type Service[Component transition.LerpConstraint[Component]] struct {
 	World       ecs.World `inject:"1"`
 	recordingID record.RecordingID
 	config      record.Config
@@ -18,7 +18,7 @@ type Service[Component transition.Lerp[Component]] struct {
 	lerpArray      ecs.ComponentsArray[transition.TransitionComponent[Component]]
 }
 
-func NewService[Component transition.Lerp[Component]](c ioc.Dic) *Service[Component] {
+func NewService[Component transition.LerpConstraint[Component]](c ioc.Dic) *Service[Component] {
 	config := record.NewConfig()
 	record.AddToConfig[Component](config)
 
@@ -33,7 +33,7 @@ func NewService[Component transition.Lerp[Component]](c ioc.Dic) *Service[Compon
 
 //
 
-type system[Component transition.Lerp[Component]] struct {
+type system[Component transition.LerpConstraint[Component]] struct {
 	EventsBuilder events.Builder      `inject:"1"`
 	World         ecs.World           `inject:"1"`
 	Record        record.Service      `inject:"1"`

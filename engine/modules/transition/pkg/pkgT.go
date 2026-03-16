@@ -8,10 +8,10 @@ import (
 	"github.com/ogiusek/ioc/v2"
 )
 
-type pkgT[Component transition.Lerp[Component]] struct {
+type pkgT[Component transition.LerpConstraint[Component]] struct {
 }
 
-func PackageT[Component transition.Lerp[Component]]() ioc.Pkg {
+func PackageT[Component transition.LerpConstraint[Component]]() ioc.Pkg {
 	return pkgT[Component]{}
 }
 

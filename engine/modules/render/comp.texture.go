@@ -1,6 +1,7 @@
 package render
 
 import (
+	"engine/modules/transition"
 	"engine/services/ecs"
 	"errors"
 	"image"
@@ -36,7 +37,7 @@ func (c TextureFrameComponent) GetFrame(frameLen int) int {
 
 func (c1 TextureFrameComponent) Lerp(c2 TextureFrameComponent, mix32 float32) TextureFrameComponent {
 	mix64 := float64(mix32)
-	return TextureFrameComponent{c1.FrameNormalized*(1-mix64) + c2.FrameNormalized*mix64}
+	return TextureFrameComponent{transition.Lerp(c1.FrameNormalized, c2.FrameNormalized, mix64)}
 }
 
 //

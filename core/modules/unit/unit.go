@@ -1,6 +1,7 @@
 package unit
 
 import (
+	"engine/modules/transition"
 	"engine/services/ecs"
 
 	"github.com/go-gl/mathgl/mgl32"
@@ -29,8 +30,8 @@ func NewCoords[Number constraints.Integer | constraints.Float](x, y Number) Coor
 
 func (c1 CoordsComponent) Lerp(c2 CoordsComponent, mix32 float32) CoordsComponent {
 	r := CoordsComponent{
-		c1.X*Coord(1-mix32) + c2.X*Coord(mix32),
-		c1.Y*Coord(1-mix32) + c2.Y*Coord(mix32),
+		transition.Lerp(c1.X, c2.X, mix32),
+		transition.Lerp(c1.Y, c2.Y, mix32),
 	}
 	return r
 }
@@ -50,7 +51,7 @@ func NewRotation(radians float32) RotationComponent {
 }
 
 func (c1 RotationComponent) Lerp(c2 RotationComponent, mix32 float32) RotationComponent {
-	return RotationComponent{c1.Radians*(1-mix32) + c2.Radians*(mix32)}
+	return RotationComponent{transition.Lerp(c1.Radians, c2.Radians, mix32)}
 }
 
 func (e *RotationComponent) Quat() mgl32.Quat {

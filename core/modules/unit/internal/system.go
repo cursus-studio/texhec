@@ -13,6 +13,7 @@ import (
 	"engine/modules/render"
 	"engine/modules/text"
 	"engine/modules/transform"
+	"engine/modules/transition"
 	"engine/services/ecs"
 	"engine/services/frames"
 	"errors"
@@ -22,7 +23,6 @@ import (
 	"github.com/go-gl/mathgl/mgl32"
 	"github.com/ogiusek/events"
 	"github.com/ogiusek/ioc/v2"
-	"golang.org/x/exp/constraints"
 )
 
 type system struct {
@@ -65,10 +65,6 @@ func NewSystem(c ioc.Dic, layer float32) error {
 	return nil
 }
 
-func lerp[Number constraints.Float](a, b, t Number) Number {
-	return a*(1-t) + b*(t)
-}
-
 func (s *system) BeforeGet() {
 	for _, entity := range s.dirtySet.Get() {
 		construct, ok := s.Unit.Unit().Get(entity)
@@ -92,8 +88,8 @@ func (s *system) BeforeGet() {
 		_, fractX := math.Modf(float64(coords.X))
 		_, fractY := math.Modf(float64(coords.Y))
 		pos := transform.NewPos(
-			lerp(posFloor.Pos[0], posCeil.Pos[0], float32(fractX)),
-			lerp(posFloor.Pos[1], posCeil.Pos[1], float32(fractY)),
+			transition.Lerp(posFloor.Pos[0], posCeil.Pos[0], float32(fractX)),
+			transition.Lerp(posFloor.Pos[1], posCeil.Pos[1], float32(fractY)),
 			s.layer,
 		)
 

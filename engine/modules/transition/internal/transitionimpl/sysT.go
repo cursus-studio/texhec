@@ -10,7 +10,7 @@ import (
 	"github.com/ogiusek/ioc/v2"
 )
 
-type sysT[Component transition.Lerp[Component]] struct {
+type sysT[Component transition.LerpConstraint[Component]] struct {
 	World         ecs.World          `inject:"1"`
 	Logger        logger.Logger      `inject:"1"`
 	Transition    transition.Service `inject:"1"`
@@ -23,7 +23,7 @@ type sysT[Component transition.Lerp[Component]] struct {
 	componentArray  ecs.ComponentsArray[Component]
 }
 
-func NewSysT[Component transition.Lerp[Component]](c ioc.Dic) transition.System {
+func NewSysT[Component transition.LerpConstraint[Component]](c ioc.Dic) transition.System {
 	return ecs.NewSystemRegister(func() error {
 		s := ioc.GetServices[*sysT[Component]](c)
 
