@@ -13,6 +13,7 @@ import (
 	"core/modules/tile/pkg"
 	"core/modules/ui"
 	"core/modules/ui/pkg"
+	"core/modules/unit"
 	unitpkg "core/modules/unit/pkg"
 	gamescenes "core/scenes"
 	creditsscene "core/scenes/credits"
@@ -240,6 +241,8 @@ func getDic() ioc.Dic {
 		smoothpkg.Package(func() smoothpkg.Config {
 			config := smoothpkg.NewConfig()
 			smoothpkg.SmoothComponent[render.ColorComponent](config)
+			smoothpkg.SmoothComponent[unit.RotationComponent](config)
+			smoothpkg.SmoothComponent[unit.CoordsComponent](config)
 			return config
 		}()),
 		transitionpkg.Package(),

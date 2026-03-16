@@ -125,6 +125,8 @@ func (pkg) Register(b ioc.Builder) {
 				temporaryInlineSystems,
 
 				ioc.Get[tile.System](c),
+				ioc.Get[unit.System](c),
+				ioc.Get[construct.System](c),
 
 				// ui update
 				ioc.Get[ui.System](c),
