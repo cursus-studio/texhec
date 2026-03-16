@@ -128,7 +128,7 @@ func addScene(
 
 		world.Unit.Unit().Set(tank, unit.NewUnit(world.GameAssets.Units.Tank))
 		world.Tile.Pos().Set(tank, tile.NewPos(499.5, 500))
-		// world.Tile.Rot().Set(tank, tile.NewRot(mgl32.DegToRad(90)))
+		world.Tile.Rot().Set(tank, tile.NewRot(mgl32.DegToRad(90)))
 
 		world.Collider.Component().Set(tank, collider.NewCollider(world.GameAssets.SquareCollider))
 		world.Inputs.Stack().Set(tank, inputs.StackComponent{})
