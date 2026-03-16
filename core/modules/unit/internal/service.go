@@ -3,14 +3,22 @@ package internal
 import (
 	"core/modules/definitions"
 	"core/modules/tile"
+	"core/modules/ui"
 	"core/modules/unit"
 	"engine"
+	"engine/modules/collider"
 	"engine/modules/grid"
+	"engine/modules/groups"
+	"engine/modules/inputs"
 	"engine/modules/render"
+	"engine/modules/text"
 	"engine/modules/transform"
 	"engine/services/ecs"
+	"errors"
+	"fmt"
 	"math"
 
+	"github.com/ogiusek/events"
 	"github.com/ogiusek/ioc/v2"
 	"golang.org/x/exp/constraints"
 )
@@ -19,6 +27,7 @@ type service struct {
 	engine.World `inject:"1"`
 	Tile         tile.Service            `inject:"1"`
 	GameAssets   definitions.Definitions `inject:"1"`
+	Ui           ui.Service              `inject:"1"`
 
 	layer    float32
 	dirtySet ecs.DirtySet
@@ -45,6 +54,12 @@ func NewService(c ioc.Dic, layer float32) unit.Service {
 	s.Render.Texture().BeforeGet(s.BeforeGet)
 	s.Transform.Pos().BeforeGet(s.BeforeGet)
 	s.Transform.Size().BeforeGet(s.BeforeGet)
+
+	s.Collider.Component().BeforeGet(s.BeforeGet)
+	s.Inputs.LeftClick().BeforeGet(s.BeforeGet)
+	s.Inputs.Stack().BeforeGet(s.BeforeGet)
+
+	events.Listen(s.EventsBuilder, s.OnClick)
 
 	return s
 }
@@ -86,6 +101,27 @@ func (s *service) BeforeGet() {
 		s.Transform.Pos().Set(entity, pos)
 		s.Transform.Size().Set(entity, s.Tile.GetTileSize())
 
+		s.Collider.Component().Set(entity, collider.NewCollider(s.GameAssets.SquareCollider))
+		s.Inputs.LeftClick().Set(entity, inputs.NewLeftClick(unit.NewClickEvent(entity)))
+		s.Inputs.Stack().Set(entity, inputs.StackComponent{})
+	}
+}
+
+func (s *service) OnClick(e unit.ClickEvent) {
+	coords, ok := s.unitCoords.Get(e.Unit)
+	if !ok {
+		s.Logger.Warn(errors.New("expected unit to have unit coords component"))
+		return
+	}
+	for _, p := range s.Ui.Show() {
+		entity := s.NewEntity()
+		s.Hierarchy.SetParent(entity, p)
+		s.Transform.Parent().Set(entity, transform.NewParent(transform.RelativePos|transform.RelativeSizeXYZ))
+		s.Groups.Inherit().Set(entity, groups.InheritGroupsComponent{})
+
+		s.Text.Content().Set(entity, text.TextComponent{Text: fmt.Sprintf("UNIT: %v", coords)})
+		s.Text.FontSize().Set(entity, text.FontSizeComponent{FontSize: 25})
+		s.Text.Align().Set(entity, text.TextAlignComponent{Vertical: .5, Horizontal: .5})
 	}
 }
 

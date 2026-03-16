@@ -34,14 +34,14 @@ type Service interface {
 type System ecs.SystemRegister
 type SystemRenderer ecs.SystemRegister
 
-type TileClickEvent struct {
+type ClickEvent struct {
 	Grid ecs.EntityID
 	Tile grid.Index
 }
 
-func NewTileClickEvent(
+func NewClickEvent(
 	grid ecs.EntityID,
 	tile grid.Index,
 ) any {
-	return TileClickEvent{grid, tile}
+	return ClickEvent{grid, tile}
 }

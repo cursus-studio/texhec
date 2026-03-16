@@ -22,30 +22,31 @@ type system struct {
 
 func NewSystem(c ioc.Dic) tile.System {
 	return ecs.NewSystemRegister(func() error {
-		s := ioc.GetServices[system](c)
-		inheritGroupsArray := ecs.GetComponentsArray[groups.InheritGroupsComponent](s)
+		s := ioc.GetServices[*system](c)
 
-		events.Listen(s.EventsBuilder, func(e tile.TileClickEvent) {
-			grid, ok := s.Tile.Grid().Get(e.Grid)
-			if !ok {
-				s.Logger.Warn(fmt.Errorf("grid doesn't exist"))
-				return
-			}
-			coords := grid.GetCoords(e.Tile)
-			if !ok {
-				return
-			}
-			for _, p := range s.Ui.Show() {
-				entity := s.NewEntity()
-				s.Hierarchy.SetParent(entity, p)
-				s.Transform.Parent().Set(entity, transform.NewParent(transform.RelativePos|transform.RelativeSizeXYZ))
-				inheritGroupsArray.Set(entity, groups.InheritGroupsComponent{})
-
-				s.Text.Content().Set(entity, text.TextComponent{Text: fmt.Sprintf("TILE: %v", coords)})
-				s.Text.FontSize().Set(entity, text.FontSizeComponent{FontSize: 25})
-				s.Text.Align().Set(entity, text.TextAlignComponent{Vertical: .5, Horizontal: .5})
-			}
-		})
+		events.Listen(s.EventsBuilder, s.OnClick)
 		return nil
 	})
+}
+
+func (s *system) OnClick(e tile.ClickEvent) {
+	grid, ok := s.Tile.Grid().Get(e.Grid)
+	if !ok {
+		s.Logger.Warn(fmt.Errorf("grid doesn't exist"))
+		return
+	}
+	coords := grid.GetCoords(e.Tile)
+	if !ok {
+		return
+	}
+	for _, p := range s.Ui.Show() {
+		entity := s.NewEntity()
+		s.Hierarchy.SetParent(entity, p)
+		s.Transform.Parent().Set(entity, transform.NewParent(transform.RelativePos|transform.RelativeSizeXYZ))
+		s.Groups.Inherit().Set(entity, groups.InheritGroupsComponent{})
+
+		s.Text.Content().Set(entity, text.TextComponent{Text: fmt.Sprintf("TILE: %v", coords)})
+		s.Text.FontSize().Set(entity, text.FontSizeComponent{FontSize: 25})
+		s.Text.Align().Set(entity, text.TextAlignComponent{Vertical: .5, Horizontal: .5})
+	}
 }

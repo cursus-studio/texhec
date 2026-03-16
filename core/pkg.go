@@ -225,7 +225,7 @@ func getDic() ioc.Dic {
 			netsyncpkg.AddEvent[inputs.DragEvent](config)
 
 			netsyncpkg.AddTransparentEvent[settings.EnterSettingsEvent](config)
-			netsyncpkg.AddTransparentEvent[tile.TileClickEvent](config)
+			netsyncpkg.AddTransparentEvent[tile.ClickEvent](config)
 			netsyncpkg.AddTransparentEvent[ui.HideUiEvent](config)
 			// syncpkg.AddEvent[frames.FrameEvent](config)
 

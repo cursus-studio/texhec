@@ -23,6 +23,14 @@ func NewCoords(coords grid.Coords) CoordsComponent { return CoordsComponent{coor
 
 //
 
+type ClickEvent struct {
+	Construct ecs.EntityID
+}
+
+func NewClickEvent(construct ecs.EntityID) ClickEvent {
+	return ClickEvent{construct}
+}
+
 // type BlueprintComponent struct {
 // 	Construct string
 // 	// Size int

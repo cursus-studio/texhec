@@ -30,6 +30,16 @@ func (c *CoordsComponent) Coords() (Coord, Coord) {
 
 //
 
+type ClickEvent struct {
+	Unit ecs.EntityID
+}
+
+func NewClickEvent(unit ecs.EntityID) ClickEvent {
+	return ClickEvent{unit}
+}
+
+//
+
 type Service interface {
 	Coords() ecs.ComponentsArray[CoordsComponent]
 	Unit() ecs.ComponentsArray[UnitComponent]
