@@ -3,6 +3,7 @@ package unit
 import (
 	"engine/services/ecs"
 
+	"github.com/go-gl/mathgl/mgl32"
 	"golang.org/x/exp/constraints"
 )
 
@@ -30,12 +31,16 @@ func (c *CoordsComponent) Coords() (Coord, Coord) {
 
 //
 
-type ClickEvent struct {
-	Unit ecs.EntityID
+type RotationComponent struct {
+	Radians float32
 }
 
-func NewClickEvent(unit ecs.EntityID) ClickEvent {
-	return ClickEvent{unit}
+func NewRotation(radians float32) RotationComponent {
+	return RotationComponent{radians}
+}
+
+func (e *RotationComponent) Quat() mgl32.Quat {
+	return mgl32.QuatRotate(e.Radians, mgl32.Vec3{0, 0, -1})
 }
 
 //
@@ -43,4 +48,15 @@ func NewClickEvent(unit ecs.EntityID) ClickEvent {
 type Service interface {
 	Coords() ecs.ComponentsArray[CoordsComponent]
 	Unit() ecs.ComponentsArray[UnitComponent]
+	Rotation() ecs.ComponentsArray[RotationComponent]
+}
+
+//
+
+type ClickEvent struct {
+	Unit ecs.EntityID
+}
+
+func NewClickEvent(unit ecs.EntityID) ClickEvent {
+	return ClickEvent{unit}
 }

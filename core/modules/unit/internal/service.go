@@ -32,8 +32,9 @@ type service struct {
 	layer    float32
 	dirtySet ecs.DirtySet
 
-	units      ecs.ComponentsArray[unit.UnitComponent]
-	unitCoords ecs.ComponentsArray[unit.CoordsComponent]
+	units     ecs.ComponentsArray[unit.UnitComponent]
+	coords    ecs.ComponentsArray[unit.CoordsComponent]
+	rotations ecs.ComponentsArray[unit.RotationComponent]
 }
 
 func NewService(c ioc.Dic, layer float32) unit.Service {
@@ -43,17 +44,21 @@ func NewService(c ioc.Dic, layer float32) unit.Service {
 	s.dirtySet = ecs.NewDirtySet()
 
 	s.units = ecs.GetComponentsArray[unit.UnitComponent](s)
-	s.unitCoords = ecs.GetComponentsArray[unit.CoordsComponent](s)
+	s.coords = ecs.GetComponentsArray[unit.CoordsComponent](s)
+	s.rotations = ecs.GetComponentsArray[unit.RotationComponent](s)
 
-	s.unitCoords.AddDirtySet(s.dirtySet)
+	s.coords.AddDirtySet(s.dirtySet)
+	s.rotations.AddDirtySet(s.dirtySet)
 
-	s.Transform.Pos().AddDependency(s.unitCoords)
-	s.Transform.Size().AddDependency(s.unitCoords)
+	s.Transform.Pos().AddDependency(s.coords)
+	s.Transform.Size().AddDependency(s.coords)
+	s.Transform.Rotation().AddDependency(s.rotations)
 
 	s.Render.Mesh().BeforeGet(s.BeforeGet)
 	s.Render.Texture().BeforeGet(s.BeforeGet)
 	s.Transform.Pos().BeforeGet(s.BeforeGet)
 	s.Transform.Size().BeforeGet(s.BeforeGet)
+	s.Transform.Rotation().BeforeGet(s.BeforeGet)
 
 	s.Collider.Component().BeforeGet(s.BeforeGet)
 	s.Inputs.LeftClick().BeforeGet(s.BeforeGet)
@@ -74,10 +79,11 @@ func (s *service) BeforeGet() {
 		if !ok {
 			continue
 		}
-		coords, ok := s.unitCoords.Get(entity)
+		coords, ok := s.coords.Get(entity)
 		if !ok {
 			continue
 		}
+		rotation, _ := s.rotations.Get(entity)
 
 		posFloor := s.Tile.GetPos(grid.NewCoords(
 			grid.Coord(math.Floor(float64(coords.X))),
@@ -94,12 +100,14 @@ func (s *service) BeforeGet() {
 			lerp(posFloor.Pos[1], posCeil.Pos[1], float32(fractY)),
 			s.layer,
 		)
+
 		s.Render.Mesh().Set(entity, render.NewMesh(s.GameAssets.SquareMesh))
 		s.Render.Texture().Set(entity, render.NewTexture(construct.Unit))
 
 		s.Transform.ParentPivotPoint().Set(entity, transform.NewParentPivotPoint(0, 0, .5))
 		s.Transform.Pos().Set(entity, pos)
 		s.Transform.Size().Set(entity, s.Tile.GetTileSize())
+		s.Transform.Rotation().Set(entity, transform.NewRotation(rotation.Quat()))
 
 		s.Collider.Component().Set(entity, collider.NewCollider(s.GameAssets.SquareCollider))
 		s.Inputs.LeftClick().Set(entity, inputs.NewLeftClick(unit.NewClickEvent(entity)))
@@ -108,7 +116,7 @@ func (s *service) BeforeGet() {
 }
 
 func (s *service) OnClick(e unit.ClickEvent) {
-	coords, ok := s.unitCoords.Get(e.Unit)
+	coords, ok := s.coords.Get(e.Unit)
 	if !ok {
 		s.Logger.Warn(errors.New("expected unit to have unit coords component"))
 		return
@@ -129,5 +137,8 @@ func (s *service) Unit() ecs.ComponentsArray[unit.UnitComponent] {
 	return s.units
 }
 func (s *service) Coords() ecs.ComponentsArray[unit.CoordsComponent] {
-	return s.unitCoords
+	return s.coords
+}
+func (s *service) Rotation() ecs.ComponentsArray[unit.RotationComponent] {
+	return s.rotations
 }
