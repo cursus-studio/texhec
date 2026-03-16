@@ -40,7 +40,7 @@ type Constructs struct {
 }
 
 type Units struct {
-	Tank ecs.EntityID `path:"units/tank.png"`
+	Tank ecs.EntityID `path:"units/tank.png" unit:"tank"`
 }
 
 type Transitions struct {

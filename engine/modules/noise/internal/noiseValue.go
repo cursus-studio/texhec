@@ -2,6 +2,7 @@ package internal
 
 import (
 	"engine/modules/noise"
+	"engine/modules/transition"
 	"math"
 
 	"github.com/go-gl/mathgl/mgl64"
@@ -44,9 +45,9 @@ func NewValueNoise(
 		ux := valueInterpolate(f.X())
 		uy := valueInterpolate(f.Y())
 
-		res := lerp(
-			lerp(a, b, ux),
-			lerp(c, d, ux),
+		res := transition.Lerp(
+			transition.Lerp(a, b, ux),
+			transition.Lerp(c, d, ux),
 			uy,
 		)
 

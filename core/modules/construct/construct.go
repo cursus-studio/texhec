@@ -5,6 +5,8 @@ import (
 	"engine/services/ecs"
 )
 
+type System ecs.SystemRegister
+
 //
 
 type ConstructComponent struct {
@@ -22,6 +24,14 @@ type CoordsComponent struct {
 func NewCoords(coords grid.Coords) CoordsComponent { return CoordsComponent{coords} }
 
 //
+
+type ClickEvent struct {
+	Construct ecs.EntityID
+}
+
+func NewClickEvent(construct ecs.EntityID) ClickEvent {
+	return ClickEvent{construct}
+}
 
 // type BlueprintComponent struct {
 // 	Construct string

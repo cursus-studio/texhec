@@ -6,10 +6,6 @@ import (
 	"github.com/go-gl/mathgl/mgl64"
 )
 
-func lerp(a, b, t float64) float64 {
-	return a + t*(b-a)
-}
-
 func dot(v1, v2 mgl64.Vec2) float64 {
 	return v1[0]*v2[0] + v1[1]*v2[1]
 }

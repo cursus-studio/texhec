@@ -32,7 +32,7 @@ func NewConfig() Config {
 type startSystem[Component any] smooth.StartSystem
 type stopSystem[Component any] smooth.StopSystem
 
-func SmoothComponent[Component transition.Lerp[Component]](config Config) {
+func SmoothComponent[Component transition.LerpConstraint[Component]](config Config) {
 	componentType := reflect.TypeFor[Component]()
 	if _, ok := config.components[componentType]; ok {
 		return

@@ -13,6 +13,8 @@ import (
 	"core/modules/tile/pkg"
 	"core/modules/ui"
 	"core/modules/ui/pkg"
+	"core/modules/unit"
+	unitpkg "core/modules/unit/pkg"
 	gamescenes "core/scenes"
 	creditsscene "core/scenes/credits"
 	gamescene "core/scenes/game"
@@ -143,7 +145,8 @@ func getDic() ioc.Dic {
 		gtexture.Package(),
 		texturearray.Package(),
 		tilepkg.Package(),
-		constructpkg.Package(),
+		constructpkg.Package(2),
+		unitpkg.Package(3),
 		generationpkg.Package(),
 		uipkg.Package(
 			time.Millisecond*300, // animation duration
@@ -223,7 +226,7 @@ func getDic() ioc.Dic {
 			netsyncpkg.AddEvent[inputs.DragEvent](config)
 
 			netsyncpkg.AddTransparentEvent[settings.EnterSettingsEvent](config)
-			netsyncpkg.AddTransparentEvent[tile.TileClickEvent](config)
+			netsyncpkg.AddTransparentEvent[tile.ClickEvent](config)
 			netsyncpkg.AddTransparentEvent[ui.HideUiEvent](config)
 			// syncpkg.AddEvent[frames.FrameEvent](config)
 
@@ -238,6 +241,8 @@ func getDic() ioc.Dic {
 		smoothpkg.Package(func() smoothpkg.Config {
 			config := smoothpkg.NewConfig()
 			smoothpkg.SmoothComponent[render.ColorComponent](config)
+			smoothpkg.SmoothComponent[unit.RotationComponent](config)
+			smoothpkg.SmoothComponent[unit.CoordsComponent](config)
 			return config
 		}()),
 		transitionpkg.Package(),

@@ -9,6 +9,7 @@ import (
 	"core/modules/settings"
 	"core/modules/tile"
 	"core/modules/ui"
+	"core/modules/unit"
 	"engine"
 	"engine/modules/audio"
 	"engine/modules/batcher"
@@ -49,6 +50,7 @@ type World struct {
 
 	// game
 	Construct  construct.Service       `inject:"1"`
+	Unit       unit.Service            `inject:"1"`
 	GameAssets definitions.Definitions `inject:"1"`
 	Tile       tile.Service            `inject:"1"`
 	Generation generation.Service      `inject:"1"`
@@ -123,6 +125,8 @@ func (pkg) Register(b ioc.Builder) {
 				temporaryInlineSystems,
 
 				ioc.Get[tile.System](c),
+				ioc.Get[unit.System](c),
+				ioc.Get[construct.System](c),
 
 				// ui update
 				ioc.Get[ui.System](c),

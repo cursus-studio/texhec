@@ -27,7 +27,7 @@ type pkg struct {
 func Package() ioc.Pkg {
 	return pkg{
 		[]ioc.Pkg{
-			gridpkg.Package[tile.ID](tile.NewTileClickEvent),
+			gridpkg.Package[tile.ID](tile.NewClickEvent),
 			tileservice.Package(),
 			tilerenderer.Package(),
 		},
@@ -42,7 +42,7 @@ func (pkg pkg) Register(b ioc.Builder) {
 	ioc.WrapService(b, func(c ioc.Dic, b codec.Builder) {
 		b.
 			// events
-			Register(tile.TileClickEvent{})
+			Register(tile.ClickEvent{})
 	})
 
 	ioc.RegisterSingleton(b, func(c ioc.Dic) tile.System {

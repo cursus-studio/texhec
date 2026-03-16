@@ -5,6 +5,7 @@ import (
 	"core/modules/generation"
 	"core/modules/settings"
 	"core/modules/ui"
+	"core/modules/unit"
 	gamescenes "core/scenes"
 	"engine/modules/camera"
 	"engine/modules/collider"
@@ -116,6 +117,20 @@ func addScene(
 
 		world.Construct.Construct().Set(farm, construct.NewConstruct(world.GameAssets.Constructs.Farm))
 		world.Construct.Coords().Set(farm, construct.NewCoords(grid.NewCoords(499, 500)))
+
+		world.Collider.Component().Set(farm, collider.NewCollider(world.GameAssets.SquareCollider))
+		world.Inputs.Stack().Set(farm, inputs.StackComponent{})
+
+		tank := world.NewEntity()
+		world.Hierarchy.SetParent(tank, gridEntity)
+		world.Groups.Component().Set(tank, groups.EmptyGroups().Ptr().Enable(GameGroup).Val())
+
+		world.Unit.Unit().Set(tank, unit.NewUnit(world.GameAssets.Units.Tank))
+		world.Unit.Coords().Set(tank, unit.NewCoords(499.5, 500))
+		world.Unit.Rotation().Set(tank, unit.NewRotation(mgl32.DegToRad(90)))
+
+		world.Collider.Component().Set(tank, collider.NewCollider(world.GameAssets.SquareCollider))
+		world.Inputs.Stack().Set(tank, inputs.StackComponent{})
 	}
 }
 
