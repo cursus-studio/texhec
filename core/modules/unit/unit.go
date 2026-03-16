@@ -29,11 +29,10 @@ func NewCoords[Number constraints.Integer | constraints.Float](x, y Number) Coor
 }
 
 func (c1 CoordsComponent) Lerp(c2 CoordsComponent, mix32 float32) CoordsComponent {
-	r := CoordsComponent{
+	return CoordsComponent{
 		transition.Lerp(c1.X, c2.X, mix32),
 		transition.Lerp(c1.Y, c2.Y, mix32),
 	}
-	return r
 }
 
 func (c *CoordsComponent) Coords() (Coord, Coord) {
