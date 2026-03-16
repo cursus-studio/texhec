@@ -9,11 +9,10 @@ import (
 )
 
 type pkg struct {
-	layer float32
 }
 
-func Package(layer float32) ioc.Pkg {
-	return pkg{layer}
+func Package() ioc.Pkg {
+	return pkg{}
 }
 
 func (pkg pkg) Register(b ioc.Builder) {
@@ -23,7 +22,7 @@ func (pkg pkg) Register(b ioc.Builder) {
 
 	ioc.RegisterSingleton(b, func(c ioc.Dic) construct.System {
 		return ecs.NewSystemRegister(func() error {
-			return internal.NewSystem(c, pkg.layer)
+			return internal.NewSystem(c)
 		})
 	})
 }

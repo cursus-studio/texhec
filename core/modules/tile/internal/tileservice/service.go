@@ -14,11 +14,25 @@ type service struct {
 	grid.Service[tile.ID] `inject:"1"`
 
 	tile ecs.ComponentsArray[tile.Component]
+
+	pos   ecs.ComponentsArray[tile.PosComponent]
+	size  ecs.ComponentsArray[tile.SizeComponent]
+	rot   ecs.ComponentsArray[tile.RotComponent]
+	layer ecs.ComponentsArray[tile.LayerComponent]
 }
 
 func NewService(c ioc.Dic) tile.Service {
 	s := ioc.GetServices[*service](c)
 	s.tile = ecs.GetComponentsArray[tile.Component](s.World)
+
+	s.pos = ecs.GetComponentsArray[tile.PosComponent](s.World)
+	s.size = ecs.GetComponentsArray[tile.SizeComponent](s.World)
+	s.rot = ecs.GetComponentsArray[tile.RotComponent](s.World)
+	s.layer = ecs.GetComponentsArray[tile.LayerComponent](s.World)
+
+	s.size.SetEmpty(tile.NewSize(1, 1))
+	s.layer.SetEmpty(tile.NewLayer(1))
+
 	return s
 }
 
@@ -28,6 +42,11 @@ func (t *service) Tile() ecs.ComponentsArray[tile.Component] {
 func (t *service) Grid() ecs.ComponentsArray[grid.SquareGridComponent[tile.ID]] {
 	return t.Component()
 }
+
+func (t *service) Pos() ecs.ComponentsArray[tile.PosComponent]     { return t.pos }
+func (t *service) Size() ecs.ComponentsArray[tile.SizeComponent]   { return t.size }
+func (t *service) Rot() ecs.ComponentsArray[tile.RotComponent]     { return t.rot }
+func (t *service) Layer() ecs.ComponentsArray[tile.LayerComponent] { return t.layer }
 
 func (t *service) GetPos(coords grid.Coords) transform.PosComponent {
 	size := t.GetTileSize().Size

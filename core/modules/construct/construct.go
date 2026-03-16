@@ -1,9 +1,6 @@
 package construct
 
-import (
-	"engine/modules/grid"
-	"engine/services/ecs"
-)
+import "engine/services/ecs"
 
 type System ecs.SystemRegister
 
@@ -14,14 +11,6 @@ type ConstructComponent struct {
 }
 
 func NewConstruct(construct ecs.EntityID) ConstructComponent { return ConstructComponent{construct} }
-
-//
-
-type CoordsComponent struct {
-	Coords grid.Coords
-}
-
-func NewCoords(coords grid.Coords) CoordsComponent { return CoordsComponent{coords} }
 
 //
 
@@ -57,5 +46,4 @@ func NewClickEvent(construct ecs.EntityID) ClickEvent {
 type Service interface {
 	// adds mesh, texture, mouse click event, adds to grid
 	Construct() ecs.ComponentsArray[ConstructComponent]
-	Coords() ecs.ComponentsArray[CoordsComponent]
 }

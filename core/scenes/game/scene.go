@@ -4,6 +4,7 @@ import (
 	"core/modules/construct"
 	"core/modules/generation"
 	"core/modules/settings"
+	"core/modules/tile"
 	"core/modules/ui"
 	"core/modules/unit"
 	gamescenes "core/scenes"
@@ -116,7 +117,7 @@ func addScene(
 		world.Groups.Component().Set(farm, groups.EmptyGroups().Ptr().Enable(GameGroup).Val())
 
 		world.Construct.Construct().Set(farm, construct.NewConstruct(world.GameAssets.Constructs.Farm))
-		world.Construct.Coords().Set(farm, construct.NewCoords(grid.NewCoords(499, 500)))
+		world.Tile.Pos().Set(farm, tile.NewPos(499, 500))
 
 		world.Collider.Component().Set(farm, collider.NewCollider(world.GameAssets.SquareCollider))
 		world.Inputs.Stack().Set(farm, inputs.StackComponent{})
@@ -126,8 +127,8 @@ func addScene(
 		world.Groups.Component().Set(tank, groups.EmptyGroups().Ptr().Enable(GameGroup).Val())
 
 		world.Unit.Unit().Set(tank, unit.NewUnit(world.GameAssets.Units.Tank))
-		world.Unit.Coords().Set(tank, unit.NewCoords(499.5, 500))
-		world.Unit.Rotation().Set(tank, unit.NewRotation(mgl32.DegToRad(90)))
+		world.Tile.Pos().Set(tank, tile.NewPos(499.5, 500))
+		// world.Tile.Rot().Set(tank, tile.NewRot(mgl32.DegToRad(90)))
 
 		world.Collider.Component().Set(tank, collider.NewCollider(world.GameAssets.SquareCollider))
 		world.Inputs.Stack().Set(tank, inputs.StackComponent{})

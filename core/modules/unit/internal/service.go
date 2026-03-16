@@ -17,27 +17,17 @@ type service struct {
 	GameAssets   definitions.Definitions `inject:"1"`
 	Ui           ui.Service              `inject:"1"`
 
-	units     ecs.ComponentsArray[unit.UnitComponent]
-	coords    ecs.ComponentsArray[unit.CoordsComponent]
-	rotations ecs.ComponentsArray[unit.RotationComponent]
+	units ecs.ComponentsArray[unit.UnitComponent]
 }
 
 func NewService(c ioc.Dic) unit.Service {
 	s := ioc.GetServices[*service](c)
 
 	s.units = ecs.GetComponentsArray[unit.UnitComponent](s.World)
-	s.coords = ecs.GetComponentsArray[unit.CoordsComponent](s.World)
-	s.rotations = ecs.GetComponentsArray[unit.RotationComponent](s.World)
 
 	return s
 }
 
 func (s *service) Unit() ecs.ComponentsArray[unit.UnitComponent] {
 	return s.units
-}
-func (s *service) Coords() ecs.ComponentsArray[unit.CoordsComponent] {
-	return s.coords
-}
-func (s *service) Rotation() ecs.ComponentsArray[unit.RotationComponent] {
-	return s.rotations
 }
