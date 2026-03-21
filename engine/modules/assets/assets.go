@@ -2,7 +2,6 @@ package assets
 
 import (
 	"engine/services/ecs"
-	"engine/services/httperrors"
 	"errors"
 	"fmt"
 	"reflect"
@@ -55,7 +54,6 @@ func GetAsset[Asset any](assets Service, assetID ecs.EntityID) (Asset, error) {
 	if !ok {
 		var a Asset
 		err := errors.Join(
-			httperrors.Err400,
 			ErrAssetHasDifferentType,
 			fmt.Errorf(
 				"asset is of type \"%s\" and expected to be \"%s\"",
