@@ -23,7 +23,7 @@ Its completely build from scratch with **less** **than** a **dozen** of **depend
 TEXHEC is a **HIGH-Performance** project where natural map size is **1.000.000*** tiles with hundreds or thousands buildings and units **all** being **simulated** in real time.\
 We use **DOD** and use our **own** **ECS** framework.
 
-[More about this **ECS** framework](engine/services/ecs/readme/README.md)
+[More about this **ECS** framework](/engine/services/ecs/readme/README.md)
 
 #### Why golang
 Others would **discard golang** due to **garbage collector**.\
@@ -81,7 +81,7 @@ Code snippets of `Service` and of how to use it.
 ...
 
 ## Dependencies
-- [module](engine/modules/module_name/readme/README.md)
+- [module](/engine/modules/module_name/readme/README.md)
 ```
 
 #### Engine
@@ -91,51 +91,51 @@ It defines ecs framework and basic engine modules like `transform` or `hierarchy
 **Currently only cherry picked readmes are written**
 
 Cherry picked readmes to show project complexity:
-- [ecs](engine/services/ecs/readme/README.md)
-- [assets](engine/modules/assets/readme/README.md)
-- [hierarchy](engine/modules/hierarchy/readme/README.md)
-- [record](engine/modules/record/readme/README.md)
-- [transform](engine/modules/transform/readme/README.md)
+- [ecs](/engine/services/ecs/readme/README.md)
+- [assets](/engine/modules/assets/readme/README.md)
+- [hierarchy](/engine/modules/hierarchy/readme/README.md)
+- [record](/engine/modules/record/readme/README.md)
+- [transform](/engine/modules/transform/readme/README.md)
 
 Engine modules:
-- [assets](engine/modules/assets/readme/README.md)
-- [audio](engine/modules/audio/readme/README.md)
-- [batcher](engine/modules/batcher/readme/README.md)
-- [camera](engine/modules/camera/readme/README.md)
-- [collider](engine/modules/collider/readme/README.md)
-- [connection](engine/modules/connection/readme/README.md)
-- [drag](engine/modules/drag/readme/README.md)
-- [grid](engine/modules/grid/readme/README.md)
-- [groups](engine/modules/groups/readme/README.md)
-- [hierarchy](engine/modules/hierarchy/readme/README.md)
-- [inputs](engine/modules/inputs/readme/README.md)
-- [layout](engine/modules/layout/readme/README.md)
-- [netsync](engine/modules/netsync/readme/README.md)
-- [noise](engine/modules/noise/readme/README.md)
-- [record](engine/modules/record/readme/README.md)
-- [registry](engine/modules/registry/readme/README.md)
-- [relation](engine/modules/relation/readme/README.md)
-- [render](engine/modules/render/readme/README.md)
-- [scene](engine/modules/scene/readme/README.md)
-- [seed](engine/modules/seed/readme/README.md)
-- [smooth](engine/modules/smooth/readme/README.md)
-- [text](engine/modules/text/readme/README.md)
-- [transform](engine/modules/transform/readme/README.md)
-- [transition](engine/modules/transition/readme/README.md)
-- [uuid](engine/modules/uuid/readme/README.md)
+- [assets](/engine/modules/assets/readme/README.md)
+- [audio](/engine/modules/audio/readme/README.md)
+- [batcher](/engine/modules/batcher/readme/README.md)
+- [camera](/engine/modules/camera/readme/README.md)
+- [collider](/engine/modules/collider/readme/README.md)
+- [connection](/engine/modules/connection/readme/README.md)
+- [drag](/engine/modules/drag/readme/README.md)
+- [grid](/engine/modules/grid/readme/README.md)
+- [groups](/engine/modules/groups/readme/README.md)
+- [hierarchy](/engine/modules/hierarchy/readme/README.md)
+- [inputs](/engine/modules/inputs/readme/README.md)
+- [layout](/engine/modules/layout/readme/README.md)
+- [netsync](/engine/modules/netsync/readme/README.md)
+- [noise](/engine/modules/noise/readme/README.md)
+- [record](/engine/modules/record/readme/README.md)
+- [registry](/engine/modules/registry/readme/README.md)
+- [relation](/engine/modules/relation/readme/README.md)
+- [render](/engine/modules/render/readme/README.md)
+- [scene](/engine/modules/scene/readme/README.md)
+- [seed](/engine/modules/seed/readme/README.md)
+- [smooth](/engine/modules/smooth/readme/README.md)
+- [text](/engine/modules/text/readme/README.md)
+- [transform](/engine/modules/transform/readme/README.md)
+- [transition](/engine/modules/transition/readme/README.md)
+- [uuid](/engine/modules/uuid/readme/README.md)
 
 Engine services:
-- [clock](engine/services/clock/readme/README.md)
-- [codec](engine/services/codec/readme/README.md)
-- [console](engine/services/console/readme/README.md)
-- [datastructures](engine/services/datastructures/readme/README.md)
-- [ecs](engine/services/ecs/readme/README.md)
-- [frames](engine/services/frames/readme/README.md)
-- [graphics](engine/services/graphics/readme/README.md)
-- [httperrors](engine/services/httperrors/readme/README.md)
-- [logger](engine/services/logger/readme/README.md)
-- [media](engine/services/media/readme/README.md)
-- [runtime](engine/services/runtime/readme/README.md)
+- [clock](/engine/services/clock/readme/README.md)
+- [codec](/engine/services/codec/readme/README.md)
+- [console](/engine/services/console/readme/README.md)
+- [datastructures](/engine/services/datastructures/readme/README.md)
+- [ecs](/engine/services/ecs/readme/README.md)
+- [frames](/engine/services/frames/readme/README.md)
+- [graphics](/engine/services/graphics/readme/README.md)
+- [httperrors](/engine/services/httperrors/readme/README.md)
+- [logger](/engine/services/logger/readme/README.md)
+- [media](/engine/services/media/readme/README.md)
+- [runtime](/engine/services/runtime/readme/README.md)
 
 #### Technical challenges
 Each and every module had unique challenges and they are described in these readmes.
@@ -148,8 +148,8 @@ Current approach reduces whole friction to a few interface files and often in a 
 
 Example map generated in a matter of seconds and rendered in less than 6ms\
 using 5 years old Intel® Core™ i5-8350U × 8 Intel® UHD Graphics 620 (KBL GT2):
-![Whole map](readme/whole_map.png)
-![Bottom right map corner](readme/bottom_right.png)
+![Whole map](/readme/whole_map.png)
+![Bottom right map corner](/readme/bottom_right.png)
 
 ## How to run ?
 ### Install dependencies
