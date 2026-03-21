@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"reflect"
+	"strings"
 )
 
 type Asset interface{ Release() }
@@ -17,6 +18,12 @@ type CacheComponent struct{ Cache Asset }
 
 func NewPath(path string) PathComponent   { return PathComponent{path} }
 func NewCache(cache Asset) CacheComponent { return CacheComponent{cache} }
+
+func (s *PathComponent) Extension() string {
+	parts := strings.Split(s.Path, ".")
+	parts = strings.Split(parts[len(parts)-1], "/")
+	return parts[len(parts)-1]
+}
 
 // add asset struct
 

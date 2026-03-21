@@ -43,8 +43,8 @@ func (s *assetsService) Get(entity ecs.EntityID) (assets.Asset, error) {
 		return nil, assets.ErrAssetNotFound
 	}
 
-	ext := s.PathExntesion(path)
-	dispatcher, ok := s.ExtensionDispatcher(ext)
+	extension := path.Extension()
+	dispatcher, ok := s.ExtensionDispatcher(extension)
 	if !ok {
 		fmt.Printf("\"%v\" path.\n", path)
 		return nil, assets.ErrAssetNotFound
