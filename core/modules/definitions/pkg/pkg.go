@@ -2,6 +2,7 @@ package definitionspkg
 
 import (
 	"core/modules/definitions"
+	"engine"
 	"engine/modules/assets"
 	"engine/modules/collider"
 	"engine/modules/registry"
@@ -9,7 +10,6 @@ import (
 	"engine/modules/transition"
 	"engine/services/ecs"
 	"engine/services/graphics/vao/ebo"
-	"engine/services/logger"
 	"image"
 	"image/color"
 	_ "image/png"
@@ -65,11 +65,10 @@ func (pkg) Register(b ioc.Builder) {
 
 	// register assets
 	ioc.RegisterSingleton(b, func(c ioc.Dic) definitions.Definitions {
-		logger := ioc.Get[logger.Logger](c)
-		registryService := ioc.Get[registry.Service](c)
+		world := ioc.GetServices[engine.World](c)
 
-		gameAssets, err := registry.GetRegistry[definitions.Definitions](registryService)
-		logger.Warn(err)
+		gameAssets, err := registry.GetRegistry[definitions.Definitions](world.Registry)
+		world.Logger.Warn(err)
 		return gameAssets
 	})
 
