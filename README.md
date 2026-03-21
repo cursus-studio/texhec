@@ -7,9 +7,9 @@ TEXHEC is a game during development.
 
 In TEXHEC we can win by:
 - technological win
-- total enemies anihilation
+- total enemies annihilation
 
-Point of the game is to allow complex tactics (all moves allowed) in seamingly endless world.
+Point of the game is to allow complex tactics (all moves allowed) in seemingly endless world.
 
 Everything can be either done automaticaly or manualy.
 Everything is under player control where he has to find order in endless chaos and has to conquer it before others do so.
@@ -23,7 +23,7 @@ Its completely build from scratch with **less** **than** a **dozen** of **depend
 TEXHEC is a **HIGH-Performance** project where natural map size is **1.000.000*** tiles with hundreds or thousands buildings and units **all** being **simulated** in real time.\
 We use **DOD** and use our **own** **ECS** framework.
 
-[More about this **ECS** framework](./engine/services/ecs/readme/README.md)
+[More about this **ECS** framework](engine/services/ecs/readme/README.md)
 
 #### Why golang
 Others would **discard golang** due to **garbage collector**.\
@@ -59,7 +59,7 @@ Services are more detached from alone game engine and have less strict rules.
 ```
 modules/
 └─ `$module_name`/
-    ├── internal/       # Defines implementation for `Serivce` and `System` (if exist in module)
+    ├── internal/       # Defines implementation for `Service` and `System` (if exist in module)
     ├── pkg/            # This exposes `Package` function to register `Service` implementation.
     │                   # `pkg`, `internal` and `tests` separation allows `modules`
     │                   # Decouples the interface definition from the construction logic to allow for flexible dependency wiring
@@ -74,52 +74,54 @@ Everything in module file structure is optional and should be only added if used
 Engine is the core which can be re-used in other projects.\
 It defines ecs framework and basic engine modules like `transform` or `hierarchy`
 
+**Currently only cherry picked readmes are written**
+
 Cherry picked readmes to show project complexity:
-- [ecs](./engine/services/ecs/readme/README.md)
-- [assets](./engine/modules/assets/readme/README.md)
-- [hierarchy](./engine/modules/hierarchy/readme/README.md)
-- [record](./engine/modules/record/readme/README.md)
-- [transform](./engine/modules/transform/readme/README.md)
+- [ecs](engine/services/ecs/readme/README.md)
+- [assets](engine/modules/assets/readme/README.md)
+- [hierarchy](engine/modules/hierarchy/readme/README.md)
+- [record](engine/modules/record/readme/README.md)
+- [transform](engine/modules/transform/readme/README.md)
 
 Engine modules:
-- [assets](./engine/modules/assets/readme/README.md)
-- [audio](./engine/modules/audio/readme/README.md)
-- [batcher](./engine/modules/batcher/readme/README.md)
-- [camera](./engine/modules/camera/readme/README.md)
-- [collider](./engine/modules/collider/readme/README.md)
-- [connection](./engine/modules/connection/readme/README.md)
-- [drag](./engine/modules/drag/readme/README.md)
-- [grid](./engine/modules/grid/readme/README.md)
-- [groups](./engine/modules/groups/readme/README.md)
-- [hierarchy](./engine/modules/hierarchy/readme/README.md)
-- [inputs](./engine/modules/inputs/readme/README.md)
-- [layout](./engine/modules/layout/readme/README.md)
-- [netsync](./engine/modules/netsync/readme/README.md)
-- [noise](./engine/modules/noise/readme/README.md)
-- [record](./engine/modules/record/readme/README.md)
-- [registry](./engine/modules/registry/readme/README.md)
-- [relation](./engine/modules/relation/readme/README.md)
-- [render](./engine/modules/render/readme/README.md)
-- [scene](./engine/modules/scene/readme/README.md)
-- [seed](./engine/modules/seed/readme/README.md)
-- [smooth](./engine/modules/smooth/readme/README.md)
-- [text](./engine/modules/text/readme/README.md)
-- [transform](./engine/modules/transform/readme/README.md)
-- [transition](./engine/modules/transition/readme/README.md)
-- [uuid](./engine/modules/uuid/readme/README.md)
+- [assets](engine/modules/assets/readme/README.md)
+- [audio](engine/modules/audio/readme/README.md)
+- [batcher](engine/modules/batcher/readme/README.md)
+- [camera](engine/modules/camera/readme/README.md)
+- [collider](engine/modules/collider/readme/README.md)
+- [connection](engine/modules/connection/readme/README.md)
+- [drag](engine/modules/drag/readme/README.md)
+- [grid](engine/modules/grid/readme/README.md)
+- [groups](engine/modules/groups/readme/README.md)
+- [hierarchy](engine/modules/hierarchy/readme/README.md)
+- [inputs](engine/modules/inputs/readme/README.md)
+- [layout](engine/modules/layout/readme/README.md)
+- [netsync](engine/modules/netsync/readme/README.md)
+- [noise](engine/modules/noise/readme/README.md)
+- [record](engine/modules/record/readme/README.md)
+- [registry](engine/modules/registry/readme/README.md)
+- [relation](engine/modules/relation/readme/README.md)
+- [render](engine/modules/render/readme/README.md)
+- [scene](engine/modules/scene/readme/README.md)
+- [seed](engine/modules/seed/readme/README.md)
+- [smooth](engine/modules/smooth/readme/README.md)
+- [text](engine/modules/text/readme/README.md)
+- [transform](engine/modules/transform/readme/README.md)
+- [transition](engine/modules/transition/readme/README.md)
+- [uuid](engine/modules/uuid/readme/README.md)
 
 Engine services:
-- [clock](./engine/services/clock/readme/README.md)
-- [codec](./engine/services/codec/readme/README.md)
-- [console](./engine/services/console/readme/README.md)
-- [datastructures](./engine/services/datastructures/readme/README.md)
-- [ecs](./engine/services/ecs/readme/README.md)
-- [frames](./engine/services/frames/readme/README.md)
-- [graphics](./engine/services/graphics/readme/README.md)
-- [httperrors](./engine/services/httperrors/readme/README.md)
-- [logger](./engine/services/logger/readme/README.md)
-- [media](./engine/services/media/readme/README.md)
-- [runtime](./engine/services/runtime/readme/README.md)
+- [clock](engine/services/clock/readme/README.md)
+- [codec](engine/services/codec/readme/README.md)
+- [console](engine/services/console/readme/README.md)
+- [datastructures](engine/services/datastructures/readme/README.md)
+- [ecs](engine/services/ecs/readme/README.md)
+- [frames](engine/services/frames/readme/README.md)
+- [graphics](engine/services/graphics/readme/README.md)
+- [httperrors](engine/services/httperrors/readme/README.md)
+- [logger](engine/services/logger/readme/README.md)
+- [media](engine/services/media/readme/README.md)
+- [runtime](engine/services/runtime/readme/README.md)
 
 #### Technical challanges
 Each and every module had unique challanges and they are described in these readmes.
