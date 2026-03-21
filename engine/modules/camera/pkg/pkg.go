@@ -49,7 +49,7 @@ func (pkg pkg) Register(b ioc.Builder) {
 			Register(camera.ChangedResolutionEvent{})
 	})
 	ioc.RegisterSingleton(b, func(c ioc.Dic) service.Service {
-		return service.NewSerivce(c)
+		return service.NewService(c)
 	})
 	ioc.RegisterSingleton(b, func(c ioc.Dic) camera.Service {
 		return ioc.Get[service.Service](c)
