@@ -17,7 +17,7 @@ Everything is under player control where he has to find order in endless chaos a
 ### Technical answer
 
 TEXHEC is a vision **RTS** (real time strategy) game which currently is being brought to life.\
-On current stage of TEHXEC i wrote **dozens** of **unique** **modules** from every solved other problems.\
+On current stage of TEXHEC i wrote **dozens** of **unique** **modules** from every solved other problems.\
 Its completely build from scratch with **less** **than** a **dozen** of **dependencies** not controled by me.
 
 TEXHEC is a **HIGH-Performance** project where natural map size is **1.000.000*** tiles with hundreds or thousands buildings and units **all** being **simulated** in real time.\
@@ -69,6 +69,20 @@ modules/
                         # Expects interface name `Service` so module name and service purpose were related
 ```
 Everything in module file structure is optional and should be only added if used.
+
+#### Module readme schema
+```md
+# Module_name
+## Architecture
+How module is built and general flow of data and why this way in case of controversial choices.
+
+## Usage examples
+Code snippets of `Service` and of how to use it.
+...
+
+## Dependencies
+- [module](engine/modules/module_name/readme/README.md)
+```
 
 #### Engine
 Engine is the core which can be re-used in other projects.\
@@ -123,10 +137,10 @@ Engine services:
 - [media](engine/services/media/readme/README.md)
 - [runtime](engine/services/runtime/readme/README.md)
 
-#### Technical challanges
-Each and every module had unique challanges and they are described in these readmes.
+#### Technical challenges
+Each and every module had unique challenges and they are described in these readmes.
 
-Biggest challange of the whole project was architecture.\
+Biggest challenge of the whole project was architecture.\
 Finding file structure which allows for most logic with least friction between modules.\
 Current approach reduces whole friction to a few interface files and often in a single `Service` interface.
 
@@ -135,7 +149,7 @@ Current approach reduces whole friction to a few interface files and often in a 
 Example map generated in a matter of seconds and rendered in less than 6ms\
 using 5 years old Intel® Core™ i5-8350U × 8 Intel® UHD Graphics 620 (KBL GT2):
 ![Whole map](readme/whole_map.png)
-![Botton right map corner](readme/bottom_right.png)
+![Bottom right map corner](readme/bottom_right.png)
 
 ## How to run ?
 ### Install dependencies
@@ -160,6 +174,10 @@ sudo pacman -S sdl2_image sdl2_mixer sdl2_ttf
 cd core
 go run .
 ```
+
+## Contribution
+Currently we do not expect any contributions and each will be handled individually.\
+But currently we're rather sceptical and assertive but open to discussion.
 
 ## License
 
