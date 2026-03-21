@@ -12,7 +12,7 @@ func BenchmarkChildren_1(b *testing.B) {
 	setup.Service.SetParent(child, parent)
 
 	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
+	for b.Loop() {
 		setup.Service.Children(parent)
 	}
 }
@@ -21,13 +21,13 @@ func BenchmarkChildren_10(b *testing.B) {
 	setup := NewSetup()
 	parent := setup.World.NewEntity()
 
-	for i := 0; i < 10; i++ {
+	for range 10 {
 		child := setup.World.NewEntity()
 		setup.Service.SetParent(child, parent)
 	}
 
 	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
+	for b.Loop() {
 		setup.Service.Children(parent)
 	}
 }
@@ -36,13 +36,13 @@ func BenchmarkChildren_100(b *testing.B) {
 	setup := NewSetup()
 	parent := setup.World.NewEntity()
 
-	for i := 0; i < 100; i++ {
+	for range 100 {
 		child := setup.World.NewEntity()
 		setup.Service.SetParent(child, parent)
 	}
 
 	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
+	for b.Loop() {
 		setup.Service.Children(parent)
 	}
 }
@@ -57,7 +57,7 @@ func BenchmarkFlatChildren_1_1(b *testing.B) {
 	setup.Service.SetParent(grandChild, child)
 
 	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
+	for b.Loop() {
 		setup.Service.FlatChildren(parent)
 	}
 }
@@ -66,17 +66,17 @@ func BenchmarkFlatChildren_10_10(b *testing.B) {
 	setup := NewSetup()
 	parent := setup.World.NewEntity()
 
-	for i := 0; i < 10; i++ {
+	for range 10 {
 		child := setup.World.NewEntity()
 		setup.Service.SetParent(child, parent)
 
-		for j := 0; j < 10; j++ {
+		for range 10 {
 			grandChild := setup.World.NewEntity()
 			setup.Service.SetParent(grandChild, child)
 		}
 	}
 
-	for i := 0; i < b.N; i++ {
+	for b.Loop() {
 		setup.Service.FlatChildren(parent)
 	}
 }
