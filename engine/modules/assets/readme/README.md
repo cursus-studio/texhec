@@ -4,7 +4,7 @@ We store all data in `ecs.World` and build on top of it.\
 We store path in `PathComponent` and upon retrival we store asset as interface in `CacheComponent`.\
 We convert `PathComponent` to `CacheComponent` using dispatchers where each file extension has dedicated dispatcher.\
 Using interfaces for `CacheComponent` doesn't affect performance heavily, its nothing in comparison to data stored and its processing.\
-To release assets we just remove `CacheComponent` (reccomended) or entity with this component.\
+To release assets we just remove `CacheComponent` (recommended) or entity with this component.\
 `CacheComponent` stores interface and we use\
 `func GetAsset[Asset any](assets Service, assetID ecs.EntityID) (Asset, error)`\
 to parse is to our asset type.
@@ -35,6 +35,10 @@ func GetAsset[Asset any](assets Service, assetID ecs.EntityID) (Asset, error)
 This is main service interface.\
 On `Get` we either return content of `CacheComponent` if exists or\
 use dispatchers for `PathComponent` extension to read file contents.
+
+### Life cycle
+Currently assets are stale and hot reloading isn't supported.\
+To hot reload you'll need to remove asset cache and replace path component and you'll need to support in in consumers.
 
 ## Usage examples
 ### Asset
@@ -69,7 +73,7 @@ func (pkg) Register(b ioc.Builder) {
 
 ### Defining assets manually
 This is only shows how everything works under the hood.\
-Doing so to define assets **isn't reccomended**.
+Doing so to define assets **isn't recommended**.
 
 ```go
 type Retrieved struct {
@@ -98,7 +102,7 @@ func (pkg) Register(b ioc.Builder) {
 }
 ```
 
-### Initializing assets entities using registry (reccomended)
+### Initializing assets entities using registry (recommended)
 We use `registry` and defined `path` struct tag to define asset path.
 
 ```go
