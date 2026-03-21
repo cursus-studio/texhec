@@ -9,7 +9,9 @@ import (
 
 type asset struct{ released bool }
 
-func (a *asset) Release() { a.released = true }
+func (a *asset) Release() {
+	a.released = true
+}
 
 //
 
@@ -34,26 +36,53 @@ func TestAssets(t *testing.T) {
 		return
 	}
 
-	asset, err := assets.GetAsset[*asset](setup.Assets, definitions.Asset)
-	if err != nil {
-		t.Error(err)
-		return
+	{
+		asset, err := assets.GetAsset[*asset](setup.Assets, definitions.Asset)
+		if err != nil {
+			t.Error(err)
+			return
+		}
+
+		if !fetched {
+			t.Error("didn't fetch asset using extension dispatcher")
+			return
+		}
+
+		if asset.released {
+			t.Error("prematurely released asset")
+			return
+		}
+
+		setup.Assets.Cache().Remove(definitions.Asset)
+
+		if !asset.released {
+			t.Error("assets wasn't released on component cache removal")
+			return
+		}
 	}
 
-	if !fetched {
-		t.Error("didn't fetch asset using extension dispatcher")
-		return
-	}
+	{
+		asset, err := assets.GetAsset[*asset](setup.Assets, definitions.Asset)
+		if err != nil {
+			t.Error(err)
+			return
+		}
 
-	if asset.released {
-		t.Error("prematurely released asset")
-		return
-	}
+		if !fetched {
+			t.Error("didn't fetch asset using extension dispatcher")
+			return
+		}
 
-	setup.Assets.Release(definitions.Asset)
+		if asset.released {
+			t.Error("prematurely released asset")
+			return
+		}
 
-	if !asset.released {
-		t.Error("assets wasn't released")
-		return
+		setup.World.RemoveEntity(definitions.Asset)
+
+		if !asset.released {
+			t.Error("assets wasn't released on entity destruction")
+			return
+		}
 	}
 }

@@ -38,8 +38,6 @@ type Service interface {
 
 	// get also caches asset
 	Get(ecs.EntityID) (Asset, error)
-	Release(...ecs.EntityID)
-	ReleaseAll()
 }
 
 var (
