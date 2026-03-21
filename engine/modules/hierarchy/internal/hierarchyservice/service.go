@@ -115,7 +115,7 @@ func (t *service) SetChildren(parent ecs.EntityID, children ...ecs.EntityID) {
 		t.hierarchyArray.Remove(child)
 	}
 
-	for i := 0; i < len(children); i++ {
+	for i := range len(children) {
 		t.SetParent(children[i], parent)
 	}
 }
