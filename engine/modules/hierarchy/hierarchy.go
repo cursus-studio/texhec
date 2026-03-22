@@ -27,7 +27,7 @@ type Service interface {
 	Parent(child ecs.EntityID) (ecs.EntityID, bool)
 
 	// from closest to furthest
-	GetParents(child ecs.EntityID) datastructures.SparseSet[ecs.EntityID]
+	GetParents(child ecs.EntityID) datastructures.SparseSetReader[ecs.EntityID]
 	GetOrderedParents(child ecs.EntityID) []ecs.EntityID
 
 	// maintains order of children and adds component to children

@@ -67,7 +67,7 @@ func (t *service) Parent(child ecs.EntityID) (ecs.EntityID, bool) {
 
 //
 
-func (t *service) GetParents(child ecs.EntityID) datastructures.SparseSet[ecs.EntityID] {
+func (t *service) GetParents(child ecs.EntityID) datastructures.SparseSetReader[ecs.EntityID] {
 	orderedParents := t.GetOrderedParents(child)
 
 	parents := datastructures.NewSparseSetWithPaging[ecs.EntityID]()
