@@ -34,7 +34,7 @@ func NewService(c ioc.Dic) hierarchy.Service {
 
 	t.hierarchyArray.OnUpsert(t.handleHierarchyChange)
 	t.hierarchyArray.OnRemove(t.handleHierarchyChange)
-	t.parentArray.OnRemove(t.handleParentChange)
+	t.parentArray.OnRemove(t.handleParentRemoval)
 
 	return t
 }
@@ -214,7 +214,7 @@ addCurrentParent:
 	}
 }
 
-func (t *service) handleParentChange(parent ecs.EntityID) {
+func (t *service) handleParentRemoval(parent ecs.EntityID) {
 	if _, isParent := t.parentArray.Get(parent); isParent {
 		return
 	}
