@@ -5,7 +5,7 @@ import (
 	"testing"
 )
 
-func BenchmarkAddNChildrenWithParent(b *testing.B) {
+func BenchmarkAddChildToParentWithGrandParent(b *testing.B) {
 	setup := NewSetup()
 	grandParent := setup.World.NewEntity()
 	parent := grandParent
@@ -21,9 +21,10 @@ func BenchmarkAddNChildrenWithParent(b *testing.B) {
 		child := setup.World.NewEntity()
 		setup.Service.SetParent(child, parent)
 	}
+	setup.Service.FlatChildren(parent)
 }
 
-func BenchmarkAddNChildrenWith5Parents(b *testing.B) {
+func BenchmarkAddChildToParentWith5GrandParents(b *testing.B) {
 	setup := NewSetup()
 	grandParent := setup.World.NewEntity()
 	parent := grandParent
@@ -39,6 +40,7 @@ func BenchmarkAddNChildrenWith5Parents(b *testing.B) {
 		child := setup.World.NewEntity()
 		setup.Service.SetParent(child, parent)
 	}
+	setup.Service.FlatChildren(parent)
 }
 
 func BenchmarkRemoveChild(b *testing.B) {
