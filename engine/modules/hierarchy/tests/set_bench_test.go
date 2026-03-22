@@ -46,26 +46,31 @@ func BenchmarkRemoveNChildren(b *testing.B) {
 	parent := setup.World.NewEntity()
 
 	children := make([]ecs.EntityID, b.N)
-	for i := 0; i < b.N; i++ {
+	for i := range b.N {
 		children[i] = setup.World.NewEntity()
 		setup.Service.SetParent(children[i], parent)
 	}
 
 	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
+	for i := range b.N {
 		setup.World.RemoveEntity(children[i])
 	}
 }
 
-func BenchmarkRemoveParentWithNChildren(b *testing.B) {
+func BenchmarkRemoveParentWith100Children(b *testing.B) {
 	setup := NewSetup()
-	parent := setup.World.NewEntity()
-
-	for b.Loop() {
-		child := setup.World.NewEntity()
-		setup.Service.SetParent(child, parent)
+	parents := make([]ecs.EntityID, b.N)
+	for i := range b.N {
+		parents[i] = setup.World.NewEntity()
+		setup.Service.SetParent(setup.World.NewEntity(), parents[i])
+		for range 10 {
+			child := setup.World.NewEntity()
+			setup.Service.SetParent(child, parents[i])
+		}
 	}
 
 	b.ResetTimer()
-	setup.World.RemoveEntity(parent)
+	for _, parent := range parents {
+		setup.World.RemoveEntity(parent)
+	}
 }
