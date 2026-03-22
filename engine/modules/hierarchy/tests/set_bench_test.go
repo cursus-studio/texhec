@@ -63,7 +63,7 @@ func BenchmarkRemoveParentWith100Children(b *testing.B) {
 	for i := range b.N {
 		parents[i] = setup.World.NewEntity()
 		setup.Service.SetParent(setup.World.NewEntity(), parents[i])
-		for range 10 {
+		for range 100 {
 			child := setup.World.NewEntity()
 			setup.Service.SetParent(child, parents[i])
 		}
