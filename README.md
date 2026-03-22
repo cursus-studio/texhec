@@ -76,6 +76,8 @@ Everything in module file structure is optional and should be only added if used
 ## Architecture
 How module is built and general flow of data and why this way in case of controversial choices.
 
+## Benchmarks (optional)
+
 ## Usage examples
 Code snippets of `Service` and of how to use it.
 ...
