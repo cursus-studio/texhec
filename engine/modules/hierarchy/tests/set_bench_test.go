@@ -41,7 +41,7 @@ func BenchmarkAddNChildrenWith5Parents(b *testing.B) {
 	}
 }
 
-func BenchmarkRemoveNChildren(b *testing.B) {
+func BenchmarkRemoveChild(b *testing.B) {
 	setup := NewSetup()
 	parent := setup.World.NewEntity()
 
