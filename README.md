@@ -182,6 +182,6 @@ Currently we do not expect any contributions and each will be handled individual
 But currently we're rather sceptical and assertive but open to discussion.
 
 ## License
-
-Internal/Private.
-Currently this repo is public to allow to see code and what it does for recruitment
+Copyright © 2026. All rights reserved.
+Currently, this repository is public to allow for code review and demonstration of functionality for recruitment purposes.\
+No part of this software may be reproduced, distributed, or transmitted in any form or by any means without prior written permission.
