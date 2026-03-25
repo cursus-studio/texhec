@@ -46,24 +46,24 @@ goos: linux
 goarch: amd64
 pkg: engine/services/ecs/tests
 cpu: Intel(R) Core(TM) i5-8350U CPU @ 1.70GHz
-BenchmarkDirtySetDirty-8               	154477539	         9.268 ns/op	      24 B/op	       0 allocs/op
-BenchmarkDirtySetDirtyInversed-8       	167806476	         7.105 ns/op	      22 B/op	       0 allocs/op
-BenchmarkDirtySetGet-8                 	612629619	         1.974 ns/op	       0 B/op	       0 allocs/op
-BenchmarkDirtySetDirtyAndGet-8         	37094258	        28.16 ns/op	       8 B/op	       1 allocs/op
-BenchmarkDirtySetDirtyAnd1Get-8        	143024499	         7.884 ns/op	      21 B/op	       0 allocs/op
-Benchmark4SavesWith7Systems-8          	29311281	        39.68 ns/op	       0 B/op	       0 allocs/op
-Benchmark16SavesWith7Systems-8         	 7328666	       163.4 ns/op	       0 B/op	       0 allocs/op
-Benchmark256SavesWith7Systems-8        	  421380	      2499 ns/op	       0 B/op	       0 allocs/op
-Benchmark4096SavesWith7Systems-8       	   29991	     38931 ns/op	       0 B/op	       0 allocs/op
-Benchmark16384SavesWith7Systems-8      	    7592	    158113 ns/op	       0 B/op	       0 allocs/op
-Benchmark65536SavesWith7Systems-8      	    1880	    623083 ns/op	       0 B/op	       0 allocs/op
-Benchmark262144SavesWith7Systems-8     	     460	   2484472 ns/op	       0 B/op	       0 allocs/op
-BenchmarkGetComponent-8                	75057112	        15.68 ns/op	       0 B/op	       0 allocs/op
-BenchmarkCreateComponents-8            	37464291	        31.42 ns/op	      81 B/op	       0 allocs/op
-BenchmarkUpdateComponents-8            	100000000	        11.05 ns/op	       0 B/op	       0 allocs/op
-BenchmarkRemoveComponent-8             	78428568	        14.23 ns/op	       0 B/op	       0 allocs/op
-BenchmarkRemoveEntityWithComponent-8   	13946500	        88.69 ns/op	      45 B/op	       0 allocs/op
-BenchmarkRemoveEntity-8                	51865363	        23.94 ns/op	      46 B/op	       0 allocs/op
+BenchmarkDirtySetDirty-8               	162088540	         7.127 ns/op	      23 B/op	       0 allocs/op
+BenchmarkDirtySetDirtyInversed-8       	173312954	         6.332 ns/op	      21 B/op	       0 allocs/op
+BenchmarkDirtySetGet-8                 	599886150	         1.868 ns/op	       0 B/op	       0 allocs/op
+BenchmarkDirtySetDirtyAndGet-8         	242420068	         4.986 ns/op	       0 B/op	       0 allocs/op
+BenchmarkDirtySetDirtyAnd1Get-8        	157544990	         8.248 ns/op	      23 B/op	       0 allocs/op
+Benchmark4SavesWith7Systems-8          	26450721	        39.41 ns/op	       0 B/op	       0 allocs/op
+Benchmark16SavesWith7Systems-8         	 7368591	       161.1 ns/op	       0 B/op	       0 allocs/op
+Benchmark256SavesWith7Systems-8        	  487632	      2466 ns/op	       0 B/op	       0 allocs/op
+Benchmark4096SavesWith7Systems-8       	   30714	     39386 ns/op	       0 B/op	       0 allocs/op
+Benchmark16384SavesWith7Systems-8      	    7208	    155196 ns/op	       0 B/op	       0 allocs/op
+Benchmark65536SavesWith7Systems-8      	    1920	    619240 ns/op	       0 B/op	       0 allocs/op
+Benchmark262144SavesWith7Systems-8     	     480	   2435807 ns/op	       0 B/op	       0 allocs/op
+BenchmarkGetComponent-8                	75503276	        15.28 ns/op	       0 B/op	       0 allocs/op
+BenchmarkCreateComponents-8            	36927805	        30.03 ns/op	      82 B/op	       0 allocs/op
+BenchmarkUpdateComponents-8            	100000000	        10.91 ns/op	       0 B/op	       0 allocs/op
+BenchmarkRemoveComponent-8             	76977810	        14.17 ns/op	       0 B/op	       0 allocs/op
+BenchmarkRemoveEntityWithComponent-8   	15177441	        77.81 ns/op	      41 B/op	       0 allocs/op
+BenchmarkRemoveEntity-8                	48522978	        23.43 ns/op	      49 B/op	       0 allocs/op
 ```
 
 ## Usage examples

@@ -60,7 +60,7 @@ func (f *dirtySet) Clear() {
 		byteIndex := entity / 8
 		f.set[byteIndex] = 0
 	}
-	f.entities = nil
+	f.entities = f.entities[:0]
 }
 
 func (f *dirtySet) Ok() bool {
