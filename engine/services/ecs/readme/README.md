@@ -5,7 +5,10 @@ This **ECS** framework tries to follow only 2 rules:
 - **Simplicity** to ensure developer productivity, scalability and performance
 
 ### What is DOD
-**DOD** is focusing on data layout so its performant to access and modify.
+**DOD** is focusing on data layout so its performant to access and modify.\
+In short writing code so its efficient.\
+This simple goal (write efficient code) has massive consequences in how code is written and how we think about code.\
+I won't talk about all of them here but the core idea comes from this goal.
 
 ### Data structures
 We use sparse structures to store data. This enables us to efficiently access data.
@@ -24,7 +27,7 @@ They allow to instantly act on data modification but:
 Active listeners might be discarded in the future.
 
 ### Why golang GC (garbage collector) isn't a problem
-We follow **DOD** there for GC isn't laden with managing pointers.\
+We follow **DOD** there for GC isn't laden with managing pointers because there are little pointers to manage.\
 This makes golang a perfect candidate for this project because of high developer efficiency and low performance overhead.
 
 ### Architecture changes to revise in the future
