@@ -50,7 +50,7 @@ type EntityKeyedRecorder interface {
 	// starts opened recording (opened recording is recorded until stopped)
 	// applying it rewinds state.
 	StartBackwardsRecording(Config) RecordingID
-	// finishes recording if open
+	// finishes recording if open (false is returned if recording isn't started)
 	Stop(RecordingID) (r Recording, ok bool)
 
 	Apply(Config, ...Recording)
@@ -58,7 +58,7 @@ type EntityKeyedRecorder interface {
 
 type RecordingID uint16
 type Recording struct {
-	// [componentArrayLayoutID]component
+	// [componentArrayLayoutID]any component
 	// nil for removed entity
 	Entities datastructures.SparseArray[ecs.EntityID, []any]
 }
@@ -73,7 +73,7 @@ type UUIDKeyedRecorder interface {
 	// starts opened recording (opened recording is recorded until stopped)
 	// applying it rewinds state.
 	StartBackwardsRecording(Config) UUIDRecordingID
-	// finishes recording if open
+	// finishes recording if open (false is returned if recording isn't started)
 	Stop(UUIDRecordingID) (r UUIDRecording, ok bool)
 
 	Apply(Config, ...UUIDRecording)
@@ -81,7 +81,7 @@ type UUIDKeyedRecorder interface {
 
 type UUIDRecordingID uint16
 type UUIDRecording struct {
-	// map[componentUUID][componentArrayLayoutID]component
+	// map[componentUUID][componentArrayLayoutID]any component
 	// map[componentUUID]nil is when entity is removed
 	Entities map[uuid.UUID][]any
 }
