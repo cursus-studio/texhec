@@ -11,14 +11,14 @@ In TEXHEC we can win by:
 
 Point of the game is to allow complex tactics (all moves allowed) in seemingly endless world.
 
-Everything can be either done automaticaly or manualy.
+Where everything can be done manually or can be automated.
 Everything is under player control where he has to find order in endless chaos and has to conquer it before others do so.
 
 ### Technical answer
 
 TEXHEC is a vision **RTS** (real time strategy) game which currently is being brought to life.\
 On current stage of TEXHEC i wrote **dozens** of **unique** **modules** from every solved other problems.\
-Its completely build from scratch with **less** **than** a **dozen** of **dependencies** not controled by me.
+Its completely built from scratch with **less** **than** a **dozen** of **dependencies** not controled by me.
 
 TEXHEC is a **HIGH-Performance** project where natural map size is **1.000.000*** tiles with hundreds or thousands buildings and units **all** being **simulated** in real time.\
 We use **DOD** and use our **own** **ECS** framework.
