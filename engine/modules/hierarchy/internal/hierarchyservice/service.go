@@ -34,7 +34,7 @@ func NewService(c ioc.Dic) hierarchy.Service {
 
 	t.hierarchyArray.OnUpsert(t.handleHierarchyChange)
 	t.hierarchyArray.OnRemove(t.handleHierarchyChange)
-	t.parentArray.OnRemove(t.handleParentChange)
+	t.parentArray.OnRemove(t.handleParentRemoval)
 
 	return t
 }
@@ -67,10 +67,10 @@ func (t *service) Parent(child ecs.EntityID) (ecs.EntityID, bool) {
 
 //
 
-func (t *service) GetParents(child ecs.EntityID) datastructures.SparseSet[ecs.EntityID] {
+func (t *service) GetParents(child ecs.EntityID) datastructures.SparseSetReader[ecs.EntityID] {
 	orderedParents := t.GetOrderedParents(child)
 
-	parents := datastructures.NewSparseSet[ecs.EntityID]()
+	parents := datastructures.NewSparseSetWithPaging[ecs.EntityID]()
 	for _, parent := range orderedParents {
 		parents.Add(parent)
 	}
@@ -115,7 +115,7 @@ func (t *service) SetChildren(parent ecs.EntityID, children ...ecs.EntityID) {
 		t.hierarchyArray.Remove(child)
 	}
 
-	for i := 0; i < len(children); i++ {
+	for i := range len(children) {
 		t.SetParent(children[i], parent)
 	}
 }
@@ -125,7 +125,7 @@ func (t *service) SetChildren(parent ecs.EntityID, children ...ecs.EntityID) {
 func (t *service) Children(parent ecs.EntityID) datastructures.SparseSetReader[ecs.EntityID] {
 	children, ok := t.children.Get(parent)
 	if !ok {
-		return datastructures.NewSparseSet[ecs.EntityID]()
+		return datastructures.NewSparseSetWithPaging[ecs.EntityID]()
 	}
 	return children
 }
@@ -134,7 +134,7 @@ func (t *service) GetFlatChildren(parent ecs.EntityID) datastructures.SparseSetR
 	if flatChildren, ok := t.flatChildren.Get(parent); ok {
 		return flatChildren
 	}
-	flatChildren := datastructures.NewSparseSet[ecs.EntityID]()
+	flatChildren := datastructures.NewSparseSetWithPaging[ecs.EntityID]()
 
 	children, ok := t.children.Get(parent)
 	if !ok {
@@ -207,14 +207,14 @@ addCurrentParent:
 			t.parentArray.Set(nextParent, parentComponent{})
 
 			// add children
-			parentChildren = datastructures.NewSparseSet[ecs.EntityID]()
+			parentChildren = datastructures.NewSparseSetWithPaging[ecs.EntityID]()
 			t.children.Set(nextParent, parentChildren)
 		}
 		parentChildren.Add(child)
 	}
 }
 
-func (t *service) handleParentChange(parent ecs.EntityID) {
+func (t *service) handleParentRemoval(parent ecs.EntityID) {
 	if _, isParent := t.parentArray.Get(parent); isParent {
 		return
 	}

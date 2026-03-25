@@ -32,12 +32,6 @@ func (s *extensions) Register(
 	s.extensions[extension] = dispatcher
 }
 
-func (s *extensions) PathExntesion(path assets.PathComponent) string {
-	parts := strings.Split(path.Path, ".")
-	parts = strings.Split(parts[len(parts)-1], "/")
-	return parts[len(parts)-1]
-}
-
 func (s *extensions) ExtensionDispatcher(extension string) (func(assets.PathComponent) (assets.Asset, error), bool) {
 	extension = strings.Trim(extension, ".")
 	dispatcher, ok := s.extensions[extension]

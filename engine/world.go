@@ -14,7 +14,9 @@ import (
 	"engine/modules/netsync"
 	"engine/modules/noise"
 	"engine/modules/record"
+	"engine/modules/registry"
 	"engine/modules/render"
+	"engine/modules/scene"
 	"engine/modules/text"
 	"engine/modules/transform"
 	"engine/modules/transition"
@@ -42,7 +44,9 @@ type World struct {
 	NetSync    netsync.Service    `inject:"1"`
 	Noise      noise.Service      `inject:"1"`
 	Record     record.Service     `inject:"1"`
+	Registry   registry.Service   `inject:"1"`
 	Render     render.Service     `inject:"1"`
+	Scene      scene.Service      `inject:"1"`
 	Text       text.Service       `inject:"1"`
 	Transform  transform.Service  `inject:"1"`
 	Transition transition.Service `inject:"1"`

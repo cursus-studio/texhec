@@ -17,22 +17,17 @@ type service struct {
 	GameAssets   definitions.Definitions `inject:"1"`
 	Ui           ui.Service              `inject:"1"`
 
-	constructs      ecs.ComponentsArray[construct.ConstructComponent]
-	constructCoords ecs.ComponentsArray[construct.CoordsComponent]
+	constructs ecs.ComponentsArray[construct.ConstructComponent]
 }
 
 func NewService(c ioc.Dic) construct.Service {
 	s := ioc.GetServices[*service](c)
 
 	s.constructs = ecs.GetComponentsArray[construct.ConstructComponent](s)
-	s.constructCoords = ecs.GetComponentsArray[construct.CoordsComponent](s)
 
 	return s
 }
 
 func (s *service) Construct() ecs.ComponentsArray[construct.ConstructComponent] {
 	return s.constructs
-}
-func (s *service) Coords() ecs.ComponentsArray[construct.CoordsComponent] {
-	return s.constructCoords
 }

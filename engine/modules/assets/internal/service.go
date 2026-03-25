@@ -3,6 +3,7 @@ package internal
 import (
 	"engine/modules/assets"
 	"engine/modules/registry"
+	"engine/services/datastructures"
 	"engine/services/ecs"
 	"fmt"
 
@@ -18,6 +19,8 @@ type assetsService struct {
 	*extensions
 	path  ecs.ComponentsArray[assets.PathComponent]
 	cache ecs.ComponentsArray[assets.CacheComponent]
+
+	cached datastructures.SparseArray[ecs.EntityID, assets.Asset]
 }
 
 func NewService(c ioc.Dic) assets.Service {
@@ -27,7 +30,27 @@ func NewService(c ioc.Dic) assets.Service {
 	s.path = ecs.GetComponentsArray[assets.PathComponent](s.World)
 	s.cache = ecs.GetComponentsArray[assets.CacheComponent](s.World)
 
+	s.cached = datastructures.NewSparseArray[ecs.EntityID, assets.Asset]()
+
+	s.cache.OnUpsert(s.OnUpsert)
+	s.cache.OnRemove(s.OnRemove)
+
 	return s
+}
+
+func (s *assetsService) OnUpsert(e ecs.EntityID) {
+	if asset, ok := s.cached.Get(e); ok {
+		asset.Release()
+	}
+	if cached, ok := s.cache.Get(e); ok {
+		s.cached.Set(e, cached.Cache)
+	}
+}
+func (s *assetsService) OnRemove(e ecs.EntityID) {
+	if asset, ok := s.cached.Get(e); ok {
+		asset.Release()
+		s.cached.Remove(e)
+	}
 }
 
 func (s *assetsService) Path() ecs.ComponentsArray[assets.PathComponent]   { return s.path }
@@ -43,8 +66,8 @@ func (s *assetsService) Get(entity ecs.EntityID) (assets.Asset, error) {
 		return nil, assets.ErrAssetNotFound
 	}
 
-	ext := s.PathExntesion(path)
-	dispatcher, ok := s.ExtensionDispatcher(ext)
+	extension := path.Extension()
+	dispatcher, ok := s.ExtensionDispatcher(extension)
 	if !ok {
 		fmt.Printf("\"%v\" path.\n", path)
 		return nil, assets.ErrAssetNotFound
@@ -55,24 +78,4 @@ func (s *assetsService) Get(entity ecs.EntityID) (assets.Asset, error) {
 	}
 	s.cache.Set(entity, assets.NewCache(asset))
 	return asset, nil
-}
-
-func (s *assetsService) Release(entities ...ecs.EntityID) {
-	for _, entity := range entities {
-		if cache, ok := s.cache.Get(entity); ok {
-			cache.Cache.Release()
-			s.cache.Remove(entity)
-		}
-	}
-}
-func (s *assetsService) ReleaseAll() {
-	src := s.cache.GetEntities()
-	dst := make([]ecs.EntityID, len(src))
-	copy(dst, src)
-	for _, entity := range dst {
-		if cache, ok := s.cache.Get(entity); ok {
-			cache.Cache.Release()
-			s.cache.Remove(entity)
-		}
-	}
 }

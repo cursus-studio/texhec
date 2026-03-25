@@ -12,7 +12,7 @@ func BenchmarkEntityCodecEncode(b *testing.B) {
 
 	originalRecording := s.Record.Entity().GetState(s.Config)
 
-	for i := 0; i < b.N; i++ {
+	for b.Loop() {
 		_, _ = s.Codec.Encode(originalRecording)
 	}
 }
@@ -30,7 +30,7 @@ func BenchmarkEntityCodecDecode(b *testing.B) {
 		return
 	}
 
-	for i := 0; i < b.N; i++ {
+	for b.Loop() {
 		_, _ = s.Codec.Decode(encodedRecording)
 	}
 }
@@ -42,7 +42,7 @@ func BenchmarkUUIDCodecEncode(b *testing.B) {
 
 	originalRecording := s.Record.UUID().GetState(s.Config)
 
-	for i := 0; i < b.N; i++ {
+	for b.Loop() {
 		_, _ = s.Codec.Encode(originalRecording)
 	}
 }
@@ -60,7 +60,7 @@ func BenchmarkUUIDCodecDecode(b *testing.B) {
 		return
 	}
 
-	for i := 0; i < b.N; i++ {
+	for b.Loop() {
 		_, _ = s.Codec.Decode(encodedRecording)
 	}
 }

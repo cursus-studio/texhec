@@ -66,7 +66,7 @@ type service struct {
 	dynamicPerspective ecs.ComponentsArray[camera.DynamicPerspectiveComponent]
 }
 
-func NewSerivce(c ioc.Dic) Service {
+func NewService(c ioc.Dic) Service {
 	s := ioc.GetServices[*service](c)
 	s.cameraArray = ecs.GetComponentsArray[camera.Component](s.World)
 	s.priorityArray = ecs.GetComponentsArray[camera.PriorityComponent](s.World)

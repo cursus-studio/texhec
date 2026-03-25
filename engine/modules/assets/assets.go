@@ -2,10 +2,10 @@ package assets
 
 import (
 	"engine/services/ecs"
-	"engine/services/httperrors"
 	"errors"
 	"fmt"
 	"reflect"
+	"strings"
 )
 
 type Asset interface{ Release() }
@@ -17,6 +17,12 @@ type CacheComponent struct{ Cache Asset }
 
 func NewPath(path string) PathComponent   { return PathComponent{path} }
 func NewCache(cache Asset) CacheComponent { return CacheComponent{cache} }
+
+func (s *PathComponent) Extension() string {
+	parts := strings.Split(s.Path, ".")
+	parts = strings.Split(parts[len(parts)-1], "/")
+	return parts[len(parts)-1]
+}
 
 // add asset struct
 
@@ -31,8 +37,6 @@ type Service interface {
 
 	// get also caches asset
 	Get(ecs.EntityID) (Asset, error)
-	Release(...ecs.EntityID)
-	ReleaseAll()
 }
 
 var (
@@ -50,7 +54,6 @@ func GetAsset[Asset any](assets Service, assetID ecs.EntityID) (Asset, error) {
 	if !ok {
 		var a Asset
 		err := errors.Join(
-			httperrors.Err400,
 			ErrAssetHasDifferentType,
 			fmt.Errorf(
 				"asset is of type \"%s\" and expected to be \"%s\"",

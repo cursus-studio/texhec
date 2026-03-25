@@ -12,7 +12,7 @@ func BenchmarkEntityRecording(b *testing.B) {
 	s.ComponentArray.Set(entity, Component{Counter: 6})
 
 	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
+	for b.Loop() {
 		recordingID := s.Record.Entity().StartRecording(s.Config)
 		s.Record.Entity().Stop(recordingID)
 	}
@@ -25,7 +25,7 @@ func BenchmarkCreateNEntitiesEntityRecording(b *testing.B) {
 	s.ComponentArray.Set(entity, Component{Counter: 6})
 
 	recordingID := s.Record.Entity().StartRecording(s.Config)
-	for i := 0; i < b.N; i++ {
+	for i := range b.N {
 		s.ComponentArray.Set(ecs.EntityID(i), Component{Counter: i})
 	}
 	b.ResetTimer()
@@ -40,21 +40,21 @@ func BenchmarkEntityApply1Entities(b *testing.B) {
 
 	recording := s.Record.Entity().GetState(s.Config)
 	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
+	for b.Loop() {
 		s.Record.Entity().Apply(s.Config, recording)
 	}
 }
 func BenchmarkEntityApply10Entities(b *testing.B) {
 	s := NewSetup()
 
-	for i := 0; i < 10; i++ {
+	for range 10 {
 		entity := s.World.NewEntity()
 		s.ComponentArray.Set(entity, Component{Counter: 6})
 	}
 
 	recording := s.Record.Entity().GetState(s.Config)
 	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
+	for b.Loop() {
 		s.Record.Entity().Apply(s.Config, recording)
 	}
 }

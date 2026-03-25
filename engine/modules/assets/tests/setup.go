@@ -15,6 +15,7 @@ import (
 )
 
 type setup struct {
+	World  ecs.World      `inject:"1"`
 	Assets assets.Service `inject:"1"`
 
 	Registry registry.Service `inject:"1"`

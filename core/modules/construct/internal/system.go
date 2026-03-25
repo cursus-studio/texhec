@@ -27,25 +27,20 @@ type system struct {
 	Ui           ui.Service              `inject:"1"`
 	Construct    construct.Service       `inject:"1"`
 
-	layer    float32
 	dirtySet ecs.DirtySet
 }
 
-func NewSystem(c ioc.Dic, layer float32) error {
+func NewSystem(c ioc.Dic) error {
 	s := ioc.GetServices[*system](c)
 
-	s.layer = layer
 	s.dirtySet = ecs.NewDirtySet()
 
-	s.Construct.Coords().AddDirtySet(s.dirtySet)
+	s.Construct.Construct().AddDirtySet(s.dirtySet)
 
-	s.Transform.Pos().AddDependency(s.Construct.Coords())
-	s.Transform.Size().AddDependency(s.Construct.Coords())
+	s.Tile.Layer().BeforeGet(s.BeforeGet)
 
 	s.Render.Mesh().BeforeGet(s.BeforeGet)
 	s.Render.Texture().BeforeGet(s.BeforeGet)
-	s.Transform.Pos().BeforeGet(s.BeforeGet)
-	s.Transform.Size().BeforeGet(s.BeforeGet)
 
 	s.Collider.Component().BeforeGet(s.BeforeGet)
 	s.Inputs.LeftClick().BeforeGet(s.BeforeGet)
@@ -62,19 +57,8 @@ func (s *system) BeforeGet() {
 		if !ok {
 			continue
 		}
-		coords, ok := s.Construct.Coords().Get(entity)
-		if !ok {
-			continue
-		}
-
-		pos := s.Tile.GetPos(coords.Coords)
-		pos.Pos[2] = s.layer
 		s.Render.Mesh().Set(entity, render.NewMesh(s.GameAssets.SquareMesh))
 		s.Render.Texture().Set(entity, render.NewTexture(constructComp.Construct))
-
-		s.Transform.ParentPivotPoint().Set(entity, transform.NewParentPivotPoint(0, 0, .5))
-		s.Transform.Pos().Set(entity, pos)
-		s.Transform.Size().Set(entity, s.Tile.GetTileSize())
 
 		s.Collider.Component().Set(entity, collider.NewCollider(s.GameAssets.SquareCollider))
 		s.Inputs.LeftClick().Set(entity, inputs.NewLeftClick(construct.NewClickEvent(entity)))
@@ -83,13 +67,16 @@ func (s *system) BeforeGet() {
 }
 
 func (s *system) OnClick(e construct.ClickEvent) {
-	coords, ok := s.Construct.Coords().Get(e.Construct)
+	coords, ok := s.Construct.Construct().Get(e.Construct)
 	if !ok {
-		s.Logger.Warn(errors.New("expected construct to have construct coords component"))
+		s.Logger.Warn(errors.New("expected construct to have construct component"))
 		return
 	}
 	for _, p := range s.Ui.Show() {
 		entity := s.NewEntity()
+
+		s.Tile.Layer().Set(entity, tile.NewLayer(2))
+
 		s.Hierarchy.SetParent(entity, p)
 		s.Transform.Parent().Set(entity, transform.NewParent(transform.RelativePos|transform.RelativeSizeXYZ))
 		s.Groups.Inherit().Set(entity, groups.InheritGroupsComponent{})

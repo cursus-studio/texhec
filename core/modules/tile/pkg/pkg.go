@@ -9,6 +9,7 @@ import (
 	"engine/modules/assets"
 	gridpkg "engine/modules/grid/pkg"
 	"engine/modules/registry"
+	transitionpkg "engine/modules/transition/pkg"
 	"engine/services/codec"
 	"engine/services/ecs"
 	gtexture "engine/services/graphics/texture"
@@ -44,6 +45,14 @@ func (pkg pkg) Register(b ioc.Builder) {
 			// events
 			Register(tile.ClickEvent{})
 	})
+
+	for _, pkg := range []ioc.Pkg{
+		transitionpkg.PackageT[tile.PosComponent](),
+		transitionpkg.PackageT[tile.SizeComponent](),
+		transitionpkg.PackageT[tile.RotComponent](),
+	} {
+		pkg.Register(b)
+	}
 
 	ioc.RegisterSingleton(b, func(c ioc.Dic) tile.System {
 		systems := []tile.System{
