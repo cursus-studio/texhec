@@ -20,7 +20,7 @@ TEXHEC is a vision **RTS** (real time strategy) game which currently is being br
 On current stage of TEXHEC i wrote **dozens** of **unique** **modules** from every solved other problems.\
 Its completely built from scratch with **less** **than** a **dozen** of **dependencies** not controled by me.
 
-TEXHEC is a **HIGH-Performance** project where natural map size is **1.000.000*** tiles with hundreds or thousands buildings and units **all** being **simulated** in real time.\
+TEXHEC is a **HIGH-Performance** project where natural map size is **1.000.000** tiles with hundreds or thousands buildings and units **all** being **simulated** in real time.\
 We use **DOD** and use our **own** **ECS** framework.
 
 [More about this **ECS** framework](/engine/services/ecs/readme/README.md)
