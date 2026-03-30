@@ -1,12 +1,10 @@
 package gamescene
 
 import (
-	"core/modules/construct"
 	"core/modules/generation"
 	"core/modules/settings"
 	"core/modules/tile"
 	"core/modules/ui"
-	"core/modules/unit"
 	gamescenes "core/scenes"
 	"engine/modules/camera"
 	"engine/modules/collider"
@@ -116,7 +114,7 @@ func addScene(
 		world.Hierarchy.SetParent(farm, gridEntity)
 		world.Groups.Component().Set(farm, groups.EmptyGroups().Ptr().Enable(GameGroup).Val())
 
-		world.Construct.Construct().Set(farm, construct.NewConstruct(world.GameAssets.Constructs.Farm))
+		world.Tile.Construct(farm, world.GameAssets.Constructs.Farm)
 		world.Tile.Pos().Set(farm, tile.NewPos(499, 500))
 
 		world.Collider.Component().Set(farm, collider.NewCollider(world.GameAssets.SquareCollider))
@@ -126,7 +124,7 @@ func addScene(
 		world.Hierarchy.SetParent(tank, gridEntity)
 		world.Groups.Component().Set(tank, groups.EmptyGroups().Ptr().Enable(GameGroup).Val())
 
-		world.Unit.Unit().Set(tank, unit.NewUnit(world.GameAssets.Units.Tank))
+		world.Tile.Unit(tank, world.GameAssets.Units.Tank)
 		world.Tile.Pos().Set(tank, tile.NewPos(499.5, 500))
 		world.Tile.Rot().Set(tank, tile.NewRot(mgl32.DegToRad(90)))
 

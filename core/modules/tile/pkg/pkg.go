@@ -3,6 +3,7 @@ package tilepkg
 import (
 	"bytes"
 	"core/modules/tile"
+	clicksystems "core/modules/tile/internal/clickSystems"
 	"core/modules/tile/internal/tilerenderer"
 	"core/modules/tile/internal/tileservice"
 	"core/modules/tile/internal/tileui"
@@ -57,6 +58,7 @@ func (pkg pkg) Register(b ioc.Builder) {
 	ioc.RegisterSingleton(b, func(c ioc.Dic) tile.System {
 		systems := []tile.System{
 			tileui.NewSystem(c),
+			clicksystems.NewSystems(c),
 		}
 		return ecs.NewSystemRegister(func() error {
 			for _, system := range systems {
