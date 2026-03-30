@@ -10,6 +10,7 @@ import (
 	"engine/modules/grid"
 	"engine/modules/inputs"
 	"engine/modules/noise"
+	"engine/services/datastructures"
 	"engine/services/ecs"
 	"fmt"
 	"slices"
@@ -55,8 +56,21 @@ func (s *service) addChance(tileType ecs.EntityID, chance int) {
 func MapRange(val, min, max float64) float64 { return min + (val * (max - min)) }
 
 func (s *service) Generate(c generation.Config) batcher.Task {
-	task := s.Batcher.NewTask()
+	gridStateComponent := tile.NewGrid(c.Size.Coords())
+	gridModifiedComponent := tile.NewGrid(c.Size.Coords())
 
+	jobs := int(gridStateComponent.GetLastIndex()) / s.tilesPerJob
+
+	// apply batch
+	applyBatch := batcher.NewBatch(jobs, func(i int) {
+		for j := range s.tilesPerJob {
+			gridI := grid.Index(i*s.tilesPerJob + j)
+			gridValue := gridModifiedComponent.GetTile(gridI)
+			gridStateComponent.SetTile(gridI, gridValue)
+		}
+	})
+
+	// generate batch
 	multiplier := 1. / 4
 
 	noise := s.Noise.NewNoise(c.Seed).AddValue(
@@ -79,14 +93,70 @@ func (s *service) Generate(c generation.Config) batcher.Task {
 		noise.NewLayer(020*multiplier, .05),
 	).Build()
 
-	gridComponent := tile.NewGrid(c.Size.Coords())
-	jobs := int(gridComponent.GetLastIndex()) / s.tilesPerJob
 	generateBatch := batcher.NewBatch(jobs, func(i int) {
 		for j := range s.tilesPerJob {
 			gridI := grid.Index(i*s.tilesPerJob + j)
-			s.SetTile(gridComponent, gridI, noise)
+			coords := gridModifiedComponent.GetCoords(gridI)
+			value := noise.Read(mgl64.Vec2{float64(coords.X), float64(coords.Y)})
+			value *= float64(len(s.types))
+			value = min(value, float64(len(s.types)-1))
+			tileValue := s.types[int(value)]
+			gridModifiedComponent.SetTile(gridI, tileValue)
 		}
 	})
+
+	// smoothing batch
+	neighbours := []grid.Coords{}
+	for x := grid.Coord(-2); x <= 2; x++ {
+		for y := grid.Coord(-2); y <= 2; y++ {
+			if x == 0 && y == 0 {
+				continue
+			}
+			neighbours = append(neighbours, grid.NewCoords(x, y))
+		}
+	}
+
+	sensitivity := 1.5
+
+	smoothingBatch := batcher.NewBatch(jobs, func(i int) {
+		for j := range s.tilesPerJob {
+			gridI := grid.Index(i*s.tilesPerJob + j)
+			coords := gridStateComponent.GetCoords(gridI)
+			counts := datastructures.NewSparseArray[tile.ID, int]()
+			for _, neighbour := range neighbours {
+				coords := grid.NewCoords(coords.X+neighbour.X, coords.Y+neighbour.Y)
+				index, ok := gridStateComponent.GetIndex(coords.Coords())
+				if !ok {
+					continue
+				}
+				value := gridStateComponent.GetTile(index)
+				count, _ := counts.Get(value)
+				counts.Set(value, count+1)
+			}
+
+			var dominantTile tile.ID
+			maxCount := 0
+			for _, tileType := range counts.GetIndices() {
+				count, _ := counts.Get(tileType)
+				if count > maxCount {
+					maxCount = count
+					dominantTile = tileType
+				}
+			}
+
+			currentTile := gridStateComponent.GetTile(gridI)
+			currentTypeCount, _ := counts.Get(currentTile)
+
+			newTile := currentTile
+			if maxCount > int(float64(currentTypeCount)*sensitivity) {
+				newTile = dominantTile
+			}
+
+			gridModifiedComponent.SetTile(gridI, newTile)
+		}
+	})
+
+	// flush batch
 	flushBatch := batcher.NewBatch(1, func(i int) {
 		size := s.Tile.GetTileSize()
 		size.Size[0] *= float32(c.Size.X)
@@ -96,24 +166,19 @@ func (s *service) Generate(c generation.Config) batcher.Task {
 
 		s.Collider.Component().Set(c.Entity, collider.NewCollider(s.GameAssets.SquareCollider))
 		s.Inputs.Stack().Set(c.Entity, inputs.StackComponent{})
-		s.Tile.Grid().Set(c.Entity, gridComponent)
+		s.Tile.Grid().Set(c.Entity, gridStateComponent)
 	})
 
+	// task
+
+	task := s.Batcher.NewTask()
 	task.AddConcurrentBatch(generateBatch)
+	task.AddConcurrentBatch(applyBatch)
+	for range 3 {
+		task.AddConcurrentBatch(smoothingBatch)
+		task.AddConcurrentBatch(applyBatch)
+	}
 	task.AddOrderedBatch(flushBatch)
 
 	return task.Build()
-}
-
-func (s *service) SetTile(
-	grid grid.SquareGridComponent[tile.ID],
-	index grid.Index,
-	noise noise.Noise,
-) {
-	coords := grid.GetCoords(index)
-	value := noise.Read(mgl64.Vec2{float64(coords.X), float64(coords.Y)})
-	value *= float64(len(s.types))
-	value = min(value, float64(len(s.types)-1))
-	tileValue := s.types[int(value)]
-	grid.SetTile(index, tileValue)
 }
