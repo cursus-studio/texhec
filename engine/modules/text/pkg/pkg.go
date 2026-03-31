@@ -2,6 +2,7 @@ package textpkg
 
 import (
 	"engine/modules/assets"
+	prototypepkg "engine/modules/prototype/pkg"
 	"engine/modules/text"
 	"engine/modules/text/internal/textrenderer"
 	"engine/modules/text/internal/textservice"
@@ -66,6 +67,15 @@ func Package(
 }
 
 func (pkg pkg) Register(b ioc.Builder) {
+	for _, pkg := range []ioc.Pkg{
+		prototypepkg.PackageT[text.BreakComponent](),
+		prototypepkg.PackageT[text.TextComponent](),
+		prototypepkg.PackageT[text.FontFamilyComponent](),
+		prototypepkg.PackageT[text.FontSizeComponent](),
+		prototypepkg.PackageT[text.TextAlignComponent](),
+	} {
+		pkg.Register(b)
+	}
 	ioc.RegisterSingleton(b, func(c ioc.Dic) text.Service {
 		return textservice.NewService(
 			ioc.Get[ecs.World](c),

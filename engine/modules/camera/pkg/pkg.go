@@ -7,6 +7,7 @@ import (
 	"engine/modules/camera/internal/projectionsys"
 	"engine/modules/camera/internal/service"
 	"engine/modules/collider"
+	prototypepkg "engine/modules/prototype/pkg"
 	"engine/modules/transform"
 	"engine/services/codec"
 	"engine/services/ecs"
@@ -32,6 +33,20 @@ func Package(minZoom, maxZoom float32) ioc.Pkg {
 }
 
 func (pkg pkg) Register(b ioc.Builder) {
+	for _, pkg := range []ioc.Pkg{
+		prototypepkg.PackageT[camera.Component](),
+		prototypepkg.PackageT[camera.MobileCameraComponent](),
+		prototypepkg.PackageT[camera.CameraLimitsComponent](),
+		prototypepkg.PackageT[camera.ViewportComponent](),
+		prototypepkg.PackageT[camera.NormalizedViewportComponent](),
+
+		prototypepkg.PackageT[camera.OrthoComponent](),
+		prototypepkg.PackageT[camera.OrthoResolutionComponent](),
+		prototypepkg.PackageT[camera.PerspectiveComponent](),
+		prototypepkg.PackageT[camera.DynamicPerspectiveComponent](),
+	} {
+		pkg.Register(b)
+	}
 	ioc.WrapService(b, func(c ioc.Dic, b codec.Builder) {
 		b.
 			// camera components

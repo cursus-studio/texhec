@@ -3,6 +3,7 @@ package renderpkg
 import (
 	"bytes"
 	"engine/modules/assets"
+	prototypepkg "engine/modules/prototype/pkg"
 	"engine/modules/render"
 	"engine/modules/render/internal/instancing"
 	"engine/modules/render/internal/service"
@@ -33,6 +34,11 @@ func (pkg) Register(b ioc.Builder) {
 	for _, pkg := range []ioc.Pkg{
 		transitionpkg.PackageT[render.ColorComponent](),
 		transitionpkg.PackageT[render.TextureFrameComponent](),
+
+		prototypepkg.PackageT[render.MeshComponent](),
+		prototypepkg.PackageT[render.TextureComponent](),
+		prototypepkg.PackageT[render.TextureFrameComponent](),
+		prototypepkg.PackageT[render.ColorComponent](),
 	} {
 		pkg.Register(b)
 	}

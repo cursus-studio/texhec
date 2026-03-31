@@ -9,6 +9,7 @@ import (
 	"core/modules/tile/internal/tileui"
 	"engine/modules/assets"
 	gridpkg "engine/modules/grid/pkg"
+	prototypepkg "engine/modules/prototype/pkg"
 	"engine/modules/registry"
 	transitionpkg "engine/modules/transition/pkg"
 	"engine/services/codec"
@@ -32,6 +33,9 @@ func Package() ioc.Pkg {
 			gridpkg.Package[tile.ID](tile.NewClickEvent),
 			tileservice.Package(),
 			tilerenderer.Package(),
+			prototypepkg.PackageT[tile.PosComponent](),
+			prototypepkg.PackageT[tile.SizeComponent](),
+			prototypepkg.PackageT[tile.RotComponent](),
 		},
 	}
 }

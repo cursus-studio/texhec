@@ -1,6 +1,7 @@
 package transitionpkg
 
 import (
+	prototypepkg "engine/modules/prototype/pkg"
 	"engine/modules/transition"
 	"engine/modules/transition/internal/service"
 	"engine/modules/transition/internal/system"
@@ -17,6 +18,12 @@ func Package() ioc.Pkg {
 }
 
 func (pkg) Register(b ioc.Builder) {
+	for _, pkg := range []ioc.Pkg{
+		prototypepkg.PackageT[transition.EasingComponent](),
+		prototypepkg.PackageT[transition.EasingFunctionComponent](),
+	} {
+		pkg.Register(b)
+	}
 	ioc.WrapService(b, func(c ioc.Dic, b codec.Builder) {
 		b.
 			// components

@@ -3,6 +3,7 @@ package hierarchypkg
 import (
 	"engine/modules/hierarchy"
 	"engine/modules/hierarchy/internal/hierarchyservice"
+	prototypepkg "engine/modules/prototype/pkg"
 	"engine/services/codec"
 
 	"github.com/ogiusek/ioc/v2"
@@ -15,6 +16,11 @@ func Package() ioc.Pkg {
 }
 
 func (pkg pkg) Register(b ioc.Builder) {
+	for _, pkg := range []ioc.Pkg{
+		prototypepkg.PackageT[hierarchy.Component](),
+	} {
+		pkg.Register(b)
+	}
 	ioc.WrapService(b, func(c ioc.Dic, b codec.Builder) {
 		b.
 			// components

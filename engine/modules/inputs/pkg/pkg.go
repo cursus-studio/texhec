@@ -5,6 +5,7 @@ import (
 	"engine/modules/inputs/internal/mouse"
 	"engine/modules/inputs/internal/service"
 	"engine/modules/inputs/internal/systems"
+	prototypepkg "engine/modules/prototype/pkg"
 	"engine/services/codec"
 	"engine/services/ecs"
 	"engine/services/frames"
@@ -21,6 +22,21 @@ func Package() ioc.Pkg {
 }
 
 func (pkg) Register(b ioc.Builder) {
+	for _, pkg := range []ioc.Pkg{
+		prototypepkg.PackageT[inputs.HoveredComponent](),
+		prototypepkg.PackageT[inputs.DraggedComponent](),
+		prototypepkg.PackageT[inputs.KeepSelectedComponent](),
+		prototypepkg.PackageT[inputs.LeftClickComponent](),
+		prototypepkg.PackageT[inputs.DoubleLeftClickComponent](),
+		prototypepkg.PackageT[inputs.RightClickComponent](),
+		prototypepkg.PackageT[inputs.DoubleRightClickComponent](),
+		prototypepkg.PackageT[inputs.MouseEnterComponent](),
+		prototypepkg.PackageT[inputs.MouseLeaveComponent](),
+		prototypepkg.PackageT[inputs.HoverComponent](),
+		prototypepkg.PackageT[inputs.DragComponent](),
+	} {
+		pkg.Register(b)
+	}
 	ioc.WrapService(b, func(c ioc.Dic, b codec.Builder) {
 		b.
 			// components

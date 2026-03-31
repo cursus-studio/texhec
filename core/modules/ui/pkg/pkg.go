@@ -4,6 +4,7 @@ import (
 	"core/modules/ui"
 	"core/modules/ui/internal/systems"
 	"core/modules/ui/internal/uiservice"
+	"engine/modules/prototype/pkg"
 	"engine/services/codec"
 	"engine/services/ecs"
 	"time"
@@ -29,9 +30,18 @@ func Package(
 }
 
 func (pkg pkg) Register(b ioc.Builder) {
+	for _, pkg := range []ioc.Pkg{
+		prototypepkg.PackageT[ui.AnimatedBackgroundComponent](),
+		prototypepkg.PackageT[ui.CursorCameraComponent](),
+		prototypepkg.PackageT[ui.UiCameraComponent](),
+	} {
+		pkg.Register(b)
+	}
 	ioc.WrapService(b, func(c ioc.Dic, b codec.Builder) {
 		b.
 			// components
+			Register(ui.AnimatedBackgroundComponent{}).
+			Register(ui.CursorCameraComponent{}).
 			Register(ui.UiCameraComponent{}).
 			// events
 			Register(ui.HideUiEvent{})

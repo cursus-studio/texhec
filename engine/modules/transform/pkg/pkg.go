@@ -1,6 +1,7 @@
 package transformpkg
 
 import (
+	prototypepkg "engine/modules/prototype/pkg"
 	"engine/modules/transform"
 	"engine/modules/transform/internal/transformservice"
 	transitionpkg "engine/modules/transition/pkg"
@@ -29,6 +30,16 @@ func Package() ioc.Pkg {
 }
 
 func (pkg pkg) Register(b ioc.Builder) {
+	for _, pkg := range []ioc.Pkg{
+		prototypepkg.PackageT[transform.PosComponent](),
+		prototypepkg.PackageT[transform.RotationComponent](),
+		prototypepkg.PackageT[transform.SizeComponent](),
+		prototypepkg.PackageT[transform.PivotPointComponent](),
+		prototypepkg.PackageT[transform.ParentPivotPointComponent](),
+		prototypepkg.PackageT[transform.ParentComponent](),
+	} {
+		pkg.Register(b)
+	}
 	ioc.WrapService(b, func(c ioc.Dic, b codec.Builder) {
 		b.
 			// components
