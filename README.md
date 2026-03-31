@@ -114,6 +114,7 @@ Engine modules:
 - [layout (placeholder)](/engine/modules/layout/readme/README.md)
 - [netsync (placeholder)](/engine/modules/netsync/readme/README.md)
 - [noise (placeholder)](/engine/modules/noise/readme/README.md)
+- [prototype (placeholder)](/engine/modules/prototype/readme/README.md)
 - [record](/engine/modules/record/readme/README.md)
 - [registry (placeholder)](/engine/modules/registry/readme/README.md)
 - [relation (placeholder)](/engine/modules/relation/readme/README.md)
