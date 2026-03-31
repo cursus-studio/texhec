@@ -10,6 +10,11 @@ import (
 	"golang.org/x/exp/constraints"
 )
 
+type System ecs.SystemRegister
+type SystemRenderer ecs.SystemRegister
+
+//
+
 type ID uint8
 
 func NewGrid(w, h grid.Coord) grid.SquareGridComponent[ID] {
@@ -104,12 +109,12 @@ type Service interface {
 	Layer() ecs.ComponentsArray[LayerComponent]
 
 	GetTileSize() transform.SizeComponent
+
+	Unit(entity, blueprint ecs.EntityID)
+	Construct(entity, blueprint ecs.EntityID)
 }
 
 //
-
-type System ecs.SystemRegister
-type SystemRenderer ecs.SystemRegister
 
 type ClickEvent struct {
 	Grid ecs.EntityID
@@ -121,4 +126,24 @@ func NewClickEvent(
 	tile grid.Index,
 ) any {
 	return ClickEvent{grid, tile}
+}
+
+//
+
+type ClickUnitEvent struct {
+	Unit ecs.EntityID
+}
+
+func NewClickUnitEvent(unit ecs.EntityID) ClickUnitEvent {
+	return ClickUnitEvent{unit}
+}
+
+//
+
+type ClickConstructEvent struct {
+	Construct ecs.EntityID
+}
+
+func NewClickConstructEvent(unit ecs.EntityID) ClickConstructEvent {
+	return ClickConstructEvent{unit}
 }

@@ -107,8 +107,9 @@ func (s *service) Generate(c generation.Config) batcher.Task {
 
 	// smoothing batch
 	neighbours := []grid.Coords{}
-	for x := grid.Coord(-2); x <= 2; x++ {
-		for y := grid.Coord(-2); y <= 2; y++ {
+	neighbourDistance := grid.Coord(3)
+	for x := -neighbourDistance; x <= neighbourDistance; x++ {
+		for y := -neighbourDistance; y <= neighbourDistance; y++ {
 			if x == 0 && y == 0 {
 				continue
 			}
@@ -174,7 +175,7 @@ func (s *service) Generate(c generation.Config) batcher.Task {
 	task := s.Batcher.NewTask()
 	task.AddConcurrentBatch(generateBatch)
 	task.AddConcurrentBatch(applyBatch)
-	for range 3 {
+	for range 2 {
 		task.AddConcurrentBatch(smoothingBatch)
 		task.AddConcurrentBatch(applyBatch)
 	}
