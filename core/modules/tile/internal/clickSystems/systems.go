@@ -53,7 +53,7 @@ func (s *system) OnUnitClick(e tile.ClickUnitEvent) {
 }
 
 func (s *system) OnConstructClick(e tile.ClickConstructEvent) {
-	unit, ok := s.Tile.Pos().Get(e.Construct)
+	construct, ok := s.Tile.Pos().Get(e.Construct)
 	if !ok {
 		s.Logger.Warn(errors.New("expected construct to have coords component"))
 		return
@@ -64,7 +64,7 @@ func (s *system) OnConstructClick(e tile.ClickConstructEvent) {
 		s.Transform.Parent().Set(entity, transform.NewParent(transform.RelativePos|transform.RelativeSizeXYZ))
 		s.Groups.Inherit().Set(entity, groups.InheritGroupsComponent{})
 
-		s.Text.Content().Set(entity, text.TextComponent{Text: fmt.Sprintf("CONSTRUCT: %v", unit)})
+		s.Text.Content().Set(entity, text.TextComponent{Text: fmt.Sprintf("CONSTRUCT: %v", construct)})
 		s.Text.FontSize().Set(entity, text.FontSizeComponent{FontSize: 25})
 		s.Text.Align().Set(entity, text.TextAlignComponent{Vertical: .5, Horizontal: .5})
 	}
