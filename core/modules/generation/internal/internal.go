@@ -26,7 +26,7 @@ type config struct {
 
 type service struct {
 	engine.World `inject:"1"`
-	GameAssets   definitions.Definitions `inject:"1"`
+	Definitions  definitions.Definitions `inject:"1"`
 	Tile         tile.Service            `inject:"1"`
 
 	config
@@ -35,10 +35,10 @@ type service struct {
 func NewService(c ioc.Dic) generation.Service {
 	s := ioc.GetServices[service](c)
 	s.types = []tile.ID{}
-	s.addChance(s.GameAssets.Tiles.Water, 35)
-	s.addChance(s.GameAssets.Tiles.Sand, 15)
-	s.addChance(s.GameAssets.Tiles.Grass, 45)
-	s.addChance(s.GameAssets.Tiles.Mountain, 5)
+	s.addChance(s.Definitions.Tiles.Water, 35)
+	s.addChance(s.Definitions.Tiles.Sand, 15)
+	s.addChance(s.Definitions.Tiles.Grass, 45)
+	s.addChance(s.Definitions.Tiles.Mountain, 5)
 
 	s.tilesPerJob = 100
 	return &s
@@ -165,7 +165,7 @@ func (s *service) Generate(c generation.Config) batcher.Task {
 
 		s.Transform.Size().Set(c.Entity, size)
 
-		s.Collider.Component().Set(c.Entity, collider.NewCollider(s.GameAssets.SquareCollider))
+		s.Collider.Component().Set(c.Entity, collider.NewCollider(s.Definitions.SquareCollider))
 		s.Inputs.Stack().Set(c.Entity, inputs.StackComponent{})
 		s.Tile.Grid().Set(c.Entity, gridStateComponent)
 	})

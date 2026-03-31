@@ -47,10 +47,10 @@ type World struct {
 	engine.World `inject:"1"`
 
 	// game
-	GameAssets definitions.Definitions `inject:"1"`
-	Tile       tile.Service            `inject:"1"`
-	Generation generation.Service      `inject:"1"`
-	Ui         ui.Service              `inject:"1"`
+	Definitions definitions.Definitions `inject:"1"`
+	Tile        tile.Service            `inject:"1"`
+	Generation  generation.Service      `inject:"1"`
+	Ui          ui.Service              `inject:"1"`
 }
 
 type MenuBuilder scene.Scene

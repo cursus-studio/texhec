@@ -20,9 +20,9 @@ type CamComp struct{}
 type TextComp struct{}
 
 type system struct {
-	World      engine.World            `inject:"1"`
-	GameAssets definitions.Definitions `inject:"1"`
-	Ui         ui.Service              `inject:"1"`
+	World       engine.World            `inject:"1"`
+	Definitions definitions.Definitions `inject:"1"`
+	Ui          ui.Service              `inject:"1"`
 
 	CamArr  ecs.ComponentsArray[CamComp]
 	TextArr ecs.ComponentsArray[TextComp]

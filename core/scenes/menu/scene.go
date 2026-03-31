@@ -72,7 +72,7 @@ func (pkg) Register(b ioc.Builder) {
 				{Text: "exit", OnClick: inputs.QuitEvent{}},
 			}
 
-			btnAsset, err := assets.GetAsset[render.TextureAsset](assetsService, world.GameAssets.Hud.Btn)
+			btnAsset, err := assets.GetAsset[render.TextureAsset](assetsService, world.Definitions.Hud.Btn)
 			if err != nil {
 				world.Logger.Warn(err)
 				return
@@ -86,12 +86,12 @@ func (pkg) Register(b ioc.Builder) {
 				world.Transform.AspectRatio().Set(btn, transform.NewAspectRatio(float32(btnAspectRatio.Dx()), float32(btnAspectRatio.Dy()), 0, transform.PrimaryAxisX))
 				world.Transform.Parent().Set(btn, transform.NewParent(transform.RelativePos))
 
-				world.Render.Mesh().Set(btn, render.NewMesh(world.GameAssets.SquareMesh))
-				world.Render.Texture().Set(btn, render.NewTexture(world.GameAssets.Hud.Btn))
+				world.Render.Mesh().Set(btn, render.NewMesh(world.Definitions.SquareMesh))
+				world.Render.Texture().Set(btn, render.NewTexture(world.Definitions.Hud.Btn))
 				world.Render.TextureFrame().Set(btn, render.NewTextureFrame(1))
 
 				world.Inputs.LeftClick().Set(btn, inputs.NewLeftClick(button.OnClick))
-				world.Collider.Component().Set(btn, collider.NewCollider(world.GameAssets.SquareCollider))
+				world.Collider.Component().Set(btn, collider.NewCollider(world.Definitions.SquareCollider))
 				world.Inputs.KeepSelected().Set(btn, inputs.KeepSelectedComponent{})
 
 				world.Text.Content().Set(btn, text.TextComponent{Text: strings.ToUpper(button.Text)})

@@ -19,7 +19,7 @@ type menuComponent struct {
 type childrenComponent struct{}
 
 type service struct {
-	GameAssets   definitions.Definitions `inject:"1"`
+	Definitions  definitions.Definitions `inject:"1"`
 	engine.World `inject:"1"`
 
 	animationDuration time.Duration
