@@ -25,6 +25,8 @@ func (pkg) Register(b ioc.Builder) {
 	for _, pkg := range []ioc.Pkg{
 		prototypepkg.PackageT[inputs.HoveredComponent](),
 		prototypepkg.PackageT[inputs.DraggedComponent](),
+		prototypepkg.PackageT[inputs.StackComponent](),
+		prototypepkg.PackageT[inputs.StackedComponent](),
 		prototypepkg.PackageT[inputs.KeepSelectedComponent](),
 		prototypepkg.PackageT[inputs.LeftClickComponent](),
 		prototypepkg.PackageT[inputs.DoubleLeftClickComponent](),
@@ -42,6 +44,8 @@ func (pkg) Register(b ioc.Builder) {
 			// components
 			Register(inputs.HoveredComponent{}).
 			Register(inputs.DraggedComponent{}).
+			Register(inputs.StackComponent{}).
+			Register(inputs.StackedComponent{}).
 			Register(inputs.KeepSelectedComponent{}).
 			Register(inputs.LeftClickComponent{}).
 			Register(inputs.DoubleLeftClickComponent{}).
@@ -51,6 +55,7 @@ func (pkg) Register(b ioc.Builder) {
 			Register(inputs.MouseLeaveComponent{}).
 			Register(inputs.HoverComponent{}).
 			Register(inputs.DragComponent{}).
+
 			// events
 			Register(inputs.QuitEvent{}).
 			Register(inputs.DragEvent{}).
