@@ -37,6 +37,9 @@ func (s *hoverSystem) handleMouseLeave(entity ecs.EntityID) {
 	if !ok {
 		return
 	}
+	if event, ok := mouseLeave.Event.(inputs.ApplyEntityEvent); ok {
+		mouseLeave.Event = event.ApplyEntity(entity)
+	}
 	events.EmitAny(s.Events, mouseLeave.Event)
 }
 
@@ -63,10 +66,14 @@ func (s *hoverSystem) Listen(event service.RayChangedTargetEvent) {
 
 	for _, target := range entered {
 		s.Inputs.Hovered().Set(target.Entity, inputs.HoveredComponent{Camera: target.Camera})
-
-		if mouseEnter, ok := s.Inputs.MouseEnter().Get(target.Entity); ok {
-			events.EmitAny(s.Events, mouseEnter.Event)
+		mouseEnter, ok := s.Inputs.MouseEnter().Get(target.Entity)
+		if !ok {
+			continue
 		}
+		if e, ok := mouseEnter.Event.(inputs.ApplyEntityEvent); ok {
+			mouseEnter.Event = e.ApplyEntity(target.Entity)
+		}
+		events.EmitAny(s.Events, mouseEnter.Event)
 	}
 	s.targets = event.Targets
 

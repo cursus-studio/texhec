@@ -22,7 +22,7 @@ func NewDraggable(
 	}
 }
 
-func (e DraggableEvent) Apply(dragEvent inputs.DragEvent) any {
+func (e DraggableEvent) ApplyDrag(dragEvent inputs.DragEvent) any {
 	e.Drag = dragEvent
 	return e
 }

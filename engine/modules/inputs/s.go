@@ -20,14 +20,20 @@ type DragEvent struct {
 
 //
 
+// interfaces which can be implemented by events
+
 type ApplyDragEvent interface {
-	Apply(DragEvent) (event any)
+	ApplyDrag(DragEvent) (event any)
+}
+
+type ApplyEntityEvent interface {
+	ApplyEntity(entityEmitting ecs.EntityID) (event any)
 }
 
 //
 
 type SynchronizePositionEvent DragEvent
 
-func (SynchronizePositionEvent) Apply(dragEvent DragEvent) any {
+func (SynchronizePositionEvent) ApplyDrag(dragEvent DragEvent) any {
 	return SynchronizePositionEvent(dragEvent)
 }
