@@ -40,13 +40,15 @@ func (s *system) OnClickObject(e tile.ClickObjectEvent) {
 		return
 	}
 	for _, p := range s.Ui.Show() {
-		entity := s.NewEntity()
-		s.Hierarchy.SetParent(entity, p)
-		s.Transform.Parent().Set(entity, transform.NewParent(transform.RelativePos|transform.RelativeSizeXYZ))
-		s.Groups.Inherit().Set(entity, groups.InheritGroupsComponent{})
+		// i want here to display all actions which can be performed by entity
+		// currently implement only building
+		textEntity := s.NewEntity()
+		s.Hierarchy.SetParent(textEntity, p)
+		s.Transform.Parent().Set(textEntity, transform.NewParent(transform.RelativePos|transform.RelativeSizeXYZ))
+		s.Groups.Inherit().Set(textEntity, groups.InheritGroupsComponent{})
 
-		s.Text.Content().Set(entity, text.TextComponent{Text: fmt.Sprintf("OBJECT: %v", unit)})
-		s.Text.FontSize().Set(entity, text.FontSizeComponent{FontSize: 25})
-		s.Text.Align().Set(entity, text.TextAlignComponent{Vertical: .5, Horizontal: .5})
+		s.Text.Content().Set(textEntity, text.TextComponent{Text: fmt.Sprintf("OBJECT: %v", unit)})
+		s.Text.FontSize().Set(textEntity, text.FontSizeComponent{FontSize: 25})
+		s.Text.Align().Set(textEntity, text.TextAlignComponent{Vertical: .5, Horizontal: .5})
 	}
 }
