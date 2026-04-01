@@ -50,6 +50,10 @@ func (service *Service) ChangeScene(event scene.ChangeSceneEvent) {
 	scene(sceneEntity)
 }
 
+func (service *Service) Scene() ecs.EntityID {
+	return service.SceneArr.GetEntities()[0]
+}
+
 func (service *Service) SetScene(id scene.ID, scene scene.Scene) {
 	service.scenes[id] = scene
 }
