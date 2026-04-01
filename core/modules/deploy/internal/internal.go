@@ -30,5 +30,7 @@ func (s *service) Deploy(deploy deploy.DeployEvent) {
 	// }
 	// pay and perform everything
 	deployed := s.Prototype.Clone(deploy.Blueprint)
+	s.Hierarchy.SetParent(deployed, s.Scene.Scene())
+
 	s.Tile.Pos().Set(deployed, tile.NewPos(deploy.Coords.Coords()))
 }

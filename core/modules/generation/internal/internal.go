@@ -2,6 +2,7 @@ package internal
 
 import (
 	"core/modules/definitions"
+	"core/modules/deploy"
 	"core/modules/generation"
 	"core/modules/tile"
 	"engine"
@@ -10,11 +11,13 @@ import (
 	"engine/modules/grid"
 	"engine/modules/inputs"
 	"engine/modules/noise"
+	"engine/modules/transform"
 	"engine/services/datastructures"
 	"engine/services/ecs"
 	"fmt"
 	"slices"
 
+	"github.com/go-gl/mathgl/mgl32"
 	"github.com/go-gl/mathgl/mgl64"
 	"github.com/ogiusek/ioc/v2"
 )
@@ -28,6 +31,7 @@ type service struct {
 	engine.World `inject:"1"`
 	Definitions  definitions.Definitions `inject:"1"`
 	Tile         tile.Service            `inject:"1"`
+	Deploy       deploy.Service          `inject:"1"`
 
 	config
 }
@@ -164,10 +168,23 @@ func (s *service) Generate(c generation.Config) batcher.Task {
 		size.Size[1] *= float32(c.Size.Y)
 
 		s.Transform.Size().Set(c.Entity, size)
+		s.Transform.PivotPoint().Set(c.Entity, transform.NewPivotPoint(0, 0, .5))
 
 		s.Collider.Component().Set(c.Entity, collider.NewCollider(s.Definitions.SquareCollider))
 		s.Inputs.Stack().Set(c.Entity, inputs.StackComponent{})
 		s.Tile.Grid().Set(c.Entity, gridStateComponent)
+
+		// generates objects
+
+		farmBlueprint := s.NewEntity()
+		s.Tile.Construct(farmBlueprint, s.Definitions.Constructs.Farm)
+
+		tankBlueprint := s.NewEntity()
+		s.Tile.Unit(tankBlueprint, s.Definitions.Units.Tank)
+		s.Tile.Rot().Set(tankBlueprint, tile.NewRot(mgl32.DegToRad(90)))
+
+		s.Deploy.Deploy(deploy.NewDeployEvent(farmBlueprint, grid.NewCoords(1, 1)))
+		s.Deploy.Deploy(deploy.NewDeployEvent(tankBlueprint, grid.NewCoords(2, 2)))
 	})
 
 	// task

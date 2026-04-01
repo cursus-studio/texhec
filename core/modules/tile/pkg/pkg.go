@@ -33,9 +33,11 @@ func Package() ioc.Pkg {
 			gridpkg.Package[tile.ID](tile.NewClickEvent),
 			tileservice.Package(),
 			tilerenderer.Package(),
+			prototypepkg.PackageT[tile.Component](),
 			prototypepkg.PackageT[tile.PosComponent](),
 			prototypepkg.PackageT[tile.SizeComponent](),
 			prototypepkg.PackageT[tile.RotComponent](),
+			prototypepkg.PackageT[tile.LayerComponent](),
 		},
 	}
 }

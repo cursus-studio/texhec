@@ -1,7 +1,14 @@
 package definitions
 
 import (
+	"engine/modules/groups"
 	"engine/services/ecs"
+)
+
+const (
+	UiGroup groups.Group = iota + 1
+	GameGroup
+	BgGroup
 )
 
 type Definitions struct {

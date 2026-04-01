@@ -3,8 +3,10 @@ package tileservice
 import (
 	"core/modules/definitions"
 	"core/modules/tile"
+	"engine"
 	"engine/modules/collider"
 	"engine/modules/grid"
+	"engine/modules/groups"
 	"engine/modules/inputs"
 	"engine/modules/render"
 	"engine/modules/transform"
@@ -16,10 +18,7 @@ import (
 type service struct {
 	C                     ioc.Dic
 	definitions           *definitions.Definitions
-	World                 ecs.World        `inject:"1"`
-	Render                render.Service   `inject:"1"`
-	Collider              collider.Service `inject:"1"`
-	Inputs                inputs.Service   `inject:"1"`
+	engine.World          `inject:"1"`
 	grid.Service[tile.ID] `inject:"1"`
 
 	tile ecs.ComponentsArray[tile.Component]
@@ -83,6 +82,7 @@ func (s *service) Unit(entity, blueprint ecs.EntityID) {
 
 	s.Render.Mesh().Set(entity, render.NewMesh(s.Definitions().SquareMesh))
 	s.Render.Texture().Set(entity, render.NewTexture(blueprint))
+	s.Groups.Component().Set(entity, groups.EmptyGroups().Ptr().Enable(definitions.GameGroup).Val())
 
 	s.Collider.Component().Set(entity, collider.NewCollider(s.Definitions().SquareCollider))
 	s.Inputs.LeftClick().Set(entity, inputs.NewLeftClick(tile.NewClickObjectEvent()))
@@ -92,6 +92,7 @@ func (s *service) Unit(entity, blueprint ecs.EntityID) {
 func (s *service) Construct(entity, blueprint ecs.EntityID) {
 	s.Render.Mesh().Set(entity, render.NewMesh(s.Definitions().SquareMesh))
 	s.Render.Texture().Set(entity, render.NewTexture(blueprint))
+	s.Groups.Component().Set(entity, groups.EmptyGroups().Ptr().Enable(definitions.GameGroup).Val())
 
 	s.Collider.Component().Set(entity, collider.NewCollider(s.Definitions().SquareCollider))
 	s.Inputs.LeftClick().Set(entity, inputs.NewLeftClick(tile.NewClickObjectEvent()))
