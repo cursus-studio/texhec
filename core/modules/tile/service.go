@@ -134,8 +134,13 @@ type ClickUnitEvent struct {
 	Unit ecs.EntityID
 }
 
-func NewClickUnitEvent(unit ecs.EntityID) ClickUnitEvent {
-	return ClickUnitEvent{unit}
+func NewClickUnitEvent() ClickUnitEvent {
+	return ClickUnitEvent{}
+}
+
+func (e ClickUnitEvent) ApplyEntity(entity ecs.EntityID) any {
+	e.Unit = entity
+	return e
 }
 
 //
@@ -144,6 +149,11 @@ type ClickConstructEvent struct {
 	Construct ecs.EntityID
 }
 
-func NewClickConstructEvent(unit ecs.EntityID) ClickConstructEvent {
-	return ClickConstructEvent{unit}
+func NewClickConstructEvent() ClickConstructEvent {
+	return ClickConstructEvent{}
+}
+
+func (e ClickConstructEvent) ApplyEntity(entity ecs.EntityID) any {
+	e.Construct = entity
+	return e
 }
