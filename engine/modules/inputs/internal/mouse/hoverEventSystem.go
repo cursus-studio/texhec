@@ -32,6 +32,9 @@ func (s *hoverEventSystem) Listen(event frames.FrameEvent) {
 			continue
 		}
 
+		if e, ok := eventsComponent.Event.(inputs.ApplyEntityEvent); ok {
+			eventsComponent.Event = e.ApplyEntity(entity)
+		}
 		events.EmitAny(s.Events, eventsComponent.Event)
 	}
 }

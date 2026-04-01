@@ -1,6 +1,7 @@
 package uuidpkg
 
 import (
+	prototypepkg "engine/modules/prototype/pkg"
 	relationpkg "engine/modules/relation/pkg"
 	uuid "engine/modules/uuid"
 	"engine/modules/uuid/internal"
@@ -18,6 +19,11 @@ func Package() ioc.Pkg {
 }
 
 func (pkg) Register(b ioc.Builder) {
+	for _, pkg := range []ioc.Pkg{
+		prototypepkg.PackageT[uuid.Component](),
+	} {
+		pkg.Register(b)
+	}
 	ioc.WrapService(b, func(_ ioc.Dic, b codec.Builder) {
 		b.
 			Register(uuid.UUID{}).

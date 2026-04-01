@@ -27,7 +27,7 @@ import (
 // 2. quit button
 
 type system struct {
-	GameAssets definitions.Definitions `inject:"1"`
+	Definitions definitions.Definitions `inject:"1"`
 
 	engine.World `inject:"1"`
 	Ui           ui.Service `inject:"1"`
@@ -96,13 +96,13 @@ func (s *system) ListenRender(parent ecs.EntityID) error {
 		event any
 	}
 	btns := []Button{
-		{"SHOT", audio.NewPlayEvent(gamescenes.EffectChannel, s.GameAssets.ExampleAudio)},
-		{"SHOT2", audio.NewPlayEvent(gamescenes.EffectChannel, s.GameAssets.ExampleAudio)},
-		{"SHOT3", audio.NewPlayEvent(gamescenes.EffectChannel, s.GameAssets.ExampleAudio)},
+		{"SHOT", audio.NewPlayEvent(gamescenes.EffectChannel, s.Definitions.ExampleAudio)},
+		{"SHOT2", audio.NewPlayEvent(gamescenes.EffectChannel, s.Definitions.ExampleAudio)},
+		{"SHOT3", audio.NewPlayEvent(gamescenes.EffectChannel, s.Definitions.ExampleAudio)},
 		{"QUIT", scene.NewChangeSceneEvent(gamescenes.MenuID)},
 	}
 
-	btnAsset, err := assets.GetAsset[render.TextureAsset](s.Assets, s.GameAssets.Hud.Btn)
+	btnAsset, err := assets.GetAsset[render.TextureAsset](s.Assets, s.Definitions.Hud.Btn)
 	if err != nil {
 		return err
 	}
@@ -120,8 +120,8 @@ func (s *system) ListenRender(parent ecs.EntityID) error {
 		s.Transform.MaxSize().Set(btnEntity, transform.NewMaxSize(0, 50, 0))
 		s.Transform.Size().Set(btnEntity, transform.NewSize(1, 50, 1))
 
-		s.Render.Mesh().Set(btnEntity, render.NewMesh(s.GameAssets.SquareMesh))
-		s.Render.Texture().Set(btnEntity, render.NewTexture(s.GameAssets.Hud.Btn))
+		s.Render.Mesh().Set(btnEntity, render.NewMesh(s.Definitions.SquareMesh))
+		s.Render.Texture().Set(btnEntity, render.NewTexture(s.Definitions.Hud.Btn))
 
 		s.Text.Content().Set(btnEntity, text.TextComponent{Text: btn.text})
 		s.Text.FontSize().Set(btnEntity, text.FontSizeComponent{FontSize: 25})
@@ -129,7 +129,7 @@ func (s *system) ListenRender(parent ecs.EntityID) error {
 
 		s.Inputs.LeftClick().Set(btnEntity, inputs.NewLeftClick(btn.event))
 		s.Inputs.KeepSelected().Set(btnEntity, inputs.KeepSelectedComponent{})
-		s.Collider.Component().Set(btnEntity, collider.NewCollider(s.GameAssets.SquareCollider))
+		s.Collider.Component().Set(btnEntity, collider.NewCollider(s.Definitions.SquareCollider))
 	}
 
 	s.Hierarchy.SetChildren(parent, children...)

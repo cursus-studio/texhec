@@ -1,6 +1,7 @@
 package gamescene
 
 import (
+	"core/modules/deploy"
 	"core/modules/generation"
 	"core/modules/settings"
 	"core/modules/tile"
@@ -63,12 +64,12 @@ func addScene(
 		world.Transform.ParentPivotPoint().Set(settingsEntity, transform.NewParentPivotPoint(0, 1, .5))
 		world.Groups.Component().Set(settingsEntity, groups.EmptyGroups().Ptr().Enable(UiGroup).Val())
 
-		world.Render.Mesh().Set(settingsEntity, render.NewMesh(world.GameAssets.SquareMesh))
-		world.Render.Texture().Set(settingsEntity, render.NewTexture(world.GameAssets.Hud.Settings))
+		world.Render.Mesh().Set(settingsEntity, render.NewMesh(world.Definitions.SquareMesh))
+		world.Render.Texture().Set(settingsEntity, render.NewTexture(world.Definitions.Hud.Settings))
 
 		world.Inputs.LeftClick().Set(settingsEntity, inputs.NewLeftClick(settings.EnterSettingsEvent{}))
 		world.Inputs.KeepSelected().Set(settingsEntity, inputs.KeepSelectedComponent{})
-		world.Collider.Component().Set(settingsEntity, collider.NewCollider(world.GameAssets.SquareCollider))
+		world.Collider.Component().Set(settingsEntity, collider.NewCollider(world.Definitions.SquareCollider))
 	}
 
 	{
@@ -110,26 +111,21 @@ func addScene(
 		))
 		world.Batcher.Queue(task)
 
-		farm := world.NewEntity()
-		world.Hierarchy.SetParent(farm, gridEntity)
-		world.Groups.Component().Set(farm, groups.EmptyGroups().Ptr().Enable(GameGroup).Val())
+		farmBlueprint := world.NewEntity()
+		world.Hierarchy.SetParent(farmBlueprint, gridEntity)
+		world.Groups.Component().Set(farmBlueprint, groups.EmptyGroups().Ptr().Enable(GameGroup).Val())
 
-		world.Tile.Construct(farm, world.GameAssets.Constructs.Farm)
-		world.Tile.Pos().Set(farm, tile.NewPos(499, 500))
+		world.Tile.Construct(farmBlueprint, world.Definitions.Constructs.Farm)
 
-		world.Collider.Component().Set(farm, collider.NewCollider(world.GameAssets.SquareCollider))
-		world.Inputs.Stack().Set(farm, inputs.StackComponent{})
+		tankBlueprint := world.NewEntity()
+		world.Hierarchy.SetParent(tankBlueprint, gridEntity)
+		world.Groups.Component().Set(tankBlueprint, groups.EmptyGroups().Ptr().Enable(GameGroup).Val())
 
-		tank := world.NewEntity()
-		world.Hierarchy.SetParent(tank, gridEntity)
-		world.Groups.Component().Set(tank, groups.EmptyGroups().Ptr().Enable(GameGroup).Val())
+		world.Tile.Unit(tankBlueprint, world.Definitions.Units.Tank)
+		world.Tile.Rot().Set(tankBlueprint, tile.NewRot(mgl32.DegToRad(90)))
 
-		world.Tile.Unit(tank, world.GameAssets.Units.Tank)
-		world.Tile.Pos().Set(tank, tile.NewPos(499.5, 500))
-		world.Tile.Rot().Set(tank, tile.NewRot(mgl32.DegToRad(90)))
-
-		world.Collider.Component().Set(tank, collider.NewCollider(world.GameAssets.SquareCollider))
-		world.Inputs.Stack().Set(tank, inputs.StackComponent{})
+		world.Deploy.Deploy(deploy.NewDeployEvent(farmBlueprint, grid.NewCoords(499, 500)))
+		world.Deploy.Deploy(deploy.NewDeployEvent(tankBlueprint, grid.NewCoords(500, 500)))
 	}
 }
 

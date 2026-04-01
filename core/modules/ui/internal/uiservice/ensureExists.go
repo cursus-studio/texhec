@@ -34,7 +34,7 @@ mainLoop:
 		t.AnimatedBackground().Set(menu, ui.AnimatedBackgroundComponent{})
 
 		t.Groups.Inherit().Set(menu, groups.InheritGroupsComponent{})
-		t.Collider.Component().Set(menu, collider.NewCollider(t.GameAssets.SquareCollider))
+		t.Collider.Component().Set(menu, collider.NewCollider(t.Definitions.SquareCollider))
 		t.Inputs.KeepSelected().Set(menu, inputs.KeepSelectedComponent{})
 		t.menuArray.Set(menu, menuComponent{})
 
@@ -54,12 +54,12 @@ mainLoop:
 		t.Text.Align().Set(quit, text.TextAlignComponent{Vertical: .5, Horizontal: .5})
 
 		t.Render.Color().Set(quit, render.NewColor(mgl32.Vec4{1, 0, 0, 1}))
-		t.Render.Mesh().Set(quit, render.NewMesh(t.GameAssets.SquareMesh))
-		t.Render.Texture().Set(quit, render.NewTexture(t.GameAssets.Blank))
+		t.Render.Mesh().Set(quit, render.NewMesh(t.Definitions.SquareMesh))
+		t.Render.Texture().Set(quit, render.NewTexture(t.Definitions.Blank))
 
 		t.Inputs.LeftClick().Set(quit, inputs.NewLeftClick(ui.HideUiEvent{}))
 		t.Inputs.KeepSelected().Set(quit, inputs.KeepSelectedComponent{})
-		t.Collider.Component().Set(quit, collider.NewCollider(t.GameAssets.SquareCollider))
+		t.Collider.Component().Set(quit, collider.NewCollider(t.Definitions.SquareCollider))
 
 		// child wrapper
 		childWrapper := t.NewEntity()

@@ -3,6 +3,7 @@ package main
 import (
 	"core/modules/definitions"
 	"core/modules/definitions/pkg"
+	deploypkg "core/modules/deploy/pkg"
 	"core/modules/fpslogger/pkg"
 	"core/modules/generation/pkg"
 	"core/modules/loading/pkg"
@@ -34,6 +35,7 @@ import (
 	"engine/modules/layout/pkg"
 	"engine/modules/netsync/pkg"
 	"engine/modules/noise/pkg"
+	prototypepkg "engine/modules/prototype/pkg"
 	"engine/modules/record"
 	"engine/modules/record/pkg"
 	"engine/modules/registry/pkg"
@@ -158,6 +160,7 @@ func getDic() ioc.Dic {
 		dragpkg.Package(),
 		groupspkg.Package(),
 		inputspkg.Package(),
+		prototypepkg.Package(),
 		renderpkg.Package(),
 		textpkg.Package(
 			func(c ioc.Dic) text.FontFamilyComponent {
@@ -247,6 +250,7 @@ func getDic() ioc.Dic {
 		noisepkg.Package(),
 
 		// game packages
+		deploypkg.Package(),
 		fpsloggerpkg.Package(),
 
 		gamescenes.Package(),

@@ -13,6 +13,7 @@ import (
 	"engine/modules/layout"
 	"engine/modules/netsync"
 	"engine/modules/noise"
+	"engine/modules/prototype"
 	"engine/modules/record"
 	"engine/modules/registry"
 	"engine/modules/render"
@@ -43,6 +44,7 @@ type World struct {
 	Layout     layout.Service     `inject:"1"`
 	NetSync    netsync.Service    `inject:"1"`
 	Noise      noise.Service      `inject:"1"`
+	Prototype  prototype.Service  `inject:"1"`
 	Record     record.Service     `inject:"1"`
 	Registry   registry.Service   `inject:"1"`
 	Render     render.Service     `inject:"1"`

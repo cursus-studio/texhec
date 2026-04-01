@@ -27,7 +27,7 @@ type cursorSystem struct {
 	Window        window.Api              `inject:"1"`
 	Logger        logger.Logger           `inject:"1"`
 	World         ecs.World               `inject:"1"`
-	GameAssets    definitions.Definitions `inject:"1"`
+	Definitions   definitions.Definitions `inject:"1"`
 	Ui            ui.Service              `inject:"1"`
 	Transform     transform.Service       `inject:"1"`
 	Groups        groups.Service          `inject:"1"`
@@ -83,8 +83,8 @@ func (s *cursorSystem) Listen(frames.FrameEvent) {
 	s.Hierarchy.SetParent(cursor, camera)
 	s.Transform.Parent().Set(cursor, transform.NewParent(transform.Absolute))
 	s.Transform.Pos().Set(cursor, pos)
-	s.Render.Mesh().Set(cursor, render.NewMesh(s.GameAssets.SquareMesh))
-	s.Render.Texture().Set(cursor, render.NewTexture(s.GameAssets.Hud.Cursor))
+	s.Render.Mesh().Set(cursor, render.NewMesh(s.Definitions.SquareMesh))
+	s.Render.Texture().Set(cursor, render.NewTexture(s.Definitions.Hud.Cursor))
 	s.Groups.Inherit().Set(cursor, groups.InheritGroupsComponent{})
 	s.Transform.Size().Set(cursor, transform.NewSize(50, 50, 1))
 	_, _ = sdl.ShowCursor(sdl.DISABLE)

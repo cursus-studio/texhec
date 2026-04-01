@@ -62,10 +62,10 @@ func (pkg) Register(b ioc.Builder) {
 			world.Transform.Pos().Set(draggable, transform.NewPos(0, 0, 2))
 			world.Transform.Size().Set(draggable, transform.NewSize(50, 50, 1))
 			world.Render.Color().Set(draggable, render.NewColor(mgl32.Vec4{0, 1, 0, 1}))
-			world.Render.Mesh().Set(draggable, render.NewMesh(world.GameAssets.SquareMesh))
-			world.Render.Texture().Set(draggable, render.NewTexture(world.GameAssets.Hud.Btn))
+			world.Render.Mesh().Set(draggable, render.NewMesh(world.Definitions.SquareMesh))
+			world.Render.Texture().Set(draggable, render.NewTexture(world.Definitions.Hud.Btn))
 
-			world.Collider.Component().Set(draggable, collider.NewCollider(world.GameAssets.SquareCollider))
+			world.Collider.Component().Set(draggable, collider.NewCollider(world.Definitions.SquareCollider))
 			world.Inputs.Drag().Set(draggable, inputs.NewDragComponent(drag.NewDraggable(draggable)))
 
 			world.Text.Content().Set(draggable, text.TextComponent{Text: strings.ToUpper("drag me")})
@@ -73,7 +73,7 @@ func (pkg) Register(b ioc.Builder) {
 			world.Text.FontSize().Set(draggable, text.FontSizeComponent{FontSize: 15})
 			world.Text.Color().Set(draggable, text.TextColorComponent{Color: mgl32.Vec4{.5, 0, 1, 1}})
 
-			btnAsset, err := assets.GetAsset[render.TextureAsset](assetsService, world.GameAssets.Hud.Btn)
+			btnAsset, err := assets.GetAsset[render.TextureAsset](assetsService, world.Definitions.Hud.Btn)
 			if err != nil {
 				world.Logger.Warn(err)
 				return
@@ -87,12 +87,12 @@ func (pkg) Register(b ioc.Builder) {
 			world.Transform.ParentPivotPoint().Set(btn, transform.NewParentPivotPoint(.5, 0, .5))
 			world.Transform.AspectRatio().Set(btn, transform.NewAspectRatio(float32(btnAspectRatio.Dx()), float32(btnAspectRatio.Dy()), 0, transform.PrimaryAxisY))
 
-			world.Render.Mesh().Set(btn, render.NewMesh(world.GameAssets.SquareMesh))
-			world.Render.Texture().Set(btn, render.NewTexture(world.GameAssets.Hud.Btn))
+			world.Render.Mesh().Set(btn, render.NewMesh(world.Definitions.SquareMesh))
+			world.Render.Texture().Set(btn, render.NewTexture(world.Definitions.Hud.Btn))
 
 			world.Inputs.LeftClick().Set(btn, inputs.NewLeftClick(scene.NewChangeSceneEvent(gamescenes.MenuID)))
 			world.Inputs.KeepSelected().Set(btn, inputs.KeepSelectedComponent{})
-			world.Collider.Component().Set(btn, collider.NewCollider(world.GameAssets.SquareCollider))
+			world.Collider.Component().Set(btn, collider.NewCollider(world.Definitions.SquareCollider))
 
 			world.Text.Content().Set(btn, text.TextComponent{Text: strings.ToUpper("return to menu")})
 			world.Text.Align().Set(btn, text.TextAlignComponent{Vertical: .5, Horizontal: .5})

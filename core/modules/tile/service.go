@@ -130,20 +130,15 @@ func NewClickEvent(
 
 //
 
-type ClickUnitEvent struct {
+type ClickObjectEvent struct {
 	Unit ecs.EntityID
 }
 
-func NewClickUnitEvent(unit ecs.EntityID) ClickUnitEvent {
-	return ClickUnitEvent{unit}
+func NewClickObjectEvent() ClickObjectEvent {
+	return ClickObjectEvent{}
 }
 
-//
-
-type ClickConstructEvent struct {
-	Construct ecs.EntityID
-}
-
-func NewClickConstructEvent(unit ecs.EntityID) ClickConstructEvent {
-	return ClickConstructEvent{unit}
+func (e ClickObjectEvent) ApplyEntity(entity ecs.EntityID) any {
+	e.Unit = entity
+	return e
 }
