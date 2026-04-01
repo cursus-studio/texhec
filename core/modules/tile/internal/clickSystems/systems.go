@@ -27,17 +27,16 @@ func NewSystems(c ioc.Dic) ecs.SystemRegister {
 	return ecs.NewSystemRegister(func() error {
 		s := ioc.GetServices[*system](c)
 
-		events.Listen(s.EventsBuilder, s.OnUnitClick)
-		events.Listen(s.EventsBuilder, s.OnConstructClick)
+		events.Listen(s.EventsBuilder, s.OnClickObject)
 
 		return nil
 	})
 }
 
-func (s *system) OnUnitClick(e tile.ClickUnitEvent) {
+func (s *system) OnClickObject(e tile.ClickObjectEvent) {
 	unit, ok := s.Tile.Pos().Get(e.Unit)
 	if !ok {
-		s.Logger.Warn(errors.New("expected unit to have coords component"))
+		s.Logger.Warn(errors.New("expected object to have coords component"))
 		return
 	}
 	for _, p := range s.Ui.Show() {
@@ -46,25 +45,7 @@ func (s *system) OnUnitClick(e tile.ClickUnitEvent) {
 		s.Transform.Parent().Set(entity, transform.NewParent(transform.RelativePos|transform.RelativeSizeXYZ))
 		s.Groups.Inherit().Set(entity, groups.InheritGroupsComponent{})
 
-		s.Text.Content().Set(entity, text.TextComponent{Text: fmt.Sprintf("UNIT: %v", unit)})
-		s.Text.FontSize().Set(entity, text.FontSizeComponent{FontSize: 25})
-		s.Text.Align().Set(entity, text.TextAlignComponent{Vertical: .5, Horizontal: .5})
-	}
-}
-
-func (s *system) OnConstructClick(e tile.ClickConstructEvent) {
-	construct, ok := s.Tile.Pos().Get(e.Construct)
-	if !ok {
-		s.Logger.Warn(errors.New("expected construct to have coords component"))
-		return
-	}
-	for _, p := range s.Ui.Show() {
-		entity := s.NewEntity()
-		s.Hierarchy.SetParent(entity, p)
-		s.Transform.Parent().Set(entity, transform.NewParent(transform.RelativePos|transform.RelativeSizeXYZ))
-		s.Groups.Inherit().Set(entity, groups.InheritGroupsComponent{})
-
-		s.Text.Content().Set(entity, text.TextComponent{Text: fmt.Sprintf("CONSTRUCT: %v", construct)})
+		s.Text.Content().Set(entity, text.TextComponent{Text: fmt.Sprintf("OBJECT: %v", unit)})
 		s.Text.FontSize().Set(entity, text.FontSizeComponent{FontSize: 25})
 		s.Text.Align().Set(entity, text.TextAlignComponent{Vertical: .5, Horizontal: .5})
 	}

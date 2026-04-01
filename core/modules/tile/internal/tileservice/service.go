@@ -85,7 +85,7 @@ func (s *service) Unit(entity, blueprint ecs.EntityID) {
 	s.Render.Texture().Set(entity, render.NewTexture(blueprint))
 
 	s.Collider.Component().Set(entity, collider.NewCollider(s.Definitions().SquareCollider))
-	s.Inputs.LeftClick().Set(entity, inputs.NewLeftClick(tile.NewClickUnitEvent()))
+	s.Inputs.LeftClick().Set(entity, inputs.NewLeftClick(tile.NewClickObjectEvent()))
 	s.Inputs.Stack().Set(entity, inputs.StackComponent{})
 }
 
@@ -94,6 +94,6 @@ func (s *service) Construct(entity, blueprint ecs.EntityID) {
 	s.Render.Texture().Set(entity, render.NewTexture(blueprint))
 
 	s.Collider.Component().Set(entity, collider.NewCollider(s.Definitions().SquareCollider))
-	s.Inputs.LeftClick().Set(entity, inputs.NewLeftClick(tile.NewClickConstructEvent()))
+	s.Inputs.LeftClick().Set(entity, inputs.NewLeftClick(tile.NewClickObjectEvent()))
 	s.Inputs.Stack().Set(entity, inputs.StackComponent{})
 }
