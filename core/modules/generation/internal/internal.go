@@ -17,7 +17,6 @@ import (
 	"fmt"
 	"slices"
 
-	"github.com/go-gl/mathgl/mgl32"
 	"github.com/go-gl/mathgl/mgl64"
 	"github.com/ogiusek/ioc/v2"
 )
@@ -175,16 +174,8 @@ func (s *service) Generate(c generation.Config) batcher.Task {
 		s.Tile.Grid().Set(c.Entity, gridStateComponent)
 
 		// generates objects
-
-		farmBlueprint := s.NewEntity()
-		s.Tile.Construct(farmBlueprint, s.Definitions.Constructs.Farm)
-
-		tankBlueprint := s.NewEntity()
-		s.Tile.Unit(tankBlueprint, s.Definitions.Units.Tank)
-		s.Tile.Rot().Set(tankBlueprint, tile.NewRot(mgl32.DegToRad(90)))
-
-		s.Deploy.Deploy(deploy.NewDeployEvent(farmBlueprint, grid.NewCoords(1, 1)))
-		s.Deploy.Deploy(deploy.NewDeployEvent(tankBlueprint, grid.NewCoords(2, 2)))
+		s.Deploy.Deploy(deploy.NewDeployEvent(s.Definitions.Constructs.Farm, grid.NewCoords(1, 1)))
+		s.Deploy.Deploy(deploy.NewDeployEvent(s.Definitions.Units.Tank, grid.NewCoords(2, 2)))
 	})
 
 	// task

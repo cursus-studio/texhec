@@ -1,14 +1,9 @@
 package tileservice
 
 import (
-	"core/modules/definitions"
 	"core/modules/tile"
 	"engine"
-	"engine/modules/collider"
 	"engine/modules/grid"
-	"engine/modules/groups"
-	"engine/modules/inputs"
-	"engine/modules/render"
 	"engine/modules/transform"
 	"engine/services/ecs"
 
@@ -16,8 +11,6 @@ import (
 )
 
 type service struct {
-	C                     ioc.Dic
-	definitions           *definitions.Definitions
 	engine.World          `inject:"1"`
 	grid.Service[tile.ID] `inject:"1"`
 
@@ -31,7 +24,6 @@ type service struct {
 
 func NewService(c ioc.Dic) tile.Service {
 	s := ioc.GetServices[*service](c)
-	s.C = c
 	s.tile = ecs.GetComponentsArray[tile.Component](s.World)
 
 	s.pos = ecs.GetComponentsArray[tile.PosComponent](s.World)
@@ -43,14 +35,6 @@ func NewService(c ioc.Dic) tile.Service {
 	s.layer.SetEmpty(tile.NewLayer(1))
 
 	return s
-}
-
-func (t *service) Definitions() *definitions.Definitions {
-	if t.definitions == nil {
-		definitions := ioc.Get[definitions.Definitions](t.C)
-		t.definitions = &definitions
-	}
-	return t.definitions
 }
 
 func (t *service) Tile() ecs.ComponentsArray[tile.Component] {
@@ -75,26 +59,4 @@ func (t *service) GetPos(coords grid.Coords) transform.PosComponent {
 }
 func (t *service) GetTileSize() transform.SizeComponent {
 	return transform.NewSize(100, 100, 1)
-}
-
-func (s *service) Unit(entity, blueprint ecs.EntityID) {
-	s.Layer().Set(entity, tile.NewLayer(3))
-
-	s.Render.Mesh().Set(entity, render.NewMesh(s.Definitions().SquareMesh))
-	s.Render.Texture().Set(entity, render.NewTexture(blueprint))
-	s.Groups.Component().Set(entity, groups.EmptyGroups().Ptr().Enable(definitions.GameGroup).Val())
-
-	s.Collider.Component().Set(entity, collider.NewCollider(s.Definitions().SquareCollider))
-	s.Inputs.LeftClick().Set(entity, inputs.NewLeftClick(tile.NewClickObjectEvent()))
-	s.Inputs.Stack().Set(entity, inputs.StackComponent{})
-}
-
-func (s *service) Construct(entity, blueprint ecs.EntityID) {
-	s.Render.Mesh().Set(entity, render.NewMesh(s.Definitions().SquareMesh))
-	s.Render.Texture().Set(entity, render.NewTexture(blueprint))
-	s.Groups.Component().Set(entity, groups.EmptyGroups().Ptr().Enable(definitions.GameGroup).Val())
-
-	s.Collider.Component().Set(entity, collider.NewCollider(s.Definitions().SquareCollider))
-	s.Inputs.LeftClick().Set(entity, inputs.NewLeftClick(tile.NewClickObjectEvent()))
-	s.Inputs.Stack().Set(entity, inputs.StackComponent{})
 }

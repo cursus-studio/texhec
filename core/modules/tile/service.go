@@ -109,9 +109,6 @@ type Service interface {
 	Layer() ecs.ComponentsArray[LayerComponent]
 
 	GetTileSize() transform.SizeComponent
-
-	Unit(entity, blueprint ecs.EntityID)
-	Construct(entity, blueprint ecs.EntityID)
 }
 
 //
