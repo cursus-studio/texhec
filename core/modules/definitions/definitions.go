@@ -11,20 +11,27 @@ const (
 	BgGroup
 )
 
-type Definitions struct {
-	Hud        Hud
-	Tiles      Tiles
-	Constructs Constructs
-	Units      Units
-
-	Transitions Transitions
-
+// In DI container
+// BuiltIn have fewer dependencies
+type BuiltIn struct {
 	ExampleAudio ecs.EntityID `path:"audio.wav"`
 
 	Blank          ecs.EntityID `path:"blank texture"`
 	SquareMesh     ecs.EntityID `path:"square mesh"`
 	SquareCollider ecs.EntityID `path:"square collider"`
 	FontAsset      ecs.EntityID `path:"font1.ttf"`
+}
+
+// In DI container
+// Definitions have more dependencies
+type Definitions struct {
+	BuiltIn    `ignore:""`
+	Hud        Hud
+	Tiles      Tiles
+	Constructs Constructs
+	Units      Units
+
+	Transitions Transitions
 }
 
 type Hud struct {
@@ -43,11 +50,11 @@ type Tiles struct {
 }
 
 type Constructs struct {
-	Farm ecs.EntityID `path:"constructs/farm.png" construct:"farm"`
+	Farm ecs.EntityID `path:"constructs/farm.png" construct:""`
 }
 
 type Units struct {
-	Tank ecs.EntityID `path:"units/tank.png" unit:"tank"`
+	Tank ecs.EntityID `path:"units/tank.png" unit:""`
 }
 
 type Transitions struct {

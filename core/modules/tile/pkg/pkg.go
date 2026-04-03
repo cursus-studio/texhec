@@ -2,15 +2,21 @@ package tilepkg
 
 import (
 	"bytes"
+	"core/modules/definitions"
 	"core/modules/tile"
 	clicksystems "core/modules/tile/internal/clickSystems"
 	"core/modules/tile/internal/tilerenderer"
 	"core/modules/tile/internal/tileservice"
 	"core/modules/tile/internal/tileui"
+	"engine"
 	"engine/modules/assets"
+	"engine/modules/collider"
 	gridpkg "engine/modules/grid/pkg"
+	"engine/modules/groups"
+	"engine/modules/inputs"
 	prototypepkg "engine/modules/prototype/pkg"
 	"engine/modules/registry"
+	"engine/modules/render"
 	transitionpkg "engine/modules/transition/pkg"
 	"engine/services/codec"
 	"engine/services/ecs"
@@ -117,6 +123,38 @@ func (pkg pkg) Register(b ioc.Builder) {
 			}
 
 			return tile.NewBiomAsset(images)
+		})
+	})
+
+	ioc.WrapService(b, func(c ioc.Dic, b registry.Service) {
+		type World struct {
+			engine.World `inject:"1"`
+			Tile         tile.Service        `inject:"1"`
+			Definitions  definitions.BuiltIn `inject:"1"`
+		}
+		b.Register("unit", func(entity ecs.EntityID, structTagValue string) {
+			world := ioc.GetServices[World](c)
+			world.Tile.Layer().Set(entity, tile.NewLayer(3))
+
+			world.Render.Mesh().Set(entity, render.NewMesh(world.Definitions.SquareMesh))
+			world.Render.Texture().Set(entity, render.NewTexture(entity))
+			world.Groups.Component().Set(entity, groups.EmptyGroups().Ptr().Enable(definitions.GameGroup).Val())
+
+			world.Collider.Component().Set(entity, collider.NewCollider(world.Definitions.SquareCollider))
+			world.Inputs.LeftClick().Set(entity, inputs.NewLeftClick(tile.NewClickObjectEvent()))
+			world.Inputs.Stack().Set(entity, inputs.StackComponent{})
+		})
+		b.Register("construct", func(entity ecs.EntityID, structTagValue string) {
+			world := ioc.GetServices[World](c)
+			world.Tile.Layer().Set(entity, tile.NewLayer(2))
+
+			world.Render.Mesh().Set(entity, render.NewMesh(world.Definitions.SquareMesh))
+			world.Render.Texture().Set(entity, render.NewTexture(entity))
+			world.Groups.Component().Set(entity, groups.EmptyGroups().Ptr().Enable(definitions.GameGroup).Val())
+
+			world.Collider.Component().Set(entity, collider.NewCollider(world.Definitions.SquareCollider))
+			world.Inputs.LeftClick().Set(entity, inputs.NewLeftClick(tile.NewClickObjectEvent()))
+			world.Inputs.Stack().Set(entity, inputs.StackComponent{})
 		})
 	})
 }

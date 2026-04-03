@@ -2,12 +2,9 @@ package definitionspkg
 
 import (
 	"core/modules/definitions"
-	"core/modules/tile"
 	"engine"
 	"engine/modules/assets"
 	"engine/modules/collider"
-	"engine/modules/groups"
-	"engine/modules/inputs"
 	"engine/modules/registry"
 	"engine/modules/render"
 	"engine/modules/transition"
@@ -66,37 +63,17 @@ func (pkg) Register(b ioc.Builder) {
 		})
 	})
 
-	// register assets
+	ioc.RegisterSingleton(b, func(c ioc.Dic) definitions.BuiltIn {
+		world := ioc.GetServices[engine.World](c)
+		def, err := registry.GetRegistry[definitions.BuiltIn](world.Registry)
+		world.Logger.Warn(err)
+		return def
+	})
+
 	ioc.RegisterSingleton(b, func(c ioc.Dic) definitions.Definitions {
 		world := ioc.GetServices[engine.World](c)
-		tileService := ioc.Get[tile.Service](c)
-
 		def, err := registry.GetRegistry[definitions.Definitions](world.Registry)
-
-		{
-			tileService.Layer().Set(def.Units.Tank, tile.NewLayer(3))
-
-			world.Render.Mesh().Set(def.Units.Tank, render.NewMesh(def.SquareMesh))
-			world.Render.Texture().Set(def.Units.Tank, render.NewTexture(def.Units.Tank))
-			world.Groups.Component().Set(def.Units.Tank, groups.EmptyGroups().Ptr().Enable(definitions.GameGroup).Val())
-
-			world.Collider.Component().Set(def.Units.Tank, collider.NewCollider(def.SquareCollider))
-			world.Inputs.LeftClick().Set(def.Units.Tank, inputs.NewLeftClick(tile.NewClickObjectEvent()))
-			world.Inputs.Stack().Set(def.Units.Tank, inputs.StackComponent{})
-		}
-
-		{
-			tileService.Layer().Set(def.Constructs.Farm, tile.NewLayer(2))
-
-			world.Render.Mesh().Set(def.Constructs.Farm, render.NewMesh(def.SquareMesh))
-			world.Render.Texture().Set(def.Constructs.Farm, render.NewTexture(def.Constructs.Farm))
-			world.Groups.Component().Set(def.Constructs.Farm, groups.EmptyGroups().Ptr().Enable(definitions.GameGroup).Val())
-
-			world.Collider.Component().Set(def.Constructs.Farm, collider.NewCollider(def.SquareCollider))
-			world.Inputs.LeftClick().Set(def.Constructs.Farm, inputs.NewLeftClick(tile.NewClickObjectEvent()))
-			world.Inputs.Stack().Set(def.Constructs.Farm, inputs.StackComponent{})
-		}
-
+		def.BuiltIn = ioc.Get[definitions.BuiltIn](c)
 		world.Logger.Warn(err)
 		return def
 	})
