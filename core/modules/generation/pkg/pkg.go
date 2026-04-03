@@ -34,7 +34,9 @@ func (pkg) Register(b ioc.Builder) {
 			world := ioc.GetServices[World](c)
 			chance, err := strconv.Atoi(structTagValue)
 			world.Logger.Warn(err)
-			world.Config.AddChance(entity, chance)
+			if err == nil {
+				world.Config.AddChance(entity, chance)
+			}
 		})
 	})
 }
