@@ -21,53 +21,70 @@ import (
 	"github.com/ogiusek/ioc/v2"
 )
 
-type config struct {
-	types       []tile.ID
+type chance struct {
+	tileType ecs.EntityID
+	chance   int
+}
+
+type Config struct {
+	chances     []chance
 	tilesPerJob int
 }
+
+func NewConfig() *Config {
+	return &Config{
+		tilesPerJob: 100,
+	}
+}
+
+func (c *Config) AddChance(tileType ecs.EntityID, chanceInProcent int) {
+	c.chances = append(c.chances, chance{tileType, chanceInProcent})
+}
+
+//
 
 type service struct {
 	engine.World `inject:"1"`
 	Definitions  definitions.Definitions `inject:"1"`
 	Tile         tile.Service            `inject:"1"`
 	Deploy       deploy.Service          `inject:"1"`
-
-	config
+	C            ioc.Dic
 }
 
 func NewService(c ioc.Dic) generation.Service {
 	s := ioc.GetServices[service](c)
-	s.types = []tile.ID{}
-	s.addChance(s.Definitions.Tiles.Water, 35)
-	s.addChance(s.Definitions.Tiles.Sand, 15)
-	s.addChance(s.Definitions.Tiles.Grass, 45)
-	s.addChance(s.Definitions.Tiles.Mountain, 5)
-
-	s.tilesPerJob = 100
+	s.C = c
 	return &s
-}
-
-func (s *service) addChance(tileType ecs.EntityID, chance int) {
-	tileComp, ok := s.Tile.Tile().Get(tileType)
-	if !ok {
-		s.Logger.Warn(fmt.Errorf("\"%v\" isn't a tile tile and therefor cannot be used in generation", tileType))
-		return
-	}
-	s.types = append(s.types, slices.Repeat([]tile.ID{tileComp.ID}, chance)...)
 }
 
 func MapRange(val, min, max float64) float64 { return min + (val * (max - min)) }
 
+func (s *service) Chances() (*Config, []tile.ID) {
+	config := ioc.Get[*Config](s.C)
+	types := []tile.ID{}
+
+	for _, chance := range config.chances {
+		tileComp, ok := s.Tile.Tile().Get(chance.tileType)
+		if !ok {
+			s.Logger.Warn(fmt.Errorf("\"%v\" isn't a tile tile and therefor cannot be used in generation", chance.tileType))
+			continue
+		}
+		types = append(types, slices.Repeat([]tile.ID{tileComp.ID}, chance.chance)...)
+	}
+	return config, types
+}
+
 func (s *service) Generate(c generation.Config) batcher.Task {
+	config, tileTypes := s.Chances()
 	gridStateComponent := tile.NewGrid(c.Size.Coords())
 	gridModifiedComponent := tile.NewGrid(c.Size.Coords())
 
-	jobs := int(gridStateComponent.GetLastIndex()) / s.tilesPerJob
+	jobs := int(gridStateComponent.GetLastIndex()) / config.tilesPerJob
 
 	// apply batch
 	applyBatch := batcher.NewBatch(jobs, func(i int) {
-		for j := range s.tilesPerJob {
-			gridI := grid.Index(i*s.tilesPerJob + j)
+		for j := range config.tilesPerJob {
+			gridI := grid.Index(i*config.tilesPerJob + j)
 			gridValue := gridModifiedComponent.GetTile(gridI)
 			gridStateComponent.SetTile(gridI, gridValue)
 		}
@@ -97,13 +114,13 @@ func (s *service) Generate(c generation.Config) batcher.Task {
 	).Build()
 
 	generateBatch := batcher.NewBatch(jobs, func(i int) {
-		for j := range s.tilesPerJob {
-			gridI := grid.Index(i*s.tilesPerJob + j)
+		for j := range config.tilesPerJob {
+			gridI := grid.Index(i*config.tilesPerJob + j)
 			coords := gridModifiedComponent.GetCoords(gridI)
 			value := noise.Read(mgl64.Vec2{float64(coords.X), float64(coords.Y)})
-			value *= float64(len(s.types))
-			value = min(value, float64(len(s.types)-1))
-			tileValue := s.types[int(value)]
+			value *= float64(len(tileTypes))
+			value = min(value, float64(len(tileTypes)-1))
+			tileValue := tileTypes[int(value)]
 			gridModifiedComponent.SetTile(gridI, tileValue)
 		}
 	})
@@ -123,8 +140,8 @@ func (s *service) Generate(c generation.Config) batcher.Task {
 	sensitivity := 1.5
 
 	smoothingBatch := batcher.NewBatch(jobs, func(i int) {
-		for j := range s.tilesPerJob {
-			gridI := grid.Index(i*s.tilesPerJob + j)
+		for j := range config.tilesPerJob {
+			gridI := grid.Index(i*config.tilesPerJob + j)
 			coords := gridStateComponent.GetCoords(gridI)
 			counts := datastructures.NewSparseArray[tile.ID, int]()
 			for _, neighbour := range neighbours {

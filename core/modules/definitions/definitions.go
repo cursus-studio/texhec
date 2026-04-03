@@ -51,10 +51,10 @@ type Transitions struct {
 // domain objects
 
 type Tiles struct {
-	Grass    ecs.EntityID `path:"tiles/grass.biom" tile:""`
-	Sand     ecs.EntityID `path:"tiles/sand.biom" tile:""`
-	Mountain ecs.EntityID `path:"tiles/mountain.biom" tile:""`
-	Water    ecs.EntityID `path:"tiles/water.biom" tile:""`
+	Water    ecs.EntityID `path:"tiles/water.biom" tile:"" generate:"35"`
+	Sand     ecs.EntityID `path:"tiles/sand.biom" tile:"" generate:"15"`
+	Grass    ecs.EntityID `path:"tiles/grass.biom" tile:"" generate:"45"`
+	Mountain ecs.EntityID `path:"tiles/mountain.biom" tile:"" generate:"5"`
 }
 
 type Constructs struct {
