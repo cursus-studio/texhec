@@ -50,6 +50,7 @@ type Transitions struct {
 
 // domain objects
 
+// generation configs should be in registry or in destined path and dispatched instantly on initialization
 type Tiles struct {
 	Water    ecs.EntityID `path:"tiles/water.biom" tile:"" generate:"35"`
 	Sand     ecs.EntityID `path:"tiles/sand.biom" tile:"" generate:"15"`
