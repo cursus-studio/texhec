@@ -42,6 +42,14 @@ type Hud struct {
 	Background2 ecs.EntityID `path:"hud/bg2.gif-trim"`
 }
 
+type Transitions struct {
+	Linear         ecs.EntityID `transition:"linear"`
+	MyEasing       ecs.EntityID `transition:"my easing"`
+	EaseOutElastic ecs.EntityID `transition:"ease out elastic"`
+}
+
+// domain objects
+
 type Tiles struct {
 	Grass    ecs.EntityID `path:"tiles/grass.biom" tile:""`
 	Sand     ecs.EntityID `path:"tiles/sand.biom" tile:""`
@@ -55,10 +63,4 @@ type Constructs struct {
 
 type Units struct {
 	Tank ecs.EntityID `path:"units/tank.png" unit:""`
-}
-
-type Transitions struct {
-	Linear         ecs.EntityID `transition:"linear"`
-	MyEasing       ecs.EntityID `transition:"my easing"`
-	EaseOutElastic ecs.EntityID `transition:"ease out elastic"`
 }
