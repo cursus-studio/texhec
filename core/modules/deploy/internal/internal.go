@@ -1,11 +1,13 @@
 package internal
 
 import (
+	"core/modules/definitions"
 	"core/modules/deploy"
 	"core/modules/tile"
 	"core/modules/ui"
 	"engine"
 	"engine/modules/grid"
+	"engine/modules/inputs"
 	"engine/modules/render"
 	"engine/services/ecs"
 
@@ -60,7 +62,7 @@ func (s *service) Deploy(blueprint ecs.EntityID, coords grid.Coords) {
 func (s *service) Select(e deploy.SelectEvent) {
 	events.Emit(s.Events, tile.NewSelectEvent(
 		deploy.NewPreviewEvent(e.By, e.Blueprint),
-		deploy.NewExecuteEvent(e.By, e.Blueprint),
+		// deploy.NewExecuteEvent(e.By, e.Blueprint),
 	))
 }
 func (s *service) Preview(e deploy.PreviewEvent) {
@@ -75,10 +77,10 @@ func (s *service) Preview(e deploy.PreviewEvent) {
 	canPlace := true
 	if canPlace {
 		s.Render.Color().Set(placeholderEntity, render.NewColor(mgl32.Vec4{0, 1, 0, 1}))
-		s.Collider.Component().Remove(placeholderEntity)
+		s.Inputs.LeftClick().Set(placeholderEntity, inputs.NewLeftClick(deploy.NewExecuteEvent(e.By, e.Blueprint).ApplyCoords(e.Coords)))
+		s.Tile.Layer().Set(placeholderEntity, tile.NewLayer(definitions.PlaceholderLayer))
 	} else {
 		s.Render.Color().Set(placeholderEntity, render.NewColor(mgl32.Vec4{1, 0, 0, 1}))
-		s.Inputs.Stack().Remove(placeholderEntity)
 	}
 }
 func (s *service) Execute(e deploy.ExecuteEvent) {

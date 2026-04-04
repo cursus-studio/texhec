@@ -12,18 +12,15 @@ import (
 )
 
 type pkg[Tile grid.TileConstraint] struct {
-	hoverEvent,
-	clickEvent func(ecs.EntityID, grid.Index) any
+	hoverEvent func(ecs.EntityID, grid.Index) any
 }
 
 // index event can be nil if layer has no collider
 func Package[Tile grid.TileConstraint](
-	hoverEvent,
-	clickEvent func(ecs.EntityID, grid.Index) any,
+	hoverEvent func(ecs.EntityID, grid.Index) any,
 ) ioc.Pkg {
 	return pkg[Tile]{
 		hoverEvent,
-		clickEvent,
 	}
 }
 
@@ -42,7 +39,6 @@ func (pkg pkg[Tile]) Register(b ioc.Builder) {
 		policy := gridcollider.NewColliderWithPolicy[Tile](
 			c,
 			pkg.hoverEvent,
-			pkg.clickEvent,
 		)
 		if policy != nil {
 			collider.AddRayFallThroughPolicy(policy)

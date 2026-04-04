@@ -36,7 +36,7 @@ type pkg struct {
 func Package() ioc.Pkg {
 	return pkg{
 		[]ioc.Pkg{
-			gridpkg.Package[tile.ID](tile.NewHoverEvent, tile.NewClickEvent),
+			gridpkg.Package[tile.ID](tile.NewHoverEvent),
 			tileservice.Package(),
 			tilerenderer.Package(),
 			prototypepkg.PackageT[tile.Component](),
@@ -56,7 +56,7 @@ func (pkg pkg) Register(b ioc.Builder) {
 	ioc.WrapService(b, func(c ioc.Dic, b codec.Builder) {
 		b.
 			// events
-			Register(tile.ClickEvent{})
+			Register(tile.HoverEvent{})
 	})
 
 	for _, pkg := range []ioc.Pkg{
@@ -134,7 +134,7 @@ func (pkg pkg) Register(b ioc.Builder) {
 		}
 		b.Register("unit", func(entity ecs.EntityID, structTagValue string) {
 			world := ioc.GetServices[World](c)
-			world.Tile.Layer().Set(entity, tile.NewLayer(3))
+			world.Tile.Layer().Set(entity, tile.NewLayer(definitions.UnitLayer))
 
 			world.Render.Mesh().Set(entity, render.NewMesh(world.Definitions.SquareMesh))
 			world.Render.Texture().Set(entity, render.NewTexture(entity))
@@ -146,7 +146,7 @@ func (pkg pkg) Register(b ioc.Builder) {
 		})
 		b.Register("construct", func(entity ecs.EntityID, structTagValue string) {
 			world := ioc.GetServices[World](c)
-			world.Tile.Layer().Set(entity, tile.NewLayer(2))
+			world.Tile.Layer().Set(entity, tile.NewLayer(definitions.ConstructLayer))
 
 			world.Render.Mesh().Set(entity, render.NewMesh(world.Definitions.SquareMesh))
 			world.Render.Texture().Set(entity, render.NewTexture(entity))

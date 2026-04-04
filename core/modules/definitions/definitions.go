@@ -1,6 +1,7 @@
 package definitions
 
 import (
+	"core/modules/tile"
 	"engine/modules/groups"
 	"engine/services/ecs"
 )
@@ -9,6 +10,12 @@ const (
 	UiGroup groups.Group = iota + 1
 	GameGroup
 	BgGroup
+)
+
+const (
+	ConstructLayer tile.Coord = 2 + iota
+	UnitLayer
+	PlaceholderLayer
 )
 
 // In DI container

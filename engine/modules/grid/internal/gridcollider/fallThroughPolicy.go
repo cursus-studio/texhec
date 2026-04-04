@@ -41,28 +41,24 @@ type squareFallThroughPolicy[Tile grid.TileConstraint] struct {
 
 	zero          Tile
 	dirtyEntities ecs.DirtySet
-	hoverEvent,
-	clickEvent func(ecs.EntityID, grid.Index) any
+	hoverEvent    func(ecs.EntityID, grid.Index) any
 }
 
 func NewColliderWithPolicy[Tile grid.TileConstraint](
 	c ioc.Dic,
-	hoverEvent,
-	clickEvent func(ecs.EntityID, grid.Index) any,
+	hoverEvent func(ecs.EntityID, grid.Index) any,
 ) collider.FallTroughPolicy {
 	s := ioc.GetServices[*squareFallThroughPolicy[Tile]](c)
 
 	s.dirtyEntities = ecs.NewDirtySet()
 	s.hoverEvent = hoverEvent
-	s.clickEvent = clickEvent
 
 	s.Grid.Component().AddDirtySet(s.dirtyEntities)
 	s.Inputs.LeftClick().BeforeGet(s.BeforeGet)
 
 	events.Listen(s.EventsBuilder, s.OnHover)
-	events.Listen(s.EventsBuilder, s.OnClick)
 
-	if clickEvent == nil {
+	if hoverEvent == nil {
 		return nil
 	}
 
@@ -123,18 +119,5 @@ func (t *squareFallThroughPolicy[Tile]) OnHover(e HoverEvent[Tile]) {
 		return
 	}
 	event := t.hoverEvent(e.Target.Entity, index)
-	events.EmitAny(t.Events, event)
-}
-
-func (t *squareFallThroughPolicy[Tile]) OnClick(e ClickEvent[Tile]) {
-	gridComponent, ok := t.Grid.Component().Get(e.Target.Entity)
-	if !ok {
-		return
-	}
-	index, ok := t.getIndex(gridComponent, e.Target.ObjectRayCollision)
-	if !ok {
-		return
-	}
-	event := t.clickEvent(e.Target.Entity, index)
 	events.EmitAny(t.Events, event)
 }

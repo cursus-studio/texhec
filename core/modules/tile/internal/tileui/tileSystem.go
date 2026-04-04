@@ -45,7 +45,6 @@ func NewSystem(c ioc.Dic) tile.System {
 		events.Listen(s.EventsBuilder, s.OnUnselect)
 		events.Listen(s.EventsBuilder, s.OnSelect)
 		events.Listen(s.EventsBuilder, s.OnHover)
-		events.Listen(s.EventsBuilder, s.OnClick)
 		return nil
 	})
 }
@@ -101,21 +100,4 @@ func (s *system) OnHover(e tile.HoverEvent) {
 		s.selectedEvent.HoverEvent = event.ApplyCoords(coords)
 	}
 	events.EmitAny(s.Events, s.selectedEvent.HoverEvent)
-}
-
-func (s *system) OnClick(e tile.ClickEvent) {
-	if s.selectedEvent == nil {
-		s.Ui.Hide()
-		return
-	}
-	grid, ok := s.Tile.Grid().Get(e.Grid)
-	if !ok {
-		s.Logger.Warn(fmt.Errorf("grid doesn't exist"))
-		return
-	}
-	coords := grid.GetCoords(e.Tile)
-	if event, ok := s.selectedEvent.ClickEvent.(tile.ApplyCoordsEvent); ok {
-		s.selectedEvent.ClickEvent = event.ApplyCoords(coords)
-	}
-	events.EmitAny(s.Events, s.selectedEvent.ClickEvent)
 }

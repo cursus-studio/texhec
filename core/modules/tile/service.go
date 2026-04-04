@@ -119,11 +119,10 @@ type ApplyCoordsEvent interface {
 
 type SelectEvent struct {
 	HoverEvent any
-	ClickEvent any
 }
 
-func NewSelectEvent(hoverEvent, clickEvent any) SelectEvent {
-	return SelectEvent{hoverEvent, clickEvent}
+func NewSelectEvent(hoverEvent any) SelectEvent {
+	return SelectEvent{hoverEvent}
 }
 
 //
@@ -138,18 +137,6 @@ func NewHoverEvent(
 	tile grid.Index,
 ) any {
 	return HoverEvent{grid, tile}
-}
-
-type ClickEvent struct {
-	Grid ecs.EntityID
-	Tile grid.Index
-}
-
-func NewClickEvent(
-	grid ecs.EntityID,
-	tile grid.Index,
-) any {
-	return ClickEvent{grid, tile}
 }
 
 //
