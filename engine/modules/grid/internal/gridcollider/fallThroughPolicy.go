@@ -58,10 +58,6 @@ func NewColliderWithPolicy[Tile grid.TileConstraint](
 
 	events.Listen(s.EventsBuilder, s.OnHover)
 
-	if hoverEvent == nil {
-		return nil
-	}
-
 	return s
 }
 

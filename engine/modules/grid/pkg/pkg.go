@@ -35,13 +35,14 @@ func (pkg pkg[Tile]) Register(b ioc.Builder) {
 			Register(grid.SquareGridComponent[Tile]{})
 	})
 
+	if pkg.hoverEvent == nil {
+		return
+	}
 	ioc.WrapService(b, func(c ioc.Dic, collider collider.Service) {
 		policy := gridcollider.NewColliderWithPolicy[Tile](
 			c,
 			pkg.hoverEvent,
 		)
-		if policy != nil {
-			collider.AddRayFallThroughPolicy(policy)
-		}
+		collider.AddRayFallThroughPolicy(policy)
 	})
 }

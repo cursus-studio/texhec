@@ -123,10 +123,10 @@ func NewSystem(c ioc.Dic) error {
 	s.textures = datastructures.NewSparseArray[uint32, image.Image]()
 
 	s.tilesDirtySet = ecs.NewDirtySet()
-	s.Tile.Tile().AddDirtySet(s.tilesDirtySet)
+	s.Tile.TileType().AddDirtySet(s.tilesDirtySet)
 
 	s.gridDirtySet = ecs.NewDirtySet()
-	s.Tile.Grid().AddDirtySet(s.gridDirtySet)
+	s.Tile.TileGrid().AddDirtySet(s.gridDirtySet)
 
 	s.batches = datastructures.NewSparseArray[ecs.EntityID, Batch]()
 
@@ -138,7 +138,7 @@ func (s *system) ListenRender(render render.RenderEvent) {
 	{ // rare reload. it reloads definitions, buffers, texture arrays (not optimal because currently its used once)
 		dirtyTiles := s.tilesDirtySet.Get()
 		for _, entity := range dirtyTiles {
-			tileComp, ok := s.Tile.Tile().Get(entity)
+			tileComp, ok := s.Tile.TileType().Get(entity)
 			if !ok {
 				continue
 			}
@@ -183,7 +183,7 @@ func (s *system) ListenRender(render render.RenderEvent) {
 			}
 
 			dirtySet := ecs.NewDirtySet()
-			s.Tile.Grid().AddDirtySet(dirtySet)
+			s.Tile.TileGrid().AddDirtySet(dirtySet)
 
 			for _, t := range s.lodTextureArrays {
 				t.Release()
@@ -208,7 +208,7 @@ func (s *system) ListenRender(render render.RenderEvent) {
 	// reload per grid buffers
 	for _, entity := range s.gridDirtySet.Get() {
 		batch, batchOk := s.batches.Get(entity)
-		grid, compOk := s.Tile.Grid().Get(entity)
+		grid, compOk := s.Tile.TileGrid().Get(entity)
 
 		if !batchOk && !compOk {
 			continue
@@ -262,7 +262,7 @@ func (s *system) ListenRender(render render.RenderEvent) {
 		}
 		batch.buffer.Bind()
 
-		grid, _ := s.Tile.Grid().Get(entity)
+		grid, _ := s.Tile.TileGrid().Get(entity)
 
 		gl.Uniform1ui(s.locations.Width, uint32(grid.Width()))
 		gl.Uniform1ui(s.locations.Height, uint32(grid.Height()))

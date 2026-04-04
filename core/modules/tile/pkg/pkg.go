@@ -37,9 +37,10 @@ func Package() ioc.Pkg {
 	return pkg{
 		[]ioc.Pkg{
 			gridpkg.Package[tile.ID](tile.NewHoverEvent),
+			gridpkg.Package[tile.Obstruction](nil),
 			tileservice.Package(),
 			tilerenderer.Package(),
-			prototypepkg.PackageT[tile.Component](),
+			prototypepkg.PackageT[tile.TypeComponent](),
 			prototypepkg.PackageT[tile.PosComponent](),
 			prototypepkg.PackageT[tile.SizeComponent](),
 			prototypepkg.PackageT[tile.RotComponent](),
@@ -87,7 +88,7 @@ func (pkg pkg) Register(b ioc.Builder) {
 		registry.Register("tile", func(entity ecs.EntityID, structTagValue string) {
 			counter++
 			tileService := ioc.Get[tile.Service](c)
-			tileService.Tile().Set(entity, tile.NewTile(counter))
+			tileService.TileType().Set(entity, tile.NewTileType(counter))
 		})
 	})
 

@@ -11,10 +11,11 @@ import (
 )
 
 type service struct {
-	engine.World          `inject:"1"`
-	grid.Service[tile.ID] `inject:"1"`
+	engine.World           `inject:"1"`
+	TileGridService        grid.Service[tile.ID]          `inject:"1"`
+	ObstructionGridService grid.Service[tile.Obstruction] `inject:"1"`
 
-	tile ecs.ComponentsArray[tile.Component]
+	tile ecs.ComponentsArray[tile.TypeComponent]
 
 	pos   ecs.ComponentsArray[tile.PosComponent]
 	size  ecs.ComponentsArray[tile.SizeComponent]
@@ -24,7 +25,7 @@ type service struct {
 
 func NewService(c ioc.Dic) tile.Service {
 	s := ioc.GetServices[*service](c)
-	s.tile = ecs.GetComponentsArray[tile.Component](s.World)
+	s.tile = ecs.GetComponentsArray[tile.TypeComponent](s.World)
 
 	s.pos = ecs.GetComponentsArray[tile.PosComponent](s.World)
 	s.size = ecs.GetComponentsArray[tile.SizeComponent](s.World)
@@ -37,11 +38,14 @@ func NewService(c ioc.Dic) tile.Service {
 	return s
 }
 
-func (t *service) Tile() ecs.ComponentsArray[tile.Component] {
+func (t *service) TileType() ecs.ComponentsArray[tile.TypeComponent] {
 	return t.tile
 }
-func (t *service) Grid() ecs.ComponentsArray[grid.SquareGridComponent[tile.ID]] {
-	return t.Component()
+func (t *service) TileGrid() ecs.ComponentsArray[grid.SquareGridComponent[tile.ID]] {
+	return t.TileGridService.Component()
+}
+func (t *service) ObstructionGrid() ecs.ComponentsArray[grid.SquareGridComponent[tile.Obstruction]] {
+	return t.ObstructionGridService.Component()
 }
 
 func (t *service) Pos() ecs.ComponentsArray[tile.PosComponent]     { return t.pos }

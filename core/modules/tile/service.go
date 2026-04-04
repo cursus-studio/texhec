@@ -21,12 +21,14 @@ func NewGrid(w, h grid.Coord) grid.SquareGridComponent[ID] {
 	return grid.NewSquareGrid[ID](w, h)
 }
 
-type Component struct {
+//
+
+type TypeComponent struct {
 	ID ID
 }
 
-func NewTile(id ID) Component {
-	return Component{id}
+func NewTileType(id ID) TypeComponent {
+	return TypeComponent{id}
 }
 
 //
@@ -99,9 +101,26 @@ func (e *RotComponent) Quat() mgl32.Quat {
 
 //
 
+// mask of ways in which tile is obstructed
+type Obstruction uint8
+
+const (
+	Airspace Obstruction = 1 << iota // obstructed by mountains and planes
+	Water                            // obstructed by non-water tiles and ships
+	Lowlands                         // obstructed by buildings and tanks
+)
+
+// defines how entity or tile obstruct
+type ObstructionComponent struct {
+	Obstruction Obstruction
+}
+
+//
+
 type Service interface {
-	Tile() ecs.ComponentsArray[Component]
-	Grid() ecs.ComponentsArray[grid.SquareGridComponent[ID]]
+	TileType() ecs.ComponentsArray[TypeComponent]
+	TileGrid() ecs.ComponentsArray[grid.SquareGridComponent[ID]]
+	ObstructionGrid() ecs.ComponentsArray[grid.SquareGridComponent[Obstruction]]
 
 	Pos() ecs.ComponentsArray[PosComponent]
 	Size() ecs.ComponentsArray[SizeComponent]
