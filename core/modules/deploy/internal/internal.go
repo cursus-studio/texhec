@@ -6,18 +6,23 @@ import (
 	"core/modules/ui"
 	"engine"
 	"engine/modules/grid"
+	"engine/modules/render"
 	"engine/services/ecs"
 
+	"github.com/go-gl/mathgl/mgl32"
 	"github.com/ogiusek/events"
 	"github.com/ogiusek/ioc/v2"
 )
+
+type placeholder struct{}
 
 type service struct {
 	engine.World `inject:"1"`
 	Tile         tile.Service `inject:"1"`
 
-	component ecs.ComponentsArray[deploy.Component]
-	link      ecs.ComponentsArray[deploy.LinkComponent]
+	component   ecs.ComponentsArray[deploy.Component]
+	link        ecs.ComponentsArray[deploy.LinkComponent]
+	placeholder ecs.ComponentsArray[placeholder]
 }
 
 func NewService(c ioc.Dic) deploy.Service {
@@ -25,6 +30,7 @@ func NewService(c ioc.Dic) deploy.Service {
 
 	s.component = ecs.GetComponentsArray[deploy.Component](s.World)
 	s.link = ecs.GetComponentsArray[deploy.LinkComponent](s.World)
+	s.placeholder = ecs.GetComponentsArray[placeholder](s.World)
 
 	events.Listen(s.EventsBuilder, s.Execute)
 	events.Listen(s.EventsBuilder, s.Preview)
@@ -58,17 +64,27 @@ func (s *service) Select(e deploy.SelectEvent) {
 	))
 }
 func (s *service) Preview(e deploy.PreviewEvent) {
-	byName, ok := s.Metadata.Name().Get(e.By)
-	if !ok {
-		return
+	for _, entity := range s.placeholder.GetEntities() {
+		s.RemoveEntity(entity)
 	}
-	blueprintName, ok := s.Metadata.Name().Get(e.Blueprint)
-	if !ok {
-		return
+	placeholderEntity := s.Prototype.Clone(e.Blueprint)
+	s.Hierarchy.SetParent(placeholderEntity, s.Scene.Scene())
+
+	s.Tile.Pos().Set(placeholderEntity, tile.NewPos(e.Coords.Coords()))
+	s.placeholder.Set(placeholderEntity, placeholder{})
+	canPlace := true
+	if canPlace {
+		s.Render.Color().Set(placeholderEntity, render.NewColor(mgl32.Vec4{0, 1, 0, 1}))
+		s.Collider.Component().Remove(placeholderEntity)
+	} else {
+		s.Render.Color().Set(placeholderEntity, render.NewColor(mgl32.Vec4{1, 0, 0, 1}))
+		s.Inputs.Stack().Remove(placeholderEntity)
 	}
-	s.Logger.Info("can %v deploy %v on %v ? show it in gui.", byName.Name, blueprintName.Name, e.Coords)
 }
 func (s *service) Execute(e deploy.ExecuteEvent) {
+	for _, entity := range s.placeholder.GetEntities() {
+		s.RemoveEntity(entity)
+	}
 	// perform verification can you deploy by someone
 	// if you cannot than do a flip
 	// if deploy.By ? {
