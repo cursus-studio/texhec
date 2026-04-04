@@ -112,6 +112,7 @@ Engine modules:
 - [hierarchy](/engine/modules/hierarchy/readme/README.md)
 - [inputs (placeholder)](/engine/modules/inputs/readme/README.md)
 - [layout (placeholder)](/engine/modules/layout/readme/README.md)
+- [metadata (placeholder)](/engine/modules/metadata/readme/README.md)
 - [netsync (placeholder)](/engine/modules/netsync/readme/README.md)
 - [noise (placeholder)](/engine/modules/noise/readme/README.md)
 - [prototype (placeholder)](/engine/modules/prototype/readme/README.md)
