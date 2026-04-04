@@ -19,6 +19,12 @@ const (
 	PlaceholderLayer
 )
 
+const (
+	Airspace tile.Obstruction = 1 << iota // obstructed by mountains and planes
+	Water                                 // obstructed by non-water tiles and ships
+	Lowlands                              // obstructed by buildings and tanks
+)
+
 // In DI container
 // BuiltIn have fewer dependencies
 type BuiltIn struct {

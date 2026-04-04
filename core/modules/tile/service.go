@@ -104,12 +104,6 @@ func (e *RotComponent) Quat() mgl32.Quat {
 // mask of ways in which tile is obstructed
 type Obstruction uint8
 
-const (
-	Airspace Obstruction = 1 << iota // obstructed by mountains and planes
-	Water                            // obstructed by non-water tiles and ships
-	Lowlands                         // obstructed by buildings and tanks
-)
-
 // defines how entity or tile obstruct
 type ObstructionComponent struct {
 	Obstruction Obstruction
