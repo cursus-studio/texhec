@@ -32,11 +32,18 @@ func (s *hoverEventSystem) Listen(event frames.FrameEvent) {
 			continue
 		}
 
-		if setter, ok := eventsComponent.Event.(inputs.EventTargetSetter); ok {
-			eventsComponent.Event = setter.SetTarget(s.Inputs.StackedData()[0])
-		}
 		if e, ok := eventsComponent.Event.(inputs.ApplyEntityEvent); ok {
 			eventsComponent.Event = e.ApplyEntity(entity)
+		}
+		if setter, ok := eventsComponent.Event.(inputs.EventTargetSetter); ok {
+			for _, data := range s.Inputs.StackedData() {
+				if data.Entity != entity {
+					continue
+				}
+				eventsComponent.Event = setter.SetTarget(data)
+				break
+			}
+
 		}
 		events.EmitAny(s.Events, eventsComponent.Event)
 	}
