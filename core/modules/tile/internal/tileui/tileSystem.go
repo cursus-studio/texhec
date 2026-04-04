@@ -19,16 +19,16 @@ type system struct {
 	Ui           ui.Service   `inject:"1"`
 	Tile         tile.Service `inject:"1"`
 
-	dirtySet ecs.DirtySet
-
-	TileSize transform.SizeComponent
+	dirtySet      ecs.DirtySet
+	tileSize      transform.SizeComponent
+	selectedEvent any
 }
 
 func NewSystem(c ioc.Dic) tile.System {
 	return ecs.NewSystemRegister(func() error {
 		s := ioc.GetServices[*system](c)
 
-		s.TileSize = s.Tile.GetTileSize()
+		s.tileSize = s.Tile.GetTileSize()
 
 		s.dirtySet = ecs.NewDirtySet()
 
@@ -44,6 +44,8 @@ func NewSystem(c ioc.Dic) tile.System {
 		s.Transform.Size().BeforeGet(s.BeforeGet)
 		s.Transform.Rotation().BeforeGet(s.BeforeGet)
 
+		events.Listen(s.EventsBuilder, s.OnUnselect)
+		events.Listen(s.EventsBuilder, s.OnSelect)
 		events.Listen(s.EventsBuilder, s.OnClick)
 		return nil
 	})
@@ -61,14 +63,14 @@ func (s *system) BeforeGet() {
 		layer, _ := s.Tile.Layer().Get(entity)
 
 		transformPos := transform.NewPos(
-			s.TileSize.Size.X()*(float32(pos.X)+.5),
-			s.TileSize.Size.Y()*(float32(pos.Y)+.5),
+			s.tileSize.Size.X()*(float32(pos.X)+.5),
+			s.tileSize.Size.Y()*(float32(pos.Y)+.5),
 			float32(layer.Z),
 		)
 		transformSize := transform.NewSize(
-			s.TileSize.Size[0]*float32(size.X),
-			s.TileSize.Size[1]*float32(size.Y),
-			s.TileSize.Size[2],
+			s.tileSize.Size[0]*float32(size.X),
+			s.tileSize.Size[1]*float32(size.Y),
+			s.tileSize.Size[2],
 		)
 		transformRot := transform.NewRotation(rot.Quat())
 
@@ -76,6 +78,14 @@ func (s *system) BeforeGet() {
 		s.Transform.Size().Set(entity, transformSize)
 		s.Transform.Rotation().Set(entity, transformRot)
 	}
+}
+
+func (s *system) OnUnselect(e ui.HideUiEvent) {
+	s.selectedEvent = nil
+}
+
+func (s *system) OnSelect(e tile.SelectEvent) {
+	s.selectedEvent = e.Selected
 }
 
 func (s *system) OnClick(e tile.ClickEvent) {
@@ -86,6 +96,13 @@ func (s *system) OnClick(e tile.ClickEvent) {
 	}
 	coords := grid.GetCoords(e.Tile)
 	if !ok {
+		return
+	}
+	if s.selectedEvent != nil {
+		if event, ok := s.selectedEvent.(tile.ApplyCoordsEvent); ok {
+			s.selectedEvent = event.ApplyCoords(coords)
+		}
+		events.EmitAny(s.Events, s.selectedEvent)
 		return
 	}
 	for _, p := range s.Ui.Show() {

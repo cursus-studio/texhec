@@ -32,25 +32,75 @@ func NewLink(deploy ecs.EntityID) LinkComponent {
 type Service interface {
 	Component() ecs.ComponentsArray[Component]
 	Link() ecs.ComponentsArray[LinkComponent]
-	Deploy(DeployEvent)
+
+	Select(SelectEvent)
+	Preview(PreviewEvent)
+	Execute(ExecuteEvent)
 }
 
 //
 
-type DeployEvent struct {
-	// By,
+// Select unit.
+// Add in gui some indicator.
+// Change on click event.
+type SelectEvent struct {
+	By,
+	Blueprint ecs.EntityID
+}
+
+func NewSelectEvent(
+	by,
+	blueprint ecs.EntityID,
+) SelectEvent {
+	return SelectEvent{
+		by,
+		blueprint,
+	}
+}
+
+//
+
+// Select unit.
+// Add in gui some indicator.
+// Perform all checks and costs
+type PreviewEvent struct {
+	By,
+	Blueprint ecs.EntityID
+	Coords grid.Coords
+}
+
+func NewPreviewEvent(
+	by,
+	blueprint ecs.EntityID,
+) PreviewEvent {
+	return PreviewEvent{
+		By:        by,
+		Blueprint: blueprint,
+	}
+}
+
+func (e PreviewEvent) ApplyCoords(coords grid.Coords) any {
+	e.Coords = coords
+	return e
+}
+
+//
+
+// Deploys on coords something if it doesn't collide
+type ExecuteEvent struct {
 	Blueprint ecs.EntityID
 	Coords    grid.Coords
 }
 
-func NewDeployEvent(
-	// by,
+func NewExecuteEvent(
 	blueprint ecs.EntityID,
-	coords grid.Coords,
-) DeployEvent {
-	return DeployEvent{
-		// by,
-		blueprint,
-		coords,
+) ExecuteEvent {
+	return ExecuteEvent{
+		Blueprint: blueprint,
 	}
+}
+
+func (e ExecuteEvent) ApplyCoords(coords grid.Coords) any {
+	e.Coords = coords
+	return e
 }

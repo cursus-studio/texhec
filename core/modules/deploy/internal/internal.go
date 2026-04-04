@@ -24,7 +24,9 @@ func NewService(c ioc.Dic) deploy.Service {
 	s.component = ecs.GetComponentsArray[deploy.Component](s.World)
 	s.link = ecs.GetComponentsArray[deploy.LinkComponent](s.World)
 
-	events.Listen(s.EventsBuilder, s.Deploy)
+	events.Listen(s.EventsBuilder, s.Execute)
+	events.Listen(s.EventsBuilder, s.Preview)
+	events.Listen(s.EventsBuilder, s.Select)
 
 	return s
 }
@@ -32,15 +34,22 @@ func NewService(c ioc.Dic) deploy.Service {
 func (s *service) Component() ecs.ComponentsArray[deploy.Component] { return s.component }
 func (s *service) Link() ecs.ComponentsArray[deploy.LinkComponent]  { return s.link }
 
-func (s *service) Deploy(deploy deploy.DeployEvent) {
-	// perform verification can you deploy by someone
-	// if you cannot than do a flip
-	// if deploy.By ? {
-	//   log warning (this shouldn't be a button)
-	// }
-	// pay and perform everything
-	deployed := s.Prototype.Clone(deploy.Blueprint)
+// perform verification can you deploy by someone
+// if you cannot than do a flip
+// if deploy.By ? {
+//   log warning (this shouldn't be a button)
+// }
+// pay and perform everything
+
+func (s *service) Select(e deploy.SelectEvent) {
+	events.Emit(s.Events, tile.NewSelectEvent(deploy.NewExecuteEvent(e.Blueprint)))
+}
+func (s *service) Preview(e deploy.PreviewEvent) {
+	// ???
+}
+func (s *service) Execute(e deploy.ExecuteEvent) {
+	deployed := s.Prototype.Clone(e.Blueprint)
 	s.Hierarchy.SetParent(deployed, s.Scene.Scene())
 
-	s.Tile.Pos().Set(deployed, tile.NewPos(deploy.Coords.Coords()))
+	s.Tile.Pos().Set(deployed, tile.NewPos(e.Coords.Coords()))
 }

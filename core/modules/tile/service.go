@@ -113,6 +113,20 @@ type Service interface {
 
 //
 
+type ApplyCoordsEvent interface {
+	ApplyCoords(grid.Coords) any
+}
+
+type SelectEvent struct {
+	Selected any
+}
+
+func NewSelectEvent(event any) SelectEvent {
+	return SelectEvent{event}
+}
+
+//
+
 type ClickEvent struct {
 	Grid ecs.EntityID
 	Tile grid.Index

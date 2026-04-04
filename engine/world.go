@@ -11,6 +11,7 @@ import (
 	"engine/modules/hierarchy"
 	"engine/modules/inputs"
 	"engine/modules/layout"
+	"engine/modules/metadata"
 	"engine/modules/netsync"
 	"engine/modules/noise"
 	"engine/modules/prototype"
@@ -42,6 +43,7 @@ type World struct {
 	Hierarchy  hierarchy.Service  `inject:"1"`
 	Inputs     inputs.Service     `inject:"1"`
 	Layout     layout.Service     `inject:"1"`
+	Metadata   metadata.Service   `inject:"1"`
 	NetSync    netsync.Service    `inject:"1"`
 	Noise      noise.Service      `inject:"1"`
 	Prototype  prototype.Service  `inject:"1"`

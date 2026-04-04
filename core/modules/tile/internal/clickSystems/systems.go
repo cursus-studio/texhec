@@ -8,7 +8,6 @@ import (
 	"engine"
 	"engine/modules/assets"
 	"engine/modules/collider"
-	"engine/modules/grid"
 	"engine/modules/groups"
 	"engine/modules/inputs"
 	"engine/modules/render"
@@ -18,6 +17,7 @@ import (
 	"errors"
 	"fmt"
 
+	"github.com/go-gl/mathgl/mgl32"
 	"github.com/ogiusek/events"
 	"github.com/ogiusek/ioc/v2"
 )
@@ -41,14 +41,14 @@ func NewSystems(c ioc.Dic) ecs.SystemRegister {
 }
 
 func (s *system) OnClickEntity(e tile.ClickEntityEvent) {
-	pos, ok := s.Tile.Pos().Get(e.Entity)
-	if !ok {
-		s.Logger.Warn(errors.New("expected entity to have coords component"))
-		return
-	}
 	link, ok := s.Deploy.Link().Get(e.Entity)
 	if !ok {
 		s.Logger.Warn(errors.New("expected entity to have link component"))
+		return
+	}
+	name, ok := s.Metadata.Name().Get(link.Deploy)
+	if !ok {
+		s.Logger.Warn(errors.New("expected link to have name component"))
 		return
 	}
 	deployed, ok := s.Deploy.Component().Get(link.Deploy)
@@ -62,10 +62,16 @@ func (s *system) OnClickEntity(e tile.ClickEntityEvent) {
 		event any
 	}
 	btns := []Button{
-		{fmt.Sprintf("OBJECT POS: %v", pos), nil},
+		{fmt.Sprintf("%v can deploy", name.Name), nil},
 	}
 	for _, deployed := range deployed.Deployable {
-		btns = append(btns, Button{fmt.Sprintf("DEPLOY: %v", deployed), deploy.NewDeployEvent(deployed, grid.NewCoords(3, 3))})
+		name, ok := s.Metadata.Name().Get(deployed)
+		if !ok {
+			s.Logger.Warn(errors.New("expected entity to have name component"))
+			continue
+		}
+		btn := Button{fmt.Sprintf("%v", name.Name), deploy.NewSelectEvent(link.Deploy, deployed)}
+		btns = append(btns, btn)
 	}
 
 	btnAsset, err := assets.GetAsset[render.TextureAsset](s.Assets, s.Definitions.Hud.Btn)
@@ -98,6 +104,10 @@ func (s *system) OnClickEntity(e tile.ClickEntityEvent) {
 			s.Inputs.LeftClick().Set(btnEntity, inputs.NewLeftClick(btn.event))
 			s.Inputs.KeepSelected().Set(btnEntity, inputs.KeepSelectedComponent{})
 			s.Collider.Component().Set(btnEntity, collider.NewCollider(s.Definitions.SquareCollider))
+
+			if btn.event == nil {
+				s.Render.Color().Set(btnEntity, render.NewColor(mgl32.Vec4{0, 0, 0, 0}))
+			}
 		}
 	}
 }

@@ -33,6 +33,7 @@ import (
 	"engine/modules/inputs"
 	"engine/modules/inputs/pkg"
 	"engine/modules/layout/pkg"
+	"engine/modules/metadata/pkg"
 	"engine/modules/netsync/pkg"
 	"engine/modules/noise/pkg"
 	prototypepkg "engine/modules/prototype/pkg"
@@ -207,6 +208,7 @@ func getDic() ioc.Dic {
 		uuidpkg.Package(),
 		batcherpkg.Package(max(1, runtime.NumCPU()-1), time.Second/60),
 		connectionpkg.Package(),
+		metadatapkg.Package(),
 		netsyncpkg.Package(func() netsyncpkg.Config {
 			config := netsyncpkg.NewConfig(
 				150, // max predictions
