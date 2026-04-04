@@ -5,7 +5,33 @@ import (
 	"engine/services/ecs"
 )
 
+type Component struct {
+	Deployable []ecs.EntityID
+}
+
+func NewDeploy(deployable ...ecs.EntityID) Component {
+	return Component{
+		deployable,
+	}
+}
+
+//
+
+type LinkComponent struct {
+	Deploy ecs.EntityID
+}
+
+func NewLink(deploy ecs.EntityID) LinkComponent {
+	return LinkComponent{
+		deploy,
+	}
+}
+
+//
+
 type Service interface {
+	Component() ecs.ComponentsArray[Component]
+	Link() ecs.ComponentsArray[LinkComponent]
 	Deploy(DeployEvent)
 }
 
