@@ -1,6 +1,7 @@
 package tileservice
 
 import (
+	"core/modules/definitions"
 	"core/modules/tile"
 	"engine"
 	"engine/modules/grid"
@@ -33,7 +34,7 @@ func NewService(c ioc.Dic) tile.Service {
 	s.layer = ecs.GetComponentsArray[tile.LayerComponent](s.World)
 
 	s.size.SetEmpty(tile.NewSize(1, 1))
-	s.layer.SetEmpty(tile.NewLayer(1))
+	s.layer.SetEmpty(tile.NewLayer(definitions.TileLayer))
 
 	return s
 }

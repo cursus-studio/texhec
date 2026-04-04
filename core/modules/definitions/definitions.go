@@ -13,7 +13,8 @@ const (
 )
 
 const (
-	ConstructLayer tile.Coord = 2 + iota
+	TileLayer tile.Coord = iota + 1
+	ConstructLayer
 	UnitLayer
 	PlaceholderLayer
 )
