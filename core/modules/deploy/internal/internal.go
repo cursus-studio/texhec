@@ -34,6 +34,7 @@ func NewService(c ioc.Dic) deploy.Service {
 	s.link = ecs.GetComponentsArray[deploy.LinkComponent](s.World)
 	s.placeholder = ecs.GetComponentsArray[placeholder](s.World)
 
+	events.Listen(s.EventsBuilder, s.Unselect)
 	events.Listen(s.EventsBuilder, s.Execute)
 	events.Listen(s.EventsBuilder, s.Preview)
 	events.Listen(s.EventsBuilder, s.Select)
@@ -59,6 +60,11 @@ func (s *service) Deploy(blueprint ecs.EntityID, coords grid.Coords) {
 	events.Emit(s.Events, ui.HideUiEvent{})
 }
 
+func (s *service) Unselect(e ui.HideUiEvent) {
+	for _, entity := range s.placeholder.GetEntities() {
+		s.RemoveEntity(entity)
+	}
+}
 func (s *service) Select(e deploy.SelectEvent) {
 	events.Emit(s.Events, tile.NewSelectEvent(
 		deploy.NewPreviewEvent(e.By, e.Blueprint),
