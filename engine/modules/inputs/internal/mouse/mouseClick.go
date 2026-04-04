@@ -194,7 +194,6 @@ func (s *clickSystem) ListenClick(event sdl.MouseButtonEvent) {
 		}
 
 		if eventToEmit != nil {
-
 			if setter, ok := eventToEmit.(inputs.EventTargetSetter); ok {
 				eventToEmit = setter.SetTarget(*target)
 			}

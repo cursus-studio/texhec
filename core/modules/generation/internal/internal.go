@@ -18,7 +18,6 @@ import (
 	"slices"
 
 	"github.com/go-gl/mathgl/mgl64"
-	"github.com/ogiusek/events"
 	"github.com/ogiusek/ioc/v2"
 )
 
@@ -192,8 +191,8 @@ func (s *service) Generate(c generation.Config) batcher.Task {
 		s.Tile.Grid().Set(c.Entity, gridStateComponent)
 
 		// generates objects
-		events.EmitAny(s.Events, deploy.NewExecuteEvent(s.Definitions.Constructs.Farm).ApplyCoords(grid.NewCoords(1, 1)))
-		events.EmitAny(s.Events, deploy.NewExecuteEvent(s.Definitions.Units.Tank).ApplyCoords(grid.NewCoords(2, 2)))
+		s.Deploy.Deploy(s.Definitions.Constructs.Farm, grid.NewCoords(1, 1))
+		s.Deploy.Deploy(s.Definitions.Units.Tank, grid.NewCoords(2, 2))
 	})
 
 	// task

@@ -33,6 +33,9 @@ type Service interface {
 	Component() ecs.ComponentsArray[Component]
 	Link() ecs.ComponentsArray[LinkComponent]
 
+	// deploy differs from execute event by who deploys.
+	// execute adds costs and everything where deploy just deploys without any costs (its deployed by system)
+	Deploy(blueprint ecs.EntityID, coords grid.Coords)
 	Select(SelectEvent)
 	Preview(PreviewEvent)
 	Execute(ExecuteEvent)
@@ -88,14 +91,17 @@ func (e PreviewEvent) ApplyCoords(coords grid.Coords) any {
 
 // Deploys on coords something if it doesn't collide
 type ExecuteEvent struct {
+	By,
 	Blueprint ecs.EntityID
-	Coords    grid.Coords
+	Coords grid.Coords
 }
 
 func NewExecuteEvent(
+	by,
 	blueprint ecs.EntityID,
 ) ExecuteEvent {
 	return ExecuteEvent{
+		By:        by,
 		Blueprint: blueprint,
 	}
 }

@@ -4,8 +4,6 @@ import (
 	"core/modules/tile"
 	"core/modules/ui"
 	"engine"
-	"engine/modules/groups"
-	"engine/modules/text"
 	"engine/modules/transform"
 	"engine/services/ecs"
 	"fmt"
@@ -21,7 +19,7 @@ type system struct {
 
 	dirtySet      ecs.DirtySet
 	tileSize      transform.SizeComponent
-	selectedEvent any
+	selectedEvent *tile.SelectEvent
 }
 
 func NewSystem(c ioc.Dic) tile.System {
@@ -29,8 +27,8 @@ func NewSystem(c ioc.Dic) tile.System {
 		s := ioc.GetServices[*system](c)
 
 		s.tileSize = s.Tile.GetTileSize()
-
 		s.dirtySet = ecs.NewDirtySet()
+		s.selectedEvent = nil
 
 		s.Tile.Pos().AddDirtySet(s.dirtySet)
 		s.Tile.Size().AddDirtySet(s.dirtySet)
@@ -46,6 +44,7 @@ func NewSystem(c ioc.Dic) tile.System {
 
 		events.Listen(s.EventsBuilder, s.OnUnselect)
 		events.Listen(s.EventsBuilder, s.OnSelect)
+		events.Listen(s.EventsBuilder, s.OnHover)
 		events.Listen(s.EventsBuilder, s.OnClick)
 		return nil
 	})
@@ -85,34 +84,38 @@ func (s *system) OnUnselect(e ui.HideUiEvent) {
 }
 
 func (s *system) OnSelect(e tile.SelectEvent) {
-	s.selectedEvent = e.Selected
+	s.selectedEvent = &e
 }
 
-func (s *system) OnClick(e tile.ClickEvent) {
+func (s *system) OnHover(e tile.HoverEvent) {
+	if s.selectedEvent == nil {
+		return
+	}
 	grid, ok := s.Tile.Grid().Get(e.Grid)
 	if !ok {
 		s.Logger.Warn(fmt.Errorf("grid doesn't exist"))
 		return
 	}
 	coords := grid.GetCoords(e.Tile)
-	if !ok {
-		return
+	if event, ok := s.selectedEvent.HoverEvent.(tile.ApplyCoordsEvent); ok {
+		s.selectedEvent.HoverEvent = event.ApplyCoords(coords)
 	}
-	if s.selectedEvent != nil {
-		if event, ok := s.selectedEvent.(tile.ApplyCoordsEvent); ok {
-			s.selectedEvent = event.ApplyCoords(coords)
-		}
-		events.EmitAny(s.Events, s.selectedEvent)
-		return
-	}
-	for _, p := range s.Ui.Show() {
-		entity := s.NewEntity()
-		s.Hierarchy.SetParent(entity, p)
-		s.Transform.Parent().Set(entity, transform.NewParent(transform.RelativePos|transform.RelativeSizeXYZ))
-		s.Groups.Inherit().Set(entity, groups.InheritGroupsComponent{})
+	events.EmitAny(s.Events, s.selectedEvent.HoverEvent)
+}
 
-		s.Text.Content().Set(entity, text.TextComponent{Text: fmt.Sprintf("TILE: %v", coords)})
-		s.Text.FontSize().Set(entity, text.FontSizeComponent{FontSize: 25})
-		s.Text.Align().Set(entity, text.TextAlignComponent{Vertical: .5, Horizontal: .5})
+func (s *system) OnClick(e tile.ClickEvent) {
+	if s.selectedEvent == nil {
+		s.Ui.Hide()
+		return
 	}
+	grid, ok := s.Tile.Grid().Get(e.Grid)
+	if !ok {
+		s.Logger.Warn(fmt.Errorf("grid doesn't exist"))
+		return
+	}
+	coords := grid.GetCoords(e.Tile)
+	if event, ok := s.selectedEvent.ClickEvent.(tile.ApplyCoordsEvent); ok {
+		s.selectedEvent.ClickEvent = event.ApplyCoords(coords)
+	}
+	events.EmitAny(s.Events, s.selectedEvent.ClickEvent)
 }

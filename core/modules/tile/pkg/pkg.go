@@ -36,7 +36,7 @@ type pkg struct {
 func Package() ioc.Pkg {
 	return pkg{
 		[]ioc.Pkg{
-			gridpkg.Package[tile.ID](tile.NewClickEvent),
+			gridpkg.Package[tile.ID](tile.NewHoverEvent, tile.NewClickEvent),
 			tileservice.Package(),
 			tilerenderer.Package(),
 			prototypepkg.PackageT[tile.Component](),
