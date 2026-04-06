@@ -16,12 +16,9 @@ type orderedBatch struct {
 }
 
 func (b *orderedBatch) Step() (finished bool) {
-	if b.blueprint.Steps == b.index {
-		return true
-	}
 	b.blueprint.Handler(b.index)
 	b.index++
-	return false
+	return b.blueprint.Steps == b.index
 }
 
 func (b *orderedBatch) Steps() int {
