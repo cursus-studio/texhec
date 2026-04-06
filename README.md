@@ -83,9 +83,9 @@ modules/
 └─ `$module_name`/
     ├── internal/       # Defines implementation for `Service` and `System` (if exist in module)
     ├── pkg/            # This exposes `Package` function to register `Service` implementation.
-    │                   # `pkg`, `internal` and `tests` separation allows `modules`
+    │                   # `pkg`, `internal` and `test` separation allows `modules`
     │                   # Decouples the interface definition from the construction logic to allow for flexible dependency wiring
-    ├── tests/          # Defines tests
+    ├── test/           # Defines test
     ├── readme/         # Defines readme
     └── `$interface.go` # There is no strict file rule naming. This defines what module exposes
                         # Expects interface name `Service` so module name and service purpose were related
