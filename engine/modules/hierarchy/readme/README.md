@@ -15,7 +15,7 @@ Instant reaction complicates flow a lot and this has space for improvement.
 $ go test . -bench=. -benchmem
 goos: linux
 goarch: amd64
-pkg: engine/modules/hierarchy/tests
+pkg: engine/modules/hierarchy/test
 cpu: Intel(R) Core(TM) i5-8350U CPU @ 1.70GHz
 BenchmarkChildren_1-8                          	211353626	         5.708 ns/op	       0 B/op	       0 allocs/op
 BenchmarkChildren_10-8                         	204640497	         5.825 ns/op	       0 B/op	       0 allocs/op
