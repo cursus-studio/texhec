@@ -50,6 +50,7 @@ import (
 	"engine/modules/transform/pkg"
 	"engine/modules/transition/pkg"
 	"engine/modules/uuid/pkg"
+	"engine/modules/warmup/pkg"
 	"engine/services/clock"
 	"engine/services/codec"
 	"engine/services/console"
@@ -250,6 +251,7 @@ func getDic() ioc.Dic {
 		layoutpkg.Package(),
 		loadingpkg.Package(),
 		noisepkg.Package(),
+		warmuppkg.Package(),
 
 		// game packages
 		deploypkg.Package(),
