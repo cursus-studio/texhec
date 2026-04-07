@@ -2,6 +2,7 @@ package internal
 
 import (
 	"engine/modules/batcher"
+	"engine/modules/warmup"
 	"engine/services/clock"
 	"engine/services/ecs"
 	"engine/services/frames"
@@ -15,6 +16,7 @@ import (
 type Service struct {
 	EventsBuilder events.Builder `inject:"1"`
 	Clock         clock.Clock    `inject:"1"`
+	WarmUp        warmup.Service `inject:"1"`
 	Logger        logger.Logger  `inject:"1"`
 
 	workers    int
@@ -54,6 +56,9 @@ func (s *Service) Listen(frames.FrameEvent) {
 		return
 	}
 	task := s.tasks[0]
+	if task.Progress() == 0 {
+		s.WarmUp.WarmUp()
+	}
 
 	start := s.Clock.Now()
 	for s.Clock.Now().Sub(start) < s.timeBudget {

@@ -23,6 +23,7 @@ import (
 	"engine/modules/transform"
 	"engine/modules/transition"
 	"engine/modules/uuid"
+	"engine/modules/warmup"
 	"engine/services/clock"
 	"engine/services/ecs"
 	"engine/services/logger"
@@ -55,6 +56,7 @@ type World struct {
 	Transform  transform.Service  `inject:"1"`
 	Transition transition.Service `inject:"1"`
 	UUID       uuid.Service       `inject:"1"`
+	WarmUp     warmup.Service     `inject:"1"`
 
 	Clock  clock.Clock   `inject:"1"`
 	Logger logger.Logger `inject:"1"`

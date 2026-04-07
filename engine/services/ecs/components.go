@@ -58,7 +58,7 @@ type componentsImpl struct {
 func (components *componentsImpl) Components() ComponentsStorage { return components.storage }
 
 func (components *componentsImpl) RemoveEntity(entity EntityID) {
-	for _, arr := range components.storage.arrays {
+	for _, arr := range components.storage.arraySlice {
 		arr.Remove(entity)
 	}
 }
@@ -78,6 +78,7 @@ type arraysSharedInterface interface {
 
 type componentsStorage struct {
 	arrays              map[componentType]arraysSharedInterface // any is *componentsArray[ComponentType]
+	arraySlice          []arraysSharedInterface
 	entities            datastructures.SparseSet[EntityID]
 	onArrayAddListeners map[componentType][]func(arraysSharedInterface)
 }
@@ -87,12 +88,18 @@ type ComponentsStorage *componentsStorage
 func newComponentsStorage(entities datastructures.SparseSet[EntityID]) ComponentsStorage {
 	return &componentsStorage{
 		arrays:              make(map[componentType]arraysSharedInterface),
+		arraySlice:          make([]arraysSharedInterface, 0),
 		entities:            entities,
 		onArrayAddListeners: make(map[componentType][]func(arraysSharedInterface)),
 	}
 }
 
-func GetComponentsArray[Component any](world World) ComponentsArray[Component] {
+type worldInterface interface {
+	componentsInterface
+	entitiesInterface
+}
+
+func GetComponentsArray[Component any](world worldInterface) ComponentsArray[Component] {
 	components := world.Components()
 	var zero Component
 	componentType := getComponentType(zero)
@@ -102,6 +109,7 @@ func GetComponentsArray[Component any](world World) ComponentsArray[Component] {
 	}
 	array := newComponentsArray[Component](world)
 	components.arrays[componentType] = array
+	components.arraySlice = append(components.arraySlice, array)
 	//
 	listeners := components.onArrayAddListeners[componentType]
 	for _, listener := range listeners {
