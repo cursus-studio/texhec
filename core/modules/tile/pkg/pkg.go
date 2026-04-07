@@ -16,6 +16,7 @@ import (
 	"engine/modules/inputs"
 	prototypepkg "engine/modules/prototype/pkg"
 	"engine/modules/registry"
+	relationpkg "engine/modules/relation/pkg"
 	"engine/modules/render"
 	transitionpkg "engine/modules/transition/pkg"
 	"engine/services/codec"
@@ -38,6 +39,21 @@ func Package() ioc.Pkg {
 		[]ioc.Pkg{
 			gridpkg.Package[tile.ID](tile.NewHoverEvent),
 			gridpkg.Package[tile.Obstruction](nil),
+			relationpkg.SpatialRelationPackage(
+				func(w ecs.World) ecs.DirtySet {
+					dirtySet := ecs.NewDirtySet()
+					ecs.GetComponentsArray[tile.TypeComponent](w).AddDirtySet(dirtySet)
+					return dirtySet
+				},
+				func(w ecs.World) func(entity ecs.EntityID) (tile.ID, bool) {
+					componentArray := ecs.GetComponentsArray[tile.TypeComponent](w)
+					return func(entity ecs.EntityID) (tile.ID, bool) {
+						comp, ok := componentArray.Get(entity)
+						return comp.ID, ok
+					}
+				},
+				func(index tile.ID) uint32 { return uint32(index) },
+			),
 			tileservice.Package(),
 			tilerenderer.Package(),
 			prototypepkg.PackageT[tile.TypeComponent](),
@@ -89,6 +105,7 @@ func (pkg pkg) Register(b ioc.Builder) {
 			counter++
 			tileService := ioc.Get[tile.Service](c)
 			tileService.TileType().Set(entity, tile.NewTileType(counter))
+			tileService.Obstruction().Set(entity, tile.NewObstruction(definitions.WaterObstruction))
 		})
 	})
 
@@ -136,6 +153,7 @@ func (pkg pkg) Register(b ioc.Builder) {
 		b.Register("unit", func(entity ecs.EntityID, structTagValue string) {
 			world := ioc.GetServices[World](c)
 			world.Tile.Layer().Set(entity, tile.NewLayer(definitions.UnitLayer))
+			world.Tile.Obstruction().Set(entity, tile.NewObstruction(definitions.LowlandsObstruction))
 
 			world.Render.Mesh().Set(entity, render.NewMesh(world.Definitions.SquareMesh))
 			world.Render.Texture().Set(entity, render.NewTexture(entity))
@@ -148,6 +166,7 @@ func (pkg pkg) Register(b ioc.Builder) {
 		b.Register("construct", func(entity ecs.EntityID, structTagValue string) {
 			world := ioc.GetServices[World](c)
 			world.Tile.Layer().Set(entity, tile.NewLayer(definitions.ConstructLayer))
+			world.Tile.Obstruction().Set(entity, tile.NewObstruction(definitions.LowlandsObstruction))
 
 			world.Render.Mesh().Set(entity, render.NewMesh(world.Definitions.SquareMesh))
 			world.Render.Texture().Set(entity, render.NewTexture(entity))

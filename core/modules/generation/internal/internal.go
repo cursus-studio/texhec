@@ -76,8 +76,10 @@ func (s *service) Chances() (*Config, []tile.ID) {
 
 func (s *service) Generate(c generation.Config) batcher.Task {
 	config, tileTypes := s.Chances()
-	gridStateComponent := tile.NewGrid(c.Size.Coords())
-	gridModifiedComponent := tile.NewGrid(c.Size.Coords())
+	gridStateComponent := tile.NewTileGrid(c.Size.Coords())
+	gridModifiedComponent := tile.NewTileGrid(c.Size.Coords())
+
+	obstructGridComponent := tile.NewObstructGrid(c.Size.Coords())
 
 	jobs := int(gridStateComponent.GetLastIndex()) / config.tilesPerJob
 
@@ -177,6 +179,19 @@ func (s *service) Generate(c generation.Config) batcher.Task {
 		}
 	})
 
+	obstructBatch := batcher.NewBatch(jobs, func(i int) {
+		for j := range config.tilesPerJob {
+			gridI := grid.Index(i*config.tilesPerJob + j)
+			tileType := gridStateComponent.GetTile(gridI)
+			entity, ok := s.Tile.GetTileType(tileType)
+			if !ok {
+				continue
+			}
+			obstruction, _ := s.Tile.Obstruction().Get(entity)
+			obstructGridComponent.SetTile(gridI, obstruction.Obstruction)
+		}
+	})
+
 	// flush batch
 	flushBatch := batcher.NewBatch(1, func(i int) {
 		size := s.Tile.GetTileSize()
@@ -189,6 +204,7 @@ func (s *service) Generate(c generation.Config) batcher.Task {
 		s.Collider.Component().Set(c.Entity, collider.NewCollider(s.Definitions.SquareCollider))
 		s.Inputs.Stack().Set(c.Entity, inputs.StackComponent{})
 		s.Tile.TileGrid().Set(c.Entity, gridStateComponent)
+		s.Tile.ObstructionGrid().Set(c.Entity, obstructGridComponent)
 
 		// generates objects
 		s.Deploy.Deploy(s.Definitions.Constructs.Farm, grid.NewCoords(1, 1))
@@ -204,6 +220,7 @@ func (s *service) Generate(c generation.Config) batcher.Task {
 		task.AddConcurrentBatch(smoothingBatch)
 		task.AddConcurrentBatch(applyBatch)
 	}
+	task.AddConcurrentBatch(obstructBatch)
 	task.AddOrderedBatch(flushBatch)
 
 	return task.Build()

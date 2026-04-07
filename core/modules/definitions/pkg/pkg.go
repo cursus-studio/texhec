@@ -3,6 +3,7 @@ package definitionspkg
 import (
 	"core/modules/definitions"
 	"core/modules/deploy"
+	"core/modules/tile"
 	"engine"
 	"engine/modules/assets"
 	"engine/modules/collider"
@@ -73,6 +74,7 @@ func (pkg) Register(b ioc.Builder) {
 
 	type World struct {
 		engine.World `inject:"1"`
+		Tile         tile.Service   `inject:"1"`
 		Deploy       deploy.Service `inject:"1"`
 	}
 
@@ -91,6 +93,7 @@ func (pkg) Register(b ioc.Builder) {
 			world.Deploy.Component().Set(def.Constructs.Farm, deploy.NewDeploy(def.Units.Tank, def.Constructs.Farm))
 			world.Deploy.Link().Set(def.Constructs.Farm, deploy.NewLink(def.Constructs.Farm))
 		}
+
 		return def
 	})
 

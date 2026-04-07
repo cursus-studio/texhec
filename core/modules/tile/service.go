@@ -17,7 +17,7 @@ type SystemRenderer ecs.SystemRegister
 
 type ID uint8
 
-func NewGrid(w, h grid.Coord) grid.SquareGridComponent[ID] {
+func NewTileGrid(w, h grid.Coord) grid.SquareGridComponent[ID] {
 	return grid.NewSquareGrid[ID](w, h)
 }
 
@@ -104,9 +104,26 @@ func (e *RotComponent) Quat() mgl32.Quat {
 // mask of ways in which tile is obstructed
 type Obstruction uint8
 
+func NewObstructGrid(w, h grid.Coord) grid.SquareGridComponent[Obstruction] {
+	return grid.NewSquareGrid[Obstruction](w, h)
+}
+
 // defines how entity or tile obstruct
 type ObstructionComponent struct {
 	Obstruction Obstruction
+}
+
+func NewObstruction(obstruction Obstruction) ObstructionComponent {
+	return ObstructionComponent{obstruction}
+}
+
+//
+
+// adding and removing deployed component modified obstruction component
+type DeployedComponent struct{}
+
+func NewDeployed() DeployedComponent {
+	return DeployedComponent{}
 }
 
 //
@@ -115,11 +132,14 @@ type Service interface {
 	TileType() ecs.ComponentsArray[TypeComponent]
 	TileGrid() ecs.ComponentsArray[grid.SquareGridComponent[ID]]
 	ObstructionGrid() ecs.ComponentsArray[grid.SquareGridComponent[Obstruction]]
+	GetTileType(ID) (ecs.EntityID, bool)
 
 	Pos() ecs.ComponentsArray[PosComponent]
 	Size() ecs.ComponentsArray[SizeComponent]
 	Rot() ecs.ComponentsArray[RotComponent]
 	Layer() ecs.ComponentsArray[LayerComponent]
+	Obstruction() ecs.ComponentsArray[ObstructionComponent]
+	Deployed() ecs.ComponentsArray[DeployedComponent]
 
 	GetTileSize() transform.SizeComponent
 }

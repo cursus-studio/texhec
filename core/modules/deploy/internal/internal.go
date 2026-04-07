@@ -10,6 +10,7 @@ import (
 	"engine/modules/inputs"
 	"engine/modules/render"
 	"engine/services/ecs"
+	"errors"
 
 	"github.com/go-gl/mathgl/mgl32"
 	"github.com/ogiusek/events"
@@ -53,9 +54,26 @@ func (s *service) Deploy(blueprint ecs.EntityID, coords grid.Coords) {
 	// }
 	// do not pay because this is performed by system
 
+	obstructionGridEntity := s.Tile.ObstructionGrid().GetEntities()[0]
+	obstructed, ok := s.Tile.ObstructionGrid().Get(obstructionGridEntity)
+	if !ok {
+		s.Logger.Warn(errors.New("didn't found obstruction grid"))
+		return
+	}
+
+	blueprintObstruction, _ := s.Tile.Obstruction().Get(blueprint)
+	index, ok := obstructed.GetIndex(coords.Coords())
+	if !ok {
+		s.Logger.Warn(errors.New(""))
+		return
+	}
+	obstructed.SetTile(index, obstructed.GetTile(index)|blueprintObstruction.Obstruction)
+	s.Tile.ObstructionGrid().Set(obstructionGridEntity, obstructed)
+
 	deployed := s.Prototype.Clone(blueprint)
 	s.Hierarchy.SetParent(deployed, s.Scene.Scene())
 
+	s.Tile.Deployed().Set(deployed, tile.NewDeployed())
 	s.Tile.Pos().Set(deployed, tile.NewPos(coords.Coords()))
 	events.Emit(s.Events, ui.HideUiEvent{})
 }
@@ -66,10 +84,7 @@ func (s *service) Unselect(e ui.HideUiEvent) {
 	}
 }
 func (s *service) Select(e deploy.SelectEvent) {
-	events.Emit(s.Events, tile.NewSelectEvent(
-		deploy.NewPreviewEvent(e.By, e.Blueprint),
-		// deploy.NewExecuteEvent(e.By, e.Blueprint),
-	))
+	events.Emit(s.Events, tile.NewSelectEvent(deploy.NewPreviewEvent(e.By, e.Blueprint)))
 }
 func (s *service) Preview(e deploy.PreviewEvent) {
 	for _, entity := range s.placeholder.GetEntities() {
@@ -80,14 +95,31 @@ func (s *service) Preview(e deploy.PreviewEvent) {
 
 	s.Tile.Pos().Set(placeholderEntity, tile.NewPos(e.Coords.Coords()))
 	s.placeholder.Set(placeholderEntity, placeholder{})
-	canPlace := true
-	if canPlace {
+
+	{ // check can place and place
+		obstructionGridEntity := s.Tile.ObstructionGrid().GetEntities()[0]
+		obstructed, ok := s.Tile.ObstructionGrid().Get(obstructionGridEntity)
+		if !ok {
+			goto cannotPlace
+		}
+		index, ok := obstructed.GetIndex(e.Coords.Coords())
+		if !ok {
+			goto cannotPlace
+		}
+		blueprintObstruction, _ := s.Tile.Obstruction().Get(e.Blueprint)
+		coordsObstruction := obstructed.GetTile(index)
+		if blueprintObstruction.Obstruction&coordsObstruction != 0 {
+			goto cannotPlace
+		}
+		// obstructed.SetTile(index, blueprintObstruction.Obstruction|coordsObstruction)
+		s.Tile.ObstructionGrid().Set(obstructionGridEntity, obstructed)
 		s.Render.Color().Set(placeholderEntity, render.NewColor(mgl32.Vec4{0, 1, 0, 1}))
 		s.Inputs.LeftClick().Set(placeholderEntity, inputs.NewLeftClick(deploy.NewExecuteEvent(e.By, e.Blueprint).ApplyCoords(e.Coords)))
 		s.Tile.Layer().Set(placeholderEntity, tile.NewLayer(definitions.PlaceholderLayer))
-	} else {
-		s.Render.Color().Set(placeholderEntity, render.NewColor(mgl32.Vec4{1, 0, 0, 1}))
+		return
 	}
+cannotPlace:
+	s.Render.Color().Set(placeholderEntity, render.NewColor(mgl32.Vec4{1, 0, 0, 1}))
 }
 func (s *service) Execute(e deploy.ExecuteEvent) {
 	for _, entity := range s.placeholder.GetEntities() {
@@ -100,9 +132,26 @@ func (s *service) Execute(e deploy.ExecuteEvent) {
 	// }
 	// pay and perform everything
 
+	obstructionGridEntity := s.Tile.ObstructionGrid().GetEntities()[0]
+	obstructed, ok := s.Tile.ObstructionGrid().Get(obstructionGridEntity)
+	if !ok {
+		s.Logger.Warn(errors.New("didn't found obstruction grid"))
+		return
+	}
+
+	blueprintObstruction, _ := s.Tile.Obstruction().Get(e.Blueprint)
+	index, ok := obstructed.GetIndex(e.Coords.Coords())
+	if !ok {
+		s.Logger.Warn(errors.New(""))
+		return
+	}
+	obstructed.SetTile(index, obstructed.GetTile(index)|blueprintObstruction.Obstruction)
+	s.Tile.ObstructionGrid().Set(obstructionGridEntity, obstructed)
+
 	deployed := s.Prototype.Clone(e.Blueprint)
 	s.Hierarchy.SetParent(deployed, s.Scene.Scene())
 
+	s.Tile.Deployed().Set(deployed, tile.NewDeployed())
 	s.Tile.Pos().Set(deployed, tile.NewPos(e.Coords.Coords()))
 	events.Emit(s.Events, ui.HideUiEvent{})
 }
