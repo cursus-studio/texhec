@@ -149,25 +149,21 @@ func (pkg pkg) Register(b ioc.Builder) {
 			Tile         tile.Service        `inject:"1"`
 			Definitions  definitions.BuiltIn `inject:"1"`
 		}
-		objectShared := func(world World, entity ecs.EntityID) {
-			world.Render.Mesh().Set(entity, render.NewMesh(world.Definitions.SquareMesh))
-			world.Render.Texture().Set(entity, render.NewTexture(entity))
-			world.Groups.Component().Set(entity, groups.EmptyGroups().Ptr().Enable(definitions.GameGroup).Val())
+		objectShared := func(layer tile.Coord) func(entity ecs.EntityID, _ string) {
+			return func(entity ecs.EntityID, _ string) {
+				world := ioc.GetServices[World](c)
+				world.Tile.Layer().Set(entity, tile.NewLayer(layer))
+				world.Render.Mesh().Set(entity, render.NewMesh(world.Definitions.SquareMesh))
+				world.Render.Texture().Set(entity, render.NewTexture(entity))
+				world.Groups.Component().Set(entity, groups.EmptyGroups().Ptr().Enable(definitions.GameGroup).Val())
 
-			world.Collider.Component().Set(entity, collider.NewCollider(world.Definitions.SquareCollider))
-			world.Inputs.LeftClick().Set(entity, inputs.NewLeftClick(tile.NewClickEntityEvent()))
-			world.Inputs.Stack().Set(entity, inputs.StackComponent{})
+				world.Collider.Component().Set(entity, collider.NewCollider(world.Definitions.SquareCollider))
+				world.Inputs.LeftClick().Set(entity, inputs.NewLeftClick(tile.NewClickEntityEvent()))
+				world.Inputs.Stack().Set(entity, inputs.StackComponent{})
+			}
 		}
-		b.Register("unit", func(entity ecs.EntityID, structTagValue string) {
-			world := ioc.GetServices[World](c)
-			world.Tile.Layer().Set(entity, tile.NewLayer(definitions.UnitLayer))
-			objectShared(world, entity)
-		})
-		b.Register("construct", func(entity ecs.EntityID, structTagValue string) {
-			world := ioc.GetServices[World](c)
-			world.Tile.Layer().Set(entity, tile.NewLayer(definitions.ConstructLayer))
-			objectShared(world, entity)
-		})
+		b.Register("unit", objectShared(definitions.UnitLayer))
+		b.Register("construct", objectShared(definitions.ConstructLayer))
 		b.Register("obstruction", func(entity ecs.EntityID, structTagValue string) {
 			world := ioc.GetServices[World](c)
 			var obstruction tile.Obstruction
