@@ -10,7 +10,6 @@ import (
 	"engine/modules/inputs"
 	"engine/modules/render"
 	"engine/services/ecs"
-	"errors"
 
 	"github.com/go-gl/mathgl/mgl32"
 	"github.com/ogiusek/events"
@@ -54,22 +53,6 @@ func (s *service) Deploy(blueprint ecs.EntityID, coords grid.Coords) {
 	// }
 	// do not pay because this is performed by system
 
-	obstructionGridEntity := s.Tile.ObstructionGrid().GetEntities()[0]
-	obstructed, ok := s.Tile.ObstructionGrid().Get(obstructionGridEntity)
-	if !ok {
-		s.Logger.Warn(errors.New("didn't found obstruction grid"))
-		return
-	}
-
-	blueprintObstruction, _ := s.Tile.Obstruction().Get(blueprint)
-	index, ok := obstructed.GetIndex(coords.Coords())
-	if !ok {
-		s.Logger.Warn(errors.New(""))
-		return
-	}
-	obstructed.SetTile(index, obstructed.GetTile(index)|blueprintObstruction.Obstruction)
-	s.Tile.ObstructionGrid().Set(obstructionGridEntity, obstructed)
-
 	deployed := s.Prototype.Clone(blueprint)
 	s.Hierarchy.SetParent(deployed, s.Scene.Scene())
 
@@ -111,7 +94,6 @@ func (s *service) Preview(e deploy.PreviewEvent) {
 		if blueprintObstruction.Obstruction&coordsObstruction != 0 {
 			goto cannotPlace
 		}
-		// obstructed.SetTile(index, blueprintObstruction.Obstruction|coordsObstruction)
 		s.Tile.ObstructionGrid().Set(obstructionGridEntity, obstructed)
 		s.Render.Color().Set(placeholderEntity, render.NewColor(mgl32.Vec4{0, 1, 0, 1}))
 		s.Inputs.LeftClick().Set(placeholderEntity, inputs.NewLeftClick(deploy.NewExecuteEvent(e.By, e.Blueprint).ApplyCoords(e.Coords)))
@@ -131,22 +113,6 @@ func (s *service) Execute(e deploy.ExecuteEvent) {
 	//   log warning (this shouldn't be a button)
 	// }
 	// pay and perform everything
-
-	obstructionGridEntity := s.Tile.ObstructionGrid().GetEntities()[0]
-	obstructed, ok := s.Tile.ObstructionGrid().Get(obstructionGridEntity)
-	if !ok {
-		s.Logger.Warn(errors.New("didn't found obstruction grid"))
-		return
-	}
-
-	blueprintObstruction, _ := s.Tile.Obstruction().Get(e.Blueprint)
-	index, ok := obstructed.GetIndex(e.Coords.Coords())
-	if !ok {
-		s.Logger.Warn(errors.New(""))
-		return
-	}
-	obstructed.SetTile(index, obstructed.GetTile(index)|blueprintObstruction.Obstruction)
-	s.Tile.ObstructionGrid().Set(obstructionGridEntity, obstructed)
 
 	deployed := s.Prototype.Clone(e.Blueprint)
 	s.Hierarchy.SetParent(deployed, s.Scene.Scene())

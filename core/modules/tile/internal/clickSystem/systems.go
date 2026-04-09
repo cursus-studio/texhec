@@ -1,4 +1,4 @@
-package clicksystems
+package clicksystem
 
 import (
 	"core/modules/definitions"
@@ -30,7 +30,7 @@ type system struct {
 	Ui           ui.Service              `inject:"1"`
 }
 
-func NewSystems(c ioc.Dic) ecs.SystemRegister {
+func NewSystem(c ioc.Dic) ecs.SystemRegister {
 	return ecs.NewSystemRegister(func() error {
 		s := ioc.GetServices[*system](c)
 

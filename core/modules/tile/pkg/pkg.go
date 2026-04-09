@@ -4,7 +4,8 @@ import (
 	"bytes"
 	"core/modules/definitions"
 	"core/modules/tile"
-	clicksystems "core/modules/tile/internal/clickSystems"
+	clicksystem "core/modules/tile/internal/clickSystem"
+	obstructionsystem "core/modules/tile/internal/obstructionSystem"
 	"core/modules/tile/internal/tilerenderer"
 	"core/modules/tile/internal/tileservice"
 	"core/modules/tile/internal/tileui"
@@ -61,6 +62,7 @@ func Package() ioc.Pkg {
 			prototypepkg.PackageT[tile.SizeComponent](),
 			prototypepkg.PackageT[tile.RotComponent](),
 			prototypepkg.PackageT[tile.LayerComponent](),
+			prototypepkg.PackageT[tile.ObstructionComponent](),
 		},
 	}
 }
@@ -87,7 +89,8 @@ func (pkg pkg) Register(b ioc.Builder) {
 	ioc.RegisterSingleton(b, func(c ioc.Dic) tile.System {
 		systems := []tile.System{
 			tileui.NewSystem(c),
-			clicksystems.NewSystems(c),
+			clicksystem.NewSystem(c),
+			obstructionsystem.NewSystem(c),
 		}
 		return ecs.NewSystemRegister(func() error {
 			for _, system := range systems {
