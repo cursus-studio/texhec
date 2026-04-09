@@ -18,6 +18,10 @@ type system struct {
 	config        record.Config
 	recordingID   record.RecordingID
 	dirtyEntities ecs.DirtySet
+
+	posGetter         record.ComponentGetter[tile.PosComponent]
+	obstructionGetter record.ComponentGetter[tile.ObstructionComponent]
+	deployedGetter    record.ComponentGetter[tile.DeployedComponent]
 }
 
 func NewSystem(c ioc.Dic) tile.System {
@@ -27,9 +31,9 @@ func NewSystem(c ioc.Dic) tile.System {
 		s.config = record.NewConfig()
 		s.dirtyEntities = ecs.NewDirtySet()
 
-		record.AddToConfig[tile.PosComponent](s.config)
-		record.AddToConfig[tile.ObstructionComponent](s.config)
-		record.AddToConfig[tile.DeployedComponent](s.config)
+		s.posGetter = record.AddToConfig[tile.PosComponent](s.config)
+		s.obstructionGetter = record.AddToConfig[tile.ObstructionComponent](s.config)
+		s.deployedGetter = record.AddToConfig[tile.DeployedComponent](s.config)
 
 		s.Tile.Pos().AddDirtySet(s.dirtyEntities)
 		s.Tile.Obstruction().AddDirtySet(s.dirtyEntities)
@@ -75,21 +79,33 @@ func (s *system) BeforeGet() {
 		goto cleanup
 	}
 
+	// remove old positions
 	for _, entity := range recording.Entities.GetIndices() {
-		if components, ok := recording.Entities.Get(entity); ok &&
-			len(components) != 0 &&
-			components[0] != nil &&
-			components[1] != nil &&
-			components[2] != nil {
-			pos := components[0].(tile.PosComponent)
-			obstruction := components[1].(tile.ObstructionComponent)
-			index, ok := obstructionGrid.GetIndex(grid.Coord(pos.X), grid.Coord(pos.Y))
-			if !ok {
-				s.Logger.Warn(errors.New("invalid position"))
-			} else {
-				obstructionGrid.SetTile(index, obstructionGrid.GetTile(index)&^obstruction.Obstruction)
-			}
+		components, ok := recording.Entities.Get(entity)
+		if !ok {
+			continue
 		}
+		pos, ok := s.posGetter(components)
+		if !ok {
+			continue
+		}
+		obstruction, ok := s.obstructionGetter(components)
+		if !ok {
+			continue
+		}
+		if _, ok := s.deployedGetter(components); !ok {
+			continue
+		}
+		index, ok := obstructionGrid.GetIndex(grid.Coord(pos.X), grid.Coord(pos.Y))
+		if !ok {
+			s.Logger.Warn(errors.New("invalid position"))
+			continue
+		}
+		obstructionGrid.SetTile(index, obstructionGrid.GetTile(index)&^obstruction.Obstruction)
+	}
+
+	// add new positions
+	for _, entity := range recording.Entities.GetIndices() {
 		if _, ok := s.Tile.Deployed().Get(entity); !ok {
 			continue
 		}
