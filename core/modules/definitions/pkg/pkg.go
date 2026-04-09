@@ -2,6 +2,8 @@ package definitionspkg
 
 import (
 	"core/modules/definitions"
+	"core/modules/deploy"
+	"core/modules/tile"
 	"engine"
 	"engine/modules/assets"
 	"engine/modules/collider"
@@ -63,13 +65,36 @@ func (pkg) Register(b ioc.Builder) {
 		})
 	})
 
-	// register assets
-	ioc.RegisterSingleton(b, func(c ioc.Dic) definitions.Definitions {
+	ioc.RegisterSingleton(b, func(c ioc.Dic) definitions.BuiltIn {
 		world := ioc.GetServices[engine.World](c)
-
-		gameAssets, err := registry.GetRegistry[definitions.Definitions](world.Registry)
+		def, err := registry.GetRegistry[definitions.BuiltIn](world.Registry)
 		world.Logger.Warn(err)
-		return gameAssets
+		return def
+	})
+
+	type World struct {
+		engine.World `inject:"1"`
+		Tile         tile.Service   `inject:"1"`
+		Deploy       deploy.Service `inject:"1"`
+	}
+
+	ioc.RegisterSingleton(b, func(c ioc.Dic) definitions.Definitions {
+		world := ioc.GetServices[World](c)
+		def, err := registry.GetRegistry[definitions.Definitions](world.Registry)
+		world.Logger.Warn(err)
+
+		def.BuiltIn = ioc.Get[definitions.BuiltIn](c)
+
+		{
+			world.Deploy.Component().Set(def.Units.Tank, deploy.NewDeploy(def.Units.Tank, def.Constructs.Farm))
+			world.Deploy.Link().Set(def.Units.Tank, deploy.NewLink(def.Units.Tank))
+		}
+		{
+			world.Deploy.Component().Set(def.Constructs.Farm, deploy.NewDeploy(def.Units.Tank, def.Constructs.Farm))
+			world.Deploy.Link().Set(def.Constructs.Farm, deploy.NewLink(def.Constructs.Farm))
+		}
+
+		return def
 	})
 
 	//

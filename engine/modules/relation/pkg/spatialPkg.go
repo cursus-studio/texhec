@@ -3,8 +3,10 @@ package relationpkg
 import (
 	"engine/modules/relation"
 	"engine/modules/relation/internal/onetokey"
+	"engine/modules/warmup"
 	"engine/services/ecs"
 
+	"github.com/ogiusek/events"
 	"github.com/ogiusek/ioc/v2"
 )
 
@@ -35,5 +37,13 @@ func (pkg spatialRelationPkg[IndexType]) Register(b ioc.Builder) {
 			pkg.componentIndex(w),
 			pkg.indexNumber,
 		)
+	})
+
+	ioc.WrapService(b, func(c ioc.Dic, b events.Builder) {
+		r := ioc.Get[relation.Service[IndexType]](c)
+		events.Listen(b, func(warmup.Event) {
+			var i IndexType
+			r.Get(i)
+		})
 	})
 }

@@ -17,16 +17,18 @@ type SystemRenderer ecs.SystemRegister
 
 type ID uint8
 
-func NewGrid(w, h grid.Coord) grid.SquareGridComponent[ID] {
+func NewTileGrid(w, h grid.Coord) grid.SquareGridComponent[ID] {
 	return grid.NewSquareGrid[ID](w, h)
 }
 
-type Component struct {
+//
+
+type TypeComponent struct {
 	ID ID
 }
 
-func NewTile(id ID) Component {
-	return Component{id}
+func NewTileType(id ID) TypeComponent {
+	return TypeComponent{id}
 }
 
 //
@@ -99,46 +101,88 @@ func (e *RotComponent) Quat() mgl32.Quat {
 
 //
 
+// mask of ways in which tile is obstructed
+type Obstruction uint8
+
+func NewObstructGrid(w, h grid.Coord) grid.SquareGridComponent[Obstruction] {
+	return grid.NewSquareGrid[Obstruction](w, h)
+}
+
+// defines how entity or tile obstruct
+type ObstructionComponent struct {
+	Obstruction Obstruction
+}
+
+func NewObstruction(obstruction Obstruction) ObstructionComponent {
+	return ObstructionComponent{obstruction}
+}
+
+//
+
+// adding and removing deployed component modified obstruction component
+type DeployedComponent struct{}
+
+func NewDeployed() DeployedComponent {
+	return DeployedComponent{}
+}
+
+//
+
 type Service interface {
-	Tile() ecs.ComponentsArray[Component]
-	Grid() ecs.ComponentsArray[grid.SquareGridComponent[ID]]
+	TileType() ecs.ComponentsArray[TypeComponent]
+	TileGrid() ecs.ComponentsArray[grid.SquareGridComponent[ID]]
+	ObstructionGrid() ecs.ComponentsArray[grid.SquareGridComponent[Obstruction]]
+	GetTileType(ID) (ecs.EntityID, bool)
 
 	Pos() ecs.ComponentsArray[PosComponent]
 	Size() ecs.ComponentsArray[SizeComponent]
 	Rot() ecs.ComponentsArray[RotComponent]
 	Layer() ecs.ComponentsArray[LayerComponent]
+	Obstruction() ecs.ComponentsArray[ObstructionComponent]
+	Deployed() ecs.ComponentsArray[DeployedComponent]
 
 	GetTileSize() transform.SizeComponent
-
-	Unit(entity, blueprint ecs.EntityID)
-	Construct(entity, blueprint ecs.EntityID)
 }
 
 //
 
-type ClickEvent struct {
+type ApplyCoordsEvent interface {
+	ApplyCoords(grid.Coords) any
+}
+
+type SelectEvent struct {
+	HoverEvent any
+}
+
+func NewSelectEvent(hoverEvent any) SelectEvent {
+	return SelectEvent{hoverEvent}
+}
+
+//
+
+type HoverEvent struct {
 	Grid ecs.EntityID
 	Tile grid.Index
 }
 
-func NewClickEvent(
+func NewHoverEvent(
 	grid ecs.EntityID,
 	tile grid.Index,
 ) any {
-	return ClickEvent{grid, tile}
+	return HoverEvent{grid, tile}
 }
 
 //
 
-type ClickObjectEvent struct {
-	Unit ecs.EntityID
+type ClickEntityEvent struct {
+	Entity ecs.EntityID
 }
 
-func NewClickObjectEvent() ClickObjectEvent {
-	return ClickObjectEvent{}
+func NewClickEntityEvent() ClickEntityEvent {
+	return ClickEntityEvent{}
 }
 
-func (e ClickObjectEvent) ApplyEntity(entity ecs.EntityID) any {
-	e.Unit = entity
+func (e ClickEntityEvent) ApplyEntity(entity ecs.EntityID) any {
+	e.Entity = entity
 	return e
 }

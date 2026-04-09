@@ -5,6 +5,7 @@ package ecs
 type World interface {
 	entitiesInterface
 	componentsInterface
+	WarmUp()
 }
 
 //
@@ -24,23 +25,29 @@ func NewWorld() World {
 	}
 }
 
-func (world world) NewEntity() EntityID {
+func (world *world) NewEntity() EntityID {
 	entity := world.entitiesInterface.NewEntity()
 	return entity
 }
 
-func (world world) RemoveEntity(entity EntityID) {
+func (world *world) RemoveEntity(entity EntityID) {
 	world.entitiesInterface.RemoveEntity(entity)
 
-	for _, arr := range world.storage.arrays {
+	for _, arr := range world.storage.arraySlice {
 		arr.Remove(entity)
 	}
 }
 
-func (world world) GetEntities() []EntityID {
+func (world *world) GetEntities() []EntityID {
 	return world.entitiesInterface.GetEntities()
 }
 
-func (world world) EntityExists(entity EntityID) bool {
+func (world *world) EntityExists(entity EntityID) bool {
 	return world.entitiesInterface.EntityExists(entity)
+}
+
+func (world *world) WarmUp() {
+	for _, arr := range world.storage.arraySlice {
+		arr.GetEntities()
+	}
 }

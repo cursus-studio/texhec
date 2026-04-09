@@ -12,15 +12,15 @@ import (
 )
 
 type pkg[Tile grid.TileConstraint] struct {
-	indexEvent func(ecs.EntityID, grid.Index) any
+	hoverEvent func(ecs.EntityID, grid.Index) any
 }
 
 // index event can be nil if layer has no collider
 func Package[Tile grid.TileConstraint](
-	indexEvent func(ecs.EntityID, grid.Index) any,
+	hoverEvent func(ecs.EntityID, grid.Index) any,
 ) ioc.Pkg {
 	return pkg[Tile]{
-		indexEvent,
+		hoverEvent,
 	}
 }
 
@@ -35,13 +35,14 @@ func (pkg pkg[Tile]) Register(b ioc.Builder) {
 			Register(grid.SquareGridComponent[Tile]{})
 	})
 
+	if pkg.hoverEvent == nil {
+		return
+	}
 	ioc.WrapService(b, func(c ioc.Dic, collider collider.Service) {
 		policy := gridcollider.NewColliderWithPolicy[Tile](
 			c,
-			pkg.indexEvent,
+			pkg.hoverEvent,
 		)
-		if policy != nil {
-			collider.AddRayFallThroughPolicy(policy)
-		}
+		collider.AddRayFallThroughPolicy(policy)
 	})
 }

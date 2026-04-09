@@ -1,4 +1,25 @@
 # TEXHEC
+## Table of contents
+Currently This readme in mainly for recruitment.\
+In the future there will be separate readmes for:
+- players
+- recruiters
+- contributors
+### General
+- [What is TEXHEC ? (for players)](#answer-for-interested-players)
+- [What is TEXHEC ? (for recruiters)](#technical-answer)
+- [Why golang](#why-golang)
+- [Dependencies](#dependencies)
+- [Module vs Service](#module-vs-service)
+- [Module structure](#module-structure)
+- [Module readme schema](#module-readme-schema)
+- [Engine](#engine)
+- [Technical challenges](#technical-challenges)
+- [Graphics](#graphics)
+- [How to run ?](#how-to-run-)
+- [Contribution](#contribution)
+- [License](#license)
+
 ## What is TEXHEC ?
 
 ### Answer for interested players
@@ -17,8 +38,9 @@ Everything is under player control where he has to find order in endless chaos a
 ### Technical answer
 
 TEXHEC is a vision **RTS** (real time strategy) game which currently is being brought to life.\
+Only point of TEXHEC is scale from performance perspective and programmer productivity perspective.\
 On current stage of TEXHEC i wrote **dozens** of **unique** **modules** from every solved other problems.\
-Its completely built from scratch with **less** **than** a **dozen** of **dependencies** not controled by me.
+It's completely built from scratch with **less** **than** a **dozen** of **dependencies** not controled by me.
 
 TEXHEC is a **HIGH-Performance** project where natural map size is **1.000.000** tiles with hundreds or thousands buildings and units **all** being **simulated** in real time.\
 We use **DOD** and use our **own** **ECS** framework.
@@ -61,9 +83,9 @@ modules/
 └─ `$module_name`/
     ├── internal/       # Defines implementation for `Service` and `System` (if exist in module)
     ├── pkg/            # This exposes `Package` function to register `Service` implementation.
-    │                   # `pkg`, `internal` and `tests` separation allows `modules`
+    │                   # `pkg`, `internal` and `test` separation allows `modules`
     │                   # Decouples the interface definition from the construction logic to allow for flexible dependency wiring
-    ├── tests/          # Defines tests
+    ├── test/           # Defines test
     ├── readme/         # Defines readme
     └── `$interface.go` # There is no strict file rule naming. This defines what module exposes
                         # Expects interface name `Service` so module name and service purpose were related
@@ -112,6 +134,7 @@ Engine modules:
 - [hierarchy](/engine/modules/hierarchy/readme/README.md)
 - [inputs (placeholder)](/engine/modules/inputs/readme/README.md)
 - [layout (placeholder)](/engine/modules/layout/readme/README.md)
+- [metadata (placeholder)](/engine/modules/metadata/readme/README.md)
 - [netsync (placeholder)](/engine/modules/netsync/readme/README.md)
 - [noise (placeholder)](/engine/modules/noise/readme/README.md)
 - [prototype (placeholder)](/engine/modules/prototype/readme/README.md)
@@ -151,6 +174,7 @@ Current approach reduces whole friction to a few interface files and often in a 
 
 Example map generated in a matter of seconds and rendered in less than 6ms\
 using 5 years old Intel® Core™ i5-8350U × 8 Intel® UHD Graphics 620 (KBL GT2):
+![Map scroll](/readme/map_scroll.gif)
 ![Whole map](/readme/whole_map.png)
 ![Bottom right map corner](/readme/bottom_right.png)
 
@@ -179,8 +203,10 @@ go run .
 ```
 
 ## Contribution
-Currently we do not expect any contributions and each will be handled individually.\
-But currently we're rather sceptical and assertive but open to discussion.
+We are not currently seeking external contributions.\
+However, we will review individual inquiries on a case-by-case basis.\
+While we remain selective at this stage, we are open to discussion.\
+Please note that this project is not yet open-source, as it is in the early stages of development.
 
 ## License
 Copyright © 2026. All rights reserved.

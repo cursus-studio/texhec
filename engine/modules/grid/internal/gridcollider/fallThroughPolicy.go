@@ -11,6 +11,16 @@ import (
 	"github.com/ogiusek/ioc/v2"
 )
 
+type HoverEvent[Tile grid.TileConstraint] struct {
+	Target inputs.Target
+}
+
+func (HoverEvent[Tile]) SetTarget(target inputs.Target) inputs.EventTargetSetter {
+	return HoverEvent[Tile]{target}
+}
+
+//
+
 type ClickEvent[Tile grid.TileConstraint] struct {
 	Target inputs.Target
 }
@@ -31,26 +41,22 @@ type squareFallThroughPolicy[Tile grid.TileConstraint] struct {
 
 	zero          Tile
 	dirtyEntities ecs.DirtySet
-	indexEvent    func(ecs.EntityID, grid.Index) any
+	hoverEvent    func(ecs.EntityID, grid.Index) any
 }
 
 func NewColliderWithPolicy[Tile grid.TileConstraint](
 	c ioc.Dic,
-	indexEvent func(ecs.EntityID, grid.Index) any,
+	hoverEvent func(ecs.EntityID, grid.Index) any,
 ) collider.FallTroughPolicy {
 	s := ioc.GetServices[*squareFallThroughPolicy[Tile]](c)
 
 	s.dirtyEntities = ecs.NewDirtySet()
-	s.indexEvent = indexEvent
+	s.hoverEvent = hoverEvent
 
 	s.Grid.Component().AddDirtySet(s.dirtyEntities)
 	s.Inputs.LeftClick().BeforeGet(s.BeforeGet)
 
-	events.Listen(s.EventsBuilder, s.OnClick)
-
-	if indexEvent == nil {
-		return nil
-	}
+	events.Listen(s.EventsBuilder, s.OnHover)
 
 	return s
 }
@@ -61,6 +67,7 @@ func (t *squareFallThroughPolicy[Tile]) BeforeGet() {
 		if !t.World.EntityExists(entity) {
 			continue
 		}
+		t.Inputs.Hover().Set(entity, inputs.NewHoverComponent(HoverEvent[Tile]{}))
 		t.Inputs.LeftClick().Set(entity, inputs.NewLeftClick(ClickEvent[Tile]{}))
 	}
 }
@@ -98,7 +105,7 @@ func (t *squareFallThroughPolicy[Tile]) FallThrough(collision collider.ObjectRay
 	return tile == t.zero
 }
 
-func (t *squareFallThroughPolicy[Tile]) OnClick(e ClickEvent[Tile]) {
+func (t *squareFallThroughPolicy[Tile]) OnHover(e HoverEvent[Tile]) {
 	gridComponent, ok := t.Grid.Component().Get(e.Target.Entity)
 	if !ok {
 		return
@@ -107,6 +114,6 @@ func (t *squareFallThroughPolicy[Tile]) OnClick(e ClickEvent[Tile]) {
 	if !ok {
 		return
 	}
-	event := t.indexEvent(e.Target.Entity, index)
+	event := t.hoverEvent(e.Target.Entity, index)
 	events.EmitAny(t.Events, event)
 }

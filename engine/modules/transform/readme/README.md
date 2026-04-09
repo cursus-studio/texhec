@@ -8,7 +8,7 @@ and this module transforms these relative components to absolute position.
 $ go test ./... -bench=. -benchmem
 goos: linux
 goarch: amd64
-pkg: engine/modules/transform/tests
+pkg: engine/modules/transform/test
 cpu: Intel(R) Core(TM) i5-8350U CPU @ 1.70GHz
 BenchmarkGetPos-8                 	62290279	        17.72 ns/op	       0 B/op	       0 allocs/op
 BenchmarkRawGetPos-8              	100000000	        10.46 ns/op	       0 B/op	       0 allocs/op

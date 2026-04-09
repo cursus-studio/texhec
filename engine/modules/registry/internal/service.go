@@ -50,7 +50,8 @@ func (s *service) populateValue(v reflect.Value) error {
 		fieldValue := v.Field(i)
 		fieldType := t.Field(i)
 		if fieldType.Type != reflect.TypeFor[ecs.EntityID]() {
-			if fieldType.Type.Kind() == reflect.Struct {
+			_, ok := fieldType.Tag.Lookup("ignore")
+			if !ok && fieldType.Type.Kind() == reflect.Struct {
 				if e := s.populateValue(fieldValue); e != nil {
 					err = e
 				}

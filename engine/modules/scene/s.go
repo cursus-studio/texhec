@@ -26,10 +26,9 @@ func NewSceneId(id string) ID {
 	return ID{id}
 }
 
-//
-
 type Scene func(sceneParent ecs.EntityID)
 
 type Service interface {
+	Scene() ecs.EntityID
 	SetScene(ID, Scene)
 }

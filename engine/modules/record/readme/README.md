@@ -16,7 +16,7 @@ Forwards recording can be used to record changes to send them somewhere else to 
 $ go test . -bench=. -benchmem
 goos: linux
 goarch: amd64
-pkg: engine/modules/record/tests
+pkg: engine/modules/record/test
 cpu: Intel(R) Core(TM) i5-8350U CPU @ 1.70GHz
 BenchmarkEntityCodecEncode-8                	  155301	      7093 ns/op	    3281 B/op	      37 allocs/op
 BenchmarkEntityCodecDecode-8                	   47541	     24805 ns/op	   10768 B/op	     245 allocs/op

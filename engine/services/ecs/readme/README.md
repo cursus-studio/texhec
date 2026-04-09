@@ -44,7 +44,7 @@ This would depracate `EnsureExists`, `OnUpsert`, `OnRemove`.
 $ go test ./... -bench=. -benchmem
 goos: linux
 goarch: amd64
-pkg: engine/services/ecs/tests
+pkg: engine/services/ecs/test
 cpu: Intel(R) Core(TM) i5-8350U CPU @ 1.70GHz
 BenchmarkDirtySetDirty-8               	162088540	         7.127 ns/op	      23 B/op	       0 allocs/op
 BenchmarkDirtySetDirtyInversed-8       	173312954	         6.332 ns/op	      21 B/op	       0 allocs/op

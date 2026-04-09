@@ -44,10 +44,11 @@ mainLoop:
 		t.Hierarchy.SetParent(quit, menu)
 		t.Groups.Inherit().Set(quit, groups.InheritGroupsComponent{})
 
+		t.Transform.Pos().Set(quit, transform.NewPos(0, 0, 1))
 		t.Transform.Parent().Set(quit, transform.NewParent(transform.RelativePos))
-		t.Transform.ParentPivotPoint().Set(quit, transform.NewParentPivotPoint(1, 1, 1))
+		t.Transform.ParentPivotPoint().Set(quit, transform.NewParentPivotPoint(1, 1, .5))
 		t.Transform.Size().Set(quit, transform.NewSize(25, 25, 1))
-		t.Transform.PivotPoint().Set(quit, transform.NewPivotPoint(1, 1, 0))
+		t.Transform.PivotPoint().Set(quit, transform.NewPivotPoint(1, 1, .5))
 
 		t.Text.Content().Set(quit, text.TextComponent{Text: "X"})
 		t.Text.FontSize().Set(quit, text.FontSizeComponent{FontSize: 25})
@@ -65,6 +66,7 @@ mainLoop:
 		childWrapper := t.NewEntity()
 		t.Hierarchy.SetParent(childWrapper, menu)
 		t.Groups.Inherit().Set(childWrapper, groups.InheritGroupsComponent{})
+		t.Transform.Pos().Set(childWrapper, transform.NewPos(0, -30 /* quit height + margin */, 0))
 		t.Transform.Parent().Set(childWrapper, transform.NewParent(transform.RelativePos|transform.RelativeSizeXY))
 
 		t.Layout.Order().Set(childWrapper, layout.NewOrder(layout.OrderVectical))

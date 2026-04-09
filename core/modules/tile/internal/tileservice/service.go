@@ -3,10 +3,9 @@ package tileservice
 import (
 	"core/modules/definitions"
 	"core/modules/tile"
-	"engine/modules/collider"
+	"engine"
 	"engine/modules/grid"
-	"engine/modules/inputs"
-	"engine/modules/render"
+	"engine/modules/relation"
 	"engine/modules/transform"
 	"engine/services/ecs"
 
@@ -14,57 +13,57 @@ import (
 )
 
 type service struct {
-	C                     ioc.Dic
-	definitions           *definitions.Definitions
-	World                 ecs.World        `inject:"1"`
-	Render                render.Service   `inject:"1"`
-	Collider              collider.Service `inject:"1"`
-	Inputs                inputs.Service   `inject:"1"`
-	grid.Service[tile.ID] `inject:"1"`
+	engine.World           `inject:"1"`
+	TileGridService        grid.Service[tile.ID]          `inject:"1"`
+	ObstructionGridService grid.Service[tile.Obstruction] `inject:"1"`
+	TileTypeRelation       relation.Service[tile.ID]      `inject:"1"`
 
-	tile ecs.ComponentsArray[tile.Component]
+	tile ecs.ComponentsArray[tile.TypeComponent]
 
-	pos   ecs.ComponentsArray[tile.PosComponent]
-	size  ecs.ComponentsArray[tile.SizeComponent]
-	rot   ecs.ComponentsArray[tile.RotComponent]
-	layer ecs.ComponentsArray[tile.LayerComponent]
+	pos         ecs.ComponentsArray[tile.PosComponent]
+	size        ecs.ComponentsArray[tile.SizeComponent]
+	rot         ecs.ComponentsArray[tile.RotComponent]
+	layer       ecs.ComponentsArray[tile.LayerComponent]
+	obstruction ecs.ComponentsArray[tile.ObstructionComponent]
+	deployed    ecs.ComponentsArray[tile.DeployedComponent]
 }
 
 func NewService(c ioc.Dic) tile.Service {
 	s := ioc.GetServices[*service](c)
-	s.C = c
-	s.tile = ecs.GetComponentsArray[tile.Component](s.World)
+	s.tile = ecs.GetComponentsArray[tile.TypeComponent](s.World)
 
 	s.pos = ecs.GetComponentsArray[tile.PosComponent](s.World)
 	s.size = ecs.GetComponentsArray[tile.SizeComponent](s.World)
 	s.rot = ecs.GetComponentsArray[tile.RotComponent](s.World)
 	s.layer = ecs.GetComponentsArray[tile.LayerComponent](s.World)
+	s.obstruction = ecs.GetComponentsArray[tile.ObstructionComponent](s.World)
+	s.deployed = ecs.GetComponentsArray[tile.DeployedComponent](s.World)
 
 	s.size.SetEmpty(tile.NewSize(1, 1))
-	s.layer.SetEmpty(tile.NewLayer(1))
+	s.layer.SetEmpty(tile.NewLayer(definitions.TileLayer))
 
 	return s
 }
 
-func (t *service) Definitions() *definitions.Definitions {
-	if t.definitions == nil {
-		definitions := ioc.Get[definitions.Definitions](t.C)
-		t.definitions = &definitions
-	}
-	return t.definitions
-}
-
-func (t *service) Tile() ecs.ComponentsArray[tile.Component] {
+func (t *service) TileType() ecs.ComponentsArray[tile.TypeComponent] {
 	return t.tile
 }
-func (t *service) Grid() ecs.ComponentsArray[grid.SquareGridComponent[tile.ID]] {
-	return t.Component()
+func (t *service) TileGrid() ecs.ComponentsArray[grid.SquareGridComponent[tile.ID]] {
+	return t.TileGridService.Component()
+}
+func (t *service) ObstructionGrid() ecs.ComponentsArray[grid.SquareGridComponent[tile.Obstruction]] {
+	return t.ObstructionGridService.Component()
+}
+func (t *service) GetTileType(id tile.ID) (ecs.EntityID, bool) {
+	return t.TileTypeRelation.Get(id)
 }
 
-func (t *service) Pos() ecs.ComponentsArray[tile.PosComponent]     { return t.pos }
-func (t *service) Size() ecs.ComponentsArray[tile.SizeComponent]   { return t.size }
-func (t *service) Rot() ecs.ComponentsArray[tile.RotComponent]     { return t.rot }
-func (t *service) Layer() ecs.ComponentsArray[tile.LayerComponent] { return t.layer }
+func (t *service) Pos() ecs.ComponentsArray[tile.PosComponent]                 { return t.pos }
+func (t *service) Size() ecs.ComponentsArray[tile.SizeComponent]               { return t.size }
+func (t *service) Rot() ecs.ComponentsArray[tile.RotComponent]                 { return t.rot }
+func (t *service) Layer() ecs.ComponentsArray[tile.LayerComponent]             { return t.layer }
+func (t *service) Obstruction() ecs.ComponentsArray[tile.ObstructionComponent] { return t.obstruction }
+func (t *service) Deployed() ecs.ComponentsArray[tile.DeployedComponent]       { return t.deployed }
 
 func (t *service) GetPos(coords grid.Coords) transform.PosComponent {
 	size := t.GetTileSize().Size
@@ -76,24 +75,4 @@ func (t *service) GetPos(coords grid.Coords) transform.PosComponent {
 }
 func (t *service) GetTileSize() transform.SizeComponent {
 	return transform.NewSize(100, 100, 1)
-}
-
-func (s *service) Unit(entity, blueprint ecs.EntityID) {
-	s.Layer().Set(entity, tile.NewLayer(3))
-
-	s.Render.Mesh().Set(entity, render.NewMesh(s.Definitions().SquareMesh))
-	s.Render.Texture().Set(entity, render.NewTexture(blueprint))
-
-	s.Collider.Component().Set(entity, collider.NewCollider(s.Definitions().SquareCollider))
-	s.Inputs.LeftClick().Set(entity, inputs.NewLeftClick(tile.NewClickObjectEvent()))
-	s.Inputs.Stack().Set(entity, inputs.StackComponent{})
-}
-
-func (s *service) Construct(entity, blueprint ecs.EntityID) {
-	s.Render.Mesh().Set(entity, render.NewMesh(s.Definitions().SquareMesh))
-	s.Render.Texture().Set(entity, render.NewTexture(blueprint))
-
-	s.Collider.Component().Set(entity, collider.NewCollider(s.Definitions().SquareCollider))
-	s.Inputs.LeftClick().Set(entity, inputs.NewLeftClick(tile.NewClickObjectEvent()))
-	s.Inputs.Stack().Set(entity, inputs.StackComponent{})
 }
