@@ -149,10 +149,7 @@ func (pkg pkg) Register(b ioc.Builder) {
 			Tile         tile.Service        `inject:"1"`
 			Definitions  definitions.BuiltIn `inject:"1"`
 		}
-		b.Register("unit", func(entity ecs.EntityID, structTagValue string) {
-			world := ioc.GetServices[World](c)
-			world.Tile.Layer().Set(entity, tile.NewLayer(definitions.UnitLayer))
-
+		objectShared := func(world World, entity ecs.EntityID) {
 			world.Render.Mesh().Set(entity, render.NewMesh(world.Definitions.SquareMesh))
 			world.Render.Texture().Set(entity, render.NewTexture(entity))
 			world.Groups.Component().Set(entity, groups.EmptyGroups().Ptr().Enable(definitions.GameGroup).Val())
@@ -160,18 +157,16 @@ func (pkg pkg) Register(b ioc.Builder) {
 			world.Collider.Component().Set(entity, collider.NewCollider(world.Definitions.SquareCollider))
 			world.Inputs.LeftClick().Set(entity, inputs.NewLeftClick(tile.NewClickEntityEvent()))
 			world.Inputs.Stack().Set(entity, inputs.StackComponent{})
+		}
+		b.Register("unit", func(entity ecs.EntityID, structTagValue string) {
+			world := ioc.GetServices[World](c)
+			world.Tile.Layer().Set(entity, tile.NewLayer(definitions.UnitLayer))
+			objectShared(world, entity)
 		})
 		b.Register("construct", func(entity ecs.EntityID, structTagValue string) {
 			world := ioc.GetServices[World](c)
 			world.Tile.Layer().Set(entity, tile.NewLayer(definitions.ConstructLayer))
-
-			world.Render.Mesh().Set(entity, render.NewMesh(world.Definitions.SquareMesh))
-			world.Render.Texture().Set(entity, render.NewTexture(entity))
-			world.Groups.Component().Set(entity, groups.EmptyGroups().Ptr().Enable(definitions.GameGroup).Val())
-
-			world.Collider.Component().Set(entity, collider.NewCollider(world.Definitions.SquareCollider))
-			world.Inputs.LeftClick().Set(entity, inputs.NewLeftClick(tile.NewClickEntityEvent()))
-			world.Inputs.Stack().Set(entity, inputs.StackComponent{})
+			objectShared(world, entity)
 		})
 	})
 }
