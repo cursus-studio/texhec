@@ -66,16 +66,16 @@ type Transitions struct {
 
 // generation configs should be in registry or in destined path and dispatched instantly on initialization
 type Tiles struct {
-	Water    ecs.EntityID `path:"tiles/water.biom" tile:"" generate:"35"`
-	Sand     ecs.EntityID `path:"tiles/sand.biom" tile:"" generate:"15"`
-	Grass    ecs.EntityID `path:"tiles/grass.biom" tile:"" generate:"45"`
-	Mountain ecs.EntityID `path:"tiles/mountain.biom" tile:"" generate:"5"`
+	Water    ecs.EntityID `path:"tiles/water.biom" tile:"" generate:"35" obstruction:"lowland"`
+	Sand     ecs.EntityID `path:"tiles/sand.biom" tile:"" generate:"15" obstruction:"water"`
+	Grass    ecs.EntityID `path:"tiles/grass.biom" tile:"" generate:"45" obstruction:"water"`
+	Mountain ecs.EntityID `path:"tiles/mountain.biom" tile:"" generate:"5" obstruction:"water lowland"`
 }
 
 type Constructs struct {
-	Farm ecs.EntityID `path:"constructs/farm.png" name:"farm" construct:""`
+	Farm ecs.EntityID `path:"constructs/farm.png" name:"farm" construct:"" obstruction:"lowland"`
 }
 
 type Units struct {
-	Tank ecs.EntityID `path:"units/tank.png" name:"tank" unit:""`
+	Tank ecs.EntityID `path:"units/tank.png" name:"tank" unit:"" obstruction:"lowland"`
 }

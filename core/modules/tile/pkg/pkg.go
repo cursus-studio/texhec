@@ -168,5 +168,19 @@ func (pkg pkg) Register(b ioc.Builder) {
 			world.Tile.Layer().Set(entity, tile.NewLayer(definitions.ConstructLayer))
 			objectShared(world, entity)
 		})
+		b.Register("obstruction", func(entity ecs.EntityID, structTagValue string) {
+			world := ioc.GetServices[World](c)
+			var obstruction tile.Obstruction
+			if strings.Contains(structTagValue, "water") {
+				obstruction |= definitions.WaterObstruction
+			}
+			if strings.Contains(structTagValue, "lowland") {
+				obstruction |= definitions.LowlandObstruction
+			}
+			if strings.Contains(structTagValue, "air") {
+				obstruction |= definitions.AirspaceObstruction
+			}
+			world.Tile.Obstruction().Set(entity, tile.NewObstruction(obstruction))
+		})
 	})
 }
