@@ -105,7 +105,6 @@ func (pkg pkg) Register(b ioc.Builder) {
 			counter++
 			tileService := ioc.Get[tile.Service](c)
 			tileService.TileType().Set(entity, tile.NewTileType(counter))
-			tileService.Obstruction().Set(entity, tile.NewObstruction(definitions.WaterObstruction))
 		})
 	})
 
@@ -153,7 +152,6 @@ func (pkg pkg) Register(b ioc.Builder) {
 		b.Register("unit", func(entity ecs.EntityID, structTagValue string) {
 			world := ioc.GetServices[World](c)
 			world.Tile.Layer().Set(entity, tile.NewLayer(definitions.UnitLayer))
-			world.Tile.Obstruction().Set(entity, tile.NewObstruction(definitions.LowlandsObstruction))
 
 			world.Render.Mesh().Set(entity, render.NewMesh(world.Definitions.SquareMesh))
 			world.Render.Texture().Set(entity, render.NewTexture(entity))
@@ -166,7 +164,6 @@ func (pkg pkg) Register(b ioc.Builder) {
 		b.Register("construct", func(entity ecs.EntityID, structTagValue string) {
 			world := ioc.GetServices[World](c)
 			world.Tile.Layer().Set(entity, tile.NewLayer(definitions.ConstructLayer))
-			world.Tile.Obstruction().Set(entity, tile.NewObstruction(definitions.LowlandsObstruction))
 
 			world.Render.Mesh().Set(entity, render.NewMesh(world.Definitions.SquareMesh))
 			world.Render.Texture().Set(entity, render.NewTexture(entity))
