@@ -22,7 +22,7 @@ const (
 const (
 	AirspaceObstruction tile.Obstruction = 1 << iota // obstructed by mountains and planes
 	WaterObstruction                                 // obstructed by non-water tiles and ships
-	LowlandsObstruction                              // obstructed by buildings and tanks
+	LowlandObstruction                               // obstructed by buildings and tanks
 )
 
 // In DI container

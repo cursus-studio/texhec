@@ -88,18 +88,18 @@ func (pkg) Register(b ioc.Builder) {
 		{
 			world.Deploy.Component().Set(def.Units.Tank, deploy.NewDeploy(def.Units.Tank, def.Constructs.Farm))
 			world.Deploy.Link().Set(def.Units.Tank, deploy.NewLink(def.Units.Tank))
-			world.Tile.Obstruction().Set(def.Units.Tank, tile.NewObstruction(definitions.LowlandsObstruction))
+			world.Tile.Obstruction().Set(def.Units.Tank, tile.NewObstruction(definitions.LowlandObstruction))
 		}
 		{
 			world.Deploy.Component().Set(def.Constructs.Farm, deploy.NewDeploy(def.Units.Tank, def.Constructs.Farm))
 			world.Deploy.Link().Set(def.Constructs.Farm, deploy.NewLink(def.Constructs.Farm))
-			world.Tile.Obstruction().Set(def.Constructs.Farm, tile.NewObstruction(definitions.LowlandsObstruction))
+			world.Tile.Obstruction().Set(def.Constructs.Farm, tile.NewObstruction(definitions.LowlandObstruction))
 		}
 		{
-			world.Tile.Obstruction().Set(def.Tiles.Water, tile.NewObstruction(definitions.LowlandsObstruction))
+			world.Tile.Obstruction().Set(def.Tiles.Water, tile.NewObstruction(definitions.LowlandObstruction))
 			world.Tile.Obstruction().Set(def.Tiles.Sand, tile.NewObstruction(definitions.WaterObstruction))
 			world.Tile.Obstruction().Set(def.Tiles.Grass, tile.NewObstruction(definitions.WaterObstruction))
-			world.Tile.Obstruction().Set(def.Tiles.Mountain, tile.NewObstruction(definitions.WaterObstruction|definitions.LowlandsObstruction))
+			world.Tile.Obstruction().Set(def.Tiles.Mountain, tile.NewObstruction(definitions.WaterObstruction|definitions.LowlandObstruction))
 		}
 
 		return def
