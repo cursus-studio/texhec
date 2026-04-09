@@ -165,7 +165,6 @@ func (c *componentsArray[Component]) AddDirtySet(dirtySet DirtySet) {
 		return
 	}
 	if _, ok := c.dirtySets.GetIndex(dirtySet); ok {
-
 		return
 	}
 	for _, entity := range c.GetEntities() {
