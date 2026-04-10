@@ -19,6 +19,7 @@ func Package() ioc.Pkg {
 func (pkg) Register(b ioc.Builder) {
 	for _, pkg := range []ioc.Pkg{
 		prototypepkg.PackageT[groups.GroupsComponent](),
+		prototypepkg.PackageT[groups.InheritGroupsComponent](),
 	} {
 		pkg.Register(b)
 	}
