@@ -7,6 +7,7 @@ import (
 	"core/modules/fpslogger/pkg"
 	"core/modules/generation/pkg"
 	"core/modules/loading/pkg"
+	playerpkg "core/modules/player/pkg"
 	"core/modules/settings"
 	"core/modules/settings/pkg"
 	"core/modules/tile"
@@ -256,6 +257,7 @@ func getDic() ioc.Dic {
 		// game packages
 		deploypkg.Package(),
 		fpsloggerpkg.Package(),
+		playerpkg.Package(),
 
 		gamescenes.Package(),
 		definitionspkg.Package(),

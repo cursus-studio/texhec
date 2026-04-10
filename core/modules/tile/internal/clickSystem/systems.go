@@ -3,6 +3,7 @@ package clicksystem
 import (
 	"core/modules/definitions"
 	"core/modules/deploy"
+	"core/modules/player"
 	"core/modules/tile"
 	"core/modules/ui"
 	"engine"
@@ -26,6 +27,7 @@ type system struct {
 	engine.World `inject:"1"`
 	Definitions  definitions.Definitions `inject:"1"`
 	Deploy       deploy.Service          `inject:"1"`
+	Player       player.Service          `inject:"1"`
 	Tile         tile.Service            `inject:"1"`
 	Ui           ui.Service              `inject:"1"`
 }
@@ -56,13 +58,24 @@ func (s *system) OnClickEntity(e tile.ClickEntityEvent) {
 		s.Logger.Warn(errors.New("expected link to have deploy component"))
 		return
 	}
+	owner, ok := s.Player.Owner().Get(e.Entity)
+	if !ok {
+		s.Logger.Warn(errors.New("object without owner cannot build"))
+		return
+	}
+	playerName, ok := s.Metadata.Name().Get(owner.Owner)
+	if !ok {
+		s.Logger.Warn(errors.New("expected player to have player component"))
+		return
+	}
 
 	type Button struct {
 		text  string
 		event any
 	}
 	btns := []Button{
-		{fmt.Sprintf("%v can deploy", name.Name), nil},
+		{fmt.Sprintf("%v's %v", playerName.Name, name.Name), nil},
+		{"Can deploy", nil},
 	}
 	for _, deployed := range deployed.Deployable {
 		name, ok := s.Metadata.Name().Get(deployed)
@@ -70,7 +83,7 @@ func (s *system) OnClickEntity(e tile.ClickEntityEvent) {
 			s.Logger.Warn(errors.New("expected entity to have name component"))
 			continue
 		}
-		btn := Button{fmt.Sprintf("%v", name.Name), deploy.NewSelectEvent(link.Deploy, deployed)}
+		btn := Button{fmt.Sprintf("%v", name.Name), deploy.NewSelectEvent(e.Entity, deployed)}
 		btns = append(btns, btn)
 	}
 

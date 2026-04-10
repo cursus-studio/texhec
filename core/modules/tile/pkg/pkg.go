@@ -158,7 +158,6 @@ func (pkg pkg) Register(b ioc.Builder) {
 				world.Groups.Component().Set(entity, groups.EmptyGroups().Ptr().Enable(definitions.GameGroup).Val())
 
 				world.Collider.Component().Set(entity, collider.NewCollider(world.Definitions.SquareCollider))
-				world.Inputs.LeftClick().Set(entity, inputs.NewLeftClick(tile.NewClickEntityEvent()))
 				world.Inputs.Stack().Set(entity, inputs.StackComponent{})
 			}
 		}
