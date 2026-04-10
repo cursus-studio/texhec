@@ -14,5 +14,6 @@ func NewCloneEvent(cloned, clone ecs.EntityID) CloneEvent {
 //
 
 type Service interface {
-	Clone(ecs.EntityID) ecs.EntityID
+	Clone(cloned ecs.EntityID) ecs.EntityID
+	CloneTo(cloned, clone ecs.EntityID)
 }
