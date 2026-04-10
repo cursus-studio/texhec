@@ -146,8 +146,8 @@ func (pkg pkg) Register(b ioc.Builder) {
 	ioc.WrapService(b, func(c ioc.Dic, b registry.Service) {
 		type World struct {
 			engine.World `inject:"1"`
-			Tile         tile.Service        `inject:"1"`
-			Definitions  definitions.BuiltIn `inject:"1"`
+			Tile         tile.Service       `inject:"1"`
+			Definitions  definitions.Assets `inject:"1"`
 		}
 		objectShared := func(layer tile.Coord) func(entity ecs.EntityID, _ string) {
 			return func(entity ecs.EntityID, _ string) {

@@ -6,12 +6,9 @@ import (
 	"core/modules/ui"
 	gamescenes "core/scenes"
 	"engine"
-	"engine/modules/assets"
 	"engine/modules/audio"
-	"engine/modules/collider"
 	"engine/modules/groups"
 	"engine/modules/inputs"
-	"engine/modules/render"
 	"engine/modules/scene"
 	"engine/modules/text"
 	"engine/modules/transform"
@@ -75,11 +72,9 @@ func (s *system) ListenRender(parent ecs.EntityID) error {
 	// collider
 	// click
 
-	children := []ecs.EntityID{}
-
 	// changes
 	labelEntity := s.NewEntity()
-	children = append(children, labelEntity)
+	s.Hierarchy.SetParent(labelEntity, parent)
 	s.Groups.Inherit().Set(labelEntity, groups.InheritGroupsComponent{})
 
 	s.Transform.Parent().Set(labelEntity, transform.NewParent(transform.RelativePos|transform.RelativeSizeX))
@@ -102,37 +97,15 @@ func (s *system) ListenRender(parent ecs.EntityID) error {
 		{"QUIT", scene.NewChangeSceneEvent(gamescenes.MenuID)},
 	}
 
-	btnAsset, err := assets.GetAsset[render.TextureAsset](s.Assets, s.Definitions.Hud.Btn)
-	if err != nil {
-		return err
-	}
-	btnAspectRatio := btnAsset.AspectRatio()
-
 	for _, btn := range btns {
-		btnEntity := s.NewEntity()
-		children = append(children, btnEntity)
-		s.Groups.Inherit().Set(btnEntity, groups.InheritGroupsComponent{})
+		btnEntity := s.Prototype.Clone(s.Definitions.Hud.Btn)
+		s.Hierarchy.SetParent(btnEntity, parent)
 
 		ecs.GetComponentsArray[temporaryToggleColorComponent](s).Set(btnEntity, temporaryToggleColorComponent{})
 
-		s.Transform.AspectRatio().Set(btnEntity, transform.NewAspectRatio(float32(btnAspectRatio.Dx()), float32(btnAspectRatio.Dy()), 0, transform.PrimaryAxisX))
-		s.Transform.Parent().Set(btnEntity, transform.NewParent(transform.RelativePos|transform.RelativeSizeX))
-		s.Transform.MaxSize().Set(btnEntity, transform.NewMaxSize(0, 50, 0))
-		s.Transform.Size().Set(btnEntity, transform.NewSize(1, 50, 1))
-
-		s.Render.Mesh().Set(btnEntity, render.NewMesh(s.Definitions.SquareMesh))
-		s.Render.Texture().Set(btnEntity, render.NewTexture(s.Definitions.Hud.Btn))
-
 		s.Text.Content().Set(btnEntity, text.TextComponent{Text: btn.text})
-		s.Text.FontSize().Set(btnEntity, text.FontSizeComponent{FontSize: 25})
-		s.Text.Align().Set(btnEntity, text.TextAlignComponent{Vertical: .5, Horizontal: .5})
-
 		s.Inputs.LeftClick().Set(btnEntity, inputs.NewLeftClick(btn.event))
-		s.Inputs.KeepSelected().Set(btnEntity, inputs.KeepSelectedComponent{})
-		s.Collider.Component().Set(btnEntity, collider.NewCollider(s.Definitions.SquareCollider))
 	}
-
-	s.Hierarchy.SetChildren(parent, children...)
 
 	return nil
 }
