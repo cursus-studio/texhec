@@ -7,8 +7,12 @@ import (
 	"engine"
 	"engine/modules/assets"
 	"engine/modules/collider"
+	"engine/modules/groups"
+	"engine/modules/inputs"
 	"engine/modules/registry"
 	"engine/modules/render"
+	"engine/modules/text"
+	"engine/modules/transform"
 	"engine/modules/transition"
 	"engine/services/ecs"
 	"engine/services/graphics/vao/ebo"
@@ -65,9 +69,9 @@ func (pkg) Register(b ioc.Builder) {
 		})
 	})
 
-	ioc.RegisterSingleton(b, func(c ioc.Dic) definitions.BuiltIn {
+	ioc.RegisterSingleton(b, func(c ioc.Dic) definitions.Assets {
 		world := ioc.GetServices[engine.World](c)
-		def, err := registry.GetRegistry[definitions.BuiltIn](world.Registry)
+		def, err := registry.GetRegistry[definitions.Assets](world.Registry)
 		world.Logger.Warn(err)
 		return def
 	})
@@ -83,7 +87,7 @@ func (pkg) Register(b ioc.Builder) {
 		def, err := registry.GetRegistry[definitions.Definitions](world.Registry)
 		world.Logger.Warn(err)
 
-		def.BuiltIn = ioc.Get[definitions.BuiltIn](c)
+		def.Assets = ioc.Get[definitions.Assets](c)
 
 		{
 			world.Deploy.Component().Set(def.Units.Tank, deploy.NewDeploy(def.Units.Tank, def.Constructs.Farm))
@@ -92,6 +96,52 @@ func (pkg) Register(b ioc.Builder) {
 		{
 			world.Deploy.Component().Set(def.Constructs.Farm, deploy.NewDeploy(def.Units.Tank, def.Constructs.Farm))
 			world.Deploy.Link().Set(def.Constructs.Farm, deploy.NewLink(def.Constructs.Farm))
+		}
+		{
+			btnAsset, err := assets.GetAsset[render.TextureAsset](world.Assets, def.Hud.Btn)
+			if err != nil {
+				world.Logger.Warn(err)
+			}
+			btnAspectRatio := btnAsset.AspectRatio()
+			world.Groups.Inherit().Set(def.Hud.Btn, groups.InheritGroupsComponent{})
+			world.Groups.Component().Set(def.Hud.Btn, groups.EmptyGroups())
+
+			world.Transform.AspectRatio().Set(def.Hud.Btn, transform.NewAspectRatio(float32(btnAspectRatio.Dx()), float32(btnAspectRatio.Dy()), 0, transform.PrimaryAxisX))
+			world.Transform.Parent().Set(def.Hud.Btn, transform.NewParent(transform.RelativePos|transform.RelativeSizeX))
+			world.Transform.MaxSize().Set(def.Hud.Btn, transform.NewMaxSize(0, 50, 0))
+			world.Transform.Size().Set(def.Hud.Btn, transform.NewSize(1, 50, 1))
+
+			world.Render.Mesh().Set(def.Hud.Btn, render.NewMesh(def.SquareMesh))
+			world.Render.Texture().Set(def.Hud.Btn, render.NewTexture(def.Hud.Btn))
+
+			world.Collider.Component().Set(def.Hud.Btn, collider.NewCollider(def.SquareCollider))
+			world.Inputs.KeepSelected().Set(def.Hud.Btn, inputs.KeepSelectedComponent{})
+
+			world.Text.Align().Set(def.Hud.Btn, text.TextAlignComponent{Vertical: .5, Horizontal: .5})
+			world.Text.FontSize().Set(def.Hud.Btn, text.FontSizeComponent{FontSize: 24})
+		}
+		{
+			btnAsset, err := assets.GetAsset[render.TextureAsset](world.Assets, def.Hud.Btn)
+			if err != nil {
+				world.Logger.Warn(err)
+			}
+			btnAspectRatio := btnAsset.AspectRatio()
+			world.Groups.Inherit().Set(def.Hud.Text, groups.InheritGroupsComponent{})
+			world.Groups.Component().Set(def.Hud.Text, groups.EmptyGroups())
+
+			world.Transform.Size().Set(def.Hud.Text, transform.NewSize(150, 50, 1))
+			world.Transform.AspectRatio().Set(def.Hud.Text, transform.NewAspectRatio(float32(btnAspectRatio.Dx()), float32(btnAspectRatio.Dy()), 0, transform.PrimaryAxisX))
+			world.Transform.Parent().Set(def.Hud.Text, transform.NewParent(transform.RelativePos))
+
+			world.Render.Mesh().Set(def.Hud.Text, render.NewMesh(def.SquareMesh))
+			world.Render.Texture().Set(def.Hud.Text, render.NewTexture(def.Hud.Btn))
+			world.Render.Color().Set(def.Hud.Text, render.NewColor(mgl32.Vec4{0, 0, 0, 0}))
+
+			world.Collider.Component().Set(def.Hud.Text, collider.NewCollider(def.SquareCollider))
+			world.Inputs.KeepSelected().Set(def.Hud.Text, inputs.KeepSelectedComponent{})
+
+			world.Text.Align().Set(def.Hud.Text, text.TextAlignComponent{Vertical: .5, Horizontal: .5})
+			world.Text.FontSize().Set(def.Hud.Text, text.FontSizeComponent{FontSize: 24})
 		}
 
 		return def

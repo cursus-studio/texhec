@@ -34,9 +34,27 @@ func (pkg pkg) Register(b ioc.Builder) {
 		prototypepkg.PackageT[transform.PosComponent](),
 		prototypepkg.PackageT[transform.RotationComponent](),
 		prototypepkg.PackageT[transform.SizeComponent](),
+
+		prototypepkg.PackageT[transform.MaxSizeComponent](),
+		prototypepkg.PackageT[transform.MinSizeComponent](),
+
+		prototypepkg.PackageT[transform.AspectRatioComponent](),
 		prototypepkg.PackageT[transform.PivotPointComponent](),
-		prototypepkg.PackageT[transform.ParentPivotPointComponent](),
+
 		prototypepkg.PackageT[transform.ParentComponent](),
+		prototypepkg.PackageT[transform.ParentPivotPointComponent](),
+		//
+		transitionpkg.PackageT[transform.PosComponent](),
+		transitionpkg.PackageT[transform.RotationComponent](),
+		transitionpkg.PackageT[transform.SizeComponent](),
+
+		transitionpkg.PackageT[transform.MaxSizeComponent](),
+		transitionpkg.PackageT[transform.MinSizeComponent](),
+
+		transitionpkg.PackageT[transform.AspectRatioComponent](),
+		transitionpkg.PackageT[transform.PivotPointComponent](),
+
+		transitionpkg.PackageT[transform.ParentPivotPointComponent](),
 	} {
 		pkg.Register(b)
 	}
@@ -46,20 +64,16 @@ func (pkg pkg) Register(b ioc.Builder) {
 			Register(transform.PosComponent{}).
 			Register(transform.RotationComponent{}).
 			Register(transform.SizeComponent{}).
+			//
+			Register(transform.MaxSizeComponent{}).
+			Register(transform.MinSizeComponent{}).
+			//
+			Register(transform.AspectRatioComponent{}).
 			Register(transform.PivotPointComponent{}).
-			Register(transform.ParentPivotPointComponent{}).
-			Register(transform.ParentComponent{})
+			//
+			Register(transform.ParentComponent{}).
+			Register(transform.ParentPivotPointComponent{})
 	})
-
-	for _, pkg := range []ioc.Pkg{
-		transitionpkg.PackageT[transform.PosComponent](),
-		transitionpkg.PackageT[transform.RotationComponent](),
-		transitionpkg.PackageT[transform.SizeComponent](),
-		transitionpkg.PackageT[transform.PivotPointComponent](),
-		transitionpkg.PackageT[transform.ParentPivotPointComponent](),
-	} {
-		pkg.Register(b)
-	}
 
 	ioc.RegisterSingleton(b, func(c ioc.Dic) transform.Service {
 		return transformservice.NewService(c,

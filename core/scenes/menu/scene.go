@@ -3,12 +3,10 @@ package menuscene
 import (
 	"core/modules/ui"
 	gamescenes "core/scenes"
-	"engine/modules/assets"
 	"engine/modules/camera"
-	"engine/modules/collider"
+	"engine/modules/groups"
 	"engine/modules/inputs"
 	"engine/modules/layout"
-	"engine/modules/render"
 	"engine/modules/scene"
 	"engine/modules/text"
 	"engine/modules/transform"
@@ -26,11 +24,11 @@ func Package() ioc.Pkg {
 
 func (pkg) Register(b ioc.Builder) {
 	ioc.RegisterSingleton(b, func(c ioc.Dic) gamescenes.MenuBuilder {
-		assetsService := ioc.Get[assets.Service](c)
 		return func(sceneParent ecs.EntityID) {
 			world := ioc.GetServices[gamescenes.World](c)
 			cameraEntity := world.NewEntity()
 			world.Hierarchy.SetParent(cameraEntity, sceneParent)
+			world.Groups.Component().Set(cameraEntity, groups.DefaultGroups())
 			world.Camera.Ortho().Set(cameraEntity, camera.NewOrtho(-1000, 1000))
 			world.Ui.CursorCamera().Set(cameraEntity, ui.CursorCameraComponent{})
 
@@ -55,7 +53,9 @@ func (pkg) Register(b ioc.Builder) {
 
 			buttonArea := world.NewEntity()
 			world.Hierarchy.SetParent(buttonArea, cameraEntity)
-			world.Transform.Parent().Set(buttonArea, transform.NewParent(transform.RelativePos))
+			world.Groups.Inherit().Set(buttonArea, groups.InheritGroupsComponent{})
+			world.Transform.Pos().Set(buttonArea, transform.NewPos(0, 0, 1))
+			world.Transform.Parent().Set(buttonArea, transform.NewParent(transform.RelativePos|transform.RelativeSizeX))
 
 			world.Layout.Order().Set(buttonArea, layout.NewOrder(layout.OrderVectical))
 			world.Layout.Align().Set(buttonArea, layout.NewAlign(.5, .5))
@@ -66,37 +66,18 @@ func (pkg) Register(b ioc.Builder) {
 				OnClick any
 			}
 			buttons := []Button{
-				{Text: "play", OnClick: scene.NewChangeSceneEvent(gamescenes.GameID)},
-				{Text: "settings", OnClick: scene.NewChangeSceneEvent(gamescenes.SettingsID)},
-				{Text: "credits", OnClick: scene.NewChangeSceneEvent(gamescenes.CreditsID)},
-				{Text: "exit", OnClick: inputs.QuitEvent{}},
+				{"play", scene.NewChangeSceneEvent(gamescenes.GameID)},
+				{"settings", scene.NewChangeSceneEvent(gamescenes.SettingsID)},
+				{"credits", scene.NewChangeSceneEvent(gamescenes.CreditsID)},
+				{"exit", inputs.QuitEvent{}},
 			}
-
-			btnAsset, err := assets.GetAsset[render.TextureAsset](assetsService, world.Definitions.Hud.Btn)
-			if err != nil {
-				world.Logger.Warn(err)
-				return
-			}
-			btnAspectRatio := btnAsset.AspectRatio()
 
 			for _, button := range buttons {
-				btn := world.NewEntity()
+				btn := world.Prototype.Clone(world.Definitions.Hud.Btn)
+
 				world.Hierarchy.SetParent(btn, buttonArea)
-				world.Transform.Size().Set(btn, transform.NewSize(150, 50, 1))
-				world.Transform.AspectRatio().Set(btn, transform.NewAspectRatio(float32(btnAspectRatio.Dx()), float32(btnAspectRatio.Dy()), 0, transform.PrimaryAxisX))
-				world.Transform.Parent().Set(btn, transform.NewParent(transform.RelativePos))
-
-				world.Render.Mesh().Set(btn, render.NewMesh(world.Definitions.SquareMesh))
-				world.Render.Texture().Set(btn, render.NewTexture(world.Definitions.Hud.Btn))
-				world.Render.TextureFrame().Set(btn, render.NewTextureFrame(1))
-
 				world.Inputs.LeftClick().Set(btn, inputs.NewLeftClick(button.OnClick))
-				world.Collider.Component().Set(btn, collider.NewCollider(world.Definitions.SquareCollider))
-				world.Inputs.KeepSelected().Set(btn, inputs.KeepSelectedComponent{})
-
 				world.Text.Content().Set(btn, text.TextComponent{Text: strings.ToUpper(button.Text)})
-				world.Text.Align().Set(btn, text.TextAlignComponent{Vertical: .5, Horizontal: .5})
-				world.Text.FontSize().Set(btn, text.FontSizeComponent{FontSize: 24})
 			}
 		}
 	})

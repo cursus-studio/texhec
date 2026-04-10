@@ -4,12 +4,14 @@ import (
 	"core/modules/definitions"
 	"core/modules/deploy"
 	"core/modules/generation"
+	"core/modules/player"
 	"core/modules/tile"
 	"engine"
 	"engine/modules/batcher"
 	"engine/modules/collider"
 	"engine/modules/grid"
 	"engine/modules/inputs"
+	"engine/modules/metadata"
 	"engine/modules/noise"
 	"engine/modules/transform"
 	"engine/services/datastructures"
@@ -48,6 +50,7 @@ type service struct {
 	Definitions  definitions.Definitions `inject:"1"`
 	Tile         tile.Service            `inject:"1"`
 	Deploy       deploy.Service          `inject:"1"`
+	Player       player.Service          `inject:"1"`
 	C            ioc.Dic
 }
 
@@ -206,9 +209,14 @@ func (s *service) Generate(c generation.Config) batcher.Task {
 		s.Tile.TileGrid().Set(c.Entity, gridStateComponent)
 		s.Tile.ObstructionGrid().Set(c.Entity, obstructGridComponent)
 
+		playerEntity := s.NewEntity()
+		s.Metadata.Name().Set(playerEntity, metadata.NewName("john"))
+		player2Entity := s.NewEntity()
+		s.Metadata.Name().Set(player2Entity, metadata.NewName("anna"))
+
 		// generates objects
-		s.Deploy.Deploy(s.Definitions.Constructs.Farm, grid.NewCoords(1, 1))
-		s.Deploy.Deploy(s.Definitions.Units.Tank, grid.NewCoords(2, 2))
+		s.Deploy.Deploy(s.Definitions.Constructs.Farm, playerEntity, grid.NewCoords(1, 1))
+		s.Deploy.Deploy(s.Definitions.Units.Tank, player2Entity, grid.NewCoords(2, 2))
 	})
 
 	// task

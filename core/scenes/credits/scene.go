@@ -3,10 +3,10 @@ package creditsscene
 import (
 	"core/modules/ui"
 	gamescenes "core/scenes"
-	"engine/modules/assets"
 	"engine/modules/camera"
 	"engine/modules/collider"
 	"engine/modules/drag"
+	"engine/modules/groups"
 	"engine/modules/inputs"
 	"engine/modules/render"
 	"engine/modules/scene"
@@ -27,11 +27,11 @@ func Package() ioc.Pkg {
 
 func (pkg) Register(b ioc.Builder) {
 	ioc.RegisterSingleton(b, func(c ioc.Dic) gamescenes.CreditsBuilder {
-		assetsService := ioc.Get[assets.Service](c)
 		return func(sceneParent ecs.EntityID) {
 			world := ioc.GetServices[gamescenes.World](c)
 			cameraEntity := world.NewEntity()
 			world.Hierarchy.SetParent(cameraEntity, sceneParent)
+			world.Groups.Component().Set(cameraEntity, groups.DefaultGroups())
 			world.Camera.Ortho().Set(cameraEntity, camera.NewOrtho(-1000, +1000))
 			world.Ui.CursorCamera().Set(cameraEntity, ui.CursorCameraComponent{})
 
@@ -53,17 +53,18 @@ func (pkg) Register(b ioc.Builder) {
 
 			buttonArea := world.NewEntity()
 			world.Hierarchy.SetParent(buttonArea, cameraEntity)
+			world.Groups.Inherit().Set(buttonArea, groups.InheritGroupsComponent{})
 			world.Transform.Pos().Set(buttonArea, transform.NewPos(0, 0, 1))
 			world.Transform.Size().Set(buttonArea, transform.NewSize(500, 200, 1))
 			world.Transform.Parent().Set(buttonArea, transform.NewParent(transform.RelativePos))
 
 			draggable := world.NewEntity()
-			world.Hierarchy.SetParent(draggable, sceneParent)
+			world.Hierarchy.SetParent(draggable, cameraEntity)
 			world.Transform.Pos().Set(draggable, transform.NewPos(0, 0, 2))
 			world.Transform.Size().Set(draggable, transform.NewSize(50, 50, 1))
 			world.Render.Color().Set(draggable, render.NewColor(mgl32.Vec4{0, 1, 0, 1}))
 			world.Render.Mesh().Set(draggable, render.NewMesh(world.Definitions.SquareMesh))
-			world.Render.Texture().Set(draggable, render.NewTexture(world.Definitions.Hud.Btn))
+			world.Render.Texture().Set(draggable, render.NewTexture(world.Definitions.Hud.Cursor))
 
 			world.Collider.Component().Set(draggable, collider.NewCollider(world.Definitions.SquareCollider))
 			world.Inputs.Drag().Set(draggable, inputs.NewDragComponent(drag.NewDraggable(draggable)))
@@ -71,32 +72,15 @@ func (pkg) Register(b ioc.Builder) {
 			world.Text.Content().Set(draggable, text.TextComponent{Text: strings.ToUpper("drag me")})
 			world.Text.Align().Set(draggable, text.TextAlignComponent{Vertical: .5, Horizontal: .5})
 			world.Text.FontSize().Set(draggable, text.FontSizeComponent{FontSize: 15})
-			world.Text.Color().Set(draggable, text.TextColorComponent{Color: mgl32.Vec4{.5, 0, 1, 1}})
+			world.Text.Color().Set(draggable, text.TextColorComponent{Color: mgl32.Vec4{1, 0, 0, 1}})
 
-			btnAsset, err := assets.GetAsset[render.TextureAsset](assetsService, world.Definitions.Hud.Btn)
-			if err != nil {
-				world.Logger.Warn(err)
-				return
-			}
-			btnAspectRatio := btnAsset.AspectRatio()
-
-			btn := world.NewEntity()
+			btn := world.Prototype.Clone(world.Definitions.Hud.Btn)
 			world.Hierarchy.SetParent(btn, buttonArea)
 			world.Transform.Size().Set(btn, transform.NewSize(500, 100, 1))
-			world.Transform.Parent().Set(btn, transform.NewParent(transform.RelativePos))
 			world.Transform.ParentPivotPoint().Set(btn, transform.NewParentPivotPoint(.5, 0, .5))
-			world.Transform.AspectRatio().Set(btn, transform.NewAspectRatio(float32(btnAspectRatio.Dx()), float32(btnAspectRatio.Dy()), 0, transform.PrimaryAxisY))
-
-			world.Render.Mesh().Set(btn, render.NewMesh(world.Definitions.SquareMesh))
-			world.Render.Texture().Set(btn, render.NewTexture(world.Definitions.Hud.Btn))
 
 			world.Inputs.LeftClick().Set(btn, inputs.NewLeftClick(scene.NewChangeSceneEvent(gamescenes.MenuID)))
-			world.Inputs.KeepSelected().Set(btn, inputs.KeepSelectedComponent{})
-			world.Collider.Component().Set(btn, collider.NewCollider(world.Definitions.SquareCollider))
-
 			world.Text.Content().Set(btn, text.TextComponent{Text: strings.ToUpper("return to menu")})
-			world.Text.Align().Set(btn, text.TextAlignComponent{Vertical: .5, Horizontal: .5})
-			world.Text.FontSize().Set(btn, text.FontSizeComponent{FontSize: 32})
 		}
 	})
 }

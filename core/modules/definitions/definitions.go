@@ -26,8 +26,8 @@ const (
 )
 
 // In DI container
-// BuiltIn have fewer dependencies
-type BuiltIn struct {
+// Assets have fewer dependencies
+type Assets struct {
 	ExampleAudio ecs.EntityID `path:"audio.wav"`
 
 	Blank          ecs.EntityID `path:"blank texture"`
@@ -36,24 +36,25 @@ type BuiltIn struct {
 	FontAsset      ecs.EntityID `path:"font1.ttf"`
 }
 
+type Hud struct {
+	Btn         ecs.EntityID `path:"hud/btn.png-trim"`
+	Text        ecs.EntityID
+	Cursor      ecs.EntityID `path:"hud/cursor.png-trim"`
+	Settings    ecs.EntityID `path:"hud/settings.png-trim"`
+	Background1 ecs.EntityID `path:"hud/bg1.gif-trim"`
+	Background2 ecs.EntityID `path:"hud/bg2.gif-trim"`
+}
+
 // In DI container
 // Definitions have more dependencies
 type Definitions struct {
-	BuiltIn    `ignore:""`
+	Assets     `ignore:""`
 	Hud        Hud
 	Tiles      Tiles
 	Constructs Constructs
 	Units      Units
 
 	Transitions Transitions
-}
-
-type Hud struct {
-	Btn         ecs.EntityID `path:"hud/btn.png-trim"`
-	Cursor      ecs.EntityID `path:"hud/cursor.png-trim"`
-	Settings    ecs.EntityID `path:"hud/settings.png-trim"`
-	Background1 ecs.EntityID `path:"hud/bg1.gif-trim"`
-	Background2 ecs.EntityID `path:"hud/bg2.gif-trim"`
 }
 
 type Transitions struct {

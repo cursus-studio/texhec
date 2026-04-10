@@ -32,43 +32,40 @@ import (
 )
 
 type pkg struct {
-	pkgs []ioc.Pkg
 }
 
 func Package() ioc.Pkg {
-	return pkg{
-		[]ioc.Pkg{
-			gridpkg.Package[tile.ID](tile.NewHoverEvent),
-			gridpkg.Package[tile.Obstruction](nil),
-			relationpkg.SpatialRelationPackage(
-				func(w ecs.World) ecs.DirtySet {
-					dirtySet := ecs.NewDirtySet()
-					ecs.GetComponentsArray[tile.TypeComponent](w).AddDirtySet(dirtySet)
-					return dirtySet
-				},
-				func(w ecs.World) func(entity ecs.EntityID) (tile.ID, bool) {
-					componentArray := ecs.GetComponentsArray[tile.TypeComponent](w)
-					return func(entity ecs.EntityID) (tile.ID, bool) {
-						comp, ok := componentArray.Get(entity)
-						return comp.ID, ok
-					}
-				},
-				func(index tile.ID) uint32 { return uint32(index) },
-			),
-			tileservice.Package(),
-			tilerenderer.Package(),
-			prototypepkg.PackageT[tile.TypeComponent](),
-			prototypepkg.PackageT[tile.PosComponent](),
-			prototypepkg.PackageT[tile.SizeComponent](),
-			prototypepkg.PackageT[tile.RotComponent](),
-			prototypepkg.PackageT[tile.LayerComponent](),
-			prototypepkg.PackageT[tile.ObstructionComponent](),
-		},
-	}
+	return pkg{}
 }
 
 func (pkg pkg) Register(b ioc.Builder) {
-	for _, pkg := range pkg.pkgs {
+	for _, pkg := range []ioc.Pkg{
+		gridpkg.Package[tile.ID](tile.NewHoverEvent),
+		gridpkg.Package[tile.Obstruction](nil),
+		relationpkg.SpatialRelationPackage(
+			func(w ecs.World) ecs.DirtySet {
+				dirtySet := ecs.NewDirtySet()
+				ecs.GetComponentsArray[tile.TypeComponent](w).AddDirtySet(dirtySet)
+				return dirtySet
+			},
+			func(w ecs.World) func(entity ecs.EntityID) (tile.ID, bool) {
+				componentArray := ecs.GetComponentsArray[tile.TypeComponent](w)
+				return func(entity ecs.EntityID) (tile.ID, bool) {
+					comp, ok := componentArray.Get(entity)
+					return comp.ID, ok
+				}
+			},
+			func(index tile.ID) uint32 { return uint32(index) },
+		),
+		tileservice.Package(),
+		tilerenderer.Package(),
+		prototypepkg.PackageT[tile.TypeComponent](),
+		prototypepkg.PackageT[tile.PosComponent](),
+		prototypepkg.PackageT[tile.SizeComponent](),
+		prototypepkg.PackageT[tile.RotComponent](),
+		prototypepkg.PackageT[tile.LayerComponent](),
+		prototypepkg.PackageT[tile.ObstructionComponent](),
+	} {
 		pkg.Register(b)
 	}
 
@@ -149,8 +146,8 @@ func (pkg pkg) Register(b ioc.Builder) {
 	ioc.WrapService(b, func(c ioc.Dic, b registry.Service) {
 		type World struct {
 			engine.World `inject:"1"`
-			Tile         tile.Service        `inject:"1"`
-			Definitions  definitions.BuiltIn `inject:"1"`
+			Tile         tile.Service       `inject:"1"`
+			Definitions  definitions.Assets `inject:"1"`
 		}
 		objectShared := func(layer tile.Coord) func(entity ecs.EntityID, _ string) {
 			return func(entity ecs.EntityID, _ string) {
@@ -161,7 +158,6 @@ func (pkg pkg) Register(b ioc.Builder) {
 				world.Groups.Component().Set(entity, groups.EmptyGroups().Ptr().Enable(definitions.GameGroup).Val())
 
 				world.Collider.Component().Set(entity, collider.NewCollider(world.Definitions.SquareCollider))
-				world.Inputs.LeftClick().Set(entity, inputs.NewLeftClick(tile.NewClickEntityEvent()))
 				world.Inputs.Stack().Set(entity, inputs.StackComponent{})
 			}
 		}

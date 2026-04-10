@@ -5,6 +5,7 @@ import (
 	"core/modules/ui"
 	gamescenes "core/scenes"
 	"engine/modules/camera"
+	"engine/modules/groups"
 	"engine/modules/layout"
 	"engine/modules/text"
 	"engine/modules/transform"
@@ -26,6 +27,7 @@ func (pkg) Register(b ioc.Builder) {
 			world := ioc.GetServices[gamescenes.World](c)
 			cameraEntity := world.NewEntity()
 			world.Hierarchy.SetParent(cameraEntity, sceneParent)
+			world.Groups.Component().Set(cameraEntity, groups.DefaultGroups())
 			world.Camera.Ortho().Set(cameraEntity, camera.NewOrtho(-1000, +1000))
 			world.Ui.CursorCamera().Set(cameraEntity, ui.CursorCameraComponent{})
 
@@ -47,6 +49,7 @@ func (pkg) Register(b ioc.Builder) {
 
 			buttonArea := world.NewEntity()
 			world.Transform.Size().Set(buttonArea, transform.NewSize(500, 200, 1))
+			world.Groups.Inherit().Set(buttonArea, groups.InheritGroupsComponent{})
 			world.Hierarchy.SetParent(buttonArea, cameraEntity)
 			world.Transform.Parent().Set(buttonArea, transform.NewParent(transform.RelativePos))
 

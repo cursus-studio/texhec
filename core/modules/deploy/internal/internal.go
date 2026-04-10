@@ -3,6 +3,7 @@ package internal
 import (
 	"core/modules/definitions"
 	"core/modules/deploy"
+	"core/modules/player"
 	"core/modules/tile"
 	"core/modules/ui"
 	"engine"
@@ -20,7 +21,8 @@ type placeholder struct{}
 
 type service struct {
 	engine.World `inject:"1"`
-	Tile         tile.Service `inject:"1"`
+	Tile         tile.Service   `inject:"1"`
+	Player       player.Service `inject:"1"`
 
 	component   ecs.ComponentsArray[deploy.Component]
 	link        ecs.ComponentsArray[deploy.LinkComponent]
@@ -45,7 +47,11 @@ func NewService(c ioc.Dic) deploy.Service {
 func (s *service) Component() ecs.ComponentsArray[deploy.Component] { return s.component }
 func (s *service) Link() ecs.ComponentsArray[deploy.LinkComponent]  { return s.link }
 
-func (s *service) Deploy(blueprint ecs.EntityID, coords grid.Coords) {
+func (s *service) Deploy(
+	blueprint,
+	owner ecs.EntityID,
+	coords grid.Coords,
+) {
 	// perform verification can you deploy by someone
 	// if you cannot than do a flip
 	// if deploy.By ? {
@@ -56,7 +62,9 @@ func (s *service) Deploy(blueprint ecs.EntityID, coords grid.Coords) {
 	deployed := s.Prototype.Clone(blueprint)
 	s.Hierarchy.SetParent(deployed, s.Scene.Scene())
 
+	s.Player.Owner().Set(deployed, player.NewOwner(owner))
 	s.Tile.Deployed().Set(deployed, tile.NewDeployed())
+	s.Inputs.LeftClick().Set(deployed, inputs.NewLeftClick(tile.NewClickEntityEvent()))
 	s.Tile.Pos().Set(deployed, tile.NewPos(coords.Coords()))
 	events.Emit(s.Events, ui.HideUiEvent{})
 }
@@ -117,7 +125,11 @@ func (s *service) Execute(e deploy.ExecuteEvent) {
 	deployed := s.Prototype.Clone(e.Blueprint)
 	s.Hierarchy.SetParent(deployed, s.Scene.Scene())
 
+	if owner, ok := s.Player.Owner().Get(e.By); ok {
+		s.Player.Owner().Set(deployed, owner)
+	}
 	s.Tile.Deployed().Set(deployed, tile.NewDeployed())
+	s.Inputs.LeftClick().Set(deployed, inputs.NewLeftClick(tile.NewClickEntityEvent()))
 	s.Tile.Pos().Set(deployed, tile.NewPos(e.Coords.Coords()))
 	events.Emit(s.Events, ui.HideUiEvent{})
 }

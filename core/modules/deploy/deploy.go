@@ -35,7 +35,11 @@ type Service interface {
 
 	// deploy differs from execute event by who deploys.
 	// execute adds costs and everything where deploy just deploys without any costs (its deployed by system)
-	Deploy(blueprint ecs.EntityID, coords grid.Coords)
+	Deploy(
+		blueprint,
+		owner ecs.EntityID,
+		coords grid.Coords,
+	)
 	Select(SelectEvent)
 	Preview(PreviewEvent)
 	Execute(ExecuteEvent)

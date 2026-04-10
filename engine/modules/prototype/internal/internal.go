@@ -31,11 +31,15 @@ func (s *service) Add(array ecs.AnyComponentArray) {
 
 func (s *service) Clone(cloned ecs.EntityID) ecs.EntityID {
 	clone := s.World.NewEntity()
+	s.CloneTo(cloned, clone)
+	return clone
+}
+
+func (s *service) CloneTo(cloned, clone ecs.EntityID) {
 	for _, arr := range s.arrays {
 		if comp, ok := arr.GetAny(cloned); ok {
 			_ = arr.SetAny(clone, comp)
 		}
 	}
 	events.Emit(s.Events, prototype.NewCloneEvent(cloned, clone))
-	return clone
 }
