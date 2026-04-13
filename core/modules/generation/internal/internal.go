@@ -216,7 +216,7 @@ func (s *service) Generate(c generation.Config) batcher.Task {
 
 		// generates objects
 		s.Deploy.Deploy(s.Definitions.Constructs.Farm, playerEntity, grid.NewCoords(1, 1))
-		s.Deploy.Deploy(s.Definitions.Units.Tank, player2Entity, grid.NewCoords(2, 2))
+		s.Deploy.Deploy(s.Definitions.Units.Tank, player2Entity, grid.NewCoords(3, 3))
 	})
 
 	// task
