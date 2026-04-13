@@ -1,4 +1,4 @@
-package tileui
+package tilesystem
 
 import (
 	"core/modules/tile"

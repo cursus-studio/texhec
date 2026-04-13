@@ -8,7 +8,7 @@ import (
 	obstructionsystem "core/modules/tile/internal/obstructionSystem"
 	"core/modules/tile/internal/tilerenderer"
 	"core/modules/tile/internal/tileservice"
-	"core/modules/tile/internal/tileui"
+	"core/modules/tile/internal/tilesystem"
 	"engine"
 	"engine/modules/assets"
 	"engine/modules/collider"
@@ -85,7 +85,7 @@ func (pkg pkg) Register(b ioc.Builder) {
 
 	ioc.RegisterSingleton(b, func(c ioc.Dic) tile.System {
 		systems := []tile.System{
-			tileui.NewSystem(c),
+			tilesystem.NewSystem(c),
 			clicksystem.NewSystem(c),
 			obstructionsystem.NewSystem(c),
 		}
