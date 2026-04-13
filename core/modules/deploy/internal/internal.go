@@ -56,10 +56,10 @@ func (s *service) Deploy(
 
 	// - is position occuped
 	pos := tile.NewPos(coords.Coords())
-	size, _ := s.Tile.Size().Get(owner)
-	blueprintObstruction, _ := s.Tile.Obstruction().Get(blueprint)
+	size, _ := s.Tile.Size().Get(blueprint)
+	obstruction, _ := s.Tile.Obstruction().Get(blueprint)
 	aabb := tile.NewAABB(pos, size)
-	if s.Tile.IsOccupied(aabb, blueprintObstruction.Obstruction) {
+	if s.Tile.IsOccupied(aabb, obstruction.Obstruction) {
 		return tile.ErrPositionIsOccupied
 	}
 

@@ -60,26 +60,12 @@ func (s *system) BeforeGet() {
 	}
 
 	recording, ok := s.Record.Entity().Stop(s.recordingID)
+	var newEntities []ecs.EntityID
 	if !ok {
-		for _, entity := range s.Tile.Deployed().GetEntities() {
-			pos, ok := s.Tile.Pos().Get(entity)
-			if !ok {
-				continue
-			}
-			obstruction, _ := s.Tile.Obstruction().Get(entity)
-			size, _ := s.Tile.Size().Get(entity)
-			aabb := tile.NewAABB(pos, size)
-			for _, coords := range aabb.Tiles {
-				index, ok := obstructionGrid.GetIndex(coords.Coords())
-				if !ok {
-					s.Logger.Warn(tile.ErrInvalidPosition)
-					continue
-				}
-				res := obstructionGrid.GetTile(index) | obstruction.Obstruction
-				obstructionGrid.SetTile(index, res)
-			}
-		}
-		goto cleanup
+		newEntities = s.Tile.Deployed().GetEntities()
+		goto entityLoop
+	} else {
+		newEntities = recording.Entities.GetIndices()
 	}
 
 	// remove old positions
@@ -109,7 +95,8 @@ func (s *system) BeforeGet() {
 	}
 
 	// add new positions
-	for _, entity := range recording.Entities.GetIndices() {
+entityLoop:
+	for _, entity := range newEntities {
 		if _, ok := s.Tile.Deployed().Get(entity); !ok {
 			continue
 		}
@@ -120,17 +107,27 @@ func (s *system) BeforeGet() {
 		size, _ := s.Tile.Size().Get(entity)
 		obstruction, _ := s.Tile.Obstruction().Get(entity)
 		aabb := tile.NewAABB(pos, size)
+
 		for _, coords := range aabb.Tiles {
 			index, ok := obstructionGrid.GetIndex(coords.Coords())
 			if !ok {
 				s.Logger.Warn(tile.ErrInvalidPosition)
 				continue
 			}
+			if obstructionGrid.GetTile(index)&obstruction.Obstruction == 0 {
+				continue
+			}
+			s.RemoveEntity(entity)
+			s.Logger.Warn(tile.ErrPositionIsOccupied)
+			continue entityLoop
+		}
+		for _, coords := range aabb.Tiles {
+			// ok validation is performed in loop before
+			index, _ := obstructionGrid.GetIndex(coords.Coords())
 			obstructionGrid.SetTile(index, obstructionGrid.GetTile(index)|obstruction.Obstruction)
 		}
 	}
 
-cleanup:
 	s.recordingID = s.Record.Entity().StartBackwardsRecording(s.config)
 	s.Tile.ObstructionGrid().Set(obstructionGridEntity, obstructionGrid)
 }
