@@ -29,6 +29,7 @@ func NewSystem(c ioc.Dic) tile.System {
 		s := ioc.GetServices[*system](c)
 
 		s.tileSize = s.Tile.GetTileSize()
+		s.dirtyDeployedSet = ecs.NewDirtySet()
 		s.dirtyTransformSet = ecs.NewDirtySet()
 		s.selectedEvent = nil
 
