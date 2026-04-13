@@ -181,6 +181,8 @@ type Service interface {
 	Deployed() ecs.ComponentsArray[DeployedComponent]
 
 	GetTileSize() transform.SizeComponent
+
+	IsOccupied(AABB, Obstruction) bool
 }
 
 //

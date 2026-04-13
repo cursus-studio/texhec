@@ -46,34 +46,53 @@ func NewService(c ioc.Dic) tile.Service {
 	return s
 }
 
-func (t *service) TileType() ecs.ComponentsArray[tile.TypeComponent] {
-	return t.tile
+func (s *service) TileType() ecs.ComponentsArray[tile.TypeComponent] {
+	return s.tile
 }
-func (t *service) TileGrid() ecs.ComponentsArray[grid.SquareGridComponent[tile.ID]] {
-	return t.TileGridService.Component()
+func (s *service) TileGrid() ecs.ComponentsArray[grid.SquareGridComponent[tile.ID]] {
+	return s.TileGridService.Component()
 }
-func (t *service) ObstructionGrid() ecs.ComponentsArray[grid.SquareGridComponent[tile.Obstruction]] {
-	return t.ObstructionGridService.Component()
+func (s *service) ObstructionGrid() ecs.ComponentsArray[grid.SquareGridComponent[tile.Obstruction]] {
+	return s.ObstructionGridService.Component()
 }
-func (t *service) GetTileType(id tile.ID) (ecs.EntityID, bool) {
-	return t.TileTypeRelation.Get(id)
+func (s *service) GetTileType(id tile.ID) (ecs.EntityID, bool) {
+	return s.TileTypeRelation.Get(id)
 }
 
-func (t *service) Pos() ecs.ComponentsArray[tile.PosComponent]                 { return t.pos }
-func (t *service) Size() ecs.ComponentsArray[tile.SizeComponent]               { return t.size }
-func (t *service) Rot() ecs.ComponentsArray[tile.RotComponent]                 { return t.rot }
-func (t *service) Layer() ecs.ComponentsArray[tile.LayerComponent]             { return t.layer }
-func (t *service) Obstruction() ecs.ComponentsArray[tile.ObstructionComponent] { return t.obstruction }
-func (t *service) Deployed() ecs.ComponentsArray[tile.DeployedComponent]       { return t.deployed }
+func (s *service) Pos() ecs.ComponentsArray[tile.PosComponent]                 { return s.pos }
+func (s *service) Size() ecs.ComponentsArray[tile.SizeComponent]               { return s.size }
+func (s *service) Rot() ecs.ComponentsArray[tile.RotComponent]                 { return s.rot }
+func (s *service) Layer() ecs.ComponentsArray[tile.LayerComponent]             { return s.layer }
+func (s *service) Obstruction() ecs.ComponentsArray[tile.ObstructionComponent] { return s.obstruction }
+func (s *service) Deployed() ecs.ComponentsArray[tile.DeployedComponent]       { return s.deployed }
 
-func (t *service) GetPos(coords grid.Coords) transform.PosComponent {
-	size := t.GetTileSize().Size
+func (s *service) GetPos(coords grid.Coords) transform.PosComponent {
+	size := s.GetTileSize().Size
 	return transform.NewPos(
 		size.X()*(float32(coords.X)+.5),
 		size.Y()*(float32(coords.Y)+.5),
 		size.Z(),
 	)
 }
-func (t *service) GetTileSize() transform.SizeComponent {
+func (s *service) GetTileSize() transform.SizeComponent {
 	return transform.NewSize(100, 100, 1)
+}
+
+func (s *service) IsOccupied(aabb tile.AABB, obstruction tile.Obstruction) bool {
+	obstructionGridEntity := s.ObstructionGrid().GetEntities()[0]
+	obstructed, ok := s.ObstructionGrid().Get(obstructionGridEntity)
+	if !ok {
+		return true
+	}
+	for _, coords := range aabb.Tiles {
+		index, ok := obstructed.GetIndex(coords.Coords())
+		if !ok {
+			return true
+		}
+		coordsObstruction := obstructed.GetTile(index)
+		if obstruction&coordsObstruction != 0 {
+			return true
+		}
+	}
+	return false
 }

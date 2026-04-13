@@ -52,26 +52,15 @@ func (s *service) Deploy(
 	owner ecs.EntityID,
 	coords grid.Coords,
 ) error {
-	// check can place
+	// check can place:
+
+	// - is position occuped
 	pos := tile.NewPos(coords.Coords())
 	size, _ := s.Tile.Size().Get(owner)
-
-	obstructionGridEntity := s.Tile.ObstructionGrid().GetEntities()[0]
-	obstructed, ok := s.Tile.ObstructionGrid().Get(obstructionGridEntity)
-	if !ok {
-		return tile.ErrPositionIsOccupied
-	}
 	blueprintObstruction, _ := s.Tile.Obstruction().Get(blueprint)
 	aabb := tile.NewAABB(pos, size)
-	for _, coords := range aabb.Tiles {
-		index, ok := obstructed.GetIndex(coords.Coords())
-		if !ok {
-			return tile.ErrPositionIsOccupied
-		}
-		coordsObstruction := obstructed.GetTile(index)
-		if blueprintObstruction.Obstruction&coordsObstruction != 0 {
-			return tile.ErrPositionIsOccupied
-		}
+	if s.Tile.IsOccupied(aabb, blueprintObstruction.Obstruction) {
+		return tile.ErrPositionIsOccupied
 	}
 
 	// place
@@ -107,25 +96,15 @@ func (s *service) Preview(e deploy.PreviewEvent) {
 	s.placeholder.Set(placeholderEntity, placeholder{})
 	size, _ := s.Tile.Size().Get(e.Blueprint)
 
-	{ // check can place and place
-		obstructionGridEntity := s.Tile.ObstructionGrid().GetEntities()[0]
-		obstructed, ok := s.Tile.ObstructionGrid().Get(obstructionGridEntity)
-		if !ok {
+	{ // check can place:
+		// - is position occupied
+		blueprintObstruction, _ := s.Tile.Obstruction().Get(e.Blueprint)
+		aabb := tile.NewAABB(pos, size)
+		if s.Tile.IsOccupied(aabb, blueprintObstruction.Obstruction) {
 			goto cannotPlace
 		}
-		aabb := tile.NewAABB(pos, size)
-		for _, coords := range aabb.Tiles {
-			index, ok := obstructed.GetIndex(coords.Coords())
-			if !ok {
-				goto cannotPlace
-			}
-			blueprintObstruction, _ := s.Tile.Obstruction().Get(e.Blueprint)
-			coordsObstruction := obstructed.GetTile(index)
-			if blueprintObstruction.Obstruction&coordsObstruction != 0 {
-				goto cannotPlace
-			}
-		}
-		s.Tile.ObstructionGrid().Set(obstructionGridEntity, obstructed)
+
+		// place
 		s.Render.Color().Set(placeholderEntity, render.NewColor(mgl32.Vec4{0, 1, 0, 1}))
 		s.Inputs.LeftClick().Set(placeholderEntity, inputs.NewLeftClick(deploy.NewExecuteEvent(e.By, e.Blueprint).ApplyCoords(e.Coords)))
 		return
