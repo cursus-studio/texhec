@@ -5,6 +5,7 @@ import (
 	"engine/modules/transform"
 	"engine/modules/transition"
 	"engine/services/ecs"
+	"math"
 
 	"github.com/go-gl/mathgl/mgl32"
 	"golang.org/x/exp/constraints"
@@ -124,6 +125,35 @@ type DeployedComponent struct{}
 
 func NewDeployed() DeployedComponent {
 	return DeployedComponent{}
+}
+
+//
+
+// aabb on grid
+type AABB struct {
+	Coords PosComponent
+	Size   SizeComponent
+	Tiles  []grid.Coords
+}
+
+func NewAABB(coords PosComponent, size SizeComponent) AABB {
+	posX := grid.Coord(coords.X)
+	posY := grid.Coord(coords.Y)
+	if Coord(posX) != coords.X {
+		size.X++
+	}
+	if Coord(posY) != coords.Y {
+		size.Y++
+	}
+	sizeX := grid.Coord(math.Ceil(float64(size.X)))
+	sizeY := grid.Coord(math.Ceil(float64(size.Y)))
+	tiles := make([]grid.Coords, 0, sizeX*sizeY)
+	for x := posX; x < posX+sizeX; x++ {
+		for y := posY; y < posY+sizeY; y++ {
+			tiles = append(tiles, grid.NewCoords(x, y))
+		}
+	}
+	return AABB{coords, size, tiles}
 }
 
 //

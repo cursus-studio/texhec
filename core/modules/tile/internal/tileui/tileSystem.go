@@ -34,10 +34,12 @@ func NewSystem(c ioc.Dic) tile.System {
 		s.Tile.Size().AddDirtySet(s.dirtySet)
 		s.Tile.Rot().AddDirtySet(s.dirtySet)
 
+		s.Transform.PivotPoint().AddDependency(s.Tile.Pos())
 		s.Transform.Pos().AddDependency(s.Tile.Pos())
 		s.Transform.Size().AddDependency(s.Tile.Size())
 		s.Transform.Rotation().AddDependency(s.Tile.Rot())
 
+		s.Transform.PivotPoint().BeforeGet(s.BeforeGet)
 		s.Transform.Pos().BeforeGet(s.BeforeGet)
 		s.Transform.Size().BeforeGet(s.BeforeGet)
 		s.Transform.Rotation().BeforeGet(s.BeforeGet)
@@ -61,8 +63,8 @@ func (s *system) BeforeGet() {
 		layer, _ := s.Tile.Layer().Get(entity)
 
 		transformPos := transform.NewPos(
-			s.tileSize.Size.X()*(float32(pos.X)+.5),
-			s.tileSize.Size.Y()*(float32(pos.Y)+.5),
+			s.tileSize.Size.X()*float32(pos.X),
+			s.tileSize.Size.Y()*float32(pos.Y),
 			float32(layer.Z),
 		)
 		transformSize := transform.NewSize(
@@ -72,6 +74,7 @@ func (s *system) BeforeGet() {
 		)
 		transformRot := transform.NewRotation(rot.Quat())
 
+		s.Transform.PivotPoint().Set(entity, transform.NewPivotPoint(0, 0, .5))
 		s.Transform.Pos().Set(entity, transformPos)
 		s.Transform.Size().Set(entity, transformSize)
 		s.Transform.Rotation().Set(entity, transformRot)

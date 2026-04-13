@@ -84,8 +84,10 @@ func (s *service) Preview(e deploy.PreviewEvent) {
 	placeholderEntity := s.Prototype.Clone(e.Blueprint)
 	s.Hierarchy.SetParent(placeholderEntity, s.Scene.Scene())
 
-	s.Tile.Pos().Set(placeholderEntity, tile.NewPos(e.Coords.Coords()))
+	pos := tile.NewPos(e.Coords.Coords())
+	s.Tile.Pos().Set(placeholderEntity, pos)
 	s.placeholder.Set(placeholderEntity, placeholder{})
+	size, _ := s.Tile.Size().Get(e.Blueprint)
 
 	{ // check can place and place
 		obstructionGridEntity := s.Tile.ObstructionGrid().GetEntities()[0]
@@ -93,14 +95,17 @@ func (s *service) Preview(e deploy.PreviewEvent) {
 		if !ok {
 			goto cannotPlace
 		}
-		index, ok := obstructed.GetIndex(e.Coords.Coords())
-		if !ok {
-			goto cannotPlace
-		}
-		blueprintObstruction, _ := s.Tile.Obstruction().Get(e.Blueprint)
-		coordsObstruction := obstructed.GetTile(index)
-		if blueprintObstruction.Obstruction&coordsObstruction != 0 {
-			goto cannotPlace
+		aabb := tile.NewAABB(pos, size)
+		for _, coords := range aabb.Tiles {
+			index, ok := obstructed.GetIndex(coords.Coords())
+			if !ok {
+				goto cannotPlace
+			}
+			blueprintObstruction, _ := s.Tile.Obstruction().Get(e.Blueprint)
+			coordsObstruction := obstructed.GetTile(index)
+			if blueprintObstruction.Obstruction&coordsObstruction != 0 {
+				goto cannotPlace
+			}
 		}
 		s.Tile.ObstructionGrid().Set(obstructionGridEntity, obstructed)
 		s.Render.Color().Set(placeholderEntity, render.NewColor(mgl32.Vec4{0, 1, 0, 1}))
