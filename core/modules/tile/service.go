@@ -19,7 +19,8 @@ type SystemRenderer ecs.SystemRegister
 
 var (
 	// error logged when grid.GetIndex returns !ok
-	ErrInvalidPosition error = errors.New("tile:position not found on the grid")
+	ErrInvalidPosition    error = errors.New("tile:position not found on the grid")
+	ErrPositionIsOccupied error = errors.New("tile:position is occupied")
 )
 
 //

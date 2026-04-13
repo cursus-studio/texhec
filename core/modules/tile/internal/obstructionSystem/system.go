@@ -66,16 +66,13 @@ func (s *system) BeforeGet() {
 			if !ok {
 				continue
 			}
+			obstruction, _ := s.Tile.Obstruction().Get(entity)
 			size, _ := s.Tile.Size().Get(entity)
 			aabb := tile.NewAABB(pos, size)
 			for _, coords := range aabb.Tiles {
 				index, ok := obstructionGrid.GetIndex(coords.Coords())
 				if !ok {
 					s.Logger.Warn(tile.ErrInvalidPosition)
-					continue
-				}
-				obstruction, ok := s.Tile.Obstruction().Get(entity)
-				if !ok {
 					continue
 				}
 				res := obstructionGrid.GetTile(index) | obstruction.Obstruction
@@ -96,15 +93,12 @@ func (s *system) BeforeGet() {
 			continue
 		}
 		size, _ := s.sizeGetter(components)
+		obstruction, _ := s.obstructionGetter(components)
+		if _, ok := s.deployedGetter(components); !ok {
+			continue
+		}
 		aabb := tile.NewAABB(pos, size)
 		for _, coords := range aabb.Tiles {
-			obstruction, ok := s.obstructionGetter(components)
-			if !ok {
-				continue
-			}
-			if _, ok := s.deployedGetter(components); !ok {
-				continue
-			}
 			index, ok := obstructionGrid.GetIndex(coords.Coords())
 			if !ok {
 				s.Logger.Warn(tile.ErrInvalidPosition)

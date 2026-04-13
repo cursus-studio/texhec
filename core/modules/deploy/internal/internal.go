@@ -51,22 +51,39 @@ func (s *service) Deploy(
 	blueprint,
 	owner ecs.EntityID,
 	coords grid.Coords,
-) {
-	// perform verification can you deploy by someone
-	// if you cannot than do a flip
-	// if deploy.By ? {
-	//   log warning (this shouldn't be a button)
-	// }
-	// do not pay because this is performed by system
+) error {
+	// check can place
+	pos := tile.NewPos(coords.Coords())
+	size, _ := s.Tile.Size().Get(owner)
 
+	obstructionGridEntity := s.Tile.ObstructionGrid().GetEntities()[0]
+	obstructed, ok := s.Tile.ObstructionGrid().Get(obstructionGridEntity)
+	if !ok {
+		return tile.ErrPositionIsOccupied
+	}
+	blueprintObstruction, _ := s.Tile.Obstruction().Get(blueprint)
+	aabb := tile.NewAABB(pos, size)
+	for _, coords := range aabb.Tiles {
+		index, ok := obstructed.GetIndex(coords.Coords())
+		if !ok {
+			return tile.ErrPositionIsOccupied
+		}
+		coordsObstruction := obstructed.GetTile(index)
+		if blueprintObstruction.Obstruction&coordsObstruction != 0 {
+			return tile.ErrPositionIsOccupied
+		}
+	}
+
+	// place
 	deployed := s.Prototype.Clone(blueprint)
 	s.Hierarchy.SetParent(deployed, s.Scene.Scene())
 
 	s.Player.Owner().Set(deployed, player.NewOwner(owner))
 	s.Tile.Deployed().Set(deployed, tile.NewDeployed())
 	s.Inputs.LeftClick().Set(deployed, inputs.NewLeftClick(tile.NewClickEntityEvent()))
-	s.Tile.Pos().Set(deployed, tile.NewPos(coords.Coords()))
+	s.Tile.Pos().Set(deployed, pos)
 	events.Emit(s.Events, ui.HideUiEvent{})
+	return nil
 }
 
 func (s *service) Unselect(e ui.HideUiEvent) {
@@ -83,6 +100,7 @@ func (s *service) Preview(e deploy.PreviewEvent) {
 	}
 	placeholderEntity := s.Prototype.Clone(e.Blueprint)
 	s.Hierarchy.SetParent(placeholderEntity, s.Scene.Scene())
+	s.Tile.Layer().Set(placeholderEntity, tile.NewLayer(definitions.PlaceholderLayer))
 
 	pos := tile.NewPos(e.Coords.Coords())
 	s.Tile.Pos().Set(placeholderEntity, pos)
@@ -110,26 +128,48 @@ func (s *service) Preview(e deploy.PreviewEvent) {
 		s.Tile.ObstructionGrid().Set(obstructionGridEntity, obstructed)
 		s.Render.Color().Set(placeholderEntity, render.NewColor(mgl32.Vec4{0, 1, 0, 1}))
 		s.Inputs.LeftClick().Set(placeholderEntity, inputs.NewLeftClick(deploy.NewExecuteEvent(e.By, e.Blueprint).ApplyCoords(e.Coords)))
-		s.Tile.Layer().Set(placeholderEntity, tile.NewLayer(definitions.PlaceholderLayer))
 		return
 	}
 cannotPlace:
 	s.Render.Color().Set(placeholderEntity, render.NewColor(mgl32.Vec4{1, 0, 0, 1}))
 }
 func (s *service) Execute(e deploy.ExecuteEvent) {
+	// remove placeholder entities
 	for _, entity := range s.placeholder.GetEntities() {
 		s.RemoveEntity(entity)
 	}
-	// perform verification can you deploy by someone
-	// if you cannot than do a flip
-	// if deploy.By ? {
-	//   log warning (this shouldn't be a button)
-	// }
-	// pay and perform everything
 
+	// pay
+	// ...
+
+	// check can place
+	pos := tile.NewPos(e.Coords.Coords())
+	size, _ := s.Tile.Size().Get(e.Blueprint)
+	blueprintObstruction, _ := s.Tile.Obstruction().Get(e.Blueprint)
+
+	obstructionGridEntity := s.Tile.ObstructionGrid().GetEntities()[0]
+	obstructed, ok := s.Tile.ObstructionGrid().Get(obstructionGridEntity)
+	if !ok {
+		s.Logger.Warn(tile.ErrPositionIsOccupied)
+		return
+	}
+	aabb := tile.NewAABB(pos, size)
+	for _, coords := range aabb.Tiles {
+		index, ok := obstructed.GetIndex(coords.Coords())
+		if !ok {
+			s.Logger.Warn(tile.ErrPositionIsOccupied)
+			return
+		}
+		coordsObstruction := obstructed.GetTile(index)
+		if blueprintObstruction.Obstruction&coordsObstruction != 0 {
+			s.Logger.Warn(tile.ErrPositionIsOccupied)
+			return
+		}
+	}
+
+	// place
 	deployed := s.Prototype.Clone(e.Blueprint)
 	s.Hierarchy.SetParent(deployed, s.Scene.Scene())
-
 	if owner, ok := s.Player.Owner().Get(e.By); ok {
 		s.Player.Owner().Set(deployed, owner)
 	}

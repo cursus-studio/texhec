@@ -14,7 +14,6 @@ import (
 	"engine/modules/collider"
 	gridpkg "engine/modules/grid/pkg"
 	"engine/modules/groups"
-	"engine/modules/inputs"
 	prototypepkg "engine/modules/prototype/pkg"
 	"engine/modules/registry"
 	relationpkg "engine/modules/relation/pkg"
@@ -159,7 +158,6 @@ func (pkg pkg) Register(b ioc.Builder) {
 				world.Groups.Component().Set(entity, groups.EmptyGroups().Ptr().Enable(definitions.GameGroup).Val())
 
 				world.Collider.Component().Set(entity, collider.NewCollider(world.Definitions.SquareCollider))
-				world.Inputs.Stack().Set(entity, inputs.StackComponent{})
 			}
 		}
 		b.Register("unit", objectShared(definitions.UnitLayer))
