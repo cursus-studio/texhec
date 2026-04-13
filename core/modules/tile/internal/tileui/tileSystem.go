@@ -4,6 +4,7 @@ import (
 	"core/modules/tile"
 	"core/modules/ui"
 	"engine"
+	"engine/modules/inputs"
 	"engine/modules/transform"
 	"engine/services/ecs"
 	"fmt"
@@ -17,9 +18,10 @@ type system struct {
 	Ui           ui.Service   `inject:"1"`
 	Tile         tile.Service `inject:"1"`
 
-	dirtySet      ecs.DirtySet
-	tileSize      transform.SizeComponent
-	selectedEvent *tile.SelectEvent
+	dirtyDeployedSet  ecs.DirtySet
+	dirtyTransformSet ecs.DirtySet
+	tileSize          transform.SizeComponent
+	selectedEvent     *tile.SelectEvent
 }
 
 func NewSystem(c ioc.Dic) tile.System {
@@ -27,22 +29,32 @@ func NewSystem(c ioc.Dic) tile.System {
 		s := ioc.GetServices[*system](c)
 
 		s.tileSize = s.Tile.GetTileSize()
-		s.dirtySet = ecs.NewDirtySet()
+		s.dirtyTransformSet = ecs.NewDirtySet()
 		s.selectedEvent = nil
 
-		s.Tile.Pos().AddDirtySet(s.dirtySet)
-		s.Tile.Size().AddDirtySet(s.dirtySet)
-		s.Tile.Rot().AddDirtySet(s.dirtySet)
+		//
+		s.Tile.Pos().AddDirtySet(s.dirtyTransformSet)
+		s.Tile.Size().AddDirtySet(s.dirtyTransformSet)
+		s.Tile.Rot().AddDirtySet(s.dirtyTransformSet)
 
 		s.Transform.PivotPoint().AddDependency(s.Tile.Pos())
 		s.Transform.Pos().AddDependency(s.Tile.Pos())
 		s.Transform.Size().AddDependency(s.Tile.Size())
 		s.Transform.Rotation().AddDependency(s.Tile.Rot())
 
-		s.Transform.PivotPoint().BeforeGet(s.BeforeGet)
-		s.Transform.Pos().BeforeGet(s.BeforeGet)
-		s.Transform.Size().BeforeGet(s.BeforeGet)
-		s.Transform.Rotation().BeforeGet(s.BeforeGet)
+		s.Transform.PivotPoint().BeforeGet(s.BeforeTransformGet)
+		s.Transform.Pos().BeforeGet(s.BeforeTransformGet)
+		s.Transform.Size().BeforeGet(s.BeforeTransformGet)
+		s.Transform.Rotation().BeforeGet(s.BeforeTransformGet)
+
+		//
+
+		s.Tile.Deployed().AddDirtySet(s.dirtyDeployedSet)
+		s.Inputs.Stack().AddDependency(s.Tile.Deployed())
+
+		s.Inputs.Stack().BeforeGet(s.BeforeStackGet)
+
+		//
 
 		events.Listen(s.EventsBuilder, s.OnUnselect)
 		events.Listen(s.EventsBuilder, s.OnSelect)
@@ -51,11 +63,23 @@ func NewSystem(c ioc.Dic) tile.System {
 	})
 }
 
-func (s *system) BeforeGet() {
-	for _, entity := range s.dirtySet.Get() {
+func (s *system) BeforeStackGet() {
+	for _, entity := range s.dirtyDeployedSet.Get() {
+		if _, ok := s.Tile.Deployed().Get(entity); !ok {
+			s.Inputs.Stack().Remove(entity)
+			continue
+		}
+
+		s.Inputs.Stack().Set(entity, inputs.StackComponent{})
+	}
+}
+
+func (s *system) BeforeTransformGet() {
+	for _, entity := range s.dirtyTransformSet.Get() {
 		pos, ok := s.Tile.Pos().Get(entity)
 		if !ok {
 			s.Transform.Size().Remove(entity)
+			s.Inputs.Stack().Remove(entity)
 			continue
 		}
 		size, _ := s.Tile.Size().Get(entity)
