@@ -41,6 +41,7 @@ func NewService(c ioc.Dic) tile.Service {
 
 	s.size.SetEmpty(tile.NewSize(1, 1))
 	s.layer.SetEmpty(tile.NewLayer(definitions.TileLayer))
+	s.obstruction.SetEmpty(tile.NewObstruction(definitions.LowlandObstruction))
 
 	return s
 }
