@@ -5,6 +5,8 @@ import (
 	"engine/modules/transform"
 	"engine/modules/transition"
 	"engine/services/ecs"
+	"errors"
+	"math"
 
 	"github.com/go-gl/mathgl/mgl32"
 	"golang.org/x/exp/constraints"
@@ -12,6 +14,14 @@ import (
 
 type System ecs.SystemRegister
 type SystemRenderer ecs.SystemRegister
+
+//
+
+var (
+	// error logged when grid.GetIndex returns !ok
+	ErrInvalidPosition    error = errors.New("tile:position not found on the grid")
+	ErrPositionIsOccupied error = errors.New("tile:position is occupied")
+)
 
 //
 
@@ -128,6 +138,35 @@ func NewDeployed() DeployedComponent {
 
 //
 
+// aabb on grid
+type AABB struct {
+	Coords PosComponent
+	Size   SizeComponent
+	Tiles  []grid.Coords
+}
+
+func NewAABB(coords PosComponent, size SizeComponent) AABB {
+	posX := grid.Coord(coords.X)
+	posY := grid.Coord(coords.Y)
+	if Coord(posX) != coords.X {
+		size.X++
+	}
+	if Coord(posY) != coords.Y {
+		size.Y++
+	}
+	sizeX := grid.Coord(math.Ceil(float64(size.X)))
+	sizeY := grid.Coord(math.Ceil(float64(size.Y)))
+	tiles := make([]grid.Coords, 0, sizeX*sizeY)
+	for x := posX; x < posX+sizeX; x++ {
+		for y := posY; y < posY+sizeY; y++ {
+			tiles = append(tiles, grid.NewCoords(x, y))
+		}
+	}
+	return AABB{coords, size, tiles}
+}
+
+//
+
 type Service interface {
 	TileType() ecs.ComponentsArray[TypeComponent]
 	TileGrid() ecs.ComponentsArray[grid.SquareGridComponent[ID]]
@@ -142,6 +181,8 @@ type Service interface {
 	Deployed() ecs.ComponentsArray[DeployedComponent]
 
 	GetTileSize() transform.SizeComponent
+
+	IsOccupied(AABB, Obstruction) bool
 }
 
 //

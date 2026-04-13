@@ -215,8 +215,24 @@ func (s *service) Generate(c generation.Config) batcher.Task {
 		s.Metadata.Name().Set(player2Entity, metadata.NewName("anna"))
 
 		// generates objects
-		s.Deploy.Deploy(s.Definitions.Constructs.Farm, playerEntity, grid.NewCoords(1, 1))
-		s.Deploy.Deploy(s.Definitions.Units.Tank, player2Entity, grid.NewCoords(2, 2))
+		type Deployed struct {
+			Blueprint,
+			Player ecs.EntityID
+		}
+		toDeploy := []Deployed{
+			{s.Definitions.Constructs.Farm, playerEntity},
+			{s.Definitions.Units.Tank, player2Entity},
+		}
+		for index := range gridStateComponent.GetLastIndex() {
+			if len(toDeploy) == 0 {
+				break
+			}
+			coords := gridStateComponent.GetCoords(index)
+			deployed := toDeploy[0]
+			if err := s.Deploy.Deploy(deployed.Blueprint, deployed.Player, coords); err == nil {
+				toDeploy = toDeploy[1:]
+			}
+		}
 	})
 
 	// task

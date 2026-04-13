@@ -39,7 +39,7 @@ type Service interface {
 		blueprint,
 		owner ecs.EntityID,
 		coords grid.Coords,
-	)
+	) error
 	Select(SelectEvent)
 	Preview(PreviewEvent)
 	Execute(ExecuteEvent)

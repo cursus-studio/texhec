@@ -14,7 +14,6 @@ import (
 	"engine/modules/collider"
 	gridpkg "engine/modules/grid/pkg"
 	"engine/modules/groups"
-	"engine/modules/inputs"
 	prototypepkg "engine/modules/prototype/pkg"
 	"engine/modules/registry"
 	relationpkg "engine/modules/relation/pkg"
@@ -26,6 +25,7 @@ import (
 	"fmt"
 	"image"
 	"os"
+	"strconv"
 	"strings"
 
 	"github.com/ogiusek/ioc/v2"
@@ -158,7 +158,6 @@ func (pkg pkg) Register(b ioc.Builder) {
 				world.Groups.Component().Set(entity, groups.EmptyGroups().Ptr().Enable(definitions.GameGroup).Val())
 
 				world.Collider.Component().Set(entity, collider.NewCollider(world.Definitions.SquareCollider))
-				world.Inputs.Stack().Set(entity, inputs.StackComponent{})
 			}
 		}
 		b.Register("unit", objectShared(definitions.UnitLayer))
@@ -176,6 +175,26 @@ func (pkg pkg) Register(b ioc.Builder) {
 				obstruction |= definitions.AirspaceObstruction
 			}
 			world.Tile.Obstruction().Set(entity, tile.NewObstruction(obstruction))
+		})
+		b.Register("size", func(entity ecs.EntityID, structTagValue string) {
+			errInvalidFormat := fmt.Errorf("size should be in format \"1x1\" where first number is width and second is height")
+			world := ioc.GetServices[World](c)
+			xy := strings.Split(structTagValue, "x")
+			if len(xy) != 2 {
+				world.Logger.Warn(errInvalidFormat)
+				return
+			}
+			x, err := strconv.Atoi(xy[0])
+			if err != nil {
+				world.Logger.Warn(errInvalidFormat)
+				return
+			}
+			y, err := strconv.Atoi(xy[1])
+			if err != nil {
+				world.Logger.Warn(errInvalidFormat)
+				return
+			}
+			world.Tile.Size().Set(entity, tile.NewSize(x, y))
 		})
 	})
 }

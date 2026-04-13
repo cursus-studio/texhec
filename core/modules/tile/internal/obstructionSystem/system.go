@@ -3,7 +3,6 @@ package obstructionsystem
 import (
 	"core/modules/tile"
 	"engine"
-	"engine/modules/grid"
 	"engine/modules/record"
 	"engine/services/ecs"
 	"errors"
@@ -20,6 +19,7 @@ type system struct {
 	dirtyEntities ecs.DirtySet
 
 	posGetter         record.ComponentGetter[tile.PosComponent]
+	sizeGetter        record.ComponentGetter[tile.SizeComponent]
 	obstructionGetter record.ComponentGetter[tile.ObstructionComponent]
 	deployedGetter    record.ComponentGetter[tile.DeployedComponent]
 }
@@ -32,10 +32,12 @@ func NewSystem(c ioc.Dic) tile.System {
 		s.dirtyEntities = ecs.NewDirtySet()
 
 		s.posGetter = record.AddToConfig[tile.PosComponent](s.config)
+		s.sizeGetter = record.AddToConfig[tile.SizeComponent](s.config)
 		s.obstructionGetter = record.AddToConfig[tile.ObstructionComponent](s.config)
 		s.deployedGetter = record.AddToConfig[tile.DeployedComponent](s.config)
 
 		s.Tile.Pos().AddDirtySet(s.dirtyEntities)
+		s.Tile.Size().AddDirtySet(s.dirtyEntities)
 		s.Tile.Obstruction().AddDirtySet(s.dirtyEntities)
 		s.Tile.Deployed().AddDirtySet(s.dirtyEntities)
 		s.Tile.ObstructionGrid().BeforeGet(s.BeforeGet)
@@ -64,17 +66,18 @@ func (s *system) BeforeGet() {
 			if !ok {
 				continue
 			}
-			index, ok := obstructionGrid.GetIndex(grid.Coord(pos.X), grid.Coord(pos.Y))
-			if !ok {
-				s.Logger.Warn(errors.New("invalid position"))
-				continue
+			obstruction, _ := s.Tile.Obstruction().Get(entity)
+			size, _ := s.Tile.Size().Get(entity)
+			aabb := tile.NewAABB(pos, size)
+			for _, coords := range aabb.Tiles {
+				index, ok := obstructionGrid.GetIndex(coords.Coords())
+				if !ok {
+					s.Logger.Warn(tile.ErrInvalidPosition)
+					continue
+				}
+				res := obstructionGrid.GetTile(index) | obstruction.Obstruction
+				obstructionGrid.SetTile(index, res)
 			}
-			obstruction, ok := s.Tile.Obstruction().Get(entity)
-			if !ok {
-				continue
-			}
-			res := obstructionGrid.GetTile(index) | obstruction.Obstruction
-			obstructionGrid.SetTile(index, res)
 		}
 		goto cleanup
 	}
@@ -89,19 +92,20 @@ func (s *system) BeforeGet() {
 		if !ok {
 			continue
 		}
-		obstruction, ok := s.obstructionGetter(components)
-		if !ok {
-			continue
-		}
+		size, _ := s.sizeGetter(components)
+		obstruction, _ := s.obstructionGetter(components)
 		if _, ok := s.deployedGetter(components); !ok {
 			continue
 		}
-		index, ok := obstructionGrid.GetIndex(grid.Coord(pos.X), grid.Coord(pos.Y))
-		if !ok {
-			s.Logger.Warn(errors.New("invalid position"))
-			continue
+		aabb := tile.NewAABB(pos, size)
+		for _, coords := range aabb.Tiles {
+			index, ok := obstructionGrid.GetIndex(coords.Coords())
+			if !ok {
+				s.Logger.Warn(tile.ErrInvalidPosition)
+				continue
+			}
+			obstructionGrid.SetTile(index, obstructionGrid.GetTile(index)&^obstruction.Obstruction)
 		}
-		obstructionGrid.SetTile(index, obstructionGrid.GetTile(index)&^obstruction.Obstruction)
 	}
 
 	// add new positions
@@ -113,13 +117,17 @@ func (s *system) BeforeGet() {
 		if !ok {
 			continue
 		}
+		size, _ := s.Tile.Size().Get(entity)
 		obstruction, _ := s.Tile.Obstruction().Get(entity)
-		index, ok := obstructionGrid.GetIndex(grid.Coord(pos.X), grid.Coord(pos.Y))
-		if !ok {
-			s.Logger.Warn(errors.New("invalid position"))
-			continue
+		aabb := tile.NewAABB(pos, size)
+		for _, coords := range aabb.Tiles {
+			index, ok := obstructionGrid.GetIndex(coords.Coords())
+			if !ok {
+				s.Logger.Warn(tile.ErrInvalidPosition)
+				continue
+			}
+			obstructionGrid.SetTile(index, obstructionGrid.GetTile(index)|obstruction.Obstruction)
 		}
-		obstructionGrid.SetTile(index, obstructionGrid.GetTile(index)|obstruction.Obstruction)
 	}
 
 cleanup:
