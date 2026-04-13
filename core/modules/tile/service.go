@@ -5,6 +5,7 @@ import (
 	"engine/modules/transform"
 	"engine/modules/transition"
 	"engine/services/ecs"
+	"errors"
 	"math"
 
 	"github.com/go-gl/mathgl/mgl32"
@@ -13,6 +14,13 @@ import (
 
 type System ecs.SystemRegister
 type SystemRenderer ecs.SystemRegister
+
+//
+
+var (
+	// error logged when grid.GetIndex returns !ok
+	ErrInvalidPosition error = errors.New("tile:position not found on the grid")
+)
 
 //
 

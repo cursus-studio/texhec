@@ -71,7 +71,7 @@ func (s *system) BeforeGet() {
 			for _, coords := range aabb.Tiles {
 				index, ok := obstructionGrid.GetIndex(coords.Coords())
 				if !ok {
-					s.Logger.Warn(errors.New("invalid position"))
+					s.Logger.Warn(tile.ErrInvalidPosition)
 					continue
 				}
 				obstruction, ok := s.Tile.Obstruction().Get(entity)
@@ -107,7 +107,7 @@ func (s *system) BeforeGet() {
 			}
 			index, ok := obstructionGrid.GetIndex(coords.Coords())
 			if !ok {
-				s.Logger.Warn(errors.New("invalid position"))
+				s.Logger.Warn(tile.ErrInvalidPosition)
 				continue
 			}
 			obstructionGrid.SetTile(index, obstructionGrid.GetTile(index)&^obstruction.Obstruction)
@@ -129,7 +129,7 @@ func (s *system) BeforeGet() {
 		for _, coords := range aabb.Tiles {
 			index, ok := obstructionGrid.GetIndex(coords.Coords())
 			if !ok {
-				s.Logger.Warn(errors.New("invalid position"))
+				s.Logger.Warn(tile.ErrInvalidPosition)
 				continue
 			}
 			obstructionGrid.SetTile(index, obstructionGrid.GetTile(index)|obstruction.Obstruction)
