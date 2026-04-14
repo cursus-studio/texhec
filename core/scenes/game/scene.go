@@ -87,7 +87,11 @@ func addScene(
 	world.Camera.Mobile().Set(gameCamera, camera.NewMobileCamera())
 	world.Camera.Limits().Set(gameCamera, camera.NewCameraLimits(
 		mgl32.Vec3{0, 0, -1000},
-		mgl32.Vec3{100 * float32(cols), 100 * float32(rows), 1000},
+		mgl32.Vec3{
+			world.Tile.GetTileSize().Size[0] * float32(cols),
+			world.Tile.GetTileSize().Size[1] * float32(rows),
+			1000,
+		},
 	))
 
 	if isServer {
@@ -98,8 +102,8 @@ func addScene(
 
 		task := world.Generation.Generate(generation.NewConfig(
 			gridEntity,
-			seed.New(world.Clock.Now().Unix()),
-			// seed.New(21377137),
+			// seed.New(world.Clock.Now().Unix()),
+			seed.New(21377137),
 			grid.NewCoords(cols, rows),
 		))
 		world.Batcher.Queue(task)

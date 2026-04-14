@@ -39,6 +39,8 @@ type ComponentsArray[Component any] interface {
 
 	// configuration
 	SetEmpty(Component)
+	// it gets called imidiately with current empty
+	GetEmpty() Component
 }
 
 // impl
@@ -106,6 +108,9 @@ func (c *componentsArray[Component]) SetAny(entity EntityID, anyComponent any) e
 
 func (c *componentsArray[Component]) SetEmpty(empty Component) {
 	c.empty = empty
+}
+func (c *componentsArray[Component]) GetEmpty() Component {
+	return c.empty
 }
 
 func (c *componentsArray[Component]) Remove(entity EntityID) {

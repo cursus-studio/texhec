@@ -78,5 +78,5 @@ type Constructs struct {
 }
 
 type Units struct {
-	Tank ecs.EntityID `path:"units/tank.png" name:"tank" unit:"" obstruction:"lowland"`
+	Tank ecs.EntityID `path:"units/tank.png" name:"tank" unit:"" obstruction:"lowland" speed:"10"`
 }

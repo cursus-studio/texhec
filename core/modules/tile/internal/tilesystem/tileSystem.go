@@ -1,17 +1,23 @@
-package tileui
+package tilesystem
 
 import (
 	"core/modules/tile"
 	"core/modules/ui"
 	"engine"
+	"engine/modules/grid"
 	"engine/modules/inputs"
 	"engine/modules/transform"
 	"engine/services/ecs"
+	"engine/services/frames"
 	"fmt"
 
+	"github.com/go-gl/mathgl/mgl32"
 	"github.com/ogiusek/events"
 	"github.com/ogiusek/ioc/v2"
+	"golang.org/x/exp/constraints"
 )
+
+var invSpeedTable [256]tile.Coord
 
 type system struct {
 	engine.World `inject:"1"`
@@ -25,6 +31,9 @@ type system struct {
 }
 
 func NewSystem(c ioc.Dic) tile.System {
+	for i := 1; i < 256; i++ {
+		invSpeedTable[i] = 1. / tile.Coord(i)
+	}
 	return ecs.NewSystemRegister(func() error {
 		s := ioc.GetServices[*system](c)
 
@@ -57,6 +66,7 @@ func NewSystem(c ioc.Dic) tile.System {
 
 		//
 
+		events.Listen(s.EventsBuilder, s.OnTick)
 		events.Listen(s.EventsBuilder, s.OnUnselect)
 		events.Listen(s.EventsBuilder, s.OnSelect)
 		events.Listen(s.EventsBuilder, s.OnHover)
@@ -103,6 +113,114 @@ func (s *system) BeforeTransformGet() {
 		s.Transform.Pos().Set(entity, transformPos)
 		s.Transform.Size().Set(entity, transformSize)
 		s.Transform.Rotation().Set(entity, transformRot)
+	}
+}
+
+func abs[Number constraints.Float | constraints.Integer](n Number) Number {
+	return max(-n, n)
+}
+
+var (
+	rotLeft  = tile.NewRot(mgl32.DegToRad(90))
+	rotRight = tile.NewRot(mgl32.DegToRad(270))
+	rotUp    = tile.NewRot(mgl32.DegToRad(0))
+	rotDown  = tile.NewRot(mgl32.DegToRad(180))
+)
+
+func (s *system) OnTick(e frames.TickEvent) {
+	entities := s.Tile.Step().GetEntities()
+	{
+		cp := make([]ecs.EntityID, len(entities))
+		copy(cp, entities)
+		entities = cp
+	}
+	for _, entity := range entities {
+		step, ok := s.Tile.Step().Get(entity)
+		if !ok {
+			continue
+		}
+		pos, ok := s.Tile.Pos().Get(entity)
+		if !ok {
+			s.Tile.Step().Remove(entity)
+			s.Logger.Warn(tile.ErrPositionAndSpeedIsRequiredToStep)
+			continue
+		}
+		speed, ok := s.Tile.Speed().Get(entity)
+		if !ok {
+			s.Tile.Step().Remove(entity)
+			s.Logger.Warn(tile.ErrPositionAndSpeedIsRequiredToStep)
+			continue
+		}
+		arrived := tile.Coord(step.X) == pos.X && tile.Coord(step.Y) == pos.Y
+		if arrived {
+			s.Tile.Step().Remove(entity)
+			continue
+		}
+		justStartedMoving := tile.Coord(int(pos.X)) == pos.X && tile.Coord(int(pos.Y)) == pos.Y
+		if justStartedMoving { // check can step
+			isValidStep := abs(step.X-grid.Coord(pos.X))+abs(step.Y-grid.Coord(pos.Y)) == 1
+			if !isValidStep {
+				s.Tile.Step().Remove(entity)
+				s.Logger.Warn(tile.ErrInvalidStep)
+				continue
+			}
+
+			// is step destination occupied
+			size, _ := s.Tile.Size().Get(entity)
+			obstruction, _ := s.Tile.Obstruction().Get(entity)
+			var aabbPos tile.PosComponent
+			var aabbSize tile.SizeComponent
+
+			// aabb size
+			if grid.Coord(pos.X) != step.X {
+				aabbSize = tile.NewSize(1, size.Y)
+			} else if grid.Coord(pos.Y) != step.Y {
+				aabbSize = tile.NewSize(size.X, 1)
+			}
+			// aabb pos
+			if grid.Coord(pos.X) < step.X {
+				aabbPos = tile.NewPos(step.X+size.X-1, step.Y)
+			} else if grid.Coord(pos.Y) < step.Y {
+				aabbPos = tile.NewPos(step.X, step.Y+size.Y-1)
+			} else {
+				aabbPos = tile.NewPos(step.Coords.Coords())
+			}
+			// perform is step destination occupied
+			if s.Tile.IsOccupied(tile.NewAABB(aabbPos, aabbSize), obstruction.Obstruction) {
+				s.Tile.Step().Remove(entity)
+				s.Logger.Warn(tile.ErrPositionIsOccupied)
+				continue
+			}
+		}
+
+		// move
+		var rot tile.RotComponent
+		stepSpeed := invSpeedTable[speed.InvSpeed]
+		if tile.Coord(step.X) > pos.X {
+			pos.X = min(pos.X+stepSpeed, tile.Coord(step.X))
+			rot = rotRight
+		} else if tile.Coord(step.X) < pos.X {
+			pos.X = max(pos.X-stepSpeed, tile.Coord(step.X))
+			rot = rotLeft
+		} else if tile.Coord(step.Y) > pos.Y {
+			pos.Y = min(pos.Y+stepSpeed, tile.Coord(step.Y))
+			rot = rotUp
+		} else if tile.Coord(step.Y) < pos.Y {
+			pos.Y = max(pos.Y-stepSpeed, tile.Coord(step.Y))
+			rot = rotDown
+		} else {
+			s.Logger.Warn(fmt.Errorf("tile system isn't able to handle StepComponent"))
+		}
+		s.Tile.Pos().Set(entity, pos)
+
+		if justStartedMoving {
+			s.Tile.Rot().Set(entity, rot)
+		}
+
+		arrived = tile.Coord(step.X) == pos.X && tile.Coord(step.Y) == pos.Y
+		if arrived {
+			s.Tile.Step().Remove(entity)
+		}
 	}
 }
 

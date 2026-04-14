@@ -20,12 +20,16 @@ type service struct {
 
 	tile ecs.ComponentsArray[tile.TypeComponent]
 
-	pos         ecs.ComponentsArray[tile.PosComponent]
-	size        ecs.ComponentsArray[tile.SizeComponent]
-	rot         ecs.ComponentsArray[tile.RotComponent]
-	layer       ecs.ComponentsArray[tile.LayerComponent]
+	pos   ecs.ComponentsArray[tile.PosComponent]
+	size  ecs.ComponentsArray[tile.SizeComponent]
+	rot   ecs.ComponentsArray[tile.RotComponent]
+	layer ecs.ComponentsArray[tile.LayerComponent]
+
 	obstruction ecs.ComponentsArray[tile.ObstructionComponent]
 	deployed    ecs.ComponentsArray[tile.DeployedComponent]
+
+	speed ecs.ComponentsArray[tile.SpeedComponent]
+	step  ecs.ComponentsArray[tile.StepComponent]
 }
 
 func NewService(c ioc.Dic) tile.Service {
@@ -36,8 +40,12 @@ func NewService(c ioc.Dic) tile.Service {
 	s.size = ecs.GetComponentsArray[tile.SizeComponent](s.World)
 	s.rot = ecs.GetComponentsArray[tile.RotComponent](s.World)
 	s.layer = ecs.GetComponentsArray[tile.LayerComponent](s.World)
+
 	s.obstruction = ecs.GetComponentsArray[tile.ObstructionComponent](s.World)
 	s.deployed = ecs.GetComponentsArray[tile.DeployedComponent](s.World)
+
+	s.speed = ecs.GetComponentsArray[tile.SpeedComponent](s.World)
+	s.step = ecs.GetComponentsArray[tile.StepComponent](s.World)
 
 	s.size.SetEmpty(tile.NewSize(1, 1))
 	s.layer.SetEmpty(tile.NewLayer(definitions.TileLayer))
@@ -59,12 +67,16 @@ func (s *service) GetTileType(id tile.ID) (ecs.EntityID, bool) {
 	return s.TileTypeRelation.Get(id)
 }
 
-func (s *service) Pos() ecs.ComponentsArray[tile.PosComponent]                 { return s.pos }
-func (s *service) Size() ecs.ComponentsArray[tile.SizeComponent]               { return s.size }
-func (s *service) Rot() ecs.ComponentsArray[tile.RotComponent]                 { return s.rot }
-func (s *service) Layer() ecs.ComponentsArray[tile.LayerComponent]             { return s.layer }
+func (s *service) Pos() ecs.ComponentsArray[tile.PosComponent]     { return s.pos }
+func (s *service) Size() ecs.ComponentsArray[tile.SizeComponent]   { return s.size }
+func (s *service) Rot() ecs.ComponentsArray[tile.RotComponent]     { return s.rot }
+func (s *service) Layer() ecs.ComponentsArray[tile.LayerComponent] { return s.layer }
+
 func (s *service) Obstruction() ecs.ComponentsArray[tile.ObstructionComponent] { return s.obstruction }
 func (s *service) Deployed() ecs.ComponentsArray[tile.DeployedComponent]       { return s.deployed }
+
+func (s *service) Speed() ecs.ComponentsArray[tile.SpeedComponent] { return s.speed }
+func (s *service) Step() ecs.ComponentsArray[tile.StepComponent]   { return s.step }
 
 func (s *service) GetPos(coords grid.Coords) transform.PosComponent {
 	size := s.GetTileSize().Size

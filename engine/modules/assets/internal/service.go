@@ -5,7 +5,6 @@ import (
 	"engine/modules/registry"
 	"engine/services/datastructures"
 	"engine/services/ecs"
-	"fmt"
 
 	"github.com/ogiusek/ioc/v2"
 )
@@ -69,7 +68,6 @@ func (s *assetsService) Get(entity ecs.EntityID) (assets.Asset, error) {
 	extension := path.Extension()
 	dispatcher, ok := s.ExtensionDispatcher(extension)
 	if !ok {
-		fmt.Printf("\"%v\" path.\n", path)
 		return nil, assets.ErrAssetNotFound
 	}
 	asset, err := dispatcher(path)

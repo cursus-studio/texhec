@@ -223,14 +223,21 @@ func (s *service) Generate(c generation.Config) batcher.Task {
 			{s.Definitions.Constructs.Farm, playerEntity},
 			{s.Definitions.Units.Tank, player2Entity},
 		}
-		for index := range gridStateComponent.GetLastIndex() {
+		for index := grid.Index(1); index < gridStateComponent.GetLastIndex(); index++ {
 			if len(toDeploy) == 0 {
 				break
 			}
 			coords := gridStateComponent.GetCoords(index)
 			deployed := toDeploy[0]
-			if err := s.Deploy.Deploy(deployed.Blueprint, deployed.Player, coords); err == nil {
+			if entity, err := s.Deploy.Deploy(deployed.Blueprint, deployed.Player, coords); err == nil {
+				index += 2
 				toDeploy = toDeploy[1:]
+				if _, ok := s.Tile.Speed().Get(entity); !ok {
+					continue
+				}
+				step := tile.NewStep(coords.Coords())
+				step.X--
+				s.Tile.Step().Set(entity, step)
 			}
 		}
 	})

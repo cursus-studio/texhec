@@ -245,7 +245,6 @@ func getDic() ioc.Dic {
 			smoothpkg.SmoothComponent[render.ColorComponent](config)
 			smoothpkg.SmoothComponent[tile.PosComponent](config)
 			smoothpkg.SmoothComponent[tile.RotComponent](config)
-			smoothpkg.SmoothComponent[tile.SizeComponent](config)
 			return config
 		}()),
 		transitionpkg.Package(),

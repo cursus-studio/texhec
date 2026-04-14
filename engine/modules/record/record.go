@@ -18,6 +18,7 @@ type Config struct {
 	ComponentsOrder    *[]reflect.Type
 	ComponentsIndices  map[reflect.Type]int
 	RecordedComponents map[reflect.Type]func(ecs.World) ecs.AnyComponentArray
+	InheritZero        map[reflect.Type]func(ecs.World)
 }
 
 func NewConfig() Config {
@@ -26,13 +27,17 @@ func NewConfig() Config {
 		ComponentsOrder:    &componentsOrder,
 		ComponentsIndices:  make(map[reflect.Type]int),
 		RecordedComponents: make(map[reflect.Type]func(ecs.World) ecs.AnyComponentArray),
+		InheritZero:        make(map[reflect.Type]func(ecs.World)),
 	}
 }
 
 type ComponentGetter[Component any] func(components []any) (Component, bool)
 
 func AddToConfig[Component any](config Config) ComponentGetter[Component] {
-	var zero Component
+	zero := func() Component {
+		var zero Component
+		return zero
+	}
 	componentType := reflect.TypeFor[Component]()
 	i, ok := config.ComponentsIndices[componentType]
 	if ok {
@@ -44,14 +49,17 @@ func AddToConfig[Component any](config Config) ComponentGetter[Component] {
 	config.RecordedComponents[componentType] = func(w ecs.World) ecs.AnyComponentArray {
 		return ecs.GetComponentsArray[Component](w)
 	}
+	config.InheritZero[componentType] = func(inherit ecs.World) {
+		zero = ecs.GetComponentsArray[Component](inherit).GetEmpty
+	}
 
 cleanup:
 	return func(components []any) (Component, bool) {
 		if len(components) == 0 {
-			return zero, false
+			return zero(), false
 		}
 		if components[i] == nil {
-			return zero, false
+			return zero(), false
 		}
 		return components[i].(Component), true
 	}

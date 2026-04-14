@@ -159,6 +159,7 @@ func (t *service) GetWorldArray(arrayType reflect.Type, config record.Config) en
 		return array
 	}
 	arrayCtor := config.RecordedComponents[arrayType]
+	inheritCtor := config.InheritZero[arrayType]
 	entityArray := entityArray{
 		dirtySet:          ecs.NewDirtySet(),
 		dependencies:      datastructures.NewSet[*BackwardRecording](),
@@ -169,6 +170,7 @@ func (t *service) GetWorldArray(arrayType reflect.Type, config record.Config) en
 	t.worldArrays[arrayKey] = entityArray
 	entityArray.dirtySet.Clear()
 
+	inheritCtor(t.World)
 	array := arrayCtor(t.worldCopy)
 	t.worldCopyArrays[arrayKey] = array
 
@@ -186,6 +188,7 @@ func (t *service) GetWorldCopyArray(arrayType reflect.Type, config record.Config
 		return array
 	}
 	arrayCtor := config.RecordedComponents[arrayType]
+	inheritCtor := config.InheritZero[arrayType]
 	entityArray := entityArray{
 		dirtySet:          ecs.NewDirtySet(),
 		dependencies:      datastructures.NewSet[*BackwardRecording](),
@@ -196,6 +199,7 @@ func (t *service) GetWorldCopyArray(arrayType reflect.Type, config record.Config
 	t.worldArrays[arrayKey] = entityArray
 	entityArray.dirtySet.Clear()
 
+	inheritCtor(t.World)
 	array := arrayCtor(t.worldCopy)
 	t.worldCopyArrays[arrayKey] = array
 
