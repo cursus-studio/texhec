@@ -39,15 +39,18 @@ type ComponentsArray[Component any] interface {
 
 	// configuration
 	SetEmpty(Component)
+	// it gets called imidiately with current empty
+	OnEmptyChange(func(Component))
 }
 
 // impl
 
 type componentsArray[Component any] struct {
-	entities   entitiesInterface
-	equal      func(Component, Component) bool
-	empty      Component
-	components datastructures.SparseArray[EntityID, Component]
+	entities               entitiesInterface
+	equal                  func(Component, Component) bool
+	empty                  Component
+	onEmptyChangelisteners []func(Component)
+	components             datastructures.SparseArray[EntityID, Component]
 
 	dependencies []AnyComponentArray
 	dirtySets    datastructures.Set[DirtySet]
@@ -106,6 +109,13 @@ func (c *componentsArray[Component]) SetAny(entity EntityID, anyComponent any) e
 
 func (c *componentsArray[Component]) SetEmpty(empty Component) {
 	c.empty = empty
+	for _, listener := range c.onEmptyChangelisteners {
+		listener(empty)
+	}
+}
+func (c *componentsArray[Component]) OnEmptyChange(listener func(Component)) {
+	c.onEmptyChangelisteners = append(c.onEmptyChangelisteners, listener)
+	listener(c.empty)
 }
 
 func (c *componentsArray[Component]) Remove(entity EntityID) {
