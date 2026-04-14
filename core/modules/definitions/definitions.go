@@ -74,9 +74,9 @@ type Tiles struct {
 }
 
 type Constructs struct {
-	Farm ecs.EntityID `path:"constructs/farm.png" name:"farm" construct:"" obstruction:"lowland" size:"2x2"`
+	Farm ecs.EntityID `path:"constructs/farm.png" name:"farm" construct:"" obstruction:"lowland" size:"2x2" speed:"20"`
 }
 
 type Units struct {
-	Tank ecs.EntityID `path:"units/tank.png" name:"tank" unit:"" obstruction:"lowland"`
+	Tank ecs.EntityID `path:"units/tank.png" name:"tank" unit:"" obstruction:"lowland" speed:"10"`
 }
