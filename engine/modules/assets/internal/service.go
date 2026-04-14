@@ -5,7 +5,6 @@ import (
 	"engine/modules/registry"
 	"engine/services/datastructures"
 	"engine/services/ecs"
-	"fmt"
 
 	"github.com/ogiusek/ioc/v2"
 )
