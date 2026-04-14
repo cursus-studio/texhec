@@ -13,9 +13,10 @@ import (
 
 	"github.com/ogiusek/events"
 	"github.com/ogiusek/ioc/v2"
+	"golang.org/x/exp/constraints"
 )
 
-var invSpeedTable [256]float32
+var invSpeedTable [256]tile.Coord
 
 type system struct {
 	engine.World `inject:"1"`
@@ -30,7 +31,7 @@ type system struct {
 
 func NewSystem(c ioc.Dic) tile.System {
 	for i := 1; i < 256; i++ {
-		invSpeedTable[i] = 1.0 / float32(i)
+		invSpeedTable[i] = 1. / tile.Coord(i)
 	}
 	return ecs.NewSystemRegister(func() error {
 		s := ioc.GetServices[*system](c)
@@ -114,7 +115,9 @@ func (s *system) BeforeTransformGet() {
 	}
 }
 
-// before destination get
+func abs[Number constraints.Float | constraints.Integer](n Number) Number {
+	return max(-n, n)
+}
 
 func (s *system) OnTick(e frames.TickEvent) {
 	entities := s.Tile.Destination().GetEntities()
@@ -140,23 +143,63 @@ func (s *system) OnTick(e frames.TickEvent) {
 			s.Logger.Warn(tile.ErrPositionAndSpeedIsRequiredToMoveToDestination)
 			continue
 		}
+		arrived := destination.X == grid.Coord(pos.X) && destination.Y == grid.Coord(pos.Y)
+		if arrived {
+			s.Tile.Destination().Remove(entity)
+			continue
+		}
+		justStartedMoving := tile.Coord(int(pos.X)) == pos.X && tile.Coord(int(pos.Y)) == pos.Y
+		if justStartedMoving { // check can move to destination
+			isValidDestination := abs(destination.X-grid.Coord(pos.X))+abs(destination.Y-grid.Coord(pos.Y)) == 1
+			if !isValidDestination {
+				s.Tile.Destination().Remove(entity)
+				s.Logger.Warn(tile.ErrInvalidDestination)
+				continue
+			}
 
-		// change position
-		progress := invSpeedTable[speed.InvSpeed]
+			// is destination occupied
+			size, _ := s.Tile.Size().Get(entity)
+			obstruction, _ := s.Tile.Obstruction().Get(entity)
+			if grid.Coord(pos.X) != destination.X && s.Tile.IsOccupied(
+				tile.NewAABB(
+					tile.NewPos(destination.X+size.X-1, destination.Y),
+					tile.NewSize(1, size.Y),
+				),
+				obstruction.Obstruction,
+			) {
+				s.Logger.Warn(tile.ErrPositionIsOccupied)
+				s.Tile.Destination().Remove(entity)
+				continue
+			}
+			if grid.Coord(pos.Y) != destination.Y && s.Tile.IsOccupied(
+				tile.NewAABB(
+					tile.NewPos(destination.X, destination.Y+size.Y-1),
+					tile.NewSize(size.X, 1),
+				),
+				obstruction.Obstruction,
+			) {
+				s.Logger.Warn(tile.ErrPositionIsOccupied)
+				s.Tile.Destination().Remove(entity)
+				continue
+			}
+		}
+
+		// move
+		step := invSpeedTable[speed.InvSpeed]
 		if destination.X > grid.Coord(pos.X) {
-			pos.X = min(pos.X+tile.Coord(progress), tile.Coord(destination.X))
+			pos.X = min(pos.X+step, tile.Coord(destination.X))
 		} else if destination.X < grid.Coord(pos.X) {
-			pos.X = max(pos.X-tile.Coord(progress), tile.Coord(destination.X))
+			pos.X = max(pos.X-step, tile.Coord(destination.X))
 		}
 		if destination.Y > grid.Coord(pos.Y) {
-			pos.Y = min(pos.Y+tile.Coord(progress), tile.Coord(destination.Y))
+			pos.Y = min(pos.Y+step, tile.Coord(destination.Y))
 		} else if destination.Y < grid.Coord(pos.Y) {
-			pos.Y = max(pos.Y-tile.Coord(progress), tile.Coord(destination.Y))
+			pos.Y = max(pos.Y-step, tile.Coord(destination.Y))
 		}
 		s.Tile.Pos().Set(entity, pos)
 
-		// remove destination if you arrived
-		if pos.X == tile.Coord(destination.X) && pos.Y == tile.Coord(destination.Y) {
+		arrived = destination.X == grid.Coord(pos.X) && destination.Y == grid.Coord(pos.Y)
+		if arrived {
 			s.Tile.Destination().Remove(entity)
 		}
 	}
