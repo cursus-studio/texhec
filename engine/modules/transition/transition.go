@@ -21,7 +21,7 @@ type LerpConstraint[Component any] interface {
 }
 
 func Lerp[Number, T constraints.Float](a, b Number, t T) Number {
-	return a*Number(1-t) + b*Number(t)
+	return a + Number(t)*(b-a)
 }
 
 //
