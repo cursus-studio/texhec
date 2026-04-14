@@ -6,7 +6,6 @@ import (
 	"engine/modules/transition"
 	"engine/services/ecs"
 	"errors"
-	"math"
 
 	"github.com/go-gl/mathgl/mgl32"
 	"golang.org/x/exp/constraints"
@@ -19,8 +18,9 @@ type SystemRenderer ecs.SystemRegister
 
 var (
 	// error logged when grid.GetIndex returns !ok
-	ErrInvalidPosition    error = errors.New("tile:position not found on the grid")
-	ErrPositionIsOccupied error = errors.New("tile:position is occupied")
+	ErrInvalidPosition                               error = errors.New("tile:position not found on the grid")
+	ErrPositionIsOccupied                            error = errors.New("tile:position is occupied")
+	ErrPositionAndSpeedIsRequiredToMoveToDestination error = errors.New("tile:to set destination you need to have speed and position")
 )
 
 //
@@ -43,7 +43,7 @@ func NewTileType(id ID) TypeComponent {
 
 //
 
-type Coord float64
+type Coord float32
 
 type PosComponent struct {
 	X, Y Coord
@@ -73,21 +73,14 @@ func NewLayer[Number constraints.Integer | constraints.Float](z Number) LayerCom
 //
 
 type SizeComponent struct {
-	X, Y Coord
+	X, Y grid.Coord
 }
 
-func NewSize[Number constraints.Integer | constraints.Float](x, y Number) SizeComponent {
-	return SizeComponent{Coord(x), Coord(y)}
+func NewSize[Number constraints.Integer](x, y Number) SizeComponent {
+	return SizeComponent{grid.Coord(x), grid.Coord(y)}
 }
 
-func (c1 SizeComponent) Lerp(c2 SizeComponent, mix32 float32) SizeComponent {
-	return SizeComponent{
-		transition.Lerp(c1.X, c2.X, mix32),
-		transition.Lerp(c1.Y, c2.Y, mix32),
-	}
-}
-
-func (c *SizeComponent) Size() (Coord, Coord) {
+func (c *SizeComponent) Size() (grid.Coord, grid.Coord) {
 	return c.X, c.Y
 }
 
@@ -110,6 +103,10 @@ func (e *RotComponent) Quat() mgl32.Quat {
 }
 
 //
+//
+//
+
+// obstruction
 
 // mask of ways in which tile is obstructed
 type Obstruction uint8
@@ -118,22 +115,14 @@ func NewObstructGrid(w, h grid.Coord) grid.SquareGridComponent[Obstruction] {
 	return grid.NewSquareGrid[Obstruction](w, h)
 }
 
-// defines how entity or tile obstruct
+// Defines how entity or tile obstruct
+// On obstruction collision new entity is removed and warning is logged
 type ObstructionComponent struct {
 	Obstruction Obstruction
 }
 
 func NewObstruction(obstruction Obstruction) ObstructionComponent {
 	return ObstructionComponent{obstruction}
-}
-
-//
-
-// adding and removing deployed component modified obstruction component
-type DeployedComponent struct{}
-
-func NewDeployed() DeployedComponent {
-	return DeployedComponent{}
 }
 
 //
@@ -154,15 +143,44 @@ func NewAABB(coords PosComponent, size SizeComponent) AABB {
 	if Coord(posY) != coords.Y {
 		size.Y++
 	}
-	sizeX := grid.Coord(math.Ceil(float64(size.X)))
-	sizeY := grid.Coord(math.Ceil(float64(size.Y)))
-	tiles := make([]grid.Coords, 0, sizeX*sizeY)
-	for x := posX; x < posX+sizeX; x++ {
-		for y := posY; y < posY+sizeY; y++ {
+	tiles := make([]grid.Coords, 0, size.X*size.Y)
+	for x := posX; x < posX+size.X; x++ {
+		for y := posY; y < posY+size.Y; y++ {
 			tiles = append(tiles, grid.NewCoords(x, y))
 		}
 	}
 	return AABB{coords, size, tiles}
+}
+
+// adding and removing deployed component modifies obstruction component
+type DeployedComponent struct{}
+
+func NewDeployed() DeployedComponent {
+	return DeployedComponent{}
+}
+
+//
+//
+//
+
+type SpeedComponent struct {
+	InvSpeed int8 // ticks to move one tile
+}
+
+func NewSpeed[Number constraints.Integer](invSpeed Number) SpeedComponent {
+	return SpeedComponent{int8(invSpeed)}
+}
+
+//
+
+// Destination coords can range < -1, 1 > from current position.
+// Otherwise it'll be ignored and warning will be logged.
+type DestinationComponent struct {
+	grid.Coords
+}
+
+func NewDestination(x, y grid.Coord) DestinationComponent {
+	return DestinationComponent{grid.NewCoords(x, y)}
 }
 
 //
@@ -177,11 +195,17 @@ type Service interface {
 	Size() ecs.ComponentsArray[SizeComponent]
 	Rot() ecs.ComponentsArray[RotComponent]
 	Layer() ecs.ComponentsArray[LayerComponent]
+
 	Obstruction() ecs.ComponentsArray[ObstructionComponent]
 	Deployed() ecs.ComponentsArray[DeployedComponent]
 
-	GetTileSize() transform.SizeComponent
+	Speed() ecs.ComponentsArray[SpeedComponent]
+	Destination() ecs.ComponentsArray[DestinationComponent]
 
+	//
+
+	// 1x1 size to transform
+	GetTileSize() transform.SizeComponent
 	IsOccupied(AABB, Obstruction) bool
 }
 

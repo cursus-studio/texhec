@@ -4,14 +4,18 @@ import (
 	"core/modules/tile"
 	"core/modules/ui"
 	"engine"
+	"engine/modules/grid"
 	"engine/modules/inputs"
 	"engine/modules/transform"
 	"engine/services/ecs"
+	"engine/services/frames"
 	"fmt"
 
 	"github.com/ogiusek/events"
 	"github.com/ogiusek/ioc/v2"
 )
+
+var invSpeedTable [256]float32
 
 type system struct {
 	engine.World `inject:"1"`
@@ -25,6 +29,9 @@ type system struct {
 }
 
 func NewSystem(c ioc.Dic) tile.System {
+	for i := 1; i < 256; i++ {
+		invSpeedTable[i] = 1.0 / float32(i)
+	}
 	return ecs.NewSystemRegister(func() error {
 		s := ioc.GetServices[*system](c)
 
@@ -57,6 +64,7 @@ func NewSystem(c ioc.Dic) tile.System {
 
 		//
 
+		events.Listen(s.EventsBuilder, s.OnTick)
 		events.Listen(s.EventsBuilder, s.OnUnselect)
 		events.Listen(s.EventsBuilder, s.OnSelect)
 		events.Listen(s.EventsBuilder, s.OnHover)
@@ -103,6 +111,54 @@ func (s *system) BeforeTransformGet() {
 		s.Transform.Pos().Set(entity, transformPos)
 		s.Transform.Size().Set(entity, transformSize)
 		s.Transform.Rotation().Set(entity, transformRot)
+	}
+}
+
+// before destination get
+
+func (s *system) OnTick(e frames.TickEvent) {
+	entities := s.Tile.Destination().GetEntities()
+	{
+		cp := make([]ecs.EntityID, len(entities))
+		copy(cp, entities)
+		entities = cp
+	}
+	for _, entity := range entities {
+		destination, ok := s.Tile.Destination().Get(entity)
+		if !ok {
+			continue
+		}
+		pos, ok := s.Tile.Pos().Get(entity)
+		if !ok {
+			s.Tile.Destination().Remove(entity)
+			s.Logger.Warn(tile.ErrPositionAndSpeedIsRequiredToMoveToDestination)
+			continue
+		}
+		speed, ok := s.Tile.Speed().Get(entity)
+		if !ok {
+			s.Tile.Destination().Remove(entity)
+			s.Logger.Warn(tile.ErrPositionAndSpeedIsRequiredToMoveToDestination)
+			continue
+		}
+
+		// change position
+		progress := invSpeedTable[speed.InvSpeed]
+		if destination.X > grid.Coord(pos.X) {
+			pos.X = min(pos.X+tile.Coord(progress), tile.Coord(destination.X))
+		} else if destination.X < grid.Coord(pos.X) {
+			pos.X = max(pos.X-tile.Coord(progress), tile.Coord(destination.X))
+		}
+		if destination.Y > grid.Coord(pos.Y) {
+			pos.Y = min(pos.Y+tile.Coord(progress), tile.Coord(destination.Y))
+		} else if destination.Y < grid.Coord(pos.Y) {
+			pos.Y = max(pos.Y-tile.Coord(progress), tile.Coord(destination.Y))
+		}
+		s.Tile.Pos().Set(entity, pos)
+
+		// remove destination if you arrived
+		if pos.X == tile.Coord(destination.X) && pos.Y == tile.Coord(destination.Y) {
+			s.Tile.Destination().Remove(entity)
+		}
 	}
 }
 

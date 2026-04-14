@@ -57,14 +57,19 @@ func (pkg pkg) Register(b ioc.Builder) {
 			},
 			func(index tile.ID) uint32 { return uint32(index) },
 		),
-		tileservice.Package(),
 		tilerenderer.Package(),
 		prototypepkg.PackageT[tile.TypeComponent](),
 		prototypepkg.PackageT[tile.PosComponent](),
 		prototypepkg.PackageT[tile.SizeComponent](),
 		prototypepkg.PackageT[tile.RotComponent](),
 		prototypepkg.PackageT[tile.LayerComponent](),
+
 		prototypepkg.PackageT[tile.ObstructionComponent](),
+
+		prototypepkg.PackageT[tile.SpeedComponent](),
+
+		transitionpkg.PackageT[tile.PosComponent](),
+		transitionpkg.PackageT[tile.RotComponent](),
 	} {
 		pkg.Register(b)
 	}
@@ -75,13 +80,9 @@ func (pkg pkg) Register(b ioc.Builder) {
 			Register(tile.HoverEvent{})
 	})
 
-	for _, pkg := range []ioc.Pkg{
-		transitionpkg.PackageT[tile.PosComponent](),
-		transitionpkg.PackageT[tile.SizeComponent](),
-		transitionpkg.PackageT[tile.RotComponent](),
-	} {
-		pkg.Register(b)
-	}
+	ioc.RegisterSingleton(b, func(c ioc.Dic) tile.Service {
+		return tileservice.NewService(c)
+	})
 
 	ioc.RegisterSingleton(b, func(c ioc.Dic) tile.System {
 		systems := []tile.System{
@@ -96,15 +97,6 @@ func (pkg pkg) Register(b ioc.Builder) {
 				}
 			}
 			return nil
-		})
-	})
-
-	ioc.WrapService(b, func(c ioc.Dic, registry registry.Service) {
-		var counter tile.ID
-		registry.Register("tile", func(entity ecs.EntityID, structTagValue string) {
-			counter++
-			tileService := ioc.Get[tile.Service](c)
-			tileService.TileType().Set(entity, tile.NewTileType(counter))
 		})
 	})
 
@@ -160,6 +152,13 @@ func (pkg pkg) Register(b ioc.Builder) {
 				world.Collider.Component().Set(entity, collider.NewCollider(world.Definitions.SquareCollider))
 			}
 		}
+		var counter tile.ID
+		b.Register("tile", func(entity ecs.EntityID, structTagValue string) {
+			counter++
+			tileService := ioc.Get[tile.Service](c)
+			tileService.TileType().Set(entity, tile.NewTileType(counter))
+		})
+
 		b.Register("unit", objectShared(definitions.UnitLayer))
 		b.Register("construct", objectShared(definitions.ConstructLayer))
 		b.Register("obstruction", func(entity ecs.EntityID, structTagValue string) {
@@ -195,6 +194,20 @@ func (pkg pkg) Register(b ioc.Builder) {
 				return
 			}
 			world.Tile.Size().Set(entity, tile.NewSize(x, y))
+		})
+		b.Register("speed", func(entity ecs.EntityID, structTagValue string) {
+			world := ioc.GetServices[World](c)
+			v, err := strconv.Atoi(structTagValue)
+			if err != nil {
+				world.Logger.Warn(err)
+				return
+			}
+			speed := tile.NewSpeed(v)
+			if int(speed.InvSpeed) != v {
+				world.Logger.Warn(fmt.Errorf("speed has to be clamped between 0 and 255"))
+				return
+			}
+			world.Tile.Speed().Set(entity, speed)
 		})
 	})
 }
