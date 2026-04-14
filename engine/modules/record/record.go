@@ -34,7 +34,10 @@ func NewConfig() Config {
 type ComponentGetter[Component any] func(components []any) (Component, bool)
 
 func AddToConfig[Component any](config Config) ComponentGetter[Component] {
-	var zero Component
+	zero := func() Component {
+		var zero Component
+		return zero
+	}
 	componentType := reflect.TypeFor[Component]()
 	i, ok := config.ComponentsIndices[componentType]
 	if ok {
@@ -47,19 +50,16 @@ func AddToConfig[Component any](config Config) ComponentGetter[Component] {
 		return ecs.GetComponentsArray[Component](w)
 	}
 	config.InheritZero[componentType] = func(inherit ecs.World) {
-		arr := ecs.GetComponentsArray[Component](inherit)
-		arr.OnEmptyChange(func(c Component) {
-			zero = c
-		})
+		zero = ecs.GetComponentsArray[Component](inherit).GetEmpty
 	}
 
 cleanup:
 	return func(components []any) (Component, bool) {
 		if len(components) == 0 {
-			return zero, false
+			return zero(), false
 		}
 		if components[i] == nil {
-			return zero, false
+			return zero(), false
 		}
 		return components[i].(Component), true
 	}
