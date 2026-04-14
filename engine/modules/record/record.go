@@ -18,6 +18,7 @@ type Config struct {
 	ComponentsOrder    *[]reflect.Type
 	ComponentsIndices  map[reflect.Type]int
 	RecordedComponents map[reflect.Type]func(ecs.World) ecs.AnyComponentArray
+	InheritZero        map[reflect.Type]func(ecs.World)
 }
 
 func NewConfig() Config {
@@ -26,6 +27,7 @@ func NewConfig() Config {
 		ComponentsOrder:    &componentsOrder,
 		ComponentsIndices:  make(map[reflect.Type]int),
 		RecordedComponents: make(map[reflect.Type]func(ecs.World) ecs.AnyComponentArray),
+		InheritZero:        make(map[reflect.Type]func(ecs.World)),
 	}
 }
 
@@ -43,6 +45,12 @@ func AddToConfig[Component any](config Config) ComponentGetter[Component] {
 	config.ComponentsIndices[componentType] = i
 	config.RecordedComponents[componentType] = func(w ecs.World) ecs.AnyComponentArray {
 		return ecs.GetComponentsArray[Component](w)
+	}
+	config.InheritZero[componentType] = func(inherit ecs.World) {
+		arr := ecs.GetComponentsArray[Component](inherit)
+		arr.OnEmptyChange(func(c Component) {
+			zero = c
+		})
 	}
 
 cleanup:
