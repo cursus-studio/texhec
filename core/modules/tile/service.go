@@ -20,6 +20,7 @@ var (
 	// error logged when grid.GetIndex returns !ok
 	ErrInvalidPosition                               error = errors.New("tile:position not found on the grid")
 	ErrPositionIsOccupied                            error = errors.New("tile:position is occupied")
+	ErrInvalidDestination                            error = errors.New("tile:invalid destination")
 	ErrPositionAndSpeedIsRequiredToMoveToDestination error = errors.New("tile:to set destination you need to have speed and position")
 )
 
