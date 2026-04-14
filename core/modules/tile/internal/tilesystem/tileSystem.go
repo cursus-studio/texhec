@@ -143,7 +143,7 @@ func (s *system) OnTick(e frames.TickEvent) {
 			s.Logger.Warn(tile.ErrPositionAndSpeedIsRequiredToStep)
 			continue
 		}
-		arrived := step.X == grid.Coord(pos.X) && step.Y == grid.Coord(pos.Y)
+		arrived := tile.Coord(step.X) == pos.X && tile.Coord(step.Y) == pos.Y
 		if arrived {
 			s.Tile.Step().Remove(entity)
 			continue
@@ -160,45 +160,47 @@ func (s *system) OnTick(e frames.TickEvent) {
 			// is step destination occupied
 			size, _ := s.Tile.Size().Get(entity)
 			obstruction, _ := s.Tile.Obstruction().Get(entity)
-			if grid.Coord(pos.X) != step.X && s.Tile.IsOccupied(
-				tile.NewAABB(
-					tile.NewPos(step.X+size.X-1, step.Y),
-					tile.NewSize(1, size.Y),
-				),
-				obstruction.Obstruction,
-			) {
-				s.Logger.Warn(tile.ErrPositionIsOccupied)
-				s.Tile.Step().Remove(entity)
-				continue
+			var aabbPos tile.PosComponent
+			var aabbSize tile.SizeComponent
+
+			// aabb size
+			if grid.Coord(pos.X) != step.X {
+				aabbSize = tile.NewSize(1, size.Y)
+			} else if grid.Coord(pos.Y) != step.Y {
+				aabbSize = tile.NewSize(size.X, 1)
 			}
-			if grid.Coord(pos.Y) != step.Y && s.Tile.IsOccupied(
-				tile.NewAABB(
-					tile.NewPos(step.X, step.Y+size.Y-1),
-					tile.NewSize(size.X, 1),
-				),
-				obstruction.Obstruction,
-			) {
-				s.Logger.Warn(tile.ErrPositionIsOccupied)
+			// aabb pos
+			if grid.Coord(pos.X) < step.X {
+				aabbPos = tile.NewPos(step.X+size.X-1, step.Y)
+			} else if grid.Coord(pos.Y) < step.Y {
+				aabbPos = tile.NewPos(step.X, step.Y+size.Y-1)
+			} else {
+				aabbPos = tile.NewPos(step.Coords.Coords())
+			}
+			// perform is step destination occupied
+			if s.Tile.IsOccupied(tile.NewAABB(aabbPos, aabbSize), obstruction.Obstruction) {
 				s.Tile.Step().Remove(entity)
+				s.Logger.Warn(tile.ErrPositionIsOccupied)
 				continue
 			}
 		}
 
 		// move
 		stepSpeed := invSpeedTable[speed.InvSpeed]
-		if step.X > grid.Coord(pos.X) {
+		if tile.Coord(step.X) > pos.X {
 			pos.X = min(pos.X+stepSpeed, tile.Coord(step.X))
-		} else if step.X < grid.Coord(pos.X) {
+		} else if tile.Coord(step.X) < pos.X {
 			pos.X = max(pos.X-stepSpeed, tile.Coord(step.X))
-		}
-		if step.Y > grid.Coord(pos.Y) {
+		} else if tile.Coord(step.Y) > pos.Y {
 			pos.Y = min(pos.Y+stepSpeed, tile.Coord(step.Y))
-		} else if step.Y < grid.Coord(pos.Y) {
+		} else if tile.Coord(step.Y) < pos.Y {
 			pos.Y = max(pos.Y-stepSpeed, tile.Coord(step.Y))
+		} else {
+			s.Logger.Warn(fmt.Errorf("tile system isn't able to handle StepComponent"))
 		}
 		s.Tile.Pos().Set(entity, pos)
 
-		arrived = step.X == grid.Coord(pos.X) && step.Y == grid.Coord(pos.Y)
+		arrived = tile.Coord(step.X) == pos.X && tile.Coord(step.Y) == pos.Y
 		if arrived {
 			s.Tile.Step().Remove(entity)
 		}
