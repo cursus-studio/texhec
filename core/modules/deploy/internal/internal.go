@@ -51,7 +51,7 @@ func (s *service) Deploy(
 	blueprint,
 	owner ecs.EntityID,
 	coords grid.Coords,
-) error {
+) (ecs.EntityID, error) {
 	// check can place:
 
 	// - is position occuped
@@ -60,7 +60,7 @@ func (s *service) Deploy(
 	obstruction, _ := s.Tile.Obstruction().Get(blueprint)
 	aabb := tile.NewAABB(pos, size)
 	if s.Tile.IsOccupied(aabb, obstruction.Obstruction) {
-		return tile.ErrPositionIsOccupied
+		return 0, tile.ErrPositionIsOccupied
 	}
 
 	// place
@@ -72,7 +72,7 @@ func (s *service) Deploy(
 	s.Inputs.LeftClick().Set(deployed, inputs.NewLeftClick(tile.NewClickEntityEvent()))
 	s.Tile.Pos().Set(deployed, pos)
 	events.Emit(s.Events, ui.HideUiEvent{})
-	return nil
+	return deployed, nil
 }
 
 func (s *service) Unselect(e ui.HideUiEvent) {

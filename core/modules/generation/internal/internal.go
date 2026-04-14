@@ -229,7 +229,10 @@ func (s *service) Generate(c generation.Config) batcher.Task {
 			}
 			coords := gridStateComponent.GetCoords(index)
 			deployed := toDeploy[0]
-			if err := s.Deploy.Deploy(deployed.Blueprint, deployed.Player, coords); err == nil {
+			if entity, err := s.Deploy.Deploy(deployed.Blueprint, deployed.Player, coords); err == nil {
+				destination := tile.NewDestination(coords.Coords())
+				destination.Y++
+				s.Tile.Destination().Set(entity, destination)
 				toDeploy = toDeploy[1:]
 			}
 		}
