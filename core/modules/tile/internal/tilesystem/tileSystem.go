@@ -11,6 +11,7 @@ import (
 	"engine/services/frames"
 	"fmt"
 
+	"github.com/go-gl/mathgl/mgl32"
 	"github.com/ogiusek/events"
 	"github.com/ogiusek/ioc/v2"
 	"golang.org/x/exp/constraints"
@@ -119,6 +120,13 @@ func abs[Number constraints.Float | constraints.Integer](n Number) Number {
 	return max(-n, n)
 }
 
+var (
+	rotLeft  = tile.NewRot(mgl32.DegToRad(90))
+	rotRight = tile.NewRot(mgl32.DegToRad(270))
+	rotUp    = tile.NewRot(mgl32.DegToRad(0))
+	rotDown  = tile.NewRot(mgl32.DegToRad(180))
+)
+
 func (s *system) OnTick(e frames.TickEvent) {
 	entities := s.Tile.Step().GetEntities()
 	{
@@ -186,19 +194,28 @@ func (s *system) OnTick(e frames.TickEvent) {
 		}
 
 		// move
+		var rot tile.RotComponent
 		stepSpeed := invSpeedTable[speed.InvSpeed]
 		if tile.Coord(step.X) > pos.X {
 			pos.X = min(pos.X+stepSpeed, tile.Coord(step.X))
+			rot = rotRight
 		} else if tile.Coord(step.X) < pos.X {
 			pos.X = max(pos.X-stepSpeed, tile.Coord(step.X))
+			rot = rotLeft
 		} else if tile.Coord(step.Y) > pos.Y {
 			pos.Y = min(pos.Y+stepSpeed, tile.Coord(step.Y))
+			rot = rotUp
 		} else if tile.Coord(step.Y) < pos.Y {
 			pos.Y = max(pos.Y-stepSpeed, tile.Coord(step.Y))
+			rot = rotDown
 		} else {
 			s.Logger.Warn(fmt.Errorf("tile system isn't able to handle StepComponent"))
 		}
 		s.Tile.Pos().Set(entity, pos)
+
+		if justStartedMoving {
+			s.Tile.Rot().Set(entity, rot)
+		}
 
 		arrived = tile.Coord(step.X) == pos.X && tile.Coord(step.Y) == pos.Y
 		if arrived {

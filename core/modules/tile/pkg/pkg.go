@@ -144,6 +144,7 @@ func (pkg pkg) Register(b ioc.Builder) {
 		objectShared := func(layer tile.Coord) func(entity ecs.EntityID, _ string) {
 			return func(entity ecs.EntityID, _ string) {
 				world := ioc.GetServices[World](c)
+				world.Tile.Rot().Set(entity, tile.NewRot(0))
 				world.Tile.Layer().Set(entity, tile.NewLayer(layer))
 				world.Render.Mesh().Set(entity, render.NewMesh(world.Definitions.SquareMesh))
 				world.Render.Texture().Set(entity, render.NewTexture(entity))
