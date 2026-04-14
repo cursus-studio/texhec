@@ -28,8 +28,8 @@ type service struct {
 	obstruction ecs.ComponentsArray[tile.ObstructionComponent]
 	deployed    ecs.ComponentsArray[tile.DeployedComponent]
 
-	speed       ecs.ComponentsArray[tile.SpeedComponent]
-	destination ecs.ComponentsArray[tile.DestinationComponent]
+	speed ecs.ComponentsArray[tile.SpeedComponent]
+	step  ecs.ComponentsArray[tile.StepComponent]
 }
 
 func NewService(c ioc.Dic) tile.Service {
@@ -45,7 +45,7 @@ func NewService(c ioc.Dic) tile.Service {
 	s.deployed = ecs.GetComponentsArray[tile.DeployedComponent](s.World)
 
 	s.speed = ecs.GetComponentsArray[tile.SpeedComponent](s.World)
-	s.destination = ecs.GetComponentsArray[tile.DestinationComponent](s.World)
+	s.step = ecs.GetComponentsArray[tile.StepComponent](s.World)
 
 	s.size.SetEmpty(tile.NewSize(1, 1))
 	s.layer.SetEmpty(tile.NewLayer(definitions.TileLayer))
@@ -75,8 +75,8 @@ func (s *service) Layer() ecs.ComponentsArray[tile.LayerComponent] { return s.la
 func (s *service) Obstruction() ecs.ComponentsArray[tile.ObstructionComponent] { return s.obstruction }
 func (s *service) Deployed() ecs.ComponentsArray[tile.DeployedComponent]       { return s.deployed }
 
-func (s *service) Speed() ecs.ComponentsArray[tile.SpeedComponent]             { return s.speed }
-func (s *service) Destination() ecs.ComponentsArray[tile.DestinationComponent] { return s.destination }
+func (s *service) Speed() ecs.ComponentsArray[tile.SpeedComponent] { return s.speed }
+func (s *service) Step() ecs.ComponentsArray[tile.StepComponent]   { return s.step }
 
 func (s *service) GetPos(coords grid.Coords) transform.PosComponent {
 	size := s.GetTileSize().Size

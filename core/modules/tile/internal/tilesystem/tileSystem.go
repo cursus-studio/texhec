@@ -120,87 +120,87 @@ func abs[Number constraints.Float | constraints.Integer](n Number) Number {
 }
 
 func (s *system) OnTick(e frames.TickEvent) {
-	entities := s.Tile.Destination().GetEntities()
+	entities := s.Tile.Step().GetEntities()
 	{
 		cp := make([]ecs.EntityID, len(entities))
 		copy(cp, entities)
 		entities = cp
 	}
 	for _, entity := range entities {
-		destination, ok := s.Tile.Destination().Get(entity)
+		step, ok := s.Tile.Step().Get(entity)
 		if !ok {
 			continue
 		}
 		pos, ok := s.Tile.Pos().Get(entity)
 		if !ok {
-			s.Tile.Destination().Remove(entity)
-			s.Logger.Warn(tile.ErrPositionAndSpeedIsRequiredToMoveToDestination)
+			s.Tile.Step().Remove(entity)
+			s.Logger.Warn(tile.ErrPositionAndSpeedIsRequiredToStep)
 			continue
 		}
 		speed, ok := s.Tile.Speed().Get(entity)
 		if !ok {
-			s.Tile.Destination().Remove(entity)
-			s.Logger.Warn(tile.ErrPositionAndSpeedIsRequiredToMoveToDestination)
+			s.Tile.Step().Remove(entity)
+			s.Logger.Warn(tile.ErrPositionAndSpeedIsRequiredToStep)
 			continue
 		}
-		arrived := destination.X == grid.Coord(pos.X) && destination.Y == grid.Coord(pos.Y)
+		arrived := step.X == grid.Coord(pos.X) && step.Y == grid.Coord(pos.Y)
 		if arrived {
-			s.Tile.Destination().Remove(entity)
+			s.Tile.Step().Remove(entity)
 			continue
 		}
 		justStartedMoving := tile.Coord(int(pos.X)) == pos.X && tile.Coord(int(pos.Y)) == pos.Y
-		if justStartedMoving { // check can move to destination
-			isValidDestination := abs(destination.X-grid.Coord(pos.X))+abs(destination.Y-grid.Coord(pos.Y)) == 1
-			if !isValidDestination {
-				s.Tile.Destination().Remove(entity)
-				s.Logger.Warn(tile.ErrInvalidDestination)
+		if justStartedMoving { // check can step
+			isValidStep := abs(step.X-grid.Coord(pos.X))+abs(step.Y-grid.Coord(pos.Y)) == 1
+			if !isValidStep {
+				s.Tile.Step().Remove(entity)
+				s.Logger.Warn(tile.ErrInvalidStep)
 				continue
 			}
 
-			// is destination occupied
+			// is step destination occupied
 			size, _ := s.Tile.Size().Get(entity)
 			obstruction, _ := s.Tile.Obstruction().Get(entity)
-			if grid.Coord(pos.X) != destination.X && s.Tile.IsOccupied(
+			if grid.Coord(pos.X) != step.X && s.Tile.IsOccupied(
 				tile.NewAABB(
-					tile.NewPos(destination.X+size.X-1, destination.Y),
+					tile.NewPos(step.X+size.X-1, step.Y),
 					tile.NewSize(1, size.Y),
 				),
 				obstruction.Obstruction,
 			) {
 				s.Logger.Warn(tile.ErrPositionIsOccupied)
-				s.Tile.Destination().Remove(entity)
+				s.Tile.Step().Remove(entity)
 				continue
 			}
-			if grid.Coord(pos.Y) != destination.Y && s.Tile.IsOccupied(
+			if grid.Coord(pos.Y) != step.Y && s.Tile.IsOccupied(
 				tile.NewAABB(
-					tile.NewPos(destination.X, destination.Y+size.Y-1),
+					tile.NewPos(step.X, step.Y+size.Y-1),
 					tile.NewSize(size.X, 1),
 				),
 				obstruction.Obstruction,
 			) {
 				s.Logger.Warn(tile.ErrPositionIsOccupied)
-				s.Tile.Destination().Remove(entity)
+				s.Tile.Step().Remove(entity)
 				continue
 			}
 		}
 
 		// move
-		step := invSpeedTable[speed.InvSpeed]
-		if destination.X > grid.Coord(pos.X) {
-			pos.X = min(pos.X+step, tile.Coord(destination.X))
-		} else if destination.X < grid.Coord(pos.X) {
-			pos.X = max(pos.X-step, tile.Coord(destination.X))
+		stepSpeed := invSpeedTable[speed.InvSpeed]
+		if step.X > grid.Coord(pos.X) {
+			pos.X = min(pos.X+stepSpeed, tile.Coord(step.X))
+		} else if step.X < grid.Coord(pos.X) {
+			pos.X = max(pos.X-stepSpeed, tile.Coord(step.X))
 		}
-		if destination.Y > grid.Coord(pos.Y) {
-			pos.Y = min(pos.Y+step, tile.Coord(destination.Y))
-		} else if destination.Y < grid.Coord(pos.Y) {
-			pos.Y = max(pos.Y-step, tile.Coord(destination.Y))
+		if step.Y > grid.Coord(pos.Y) {
+			pos.Y = min(pos.Y+stepSpeed, tile.Coord(step.Y))
+		} else if step.Y < grid.Coord(pos.Y) {
+			pos.Y = max(pos.Y-stepSpeed, tile.Coord(step.Y))
 		}
 		s.Tile.Pos().Set(entity, pos)
 
-		arrived = destination.X == grid.Coord(pos.X) && destination.Y == grid.Coord(pos.Y)
+		arrived = step.X == grid.Coord(pos.X) && step.Y == grid.Coord(pos.Y)
 		if arrived {
-			s.Tile.Destination().Remove(entity)
+			s.Tile.Step().Remove(entity)
 		}
 	}
 }

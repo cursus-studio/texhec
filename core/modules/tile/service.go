@@ -18,10 +18,10 @@ type SystemRenderer ecs.SystemRegister
 
 var (
 	// error logged when grid.GetIndex returns !ok
-	ErrInvalidPosition                               error = errors.New("tile:position not found on the grid")
-	ErrPositionIsOccupied                            error = errors.New("tile:position is occupied")
-	ErrInvalidDestination                            error = errors.New("tile:invalid destination")
-	ErrPositionAndSpeedIsRequiredToMoveToDestination error = errors.New("tile:to set destination you need to have speed and position")
+	ErrInvalidPosition                  error = errors.New("tile:position not found on the grid")
+	ErrPositionIsOccupied               error = errors.New("tile:position is occupied")
+	ErrInvalidStep                      error = errors.New("tile:invalid step")
+	ErrPositionAndSpeedIsRequiredToStep error = errors.New("tile:to step you need to have speed and position")
 )
 
 //
@@ -174,14 +174,14 @@ func NewSpeed[Number constraints.Integer](invSpeed Number) SpeedComponent {
 
 //
 
-// Destination coords can range < -1, 1 > from current position.
-// Otherwise it'll be ignored and warning will be logged.
-type DestinationComponent struct {
+// Step coords should be +/- 1 x or y from current target position.
+// Otherwise step will be removed and warning will be logged.
+type StepComponent struct {
 	grid.Coords
 }
 
-func NewDestination(x, y grid.Coord) DestinationComponent {
-	return DestinationComponent{grid.NewCoords(x, y)}
+func NewStep(x, y grid.Coord) StepComponent {
+	return StepComponent{grid.NewCoords(x, y)}
 }
 
 //
@@ -201,7 +201,7 @@ type Service interface {
 	Deployed() ecs.ComponentsArray[DeployedComponent]
 
 	Speed() ecs.ComponentsArray[SpeedComponent]
-	Destination() ecs.ComponentsArray[DestinationComponent]
+	Step() ecs.ComponentsArray[StepComponent]
 
 	//
 
