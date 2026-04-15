@@ -10,6 +10,7 @@ import (
 	"engine/services/ecs"
 
 	"github.com/ogiusek/ioc/v2"
+	"golang.org/x/exp/constraints"
 )
 
 type service struct {
@@ -106,4 +107,45 @@ func (s *service) Collisions(aabb tile.AABB, obstruction tile.Obstruction) []gri
 		}
 	}
 	return collisions
+}
+
+func abs[Number constraints.Float | constraints.Integer](n Number) Number {
+	return max(-n, n)
+}
+
+func (s *service) CanStep(entity ecs.EntityID, step tile.StepComponent) bool {
+	pos, ok := s.Pos().Get(entity)
+	if !ok {
+		return false
+	}
+	isValidStep := abs(step.X-grid.Coord(pos.X))+abs(step.Y-grid.Coord(pos.Y)) == 1
+	if !isValidStep {
+		return false
+	}
+
+	// is step destination occupied
+	size, _ := s.Size().Get(entity)
+	obstruction, _ := s.Obstruction().Get(entity)
+	var aabbPos tile.PosComponent
+	var aabbSize tile.SizeComponent
+
+	// aabb size
+	if grid.Coord(pos.X) != step.X {
+		aabbSize = tile.NewSize(1, size.Y)
+	} else if grid.Coord(pos.Y) != step.Y {
+		aabbSize = tile.NewSize(size.X, 1)
+	}
+	// aabb pos
+	if grid.Coord(pos.X) < step.X {
+		aabbPos = tile.NewPos(step.X+size.X-1, step.Y)
+	} else if grid.Coord(pos.Y) < step.Y {
+		aabbPos = tile.NewPos(step.X, step.Y+size.Y-1)
+	} else {
+		aabbPos = tile.NewPos(step.Coords.Coords())
+	}
+	// perform is step destination occupied
+	if collisions := s.Collisions(tile.NewAABB(aabbPos, aabbSize), obstruction.Obstruction); len(collisions) != 0 {
+		return false
+	}
+	return true
 }

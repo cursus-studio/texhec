@@ -6,6 +6,8 @@ import (
 	"core/modules/fpslogger"
 	"core/modules/generation"
 	"core/modules/loading"
+	"core/modules/pathfind"
+	"core/modules/player"
 	"core/modules/settings"
 	"core/modules/tile"
 	"core/modules/ui"
@@ -50,8 +52,10 @@ type World struct {
 	// game
 	Definitions definitions.Definitions `inject:"1"`
 	Deploy      deploy.Service          `inject:"1"`
-	Tile        tile.Service            `inject:"1"`
 	Generation  generation.Service      `inject:"1"`
+	Pathfind    pathfind.Service        `inject:"1"`
+	Player      player.Service          `inject:"1"`
+	Tile        tile.Service            `inject:"1"`
 	Ui          ui.Service              `inject:"1"`
 }
 

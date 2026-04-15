@@ -4,7 +4,6 @@ import (
 	"core/modules/tile"
 	"core/modules/ui"
 	"engine"
-	"engine/modules/grid"
 	"engine/modules/inputs"
 	"engine/modules/transform"
 	"engine/services/ecs"
@@ -14,7 +13,6 @@ import (
 	"github.com/go-gl/mathgl/mgl32"
 	"github.com/ogiusek/events"
 	"github.com/ogiusek/ioc/v2"
-	"golang.org/x/exp/constraints"
 )
 
 var invSpeedTable [256]tile.Coord
@@ -116,10 +114,6 @@ func (s *system) BeforeTransformGet() {
 	}
 }
 
-func abs[Number constraints.Float | constraints.Integer](n Number) Number {
-	return max(-n, n)
-}
-
 var (
 	rotLeft  = tile.NewRot(mgl32.DegToRad(90))
 	rotRight = tile.NewRot(mgl32.DegToRad(270))
@@ -156,41 +150,11 @@ func (s *system) OnTick(e frames.TickEvent) {
 			s.Tile.Step().Remove(entity)
 			continue
 		}
-		justStartedMoving := tile.Coord(int(pos.X)) == pos.X && tile.Coord(int(pos.Y)) == pos.Y
-		if justStartedMoving { // check can step
-			isValidStep := abs(step.X-grid.Coord(pos.X))+abs(step.Y-grid.Coord(pos.Y)) == 1
-			if !isValidStep {
-				s.Tile.Step().Remove(entity)
-				s.Logger.Warn(tile.ErrInvalidStep)
-				continue
-			}
-
-			// is step destination occupied
-			size, _ := s.Tile.Size().Get(entity)
-			obstruction, _ := s.Tile.Obstruction().Get(entity)
-			var aabbPos tile.PosComponent
-			var aabbSize tile.SizeComponent
-
-			// aabb size
-			if grid.Coord(pos.X) != step.X {
-				aabbSize = tile.NewSize(1, size.Y)
-			} else if grid.Coord(pos.Y) != step.Y {
-				aabbSize = tile.NewSize(size.X, 1)
-			}
-			// aabb pos
-			if grid.Coord(pos.X) < step.X {
-				aabbPos = tile.NewPos(step.X+size.X-1, step.Y)
-			} else if grid.Coord(pos.Y) < step.Y {
-				aabbPos = tile.NewPos(step.X, step.Y+size.Y-1)
-			} else {
-				aabbPos = tile.NewPos(step.Coords.Coords())
-			}
-			// perform is step destination occupied
-			if collisions := s.Tile.Collisions(tile.NewAABB(aabbPos, aabbSize), obstruction.Obstruction); len(collisions) != 0 {
-				s.Tile.Step().Remove(entity)
-				s.Logger.Warn(tile.ErrPositionIsOccupied)
-				continue
-			}
+		isFirstStep := pos.IsAligned()
+		if isFirstStep && !s.Tile.CanStep(entity, step) {
+			s.Tile.Step().Remove(entity)
+			s.Logger.Warn(tile.ErrInvalidStep)
+			continue
 		}
 
 		// move
@@ -213,7 +177,7 @@ func (s *system) OnTick(e frames.TickEvent) {
 		}
 		s.Tile.Pos().Set(entity, pos)
 
-		if justStartedMoving {
+		if isFirstStep {
 			s.Tile.Rot().Set(entity, rot)
 		}
 

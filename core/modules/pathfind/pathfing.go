@@ -5,13 +5,30 @@ import (
 	"engine/services/ecs"
 )
 
+// all entities without [tile.StepComponent] get one on tick which will move them towards target
+type TargetComponent struct {
+	grid.Coords
+}
+
+func NewTarget(coords grid.Coords) TargetComponent {
+	return TargetComponent{coords}
+}
+
+//
+
+type Service interface {
+	Target() ecs.ComponentsArray[TargetComponent]
+
+	Select(SelectEvent)
+	PreviewPath(PreviewPathEvent)
+	FindPath(FindPathEvent)
+}
+
 // TODO:
-// - add pathfind component
 // - each tick check each component and add tile.Step for each without tile.Step
-// - abstract away can move in tile module and use it in here
 // - follow patterns in deploy module how to add hover effects
 
-// Select unit.
+// Select object.
 // Add in gui some indicator.
 // Change on click event.
 type SelectEvent struct {
@@ -26,7 +43,7 @@ func NewSelectEvent(entity ecs.EntityID) SelectEvent {
 
 //
 
-// Select unit.
+// Select object.
 // Add in gui some indicator.
 // Perform all checks and costs
 type PreviewPathEvent struct {
@@ -49,7 +66,7 @@ func (e PreviewPathEvent) ApplyCoords(coords grid.Coords) any {
 
 //
 
-// Deploys on coords something if it doesn't collide
+// Adds [TargetComponent] to entity
 type FindPathEvent struct {
 	Entity ecs.EntityID
 	Coords grid.Coords

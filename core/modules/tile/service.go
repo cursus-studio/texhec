@@ -61,6 +61,10 @@ func (c1 PosComponent) Lerp(c2 PosComponent, mix32 float32) PosComponent {
 	}
 }
 
+func (p *PosComponent) IsAligned() bool {
+	return Coord(grid.Coord(p.X)) == p.X && Coord(grid.Coord(p.Y)) == p.Y
+}
+
 //
 
 type LayerComponent struct {
@@ -208,6 +212,7 @@ type Service interface {
 	// 1x1 size to transform
 	GetTileSize() transform.SizeComponent
 	Collisions(AABB, Obstruction) []grid.Coords
+	CanStep(ecs.EntityID, StepComponent) bool
 }
 
 //
