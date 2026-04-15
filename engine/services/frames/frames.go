@@ -40,13 +40,13 @@ func (frames *frames) StartLoop() {
 		currentTime := time.Now()
 
 		delta := currentTime.Sub(lastFrameTime)
-		event := NewFrameEvent(delta)
+		frameEvent := NewFrameEvent(delta)
 		frames.TickProgress += delta
 		for frames.TickProgress > tickDuration {
 			frames.TickProgress -= tickDuration
 			events.Emit(frames.Events, TickEvent{tickDuration})
 		}
-		events.Emit(frames.Events, event)
+		events.Emit(frames.Events, frameEvent)
 
 		lastFrameTime = currentTime
 	}
