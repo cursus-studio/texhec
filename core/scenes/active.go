@@ -119,6 +119,7 @@ func (pkg) Register(b ioc.Builder) {
 
 				// inputs
 				ioc.Get[inputs.System](c),
+				ioc.Get[audio.System](c),
 
 				// update
 				ioc.Get[camera.System](c),
@@ -132,13 +133,12 @@ func (pkg) Register(b ioc.Builder) {
 				ioc.Get[ui.System](c),
 				ioc.Get[settings.System](c),
 				ioc.Get[loading.System](c),
+				ioc.Get[batcher.System](c),
 				// } (update)
+
 				ioc.Get[smooth.StopSystem](c),
 				ioc.Get[netsync.StopSystem](c),
-				ioc.Get[batcher.System](c),
 
-				// audio
-				ioc.Get[audio.System](c),
 				ioc.Get[inputs.ShutdownSystem](c), // after batcher and before render system
 
 				// render
