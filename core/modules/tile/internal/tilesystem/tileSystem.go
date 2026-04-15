@@ -186,7 +186,7 @@ func (s *system) OnTick(e frames.TickEvent) {
 				aabbPos = tile.NewPos(step.Coords.Coords())
 			}
 			// perform is step destination occupied
-			if s.Tile.IsOccupied(tile.NewAABB(aabbPos, aabbSize), obstruction.Obstruction) {
+			if collisions := s.Tile.Collisions(tile.NewAABB(aabbPos, aabbSize), obstruction.Obstruction); len(collisions) != 0 {
 				s.Tile.Step().Remove(entity)
 				s.Logger.Warn(tile.ErrPositionIsOccupied)
 				continue

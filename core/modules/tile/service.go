@@ -207,7 +207,7 @@ type Service interface {
 
 	// 1x1 size to transform
 	GetTileSize() transform.SizeComponent
-	IsOccupied(AABB, Obstruction) bool
+	Collisions(AABB, Obstruction) []grid.Coords
 }
 
 //

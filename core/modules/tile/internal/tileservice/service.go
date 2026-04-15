@@ -90,21 +90,20 @@ func (s *service) GetTileSize() transform.SizeComponent {
 	return transform.NewSize(100, 100, 1)
 }
 
-func (s *service) IsOccupied(aabb tile.AABB, obstruction tile.Obstruction) bool {
+func (s *service) Collisions(aabb tile.AABB, obstruction tile.Obstruction) []grid.Coords {
+	var collisions []grid.Coords
 	obstructionGridEntity := s.ObstructionGrid().GetEntities()[0]
 	obstructed, ok := s.ObstructionGrid().Get(obstructionGridEntity)
 	if !ok {
-		return true
+		collisions = append(collisions, aabb.Tiles...)
+		return collisions
 	}
 	for _, coords := range aabb.Tiles {
 		index, ok := obstructed.GetIndex(coords.Coords())
-		if !ok {
-			return true
-		}
-		coordsObstruction := obstructed.GetTile(index)
-		if obstruction&coordsObstruction != 0 {
-			return true
+		if !ok || obstruction&obstructed.GetTile(index) != 0 {
+			collisions = append(collisions, coords)
+			continue
 		}
 	}
-	return false
+	return collisions
 }
