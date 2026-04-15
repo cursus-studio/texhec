@@ -3,6 +3,11 @@ package pathfind
 import (
 	"engine/modules/grid"
 	"engine/services/ecs"
+	"errors"
+)
+
+var (
+	ErrInvalidPath error = errors.New("pathfind:invalid path")
 )
 
 // all entities without [tile.StepComponent] get one on tick which will move them towards target

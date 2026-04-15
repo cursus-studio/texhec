@@ -4,6 +4,7 @@ import (
 	"core/modules/tile"
 	"core/modules/ui"
 	"engine"
+	"engine/modules/grid"
 	"engine/modules/inputs"
 	"engine/modules/transform"
 	"engine/services/ecs"
@@ -13,6 +14,7 @@ import (
 	"github.com/go-gl/mathgl/mgl32"
 	"github.com/ogiusek/events"
 	"github.com/ogiusek/ioc/v2"
+	"golang.org/x/exp/constraints"
 )
 
 var invSpeedTable [256]tile.Coord
@@ -26,6 +28,7 @@ type system struct {
 	dirtyTransformSet ecs.DirtySet
 	tileSize          transform.SizeComponent
 	selectedEvent     *tile.SelectEvent
+	previousCoords    grid.Coords
 }
 
 func NewSystem(c ioc.Dic) tile.System {
@@ -121,6 +124,8 @@ var (
 	rotDown  = tile.NewRot(mgl32.DegToRad(180))
 )
 
+func abs[Number constraints.Float | constraints.Integer](n Number) Number { return max(-n, n) }
+
 func (s *system) OnTick(e frames.TickEvent) {
 	entities := s.Tile.Step().GetEntities()
 	{
@@ -152,8 +157,8 @@ func (s *system) OnTick(e frames.TickEvent) {
 		}
 		size, _ := s.Tile.Size().Get(entity)
 		obstruction, _ := s.Tile.Obstruction().Get(entity)
-		isFirstStep := pos.IsAligned()
-		if isFirstStep && !s.Tile.CanStep(pos, size, obstruction, step) {
+		aligned, isFirstStep := pos.Aligned()
+		if isFirstStep && !s.Tile.CanStep(aligned, size, obstruction, step) {
 			s.Tile.Step().Remove(entity)
 			s.Logger.Warn(tile.ErrInvalidStep)
 			continue
@@ -177,6 +182,13 @@ func (s *system) OnTick(e frames.TickEvent) {
 		} else {
 			s.Logger.Warn(fmt.Errorf("tile system isn't able to handle StepComponent"))
 		}
+		const epsilon tile.Coord = 1e-3
+		if abs(tile.Coord(step.X)-pos.X) < epsilon {
+			pos.X = tile.Coord(step.X)
+		}
+		if abs(tile.Coord(step.Y)-pos.Y) < epsilon {
+			pos.Y = tile.Coord(step.Y)
+		}
 		s.Tile.Pos().Set(entity, pos)
 
 		if isFirstStep {
@@ -192,10 +204,12 @@ func (s *system) OnTick(e frames.TickEvent) {
 
 func (s *system) OnUnselect(e ui.HideUiEvent) {
 	s.selectedEvent = nil
+	s.previousCoords = grid.NewCoords(-1, -1)
 }
 
 func (s *system) OnSelect(e tile.SelectEvent) {
 	s.selectedEvent = &e
+	s.previousCoords = grid.NewCoords(-1, -1)
 }
 
 func (s *system) OnHover(e tile.HoverEvent) {
@@ -208,6 +222,10 @@ func (s *system) OnHover(e tile.HoverEvent) {
 		return
 	}
 	coords := grid.GetCoords(e.Tile)
+	if s.previousCoords == coords {
+		return
+	}
+	s.previousCoords = coords
 	if event, ok := s.selectedEvent.HoverEvent.(tile.ApplyCoordsEvent); ok {
 		s.selectedEvent.HoverEvent = event.ApplyCoords(coords)
 	}

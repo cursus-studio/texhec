@@ -6,6 +6,7 @@ import (
 	"engine/modules/transition"
 	"engine/services/ecs"
 	"errors"
+	"math"
 
 	"github.com/go-gl/mathgl/mgl32"
 	"golang.org/x/exp/constraints"
@@ -61,8 +62,11 @@ func (c1 PosComponent) Lerp(c2 PosComponent, mix32 float32) PosComponent {
 	}
 }
 
-func (p *PosComponent) IsAligned() bool {
-	return Coord(grid.Coord(p.X)) == p.X && Coord(grid.Coord(p.Y)) == p.Y
+func abs[Number constraints.Float | constraints.Integer](n Number) Number { return max(-n, n) }
+func (p *PosComponent) Aligned() (coords grid.Coords, isAligned bool) {
+	const epsilon Coord = 1e-3
+	x, y := grid.Coord(p.X+.5-epsilon), grid.Coord(p.Y+.5-epsilon)
+	return grid.NewCoords(x, y), abs(Coord(x)-p.X) < epsilon && abs(Coord(y)-p.Y) < epsilon
 }
 
 //
@@ -100,6 +104,8 @@ func NewRot(radians float32) RotComponent {
 }
 
 func (c1 RotComponent) Lerp(c2 RotComponent, mix32 float32) RotComponent {
+	const Tau = 2 * math.Pi
+	c2.Radians = c1.Radians + float32(math.Remainder(float64(c2.Radians-c1.Radians), Tau))
 	return RotComponent{transition.Lerp(c1.Radians, c2.Radians, mix32)}
 }
 
@@ -226,7 +232,7 @@ type Service interface {
 	GetTileSize() transform.SizeComponent
 	Collisions(AABB, Obstruction) []grid.Coords
 	CanStep(
-		PosComponent,
+		grid.Coords,
 		SizeComponent,
 		ObstructionComponent,
 		StepComponent,

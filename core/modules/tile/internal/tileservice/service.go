@@ -115,17 +115,15 @@ func (s *service) Collisions(aabb tile.AABB, obstruction tile.Obstruction) []gri
 	return collisions
 }
 
-func abs[Number constraints.Float | constraints.Integer](n Number) Number {
-	return max(-n, n)
-}
+func abs[Number constraints.Float | constraints.Integer](n Number) Number { return max(-n, n) }
 
 func (s *service) CanStep(
-	pos tile.PosComponent,
+	pos grid.Coords,
 	size tile.SizeComponent,
 	obstruction tile.ObstructionComponent,
 	step tile.StepComponent,
 ) bool {
-	isValidStep := abs(step.X-grid.Coord(pos.X))+abs(step.Y-grid.Coord(pos.Y)) == 1
+	isValidStep := abs(step.X-pos.X)+abs(step.Y-pos.Y) == 1
 	if !isValidStep {
 		return false
 	}
@@ -135,15 +133,15 @@ func (s *service) CanStep(
 	var aabbSize tile.SizeComponent
 
 	// aabb size
-	if grid.Coord(pos.X) != step.X {
+	if pos.X != step.X {
 		aabbSize = tile.NewSize(1, size.Y)
-	} else if grid.Coord(pos.Y) != step.Y {
+	} else if pos.Y != step.Y {
 		aabbSize = tile.NewSize(size.X, 1)
 	}
 	// aabb pos
-	if grid.Coord(pos.X) < step.X {
+	if pos.X < step.X {
 		aabbPos = tile.NewPos(step.X+size.X-1, step.Y)
-	} else if grid.Coord(pos.Y) < step.Y {
+	} else if pos.Y < step.Y {
 		aabbPos = tile.NewPos(step.X, step.Y+size.Y-1)
 	} else {
 		aabbPos = tile.NewPos(step.Coords.Coords())
