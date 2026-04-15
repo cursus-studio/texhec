@@ -18,17 +18,14 @@ import (
 	"github.com/ogiusek/ioc/v2"
 )
 
-type placeholder struct{}
-
 type service struct {
 	engine.World `inject:"1"`
 	Tile         tile.Service       `inject:"1"`
 	Player       player.Service     `inject:"1"`
 	Definitions  definitions.Assets `inject:"1"`
 
-	component   ecs.ComponentsArray[deploy.Component]
-	link        ecs.ComponentsArray[deploy.LinkComponent]
-	placeholder ecs.ComponentsArray[placeholder]
+	component ecs.ComponentsArray[deploy.Component]
+	link      ecs.ComponentsArray[deploy.LinkComponent]
 }
 
 func NewService(c ioc.Dic) deploy.Service {
@@ -36,7 +33,6 @@ func NewService(c ioc.Dic) deploy.Service {
 
 	s.component = ecs.GetComponentsArray[deploy.Component](s.World)
 	s.link = ecs.GetComponentsArray[deploy.LinkComponent](s.World)
-	s.placeholder = ecs.GetComponentsArray[placeholder](s.World)
 
 	events.Listen(s.EventsBuilder, s.Unselect)
 	events.Listen(s.EventsBuilder, s.Execute)
@@ -78,7 +74,7 @@ func (s *service) Deploy(
 }
 
 func (s *service) Unselect(e ui.HideUiEvent) {
-	for _, entity := range s.placeholder.GetEntities() {
+	for _, entity := range s.Tile.Placeholder().GetEntities() {
 		s.RemoveEntity(entity)
 	}
 }
@@ -86,7 +82,7 @@ func (s *service) Select(e deploy.SelectEvent) {
 	events.Emit(s.Events, tile.NewSelectEvent(deploy.NewPreviewEvent(e.By, e.Blueprint)))
 }
 func (s *service) Preview(e deploy.PreviewEvent) {
-	for _, entity := range s.placeholder.GetEntities() {
+	for _, entity := range s.Tile.Placeholder().GetEntities() {
 		s.RemoveEntity(entity)
 	}
 	var collisions []grid.Coords
@@ -96,7 +92,7 @@ func (s *service) Preview(e deploy.PreviewEvent) {
 
 	pos := tile.NewPos(e.Coords.Coords())
 	s.Tile.Pos().Set(placeholderEntity, pos)
-	s.placeholder.Set(placeholderEntity, placeholder{})
+	s.Tile.Placeholder().Set(placeholderEntity, tile.NewPlaceholder())
 	size, _ := s.Tile.Size().Get(e.Blueprint)
 
 	{ // check can place:
@@ -126,14 +122,14 @@ cannotPlace:
 
 		s.Tile.Layer().Set(entity, tile.NewLayer(definitions.PlaceholderTileLayer))
 		s.Tile.Pos().Set(entity, tile.NewPos(collision.Coords()))
-		s.placeholder.Set(entity, placeholder{})
+		s.Tile.Placeholder().Set(entity, tile.NewPlaceholder())
 		s.Render.Color().Set(entity, render.NewColor(mgl32.Vec4{1, 0, 0, 1}))
 	}
 	s.Render.Color().Set(placeholderEntity, render.NewColor(mgl32.Vec4{1, 0, 0, 1}))
 }
 func (s *service) Execute(e deploy.ExecuteEvent) {
 	// remove placeholder entities
-	for _, entity := range s.placeholder.GetEntities() {
+	for _, entity := range s.Tile.Placeholder().GetEntities() {
 		s.RemoveEntity(entity)
 	}
 

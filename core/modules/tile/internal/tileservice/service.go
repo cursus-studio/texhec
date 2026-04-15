@@ -26,6 +26,8 @@ type service struct {
 	rot   ecs.ComponentsArray[tile.RotComponent]
 	layer ecs.ComponentsArray[tile.LayerComponent]
 
+	placeholder ecs.ComponentsArray[tile.PlaceholderComponent]
+
 	obstruction ecs.ComponentsArray[tile.ObstructionComponent]
 	deployed    ecs.ComponentsArray[tile.DeployedComponent]
 
@@ -41,6 +43,8 @@ func NewService(c ioc.Dic) tile.Service {
 	s.size = ecs.GetComponentsArray[tile.SizeComponent](s.World)
 	s.rot = ecs.GetComponentsArray[tile.RotComponent](s.World)
 	s.layer = ecs.GetComponentsArray[tile.LayerComponent](s.World)
+
+	s.placeholder = ecs.GetComponentsArray[tile.PlaceholderComponent](s.World)
 
 	s.obstruction = ecs.GetComponentsArray[tile.ObstructionComponent](s.World)
 	s.deployed = ecs.GetComponentsArray[tile.DeployedComponent](s.World)
@@ -72,6 +76,8 @@ func (s *service) Pos() ecs.ComponentsArray[tile.PosComponent]     { return s.po
 func (s *service) Size() ecs.ComponentsArray[tile.SizeComponent]   { return s.size }
 func (s *service) Rot() ecs.ComponentsArray[tile.RotComponent]     { return s.rot }
 func (s *service) Layer() ecs.ComponentsArray[tile.LayerComponent] { return s.layer }
+
+func (s *service) Placeholder() ecs.ComponentsArray[tile.PlaceholderComponent] { return s.placeholder }
 
 func (s *service) Obstruction() ecs.ComponentsArray[tile.ObstructionComponent] { return s.obstruction }
 func (s *service) Deployed() ecs.ComponentsArray[tile.DeployedComponent]       { return s.deployed }
@@ -113,19 +119,18 @@ func abs[Number constraints.Float | constraints.Integer](n Number) Number {
 	return max(-n, n)
 }
 
-func (s *service) CanStep(entity ecs.EntityID, step tile.StepComponent) bool {
-	pos, ok := s.Pos().Get(entity)
-	if !ok {
-		return false
-	}
+func (s *service) CanStep(
+	pos tile.PosComponent,
+	size tile.SizeComponent,
+	obstruction tile.ObstructionComponent,
+	step tile.StepComponent,
+) bool {
 	isValidStep := abs(step.X-grid.Coord(pos.X))+abs(step.Y-grid.Coord(pos.Y)) == 1
 	if !isValidStep {
 		return false
 	}
 
 	// is step destination occupied
-	size, _ := s.Size().Get(entity)
-	obstruction, _ := s.Obstruction().Get(entity)
 	var aabbPos tile.PosComponent
 	var aabbSize tile.SizeComponent
 

@@ -111,6 +111,16 @@ func (e *RotComponent) Quat() mgl32.Quat {
 //
 //
 
+type PlaceholderComponent struct{}
+
+func NewPlaceholder() PlaceholderComponent {
+	return PlaceholderComponent{}
+}
+
+//
+//
+//
+
 // obstruction
 
 // mask of ways in which tile is obstructed
@@ -201,6 +211,9 @@ type Service interface {
 	Rot() ecs.ComponentsArray[RotComponent]
 	Layer() ecs.ComponentsArray[LayerComponent]
 
+	// elemenets with this components are gui indicators
+	Placeholder() ecs.ComponentsArray[PlaceholderComponent]
+
 	Obstruction() ecs.ComponentsArray[ObstructionComponent]
 	Deployed() ecs.ComponentsArray[DeployedComponent]
 
@@ -212,7 +225,12 @@ type Service interface {
 	// 1x1 size to transform
 	GetTileSize() transform.SizeComponent
 	Collisions(AABB, Obstruction) []grid.Coords
-	CanStep(ecs.EntityID, StepComponent) bool
+	CanStep(
+		PosComponent,
+		SizeComponent,
+		ObstructionComponent,
+		StepComponent,
+	) bool
 }
 
 //

@@ -150,8 +150,10 @@ func (s *system) OnTick(e frames.TickEvent) {
 			s.Tile.Step().Remove(entity)
 			continue
 		}
+		size, _ := s.Tile.Size().Get(entity)
+		obstruction, _ := s.Tile.Obstruction().Get(entity)
 		isFirstStep := pos.IsAligned()
-		if isFirstStep && !s.Tile.CanStep(entity, step) {
+		if isFirstStep && !s.Tile.CanStep(pos, size, obstruction, step) {
 			s.Tile.Step().Remove(entity)
 			s.Logger.Warn(tile.ErrInvalidStep)
 			continue
