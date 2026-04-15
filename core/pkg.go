@@ -7,6 +7,7 @@ import (
 	"core/modules/fpslogger/pkg"
 	"core/modules/generation/pkg"
 	"core/modules/loading/pkg"
+	pathfindpkg "core/modules/pathfind/pkg"
 	playerpkg "core/modules/player/pkg"
 	"core/modules/settings"
 	"core/modules/settings/pkg"
@@ -255,6 +256,7 @@ func getDic() ioc.Dic {
 
 		// game packages
 		deploypkg.Package(),
+		pathfindpkg.Package(),
 		fpsloggerpkg.Package(),
 		playerpkg.Package(),
 

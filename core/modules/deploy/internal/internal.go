@@ -8,6 +8,7 @@ import (
 	"core/modules/ui"
 	"engine"
 	"engine/modules/grid"
+	"engine/modules/groups"
 	"engine/modules/inputs"
 	"engine/modules/render"
 	"engine/services/ecs"
@@ -17,16 +18,14 @@ import (
 	"github.com/ogiusek/ioc/v2"
 )
 
-type placeholder struct{}
-
 type service struct {
 	engine.World `inject:"1"`
-	Tile         tile.Service   `inject:"1"`
-	Player       player.Service `inject:"1"`
+	Tile         tile.Service       `inject:"1"`
+	Player       player.Service     `inject:"1"`
+	Definitions  definitions.Assets `inject:"1"`
 
-	component   ecs.ComponentsArray[deploy.Component]
-	link        ecs.ComponentsArray[deploy.LinkComponent]
-	placeholder ecs.ComponentsArray[placeholder]
+	component ecs.ComponentsArray[deploy.Component]
+	link      ecs.ComponentsArray[deploy.LinkComponent]
 }
 
 func NewService(c ioc.Dic) deploy.Service {
@@ -34,7 +33,6 @@ func NewService(c ioc.Dic) deploy.Service {
 
 	s.component = ecs.GetComponentsArray[deploy.Component](s.World)
 	s.link = ecs.GetComponentsArray[deploy.LinkComponent](s.World)
-	s.placeholder = ecs.GetComponentsArray[placeholder](s.World)
 
 	events.Listen(s.EventsBuilder, s.Unselect)
 	events.Listen(s.EventsBuilder, s.Execute)
@@ -59,7 +57,7 @@ func (s *service) Deploy(
 	size, _ := s.Tile.Size().Get(blueprint)
 	obstruction, _ := s.Tile.Obstruction().Get(blueprint)
 	aabb := tile.NewAABB(pos, size)
-	if s.Tile.IsOccupied(aabb, obstruction.Obstruction) {
+	if collisions := s.Tile.Collisions(aabb, obstruction.Obstruction); len(collisions) != 0 {
 		return 0, tile.ErrPositionIsOccupied
 	}
 
@@ -76,7 +74,7 @@ func (s *service) Deploy(
 }
 
 func (s *service) Unselect(e ui.HideUiEvent) {
-	for _, entity := range s.placeholder.GetEntities() {
+	for _, entity := range s.Tile.Placeholder().GetEntities() {
 		s.RemoveEntity(entity)
 	}
 }
@@ -84,23 +82,25 @@ func (s *service) Select(e deploy.SelectEvent) {
 	events.Emit(s.Events, tile.NewSelectEvent(deploy.NewPreviewEvent(e.By, e.Blueprint)))
 }
 func (s *service) Preview(e deploy.PreviewEvent) {
-	for _, entity := range s.placeholder.GetEntities() {
+	for _, entity := range s.Tile.Placeholder().GetEntities() {
 		s.RemoveEntity(entity)
 	}
+	var collisions []grid.Coords
 	placeholderEntity := s.Prototype.Clone(e.Blueprint)
 	s.Hierarchy.SetParent(placeholderEntity, s.Scene.Scene())
 	s.Tile.Layer().Set(placeholderEntity, tile.NewLayer(definitions.PlaceholderLayer))
 
 	pos := tile.NewPos(e.Coords.Coords())
 	s.Tile.Pos().Set(placeholderEntity, pos)
-	s.placeholder.Set(placeholderEntity, placeholder{})
+	s.Tile.Placeholder().Set(placeholderEntity, tile.NewPlaceholder())
 	size, _ := s.Tile.Size().Get(e.Blueprint)
 
 	{ // check can place:
 		// - is position occupied
 		blueprintObstruction, _ := s.Tile.Obstruction().Get(e.Blueprint)
 		aabb := tile.NewAABB(pos, size)
-		if s.Tile.IsOccupied(aabb, blueprintObstruction.Obstruction) {
+		collisions = s.Tile.Collisions(aabb, blueprintObstruction.Obstruction)
+		if len(collisions) != 0 {
 			goto cannotPlace
 		}
 
@@ -110,11 +110,26 @@ func (s *service) Preview(e deploy.PreviewEvent) {
 		return
 	}
 cannotPlace:
+	// place indicator on occupied tiles
+	for _, collision := range collisions {
+		entity := s.Prototype.Clone(s.Definitions.Blank)
+		s.Hierarchy.SetParent(entity, s.Scene.Scene())
+
+		s.Tile.Layer().Set(entity, tile.NewLayer(definitions.PlaceholderTileLayer))
+		s.Render.Mesh().Set(entity, render.NewMesh(s.Definitions.SquareMesh))
+		s.Render.Texture().Set(entity, render.NewTexture(s.Definitions.Blank))
+		s.Groups.Component().Set(entity, groups.EmptyGroups().Ptr().Enable(definitions.GameGroup).Val())
+
+		s.Tile.Layer().Set(entity, tile.NewLayer(definitions.PlaceholderTileLayer))
+		s.Tile.Pos().Set(entity, tile.NewPos(collision.Coords()))
+		s.Tile.Placeholder().Set(entity, tile.NewPlaceholder())
+		s.Render.Color().Set(entity, render.NewColor(mgl32.Vec4{1, 0, 0, 1}))
+	}
 	s.Render.Color().Set(placeholderEntity, render.NewColor(mgl32.Vec4{1, 0, 0, 1}))
 }
 func (s *service) Execute(e deploy.ExecuteEvent) {
 	// remove placeholder entities
-	for _, entity := range s.placeholder.GetEntities() {
+	for _, entity := range s.Tile.Placeholder().GetEntities() {
 		s.RemoveEntity(entity)
 	}
 

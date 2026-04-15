@@ -6,6 +6,8 @@ import (
 	"core/modules/fpslogger"
 	"core/modules/generation"
 	"core/modules/loading"
+	"core/modules/pathfind"
+	"core/modules/player"
 	"core/modules/settings"
 	"core/modules/tile"
 	"core/modules/ui"
@@ -50,8 +52,10 @@ type World struct {
 	// game
 	Definitions definitions.Definitions `inject:"1"`
 	Deploy      deploy.Service          `inject:"1"`
-	Tile        tile.Service            `inject:"1"`
 	Generation  generation.Service      `inject:"1"`
+	Pathfind    pathfind.Service        `inject:"1"`
+	Player      player.Service          `inject:"1"`
+	Tile        tile.Service            `inject:"1"`
 	Ui          ui.Service              `inject:"1"`
 }
 
@@ -115,6 +119,7 @@ func (pkg) Register(b ioc.Builder) {
 
 				// inputs
 				ioc.Get[inputs.System](c),
+				ioc.Get[audio.System](c),
 
 				// update
 				ioc.Get[camera.System](c),
@@ -128,13 +133,12 @@ func (pkg) Register(b ioc.Builder) {
 				ioc.Get[ui.System](c),
 				ioc.Get[settings.System](c),
 				ioc.Get[loading.System](c),
+				ioc.Get[batcher.System](c),
 				// } (update)
+
 				ioc.Get[smooth.StopSystem](c),
 				ioc.Get[netsync.StopSystem](c),
-				ioc.Get[batcher.System](c),
 
-				// audio
-				ioc.Get[audio.System](c),
 				ioc.Get[inputs.ShutdownSystem](c), // after batcher and before render system
 
 				// render

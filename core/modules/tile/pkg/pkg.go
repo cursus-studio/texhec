@@ -141,27 +141,31 @@ func (pkg pkg) Register(b ioc.Builder) {
 			Tile         tile.Service       `inject:"1"`
 			Definitions  definitions.Assets `inject:"1"`
 		}
-		objectShared := func(layer tile.Coord) func(entity ecs.EntityID, _ string) {
-			return func(entity ecs.EntityID, _ string) {
-				world := ioc.GetServices[World](c)
-				world.Tile.Rot().Set(entity, tile.NewRot(0))
-				world.Tile.Layer().Set(entity, tile.NewLayer(layer))
-				world.Render.Mesh().Set(entity, render.NewMesh(world.Definitions.SquareMesh))
-				world.Render.Texture().Set(entity, render.NewTexture(entity))
-				world.Groups.Component().Set(entity, groups.EmptyGroups().Ptr().Enable(definitions.GameGroup).Val())
-
-				world.Collider.Component().Set(entity, collider.NewCollider(world.Definitions.SquareCollider))
-			}
-		}
 		var counter tile.ID
+		b.Register("object", func(entity ecs.EntityID, structTagValue string) {
+			var layer tile.Coord
+			switch structTagValue {
+			case "construct":
+				layer = definitions.ConstructLayer
+			case "unit":
+				layer = definitions.UnitLayer
+			default:
+				return
+			}
+			world := ioc.GetServices[World](c)
+			world.Tile.Rot().Set(entity, tile.NewRot(0))
+			world.Tile.Layer().Set(entity, tile.NewLayer(layer))
+			world.Render.Mesh().Set(entity, render.NewMesh(world.Definitions.SquareMesh))
+			world.Render.Texture().Set(entity, render.NewTexture(entity))
+			world.Groups.Component().Set(entity, groups.EmptyGroups().Ptr().Enable(definitions.GameGroup).Val())
+
+			world.Collider.Component().Set(entity, collider.NewCollider(world.Definitions.SquareCollider))
+		})
 		b.Register("tile", func(entity ecs.EntityID, structTagValue string) {
 			counter++
 			tileService := ioc.Get[tile.Service](c)
 			tileService.TileType().Set(entity, tile.NewTileType(counter))
 		})
-
-		b.Register("unit", objectShared(definitions.UnitLayer))
-		b.Register("construct", objectShared(definitions.ConstructLayer))
 		b.Register("obstruction", func(entity ecs.EntityID, structTagValue string) {
 			world := ioc.GetServices[World](c)
 			var obstruction tile.Obstruction

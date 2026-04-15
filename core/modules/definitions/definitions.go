@@ -16,6 +16,7 @@ const (
 	TileLayer tile.Coord = iota + 1
 	ConstructLayer
 	UnitLayer
+	PlaceholderTileLayer
 	PlaceholderLayer
 )
 
@@ -74,9 +75,9 @@ type Tiles struct {
 }
 
 type Constructs struct {
-	Farm ecs.EntityID `path:"constructs/farm.png" name:"farm" construct:"" obstruction:"lowland" size:"2x2"`
+	Farm ecs.EntityID `path:"constructs/farm.png" name:"farm" object:"construct" obstruction:"lowland" size:"2x2"`
 }
 
 type Units struct {
-	Tank ecs.EntityID `path:"units/tank.png" name:"tank" unit:"" obstruction:"lowland" speed:"10"`
+	Tank ecs.EntityID `path:"units/tank.png" name:"tank" object:"unit" obstruction:"lowland" speed:"2"`
 }

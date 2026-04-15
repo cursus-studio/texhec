@@ -6,6 +6,7 @@ import (
 	"engine/modules/transition"
 	"engine/services/ecs"
 	"errors"
+	"math"
 
 	"github.com/go-gl/mathgl/mgl32"
 	"golang.org/x/exp/constraints"
@@ -61,6 +62,13 @@ func (c1 PosComponent) Lerp(c2 PosComponent, mix32 float32) PosComponent {
 	}
 }
 
+func abs[Number constraints.Float | constraints.Integer](n Number) Number { return max(-n, n) }
+func (p *PosComponent) Aligned() (coords grid.Coords, isAligned bool) {
+	const epsilon Coord = 1e-3
+	x, y := grid.Coord(p.X+.5-epsilon), grid.Coord(p.Y+.5-epsilon)
+	return grid.NewCoords(x, y), abs(Coord(x)-p.X) < epsilon && abs(Coord(y)-p.Y) < epsilon
+}
+
 //
 
 type LayerComponent struct {
@@ -96,11 +104,23 @@ func NewRot(radians float32) RotComponent {
 }
 
 func (c1 RotComponent) Lerp(c2 RotComponent, mix32 float32) RotComponent {
+	const Tau = 2 * math.Pi
+	c2.Radians = c1.Radians + float32(math.Remainder(float64(c2.Radians-c1.Radians), Tau))
 	return RotComponent{transition.Lerp(c1.Radians, c2.Radians, mix32)}
 }
 
 func (e *RotComponent) Quat() mgl32.Quat {
 	return mgl32.QuatRotate(e.Radians, mgl32.Vec3{0, 0, 1})
+}
+
+//
+//
+//
+
+type PlaceholderComponent struct{}
+
+func NewPlaceholder() PlaceholderComponent {
+	return PlaceholderComponent{}
 }
 
 //
@@ -197,6 +217,9 @@ type Service interface {
 	Rot() ecs.ComponentsArray[RotComponent]
 	Layer() ecs.ComponentsArray[LayerComponent]
 
+	// elemenets with this components are gui indicators
+	Placeholder() ecs.ComponentsArray[PlaceholderComponent]
+
 	Obstruction() ecs.ComponentsArray[ObstructionComponent]
 	Deployed() ecs.ComponentsArray[DeployedComponent]
 
@@ -207,7 +230,13 @@ type Service interface {
 
 	// 1x1 size to transform
 	GetTileSize() transform.SizeComponent
-	IsOccupied(AABB, Obstruction) bool
+	Collisions(AABB, Obstruction) []grid.Coords
+	CanStep(
+		grid.Coords,
+		SizeComponent,
+		ObstructionComponent,
+		StepComponent,
+	) bool
 }
 
 //

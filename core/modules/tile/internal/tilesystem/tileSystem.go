@@ -28,6 +28,7 @@ type system struct {
 	dirtyTransformSet ecs.DirtySet
 	tileSize          transform.SizeComponent
 	selectedEvent     *tile.SelectEvent
+	previousCoords    grid.Coords
 }
 
 func NewSystem(c ioc.Dic) tile.System {
@@ -116,16 +117,14 @@ func (s *system) BeforeTransformGet() {
 	}
 }
 
-func abs[Number constraints.Float | constraints.Integer](n Number) Number {
-	return max(-n, n)
-}
-
 var (
 	rotLeft  = tile.NewRot(mgl32.DegToRad(90))
 	rotRight = tile.NewRot(mgl32.DegToRad(270))
 	rotUp    = tile.NewRot(mgl32.DegToRad(0))
 	rotDown  = tile.NewRot(mgl32.DegToRad(180))
 )
+
+func abs[Number constraints.Float | constraints.Integer](n Number) Number { return max(-n, n) }
 
 func (s *system) OnTick(e frames.TickEvent) {
 	entities := s.Tile.Step().GetEntities()
@@ -156,41 +155,13 @@ func (s *system) OnTick(e frames.TickEvent) {
 			s.Tile.Step().Remove(entity)
 			continue
 		}
-		justStartedMoving := tile.Coord(int(pos.X)) == pos.X && tile.Coord(int(pos.Y)) == pos.Y
-		if justStartedMoving { // check can step
-			isValidStep := abs(step.X-grid.Coord(pos.X))+abs(step.Y-grid.Coord(pos.Y)) == 1
-			if !isValidStep {
-				s.Tile.Step().Remove(entity)
-				s.Logger.Warn(tile.ErrInvalidStep)
-				continue
-			}
-
-			// is step destination occupied
-			size, _ := s.Tile.Size().Get(entity)
-			obstruction, _ := s.Tile.Obstruction().Get(entity)
-			var aabbPos tile.PosComponent
-			var aabbSize tile.SizeComponent
-
-			// aabb size
-			if grid.Coord(pos.X) != step.X {
-				aabbSize = tile.NewSize(1, size.Y)
-			} else if grid.Coord(pos.Y) != step.Y {
-				aabbSize = tile.NewSize(size.X, 1)
-			}
-			// aabb pos
-			if grid.Coord(pos.X) < step.X {
-				aabbPos = tile.NewPos(step.X+size.X-1, step.Y)
-			} else if grid.Coord(pos.Y) < step.Y {
-				aabbPos = tile.NewPos(step.X, step.Y+size.Y-1)
-			} else {
-				aabbPos = tile.NewPos(step.Coords.Coords())
-			}
-			// perform is step destination occupied
-			if s.Tile.IsOccupied(tile.NewAABB(aabbPos, aabbSize), obstruction.Obstruction) {
-				s.Tile.Step().Remove(entity)
-				s.Logger.Warn(tile.ErrPositionIsOccupied)
-				continue
-			}
+		size, _ := s.Tile.Size().Get(entity)
+		obstruction, _ := s.Tile.Obstruction().Get(entity)
+		aligned, isFirstStep := pos.Aligned()
+		if isFirstStep && !s.Tile.CanStep(aligned, size, obstruction, step) {
+			s.Tile.Step().Remove(entity)
+			s.Logger.Warn(tile.ErrInvalidStep)
+			continue
 		}
 
 		// move
@@ -211,9 +182,16 @@ func (s *system) OnTick(e frames.TickEvent) {
 		} else {
 			s.Logger.Warn(fmt.Errorf("tile system isn't able to handle StepComponent"))
 		}
+		const epsilon tile.Coord = 1e-3
+		if abs(tile.Coord(step.X)-pos.X) < epsilon {
+			pos.X = tile.Coord(step.X)
+		}
+		if abs(tile.Coord(step.Y)-pos.Y) < epsilon {
+			pos.Y = tile.Coord(step.Y)
+		}
 		s.Tile.Pos().Set(entity, pos)
 
-		if justStartedMoving {
+		if isFirstStep {
 			s.Tile.Rot().Set(entity, rot)
 		}
 
@@ -226,10 +204,12 @@ func (s *system) OnTick(e frames.TickEvent) {
 
 func (s *system) OnUnselect(e ui.HideUiEvent) {
 	s.selectedEvent = nil
+	s.previousCoords = grid.NewCoords(-1, -1)
 }
 
 func (s *system) OnSelect(e tile.SelectEvent) {
 	s.selectedEvent = &e
+	s.previousCoords = grid.NewCoords(-1, -1)
 }
 
 func (s *system) OnHover(e tile.HoverEvent) {
@@ -242,6 +222,10 @@ func (s *system) OnHover(e tile.HoverEvent) {
 		return
 	}
 	coords := grid.GetCoords(e.Tile)
+	if s.previousCoords == coords {
+		return
+	}
+	s.previousCoords = coords
 	if event, ok := s.selectedEvent.HoverEvent.(tile.ApplyCoordsEvent); ok {
 		s.selectedEvent.HoverEvent = event.ApplyCoords(coords)
 	}

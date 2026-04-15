@@ -3,6 +3,7 @@ package clicksystem
 import (
 	"core/modules/definitions"
 	"core/modules/deploy"
+	"core/modules/pathfind"
 	"core/modules/player"
 	"core/modules/tile"
 	"core/modules/ui"
@@ -79,6 +80,9 @@ func (s *system) OnClickEntity(e tile.ClickEntityEvent) {
 		}
 		btn := Button{fmt.Sprintf("%v", name.Name), deploy.NewSelectEvent(e.Entity, deployed)}
 		btns = append(btns, btn)
+	}
+	if _, ok := s.Tile.Speed().Get(e.Entity); ok {
+		btns = append(btns, Button{"Move", pathfind.NewSelectEvent(e.Entity)})
 	}
 
 	for _, p := range s.Ui.Show() {
