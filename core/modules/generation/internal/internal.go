@@ -229,15 +229,8 @@ func (s *service) Generate(c generation.Config) batcher.Task {
 			}
 			coords := gridStateComponent.GetCoords(index)
 			deployed := toDeploy[0]
-			if entity, err := s.Deploy.Deploy(deployed.Blueprint, deployed.Player, coords); err == nil {
-				index += 2
+			if _, err := s.Deploy.Deploy(deployed.Blueprint, deployed.Player, coords); err == nil {
 				toDeploy = toDeploy[1:]
-				if _, ok := s.Tile.Speed().Get(entity); !ok {
-					continue
-				}
-				step := tile.NewStep(coords.Coords())
-				step.X--
-				s.Tile.Step().Set(entity, step)
 			}
 		}
 	})
