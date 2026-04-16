@@ -138,9 +138,10 @@ func (pkg pkg) Register(b ioc.Builder) {
 	ioc.Wrap(b, func(c ioc.Dic, b registry.Service) {
 		type World struct {
 			engine.World `inject:"1"`
-			Tile         tile.Service       `inject:"1"`
-			Definitions  definitions.Assets `inject:"1"`
+			Tile         ioc.Lazy[tile.Service] `inject:"1"`
+			Definitions  definitions.Assets     `inject:"1"`
 		}
+		world := ioc.GetServices[World](c)
 		var counter tile.ID
 		b.Register("object", func(entity ecs.EntityID, structTagValue string) {
 			var layer tile.Coord
@@ -152,9 +153,8 @@ func (pkg pkg) Register(b ioc.Builder) {
 			default:
 				return
 			}
-			world := ioc.GetServices[World](c)
-			world.Tile.Rot().Set(entity, tile.NewRot(0))
-			world.Tile.Layer().Set(entity, tile.NewLayer(layer))
+			world.Tile().Rot().Set(entity, tile.NewRot(0))
+			world.Tile().Layer().Set(entity, tile.NewLayer(layer))
 			world.Render.Mesh().Set(entity, render.NewMesh(world.Definitions.SquareMesh))
 			world.Render.Texture().Set(entity, render.NewTexture(entity))
 			world.Groups.Component().Set(entity, groups.EmptyGroups().Ptr().Enable(definitions.GameGroup).Val())
@@ -163,11 +163,9 @@ func (pkg pkg) Register(b ioc.Builder) {
 		})
 		b.Register("tile", func(entity ecs.EntityID, structTagValue string) {
 			counter++
-			tileService := ioc.Get[tile.Service](c)
-			tileService.TileType().Set(entity, tile.NewTileType(counter))
+			world.Tile().TileType().Set(entity, tile.NewTileType(counter))
 		})
 		b.Register("obstruction", func(entity ecs.EntityID, structTagValue string) {
-			world := ioc.GetServices[World](c)
 			var obstruction tile.Obstruction
 			if strings.Contains(structTagValue, "water") {
 				obstruction |= definitions.WaterObstruction
@@ -178,11 +176,10 @@ func (pkg pkg) Register(b ioc.Builder) {
 			if strings.Contains(structTagValue, "air") {
 				obstruction |= definitions.AirspaceObstruction
 			}
-			world.Tile.Obstruction().Set(entity, tile.NewObstruction(obstruction))
+			world.Tile().Obstruction().Set(entity, tile.NewObstruction(obstruction))
 		})
 		b.Register("size", func(entity ecs.EntityID, structTagValue string) {
 			errInvalidFormat := fmt.Errorf("size should be in format \"1x1\" where first number is width and second is height")
-			world := ioc.GetServices[World](c)
 			xy := strings.Split(structTagValue, "x")
 			if len(xy) != 2 {
 				world.Logger.Warn(errInvalidFormat)
@@ -198,10 +195,9 @@ func (pkg pkg) Register(b ioc.Builder) {
 				world.Logger.Warn(errInvalidFormat)
 				return
 			}
-			world.Tile.Size().Set(entity, tile.NewSize(x, y))
+			world.Tile().Size().Set(entity, tile.NewSize(x, y))
 		})
 		b.Register("speed", func(entity ecs.EntityID, structTagValue string) {
-			world := ioc.GetServices[World](c)
 			v, err := strconv.Atoi(structTagValue)
 			if err != nil {
 				world.Logger.Warn(err)
@@ -212,7 +208,7 @@ func (pkg pkg) Register(b ioc.Builder) {
 				world.Logger.Warn(fmt.Errorf("speed has to be clamped between 0 and 255"))
 				return
 			}
-			world.Tile.Speed().Set(entity, speed)
+			world.Tile().Speed().Set(entity, speed)
 		})
 	})
 }
