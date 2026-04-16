@@ -2,7 +2,6 @@ package internal
 
 import (
 	"engine/modules/assets"
-	"engine/modules/registry"
 	"engine/services/datastructures"
 	"engine/services/ecs"
 
@@ -12,8 +11,7 @@ import (
 //
 
 type assetsService struct {
-	Registry registry.Service `inject:"1"`
-	World    ecs.World        `inject:"1"`
+	World ecs.World `inject:"1"`
 
 	*extensions
 	path  ecs.ComponentsArray[assets.PathComponent]
