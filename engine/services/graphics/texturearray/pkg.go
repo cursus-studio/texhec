@@ -12,7 +12,7 @@ func Package() ioc.Pkg {
 }
 
 func (pkg) Register(b ioc.Builder) {
-	ioc.RegisterTransient(b, func(c ioc.Dic) Factory {
+	ioc.RegisterSingleton(b, func(c ioc.Dic) Factory {
 		return &factory{
 			make([]func(TextureArray), 0),
 		}
