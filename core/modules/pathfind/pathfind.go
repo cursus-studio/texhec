@@ -33,6 +33,7 @@ type Service interface {
 // - add path caching (best would be improving its performance)
 // - add more security to ensure 2 objects cannot move to the same tile in one tick (this causes error currently)
 // - improve errors
+// - look on `HPA*` and `JPS`
 
 // Select object.
 // Add in gui some indicator.
