@@ -13,8 +13,4 @@ require (
 	golang.org/x/image v0.32.0
 )
 
-require (
-	github.com/optimus-hft/lockset/v2 v2.0.0 // indirect
-	github.com/stretchr/testify v1.9.0 // indirect
-	golang.org/x/text v0.30.0 // indirect
-)
+require golang.org/x/text v0.30.0 // indirect
