@@ -21,10 +21,10 @@ func Package(parentDirectory string) ioc.Pkg {
 }
 
 func (pkg pkg) Register(b ioc.Builder) {
-	ioc.RegisterSingleton(b, func(c ioc.Dic) assets.Service {
+	ioc.Register(b, func(c ioc.Dic) assets.Service {
 		return internal.NewService(c)
 	})
-	ioc.WrapService(b, func(c ioc.Dic, registry registry.Service) {
+	ioc.Wrap(b, func(c ioc.Dic, registry registry.Service) {
 		registry.Register("path", func(entity ecs.EntityID, structTagValue string) {
 			assetsService := ioc.Get[assets.Service](c)
 			path := assets.NewPath(pkg.parentDirectory + structTagValue)

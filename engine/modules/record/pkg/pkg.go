@@ -23,7 +23,7 @@ func Package() ioc.Pkg {
 }
 
 func (pkg) Register(b ioc.Builder) {
-	ioc.WrapService(b, func(c ioc.Dic, b codec.Builder) {
+	ioc.Wrap(b, func(c ioc.Dic, b codec.Builder) {
 		b.
 			// recording
 			Register(record.Recording{}).
@@ -33,7 +33,7 @@ func (pkg) Register(b ioc.Builder) {
 			Register(record.UUIDRecording{}).
 			Register(map[uuid.UUID][]any{})
 	})
-	ioc.RegisterSingleton(b, func(c ioc.Dic) record.Service {
+	ioc.Register(b, func(c ioc.Dic) record.Service {
 		return recordimpl.NewService(c)
 	})
 }

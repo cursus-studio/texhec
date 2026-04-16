@@ -25,11 +25,11 @@ func Package[Tile grid.TileConstraint](
 }
 
 func (pkg pkg[Tile]) Register(b ioc.Builder) {
-	ioc.RegisterSingleton(b, func(c ioc.Dic) grid.Service[Tile] {
+	ioc.Register(b, func(c ioc.Dic) grid.Service[Tile] {
 		return service.NewService[Tile](c)
 	})
 
-	ioc.WrapService(b, func(c ioc.Dic, b codec.Builder) {
+	ioc.Wrap(b, func(c ioc.Dic, b codec.Builder) {
 		b.
 			// components
 			Register(grid.SquareGridComponent[Tile]{})
@@ -38,7 +38,7 @@ func (pkg pkg[Tile]) Register(b ioc.Builder) {
 	if pkg.hoverEvent == nil {
 		return
 	}
-	ioc.WrapService(b, func(c ioc.Dic, collider collider.Service) {
+	ioc.Wrap(b, func(c ioc.Dic, collider collider.Service) {
 		policy := gridcollider.NewColliderWithPolicy[Tile](
 			c,
 			pkg.hoverEvent,

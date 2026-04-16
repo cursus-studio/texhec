@@ -63,7 +63,7 @@ func (a *exampleAsset) Release()     {}
 ### Extension registration
 ```go
 func (pkg) Register(b ioc.Builder) {
-	ioc.WrapService(b, func(c ioc.Dic, b assets.Service) {
+	ioc.Wrap(b, func(c ioc.Dic, b assets.Service) {
 		b.Register("extension", func(path assets.PathComponent) (assets.Asset, error) {
 			return NewExampleAsset(path.Path), nil
 		})
@@ -84,7 +84,7 @@ type Retrieved struct {
 }
 
 func (pkg) Register(b ioc.Builder) {
-	ioc.RegisterSingleton(b, func(c ioc.Dic) Retrieved {
+	ioc.Register(b, func(c ioc.Dic) Retrieved {
 		world := ioc.Get[ecs.World](c)
 		assetsService := ioc.Get[assets.Service](c)
 		retrieved := Retrieved{
@@ -114,7 +114,7 @@ type Retrieved struct {
 }
 
 func (pkg) Register(b ioc.Builder) {
-	ioc.RegisterSingleton(b, func(c ioc.Dic) Retrieved {
+	ioc.Register(b, func(c ioc.Dic) Retrieved {
 		logger := ioc.Get[logger.Logger](c)
 		registryService := ioc.Get[registry.Service](c)
 

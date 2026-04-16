@@ -15,13 +15,13 @@ func Package() ioc.Pkg {
 }
 
 func (pkg) Register(b ioc.Builder) {
-	ioc.RegisterSingleton(b, func(c ioc.Dic) connection.System {
+	ioc.Register(b, func(c ioc.Dic) connection.System {
 		return ecs.NewSystemRegister(func() error {
 			ioc.Get[connection.Service](c)
 			return nil
 		})
 	})
-	ioc.RegisterSingleton(b, func(c ioc.Dic) connection.Service {
+	ioc.Register(b, func(c ioc.Dic) connection.Service {
 		return internal.NewService(c)
 	})
 }

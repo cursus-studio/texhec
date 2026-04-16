@@ -15,13 +15,13 @@ func Package() ioc.Pkg {
 }
 
 func (pkg) Register(b ioc.Builder) {
-	ioc.WrapService(b, func(c ioc.Dic, b codec.Builder) {
+	ioc.Wrap(b, func(c ioc.Dic, b codec.Builder) {
 		b.
 			// events
 			Register(scene.ChangeSceneEvent{})
 	})
 
-	ioc.RegisterSingleton(b, func(c ioc.Dic) scene.Service {
+	ioc.Register(b, func(c ioc.Dic) scene.Service {
 		return internal.NewService(c)
 	})
 }

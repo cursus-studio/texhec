@@ -12,7 +12,7 @@ func Package() ioc.Pkg {
 }
 
 func (pkg) Register(b ioc.Builder) {
-	ioc.RegisterSingleton(b, func(c ioc.Dic) Api {
+	ioc.Register(b, func(c ioc.Dic) Api {
 		return newApi()
 	})
 }

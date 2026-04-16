@@ -43,7 +43,7 @@ func (pkg) Register(b ioc.Builder) {
 		pkg.Register(b)
 	}
 
-	ioc.RegisterSingleton(b, func(c ioc.Dic) vbo.VBOFactory[render.Vertex] {
+	ioc.Register(b, func(c ioc.Dic) vbo.VBOFactory[render.Vertex] {
 		return func() vbo.VBOSetter[render.Vertex] {
 			vbo := vbo.NewVBO[render.Vertex](func() {
 				gl.VertexAttribPointerWithOffset(0, 3, gl.FLOAT, false,
@@ -58,11 +58,11 @@ func (pkg) Register(b ioc.Builder) {
 		}
 	})
 
-	ioc.RegisterSingleton(b, func(c ioc.Dic) render.Service {
+	ioc.Register(b, func(c ioc.Dic) render.Service {
 		return service.NewService(c)
 	})
 
-	ioc.RegisterSingleton(b, func(c ioc.Dic) render.System {
+	ioc.Register(b, func(c ioc.Dic) render.System {
 		return ecs.NewSystemRegister(func() error {
 			errs := ecs.RegisterSystems(
 				systems.NewErrorLogger(c),
@@ -75,7 +75,7 @@ func (pkg) Register(b ioc.Builder) {
 		})
 	})
 
-	ioc.RegisterSingleton(b, func(c ioc.Dic) render.SystemRenderer {
+	ioc.Register(b, func(c ioc.Dic) render.SystemRenderer {
 		return ecs.NewSystemRegister(func() error {
 			errs := ecs.RegisterSystems(
 				instancing.NewSystem(c),
@@ -87,7 +87,7 @@ func (pkg) Register(b ioc.Builder) {
 		})
 	})
 
-	ioc.WrapService(b, func(c ioc.Dic, b assets.Service) {
+	ioc.Wrap(b, func(c ioc.Dic, b assets.Service) {
 		imageHandler := func(id assets.PathComponent) (assets.Asset, error) {
 			source, err := os.ReadFile(id.Path)
 			if err != nil {

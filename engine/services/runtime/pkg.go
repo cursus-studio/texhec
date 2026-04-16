@@ -11,10 +11,10 @@ func Package() ioc.Pkg {
 }
 
 func (pkg) Register(b ioc.Builder) {
-	ioc.RegisterSingleton(b, func(c ioc.Dic) Builder {
+	ioc.Register(b, func(c ioc.Dic) Builder {
 		return newBuilder()
 	})
-	ioc.RegisterSingleton(b, func(c ioc.Dic) Runtime {
+	ioc.Register(b, func(c ioc.Dic) Runtime {
 		return ioc.Get[Builder](c).Build()
 	})
 }

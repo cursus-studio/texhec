@@ -24,12 +24,12 @@ func (pkg) Register(b ioc.Builder) {
 	} {
 		pkg.Register(b)
 	}
-	ioc.WrapService(b, func(_ ioc.Dic, b codec.Builder) {
+	ioc.Wrap(b, func(_ ioc.Dic, b codec.Builder) {
 		b.
 			Register(uuid.UUID{}).
 			Register(uuid.Component{})
 	})
-	ioc.RegisterSingleton(b, func(c ioc.Dic) uuid.Factory { return internal.NewFactory() })
+	ioc.Register(b, func(c ioc.Dic) uuid.Factory { return internal.NewFactory() })
 	relationpkg.MapRelationPackage(
 		func(w ecs.World) ecs.DirtySet {
 			set := ecs.NewDirtySet()
@@ -48,7 +48,7 @@ func (pkg) Register(b ioc.Builder) {
 		},
 	).Register(b)
 
-	ioc.RegisterSingleton(b, func(c ioc.Dic) uuid.Service {
+	ioc.Register(b, func(c ioc.Dic) uuid.Service {
 		return internal.NewService(c)
 	})
 }

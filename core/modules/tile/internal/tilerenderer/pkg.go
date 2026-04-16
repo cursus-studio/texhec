@@ -21,11 +21,11 @@ func Package() ioc.Pkg {
 }
 
 func (pkg pkg) Register(b ioc.Builder) {
-	ioc.RegisterSingleton(b, func(c ioc.Dic) tile.SystemRenderer {
+	ioc.Register(b, func(c ioc.Dic) tile.SystemRenderer {
 		return ecs.NewSystemRegister(func() error { return NewSystem(c) })
 	})
 
-	ioc.RegisterSingleton(b, func(c ioc.Dic) vbo.VBOFactory[tile.ID] {
+	ioc.Register(b, func(c ioc.Dic) vbo.VBOFactory[tile.ID] {
 		return func() vbo.VBOSetter[tile.ID] {
 			vbo := vbo.NewVBO[tile.ID](func() {
 				var i uint32 = 0

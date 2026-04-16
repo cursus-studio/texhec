@@ -74,17 +74,17 @@ func (pkg pkg) Register(b ioc.Builder) {
 		pkg.Register(b)
 	}
 
-	ioc.WrapService(b, func(c ioc.Dic, b codec.Builder) {
+	ioc.Wrap(b, func(c ioc.Dic, b codec.Builder) {
 		b.
 			// events
 			Register(tile.HoverEvent{})
 	})
 
-	ioc.RegisterSingleton(b, func(c ioc.Dic) tile.Service {
+	ioc.Register(b, func(c ioc.Dic) tile.Service {
 		return tileservice.NewService(c)
 	})
 
-	ioc.RegisterSingleton(b, func(c ioc.Dic) tile.System {
+	ioc.Register(b, func(c ioc.Dic) tile.System {
 		systems := []tile.System{
 			tilesystem.NewSystem(c),
 			clicksystem.NewSystem(c),
@@ -100,7 +100,7 @@ func (pkg pkg) Register(b ioc.Builder) {
 		})
 	})
 
-	ioc.WrapService(b, func(c ioc.Dic, b assets.Service) {
+	ioc.Wrap(b, func(c ioc.Dic, b assets.Service) {
 		b.Register("biom", func(path assets.PathComponent) (assets.Asset, error) {
 			images := [6][]image.Image{}
 			directory, _ := strings.CutSuffix(path.Path, ".biom")
@@ -135,7 +135,7 @@ func (pkg pkg) Register(b ioc.Builder) {
 		})
 	})
 
-	ioc.WrapService(b, func(c ioc.Dic, b registry.Service) {
+	ioc.Wrap(b, func(c ioc.Dic, b registry.Service) {
 		type World struct {
 			engine.World `inject:"1"`
 			Tile         tile.Service       `inject:"1"`

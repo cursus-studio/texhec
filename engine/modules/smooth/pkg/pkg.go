@@ -40,13 +40,13 @@ func SmoothComponent[Component transition.LerpConstraint[Component]](config Conf
 
 	config.components[componentType] = struct{}{}
 	config.services = append(config.services, func(b ioc.Builder) {
-		ioc.RegisterSingleton(b, func(c ioc.Dic) *internal.Service[Component] {
+		ioc.Register(b, func(c ioc.Dic) *internal.Service[Component] {
 			return internal.NewService[Component](c)
 		})
-		ioc.RegisterSingleton(b, func(c ioc.Dic) startSystem[Component] {
+		ioc.Register(b, func(c ioc.Dic) startSystem[Component] {
 			return internal.NewFirstSystem[Component](c)
 		})
-		ioc.RegisterSingleton(b, func(c ioc.Dic) stopSystem[Component] {
+		ioc.Register(b, func(c ioc.Dic) stopSystem[Component] {
 			return internal.NewLastSystem[Component](c)
 		})
 	})
@@ -70,7 +70,7 @@ func (pkg pkg) Register(b ioc.Builder) {
 	for _, register := range pkg.config.services {
 		register(b)
 	}
-	ioc.RegisterSingleton(b, func(c ioc.Dic) smooth.StartSystem {
+	ioc.Register(b, func(c ioc.Dic) smooth.StartSystem {
 		return ecs.NewSystemRegister(func() error {
 			for _, system := range pkg.config.firstSystems {
 				if err := system(c).Register(); err != nil {
@@ -81,7 +81,7 @@ func (pkg pkg) Register(b ioc.Builder) {
 		})
 	})
 
-	ioc.RegisterSingleton(b, func(c ioc.Dic) smooth.StopSystem {
+	ioc.Register(b, func(c ioc.Dic) smooth.StopSystem {
 		return ecs.NewSystemRegister(func() error {
 			for _, system := range pkg.config.lastSystems {
 				if err := system(c).Register(); err != nil {

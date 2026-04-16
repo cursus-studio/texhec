@@ -16,7 +16,7 @@ type pkg struct{}
 func Package() ioc.Pkg { return pkg{} }
 
 func (pkg) Register(b ioc.Builder) {
-	ioc.WrapService(b, func(c ioc.Dic, b codec.Builder) {
+	ioc.Wrap(b, func(c ioc.Dic, b codec.Builder) {
 		b.
 			// events
 			Register(audio.StopEvent{}).
@@ -26,18 +26,18 @@ func (pkg) Register(b ioc.Builder) {
 			Register(audio.SetMasterVolumeEvent{}).
 			Register(audio.SetChannelVolumeEvent{})
 	})
-	ioc.RegisterSingleton(b, func(c ioc.Dic) internal.Service {
+	ioc.Register(b, func(c ioc.Dic) internal.Service {
 		return internal.NewService(c)
 	})
-	ioc.RegisterSingleton(b, func(c ioc.Dic) audio.PlayerService { return ioc.Get[internal.Service](c) })
-	ioc.RegisterSingleton(b, func(c ioc.Dic) audio.VolumeService { return ioc.Get[internal.Service](c) })
-	ioc.RegisterSingleton(b, func(c ioc.Dic) audio.Service { return ioc.Get[internal.Service](c) })
+	ioc.Register(b, func(c ioc.Dic) audio.PlayerService { return ioc.Get[internal.Service](c) })
+	ioc.Register(b, func(c ioc.Dic) audio.VolumeService { return ioc.Get[internal.Service](c) })
+	ioc.Register(b, func(c ioc.Dic) audio.Service { return ioc.Get[internal.Service](c) })
 
-	ioc.RegisterSingleton(b, func(c ioc.Dic) audio.System {
+	ioc.Register(b, func(c ioc.Dic) audio.System {
 		return internal.NewSystem(c)
 	})
 
-	ioc.WrapService(b, func(c ioc.Dic, b assets.Service) {
+	ioc.Wrap(b, func(c ioc.Dic, b assets.Service) {
 		b.Register("wav", func(id assets.PathComponent) (assets.Asset, error) {
 			source, err := os.ReadFile(id.Path)
 			if err != nil {

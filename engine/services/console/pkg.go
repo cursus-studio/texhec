@@ -9,5 +9,5 @@ func Package() ioc.Pkg {
 }
 
 func (pkg pkg) Register(b ioc.Builder) {
-	ioc.RegisterSingleton(b, func(c ioc.Dic) Console { return newConsole() })
+	ioc.Register(b, func(c ioc.Dic) Console { return newConsole() })
 }

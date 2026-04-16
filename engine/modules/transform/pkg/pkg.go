@@ -58,7 +58,7 @@ func (pkg pkg) Register(b ioc.Builder) {
 	} {
 		pkg.Register(b)
 	}
-	ioc.WrapService(b, func(c ioc.Dic, b codec.Builder) {
+	ioc.Wrap(b, func(c ioc.Dic, b codec.Builder) {
 		b.
 			// components
 			Register(transform.PosComponent{}).
@@ -75,7 +75,7 @@ func (pkg pkg) Register(b ioc.Builder) {
 			Register(transform.ParentPivotPointComponent{})
 	})
 
-	ioc.RegisterSingleton(b, func(c ioc.Dic) transform.Service {
+	ioc.Register(b, func(c ioc.Dic) transform.Service {
 		return transformservice.NewService(c,
 			pkg.defaultRot,
 			pkg.defaultSize,

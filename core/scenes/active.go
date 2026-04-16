@@ -71,14 +71,14 @@ func Package() ioc.Pkg {
 }
 
 func (pkg) Register(b ioc.Builder) {
-	ioc.WrapService(b, func(c ioc.Dic, b scene.Service) {
+	ioc.Wrap(b, func(c ioc.Dic, b scene.Service) {
 		b.SetScene(MenuID, scene.Scene(ioc.Get[MenuBuilder](c)))
 		b.SetScene(GameID, scene.Scene(ioc.Get[GameBuilder](c)))
 		b.SetScene(SettingsID, scene.Scene(ioc.Get[SettingsBuilder](c)))
 		b.SetScene(CreditsID, scene.Scene(ioc.Get[CreditsBuilder](c)))
 	})
 
-	ioc.WrapService(b, func(c ioc.Dic, b runtime.Builder) {
+	ioc.Wrap(b, func(c ioc.Dic, b runtime.Builder) {
 		b.BeforeStart(func(r runtime.Runtime) {
 			logger := ioc.Get[logger.Logger](c)
 			eventsBuilder := ioc.Get[events.Builder](c)

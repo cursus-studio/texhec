@@ -111,7 +111,7 @@ func addScene(
 }
 
 func (pkg) Register(b ioc.Builder) {
-	ioc.RegisterSingleton(b, func(c ioc.Dic) gamescenes.GameBuilder {
+	ioc.Register(b, func(c ioc.Dic) gamescenes.GameBuilder {
 		return func(sceneParent ecs.EntityID) {
 			world := ioc.GetServices[gamescenes.World](c)
 			addScene(

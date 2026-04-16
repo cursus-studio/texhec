@@ -22,14 +22,14 @@ func (pkgT[Component]) Register(b ioc.Builder) {
 	} {
 		pkg.Register(b)
 	}
-	ioc.WrapService(b, func(c ioc.Dic, b codec.Builder) {
+	ioc.Wrap(b, func(c ioc.Dic, b codec.Builder) {
 		b.
 			// components
 			Register(transition.TransitionComponent[Component]{}).
 			// events
 			Register(transition.TransitionEvent[Component]{})
 	})
-	ioc.WrapService(b, func(c ioc.Dic, b transitionimpl.Builder) {
+	ioc.Wrap(b, func(c ioc.Dic, b transitionimpl.Builder) {
 		sys := transitionimpl.NewSysT[Component](c)
 		b.Register(sys)
 	})

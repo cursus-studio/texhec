@@ -39,7 +39,7 @@ func (pkg) Register(b ioc.Builder) {
 	} {
 		pkg.Register(b)
 	}
-	ioc.WrapService(b, func(c ioc.Dic, b codec.Builder) {
+	ioc.Wrap(b, func(c ioc.Dic, b codec.Builder) {
 		b.
 			// components
 			Register(inputs.HoveredComponent{}).
@@ -62,11 +62,11 @@ func (pkg) Register(b ioc.Builder) {
 			Register(inputs.SynchronizePositionEvent{})
 	})
 
-	ioc.RegisterSingleton(b, func(c ioc.Dic) inputs.Service {
+	ioc.Register(b, func(c ioc.Dic) inputs.Service {
 		return service.NewService(c)
 	})
 
-	ioc.RegisterSingleton(b, func(c ioc.Dic) inputs.System {
+	ioc.Register(b, func(c ioc.Dic) inputs.System {
 		return ecs.NewSystemRegister(func() error {
 			ecs.RegisterSystems(
 				systems.NewInputsSystem(c),
@@ -94,7 +94,7 @@ func (pkg) Register(b ioc.Builder) {
 			return nil
 		})
 	})
-	ioc.RegisterSingleton(b, func(c ioc.Dic) inputs.ShutdownSystem {
+	ioc.Register(b, func(c ioc.Dic) inputs.ShutdownSystem {
 		return systems.NewQuitSystem(c)
 	})
 }

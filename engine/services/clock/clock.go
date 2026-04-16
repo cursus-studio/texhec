@@ -45,6 +45,6 @@ func Package(
 }
 
 func (pkg pkg) Register(b ioc.Builder) {
-	ioc.RegisterSingleton(b, func(c ioc.Dic) Clock { return &clock{} })
-	ioc.RegisterSingleton(b, func(c ioc.Dic) DateFormat { return pkg.dateFormat })
+	ioc.Register(b, func(c ioc.Dic) Clock { return &clock{} })
+	ioc.Register(b, func(c ioc.Dic) DateFormat { return pkg.dateFormat })
 }

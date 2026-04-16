@@ -17,10 +17,10 @@ func Package() ioc.Pkg {
 }
 
 func (pkg) Register(b ioc.Builder) {
-	ioc.RegisterSingleton(b, func(c ioc.Dic) metadata.Service {
+	ioc.Register(b, func(c ioc.Dic) metadata.Service {
 		return internal.NewService(c)
 	})
-	ioc.WrapService(b, func(c ioc.Dic, r registry.Service) {
+	ioc.Wrap(b, func(c ioc.Dic, r registry.Service) {
 		service := ioc.Get[metadata.Service](c)
 		r.Register("name", func(entity ecs.EntityID, structTagValue string) {
 			service.Name().Set(entity, metadata.NewName(structTagValue))

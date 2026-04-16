@@ -17,7 +17,7 @@ func Package() ioc.Pkg {
 }
 
 func (pkg) Register(b ioc.Builder) {
-	ioc.RegisterSingleton(b, func(c ioc.Dic) Api {
+	ioc.Register(b, func(c ioc.Dic) Api {
 		return newInputsApi(
 			ioc.Get[logger.Logger](c),
 			ioc.Get[clock.Clock](c),
@@ -25,7 +25,7 @@ func (pkg) Register(b ioc.Builder) {
 		)
 	})
 
-	ioc.WrapService(b, func(c ioc.Dic, b events.Builder) {
+	ioc.Wrap(b, func(c ioc.Dic, b events.Builder) {
 		events.Listen(b, func(qe sdl.QuitEvent) {
 			ioc.Get[runtime.Runtime](c).Stop()
 		})

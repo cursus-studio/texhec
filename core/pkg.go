@@ -274,7 +274,7 @@ func getDic() ioc.Dic {
 		pkg.Register(b)
 	}
 
-	ioc.WrapService(b, func(c ioc.Dic, f gtexture.Factory) {
+	ioc.Wrap(b, func(c ioc.Dic, f gtexture.Factory) {
 		f.Wrap(func(t gtexture.Texture) {
 			t.Bind()
 			defer gl.BindTexture(gl.TEXTURE_2D, 0)
@@ -286,7 +286,7 @@ func getDic() ioc.Dic {
 		})
 	})
 
-	ioc.WrapService(b, func(c ioc.Dic, f texturearray.Factory) {
+	ioc.Wrap(b, func(c ioc.Dic, f texturearray.Factory) {
 		f.Wrap(func(ta texturearray.TextureArray) {
 			ta.Bind()
 			defer gl.BindTexture(gl.TEXTURE_2D_ARRAY, 0)

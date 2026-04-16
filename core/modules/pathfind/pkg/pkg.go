@@ -15,7 +15,7 @@ func Package() ioc.Pkg {
 }
 
 func (pkg) Register(b ioc.Builder) {
-	ioc.RegisterSingleton(b, func(c ioc.Dic) pathfind.Service {
+	ioc.Register(b, func(c ioc.Dic) pathfind.Service {
 		return internal.NewService(c)
 	})
 }

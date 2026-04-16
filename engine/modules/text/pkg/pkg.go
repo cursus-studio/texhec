@@ -76,13 +76,13 @@ func (pkg pkg) Register(b ioc.Builder) {
 	} {
 		pkg.Register(b)
 	}
-	ioc.RegisterSingleton(b, func(c ioc.Dic) text.Service {
+	ioc.Register(b, func(c ioc.Dic) text.Service {
 		return textservice.NewService(
 			ioc.Get[ecs.World](c),
 			ioc.Get[logger.Logger](c),
 		)
 	})
-	ioc.RegisterSingleton(b, func(c ioc.Dic) textrenderer.FontService {
+	ioc.Register(b, func(c ioc.Dic) textrenderer.FontService {
 		return textrenderer.NewFontService(
 			ioc.Get[assets.Service](c),
 			pkg.usedGlyphs,
@@ -93,7 +93,7 @@ func (pkg pkg) Register(b ioc.Builder) {
 		)
 	})
 
-	ioc.RegisterSingleton(b, func(c ioc.Dic) textrenderer.LayoutService {
+	ioc.Register(b, func(c ioc.Dic) textrenderer.LayoutService {
 		return textrenderer.NewLayoutService(
 			c,
 			pkg.defaultFontFamily(c),
@@ -104,11 +104,11 @@ func (pkg pkg) Register(b ioc.Builder) {
 		)
 	})
 
-	ioc.RegisterSingleton(b, func(c ioc.Dic) textrenderer.FontKeys {
+	ioc.Register(b, func(c ioc.Dic) textrenderer.FontKeys {
 		return textrenderer.NewFontKeys()
 	})
 
-	ioc.RegisterSingleton(b, func(c ioc.Dic) text.SystemRenderer {
+	ioc.Register(b, func(c ioc.Dic) text.SystemRenderer {
 		return textrenderer.NewTextRenderer(
 			c,
 			pkg.defaultFontFamily(c).FontFamily,
@@ -117,7 +117,7 @@ func (pkg pkg) Register(b ioc.Builder) {
 		)
 	})
 
-	ioc.RegisterSingleton(b, func(c ioc.Dic) vbo.VBOFactory[textrenderer.Glyph] {
+	ioc.Register(b, func(c ioc.Dic) vbo.VBOFactory[textrenderer.Glyph] {
 		return func() vbo.VBOSetter[textrenderer.Glyph] {
 			vbo := vbo.NewVBO[textrenderer.Glyph](func() {
 				var i uint32 = 0
@@ -135,7 +135,7 @@ func (pkg pkg) Register(b ioc.Builder) {
 		}
 	})
 
-	ioc.WrapService(b, func(c ioc.Dic, b assets.Service) {
+	ioc.Wrap(b, func(c ioc.Dic, b assets.Service) {
 		getLetterImage := func(drawer font.Drawer, letter rune) *image.RGBA {
 			var text = string(letter)
 			textBounds, _ := drawer.BoundString(text)

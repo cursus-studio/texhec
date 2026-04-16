@@ -15,10 +15,10 @@ func Package() ioc.Pkg {
 }
 
 func (pkg) Register(b ioc.Builder) {
-	ioc.RegisterSingleton(b, func(c ioc.Dic) internal.Service {
+	ioc.Register(b, func(c ioc.Dic) internal.Service {
 		return internal.NewService(c)
 	})
-	ioc.RegisterSingleton(b, func(c ioc.Dic) prototype.Service {
+	ioc.Register(b, func(c ioc.Dic) prototype.Service {
 		return ioc.Get[internal.Service](c)
 	})
 }

@@ -22,15 +22,15 @@ func Package(tps, fps int) ioc.Pkg {
 }
 
 func (pkg pkg) Register(b ioc.Builder) {
-	ioc.RegisterSingleton(b, func(c ioc.Dic) Builder {
+	ioc.Register(b, func(c ioc.Dic) Builder {
 		return NewBuilder(pkg.tps, pkg.fps)
 	})
 
-	ioc.RegisterSingleton(b, func(c ioc.Dic) Frames {
+	ioc.Register(b, func(c ioc.Dic) Frames {
 		return ioc.Get[Builder](c).Build(ioc.Get[events.Events](c), ioc.Get[clock.Clock](c))
 	})
 
-	ioc.WrapServiceInOrder(b, runtimeservice.OrderStop, func(c ioc.Dic, r runtimeservice.Builder) {
+	ioc.Wrap(b, func(c ioc.Dic, r runtimeservice.Builder) {
 		err := r.OnStartOnMainThread(func(r runtimeservice.Runtime) {
 			_ = ioc.Get[Frames](c).Run()
 			go r.Stop()

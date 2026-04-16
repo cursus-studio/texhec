@@ -33,7 +33,7 @@ func Package() ioc.Pkg {
 
 func (pkg) Register(b ioc.Builder) {
 	// register specific files
-	ioc.WrapService(b, func(c ioc.Dic, b assets.Service) {
+	ioc.Wrap(b, func(c ioc.Dic, b assets.Service) {
 		b.Register("blank texture", func(_ assets.PathComponent) (assets.Asset, error) {
 			img := image.NewRGBA(image.Rect(0, 0, 1, 1))
 			white := color.RGBA{255, 255, 255, 255}
@@ -69,7 +69,7 @@ func (pkg) Register(b ioc.Builder) {
 		})
 	})
 
-	ioc.RegisterSingleton(b, func(c ioc.Dic) definitions.Assets {
+	ioc.Register(b, func(c ioc.Dic) definitions.Assets {
 		world := ioc.GetServices[engine.World](c)
 		def, err := registry.GetRegistry[definitions.Assets](world.Registry)
 		world.Logger.Warn(err)
@@ -82,7 +82,7 @@ func (pkg) Register(b ioc.Builder) {
 		Deploy       deploy.Service `inject:"1"`
 	}
 
-	ioc.RegisterSingleton(b, func(c ioc.Dic) definitions.Definitions {
+	ioc.Register(b, func(c ioc.Dic) definitions.Definitions {
 		world := ioc.GetServices[World](c)
 		def, err := registry.GetRegistry[definitions.Definitions](world.Registry)
 		world.Logger.Warn(err)
@@ -192,7 +192,7 @@ func (pkg) Register(b ioc.Builder) {
 		},
 	}
 
-	ioc.WrapService(b, func(c ioc.Dic, b registry.Service) {
+	ioc.Wrap(b, func(c ioc.Dic, b registry.Service) {
 		b.Register("transition", func(entity ecs.EntityID, structTagValue string) {
 			transitionService := ioc.Get[transition.Service](c)
 			easing, ok := transitions[structTagValue]

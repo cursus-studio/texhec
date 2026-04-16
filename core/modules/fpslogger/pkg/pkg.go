@@ -14,7 +14,7 @@ func Package() ioc.Pkg {
 }
 
 func (pkg) Register(b ioc.Builder) {
-	ioc.RegisterSingleton(b, func(c ioc.Dic) fpslogger.System {
+	ioc.Register(b, func(c ioc.Dic) fpslogger.System {
 		return internal.NewFpsLoggerSystem(c)
 	})
 }

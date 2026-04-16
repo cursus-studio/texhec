@@ -22,7 +22,7 @@ func (pkg) Register(b ioc.Builder) {
 	} {
 		pkg.Register(b)
 	}
-	ioc.RegisterSingleton(b, func(c ioc.Dic) layout.Service {
+	ioc.Register(b, func(c ioc.Dic) layout.Service {
 		return service.NewLayoutService(c)
 	})
 }

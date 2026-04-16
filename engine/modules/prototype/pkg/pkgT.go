@@ -14,7 +14,7 @@ func PackageT[Component any]() ioc.Pkg {
 }
 
 func (clonerPkg[Component]) Register(b ioc.Builder) {
-	ioc.WrapService(b, func(c ioc.Dic, b internal.Service) {
+	ioc.Wrap(b, func(c ioc.Dic, b internal.Service) {
 		b.Add(ecs.GetComponentsArray[Component](ioc.Get[ecs.World](c)))
 	})
 }

@@ -20,7 +20,7 @@ func (pkg) Register(b ioc.Builder) {
 	} {
 		pkg.Register(b)
 	}
-	ioc.RegisterSingleton(b, func(c ioc.Dic) deploy.Service {
+	ioc.Register(b, func(c ioc.Dic) deploy.Service {
 		return internal.NewService(c)
 	})
 }

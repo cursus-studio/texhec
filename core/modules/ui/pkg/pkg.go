@@ -37,7 +37,7 @@ func (pkg pkg) Register(b ioc.Builder) {
 	} {
 		pkg.Register(b)
 	}
-	ioc.WrapService(b, func(c ioc.Dic, b codec.Builder) {
+	ioc.Wrap(b, func(c ioc.Dic, b codec.Builder) {
 		b.
 			// components
 			Register(ui.AnimatedBackgroundComponent{}).
@@ -47,10 +47,10 @@ func (pkg pkg) Register(b ioc.Builder) {
 			Register(ui.HideUiEvent{})
 	})
 
-	ioc.RegisterSingleton(b, func(c ioc.Dic) ui.Service {
+	ioc.Register(b, func(c ioc.Dic) ui.Service {
 		return uiservice.NewService(c, pkg.animationDuration, pkg.bgTimePerFrame)
 	})
-	ioc.RegisterSingleton(b, func(c ioc.Dic) ui.System {
+	ioc.Register(b, func(c ioc.Dic) ui.System {
 		eventsBuilder := ioc.Get[events.Builder](c)
 		return ecs.NewSystemRegister(func() error {
 			errs := ecs.RegisterSystems(

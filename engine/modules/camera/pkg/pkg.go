@@ -47,7 +47,7 @@ func (pkg pkg) Register(b ioc.Builder) {
 	} {
 		pkg.Register(b)
 	}
-	ioc.WrapService(b, func(c ioc.Dic, b codec.Builder) {
+	ioc.Wrap(b, func(c ioc.Dic, b codec.Builder) {
 		b.
 			// camera components
 			Register(camera.Component{}).
@@ -63,17 +63,17 @@ func (pkg pkg) Register(b ioc.Builder) {
 			// events
 			Register(camera.ChangedResolutionEvent{})
 	})
-	ioc.RegisterSingleton(b, func(c ioc.Dic) service.Service {
+	ioc.Register(b, func(c ioc.Dic) service.Service {
 		return service.NewService(c)
 	})
-	ioc.RegisterSingleton(b, func(c ioc.Dic) camera.Service {
+	ioc.Register(b, func(c ioc.Dic) camera.Service {
 		return ioc.Get[service.Service](c)
 	})
 
-	ioc.RegisterSingleton(b, func(c ioc.Dic) camera.CameraUp { return camera.CameraUp(mgl32.Vec3{0, 1, 0}) })
-	ioc.RegisterSingleton(b, func(c ioc.Dic) camera.CameraForward { return camera.CameraForward(mgl32.Vec3{0, 0, -1}) })
+	ioc.Register(b, func(c ioc.Dic) camera.CameraUp { return camera.CameraUp(mgl32.Vec3{0, 1, 0}) })
+	ioc.Register(b, func(c ioc.Dic) camera.CameraForward { return camera.CameraForward(mgl32.Vec3{0, 0, -1}) })
 
-	ioc.WrapService(b, func(c ioc.Dic, s service.Service) {
+	ioc.Wrap(b, func(c ioc.Dic, s service.Service) {
 		transform := ioc.Get[transform.Service](c)
 		cameraService := s
 		// transform := ioc.Get[transform.Service](c)
@@ -155,7 +155,7 @@ func (pkg pkg) Register(b ioc.Builder) {
 		}())
 	})
 
-	ioc.RegisterSingleton(b, func(c ioc.Dic) camera.System {
+	ioc.Register(b, func(c ioc.Dic) camera.System {
 		return ecs.NewSystemRegister(func() error {
 			w := ioc.Get[ecs.World](c)
 			eventsBuilder := ioc.Get[events.Builder](c)

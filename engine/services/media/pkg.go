@@ -31,7 +31,7 @@ func (pkg pkg) Register(b ioc.Builder) {
 		pkg.Register(b)
 	}
 
-	ioc.RegisterSingleton(b, func(c ioc.Dic) Api {
+	ioc.Register(b, func(c ioc.Dic) Api {
 		return newApi(
 			ioc.Get[inputs.Api](c),
 			ioc.Get[window.Api](c),

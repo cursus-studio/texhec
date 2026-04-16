@@ -16,10 +16,10 @@ func Package() ioc.Pkg {
 }
 
 func (pkg) Register(b ioc.Builder) {
-	ioc.RegisterSingleton(b, func(c ioc.Dic) warmup.Service {
+	ioc.Register(b, func(c ioc.Dic) warmup.Service {
 		return internal.NewService(c)
 	})
-	ioc.WrapService(b, func(c ioc.Dic, b events.Builder) {
+	ioc.Wrap(b, func(c ioc.Dic, b events.Builder) {
 		world := ioc.Get[ecs.World](c)
 		events.Listen(b, func(warmup.Event) {
 			world.WarmUp()

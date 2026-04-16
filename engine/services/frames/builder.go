@@ -5,13 +5,6 @@ import (
 	"time"
 
 	"github.com/ogiusek/events"
-	"github.com/ogiusek/ioc/v2"
-)
-
-const (
-	// before scene listeners are executed
-	HandleInputs ioc.Order = iota
-	FlushDraw
 )
 
 type FrameEvent struct {

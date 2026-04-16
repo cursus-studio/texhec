@@ -22,7 +22,7 @@ func Package(
 }
 
 func (pkg pkg) Register(b ioc.Builder) {
-	ioc.RegisterSingleton(b, func(c ioc.Dic) Logger {
+	ioc.Register(b, func(c ioc.Dic) Logger {
 		return &logger{
 			PanicOnError: pkg.panicOnWarn,
 			Clock:        ioc.Get[clock.Clock](c),

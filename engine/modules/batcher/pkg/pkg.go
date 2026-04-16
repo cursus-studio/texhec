@@ -24,7 +24,7 @@ func Package(
 }
 
 func (pkg pkg) Register(b ioc.Builder) {
-	ioc.RegisterSingleton(b, func(c ioc.Dic) *internal.Service {
+	ioc.Register(b, func(c ioc.Dic) *internal.Service {
 		return internal.NewService(
 			c,
 			pkg.workers,
@@ -32,11 +32,11 @@ func (pkg pkg) Register(b ioc.Builder) {
 		)
 	})
 
-	ioc.RegisterSingleton(b, func(c ioc.Dic) batcher.Service {
+	ioc.Register(b, func(c ioc.Dic) batcher.Service {
 		return ioc.Get[*internal.Service](c)
 	})
 
-	ioc.RegisterSingleton(b, func(c ioc.Dic) batcher.System {
+	ioc.Register(b, func(c ioc.Dic) batcher.System {
 		return ioc.Get[*internal.Service](c).System()
 	})
 }

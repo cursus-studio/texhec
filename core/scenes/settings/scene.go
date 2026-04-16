@@ -22,7 +22,7 @@ func Package() ioc.Pkg {
 }
 
 func (pkg) Register(b ioc.Builder) {
-	ioc.RegisterSingleton(b, func(c ioc.Dic) gamescenes.SettingsBuilder {
+	ioc.Register(b, func(c ioc.Dic) gamescenes.SettingsBuilder {
 		return func(sceneParent ecs.EntityID) {
 			world := ioc.GetServices[gamescenes.World](c)
 			cameraEntity := world.NewEntity()

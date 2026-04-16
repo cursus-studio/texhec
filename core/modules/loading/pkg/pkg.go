@@ -14,7 +14,7 @@ func Package() ioc.Pkg {
 }
 
 func (pkg) Register(b ioc.Builder) {
-	ioc.RegisterSingleton(b, func(c ioc.Dic) loading.System {
+	ioc.Register(b, func(c ioc.Dic) loading.System {
 		return internal.NewSystem(c)
 	})
 }
