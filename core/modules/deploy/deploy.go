@@ -15,6 +15,9 @@ func NewDeploy(deployable ...ecs.EntityID) Component {
 	}
 }
 
+// TODO:
+// - when unit moves below deployed building it doesn't turn red
+
 //
 
 type LinkComponent struct {
