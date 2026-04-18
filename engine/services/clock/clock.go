@@ -32,19 +32,7 @@ func (clock *clock) Now() time.Time {
 
 // package
 
-type pkg struct {
-	dateFormat DateFormat
-}
-
-func Package(
-	dateFormat DateFormat,
-) ioc.Pkg {
-	return pkg{
-		dateFormat: dateFormat,
-	}
-}
-
-func (pkg pkg) Register(b ioc.Builder) {
+var Pkg = ioc.NewPkgT(func(b ioc.Builder, dateFormat DateFormat) {
 	ioc.Register(b, func(c ioc.Dic) Clock { return &clock{} })
-	ioc.Register(b, func(c ioc.Dic) DateFormat { return pkg.dateFormat })
-}
+	ioc.Register(b, func(c ioc.Dic) DateFormat { return dateFormat })
+})

@@ -8,27 +8,27 @@ import (
 	"github.com/ogiusek/ioc/v2"
 )
 
-type pkg struct {
+type config struct {
 	workers            int
 	frameLoadingBudget time.Duration
 }
 
-func Package(
+func NewConfig(
 	workers int,
 	frameLoadingBudget time.Duration,
-) ioc.Pkg {
-	return pkg{
+) config {
+	return config{
 		workers,
 		frameLoadingBudget,
 	}
 }
 
-func (pkg pkg) Register(b ioc.Builder) {
+var Pkg = ioc.NewPkgT(func(b ioc.Builder, config config) {
 	ioc.Register(b, func(c ioc.Dic) *internal.Service {
 		return internal.NewService(
 			c,
-			pkg.workers,
-			pkg.frameLoadingBudget,
+			config.workers,
+			config.frameLoadingBudget,
 		)
 	})
 
@@ -39,4 +39,4 @@ func (pkg pkg) Register(b ioc.Builder) {
 	ioc.Register(b, func(c ioc.Dic) batcher.System {
 		return ioc.Get[*internal.Service](c).System()
 	})
-}
+})

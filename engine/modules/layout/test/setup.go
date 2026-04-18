@@ -26,18 +26,14 @@ type Setup struct {
 }
 
 func NewSetup(t *testing.T) Setup {
-	b := ioc.NewBuilder()
-	for _, pkg := range []ioc.Pkg{
-		logger.Package(true, func(c ioc.Dic, message string) { print(message) }),
-		clock.Package(time.RFC3339Nano),
-		ecs.Package(),
-		hierarchypkg.Package(),
-		transformpkg.Package(),
-		layoutpkg.Package(),
-	} {
-		pkg.Register(b)
-	}
-	c := b.Build()
+	c := ioc.NewContainer(
+		logger.Pkg(logger.NewConfig(true, func(c ioc.Dic, message string) { print(message) })),
+		clock.Pkg(time.RFC3339Nano),
+		ecs.Pkg,
+		hierarchypkg.Pkg,
+		transformpkg.Pkg,
+		layoutpkg.Pkg,
+	)
 	setup := ioc.GetServices[Setup](c)
 	setup.T = t
 	return setup

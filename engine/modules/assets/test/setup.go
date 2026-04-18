@@ -22,17 +22,13 @@ type setup struct {
 }
 
 func NewSetup() setup {
-	b := ioc.NewBuilder()
-	for _, pkg := range []ioc.Pkg{
-		clock.Package(time.RFC3339Nano),
-		logger.Package(true, func(c ioc.Dic, message string) { print(message) }),
-		registrypkg.Package(),
-		ecs.Package(),
-		uuidpkg.Package(),
-		assetspkg.Package(""),
-	} {
-		pkg.Register(b)
-	}
-	c := b.Build()
+	c := ioc.NewContainer(
+		clock.Pkg(time.RFC3339Nano),
+		logger.Pkg(logger.NewConfig(true, func(c ioc.Dic, message string) { print(message) })),
+		registrypkg.Pkg,
+		ecs.Pkg,
+		uuidpkg.Pkg,
+		assetspkg.Pkg(""),
+	)
 	return ioc.GetServices[setup](c)
 }

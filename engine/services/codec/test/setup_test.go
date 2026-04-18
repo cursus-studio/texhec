@@ -18,20 +18,15 @@ type setup struct {
 }
 
 func NewSetup() setup {
-	b := ioc.NewBuilder()
-
-	for _, pkg := range []ioc.Pkg{
-		codec.Package(),
-		clock.Package(time.RFC3339Nano),
-		logger.Package(true, func(c ioc.Dic, message string) { print(message) }),
-	} {
-		pkg.Register(b)
-	}
-
-	ioc.Wrap(b, func(c ioc.Dic, b codec.Builder) {
-		b.Register(Type{})
-	})
-
-	c := b.Build()
+	c := ioc.NewContainer(
+		codec.Pkg,
+		clock.Pkg(time.RFC3339Nano),
+		logger.Pkg(logger.NewConfig(true, func(c ioc.Dic, message string) { print(message) })),
+		ioc.NewPkg(func(b ioc.Builder) {
+			ioc.Wrap(b, func(c ioc.Dic, b codec.Builder) {
+				b.Register(Type{})
+			})
+		}),
+	)
 	return setup{ioc.Get[codec.Codec](c)}
 }

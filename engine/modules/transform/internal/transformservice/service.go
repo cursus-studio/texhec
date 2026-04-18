@@ -76,10 +76,10 @@ func NewService(
 	s.ParentMaskArray = ecs.GetComponentsArray[transform.ParentComponent](s.World)
 	s.ParentPivotPointArray = ecs.GetComponentsArray[transform.ParentPivotPointComponent](s.World)
 
-	s.defaultRot = defaultRot
-	s.defaultSize = defaultSize
-	s.defaultPivot = defaultPivot
-	s.defaultParentPivot = defaultParentPivot
+	s.defaultRot = transform.NewRotation(mgl32.QuatIdent())
+	s.defaultSize = transform.NewSize(1, 1, 1)
+	s.defaultPivot = transform.NewPivotPoint(.5, .5, .5)
+	s.defaultParentPivot = transform.NewParentPivotPoint(.5, .5, .5)
 
 	s.Init()
 	return s

@@ -7,26 +7,26 @@ import (
 	"github.com/veandco/go-sdl2/sdl"
 )
 
-type pkg struct {
+type config struct {
 	window  *sdl.Window
 	context sdl.GLContext
 }
 
-func Package(
+func NewConfig(
 	window *sdl.Window,
 	context sdl.GLContext,
-) ioc.Pkg {
-	return pkg{
+) config {
+	return config{
 		window:  window,
 		context: context,
 	}
 }
 
-func (pkg pkg) Register(b ioc.Builder) {
+var Pkg = ioc.NewPkgT(func(b ioc.Builder, config config) {
 	ioc.Register(b, func(c ioc.Dic) Api {
 		return newApi(
-			pkg.window,
-			pkg.context,
+			config.window,
+			config.context,
 		)
 	})
 
@@ -38,4 +38,4 @@ func (pkg pkg) Register(b ioc.Builder) {
 			sdl.Quit()
 		})
 	})
-}
+})

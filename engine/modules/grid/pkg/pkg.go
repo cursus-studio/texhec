@@ -11,38 +11,37 @@ import (
 	"github.com/ogiusek/ioc/v2"
 )
 
-type pkg[Tile grid.TileConstraint] struct {
+type config[Tile grid.TileConstraint] struct {
 	hoverEvent func(ecs.EntityID, grid.Index) any
 }
 
-// index event can be nil if layer has no collider
-func Package[Tile grid.TileConstraint](
+func NewConfig[Tile grid.TileConstraint](
 	hoverEvent func(ecs.EntityID, grid.Index) any,
-) ioc.Pkg {
-	return pkg[Tile]{
-		hoverEvent,
-	}
+) config[Tile] {
+	return config[Tile]{hoverEvent}
 }
 
-func (pkg pkg[Tile]) Register(b ioc.Builder) {
-	ioc.Register(b, func(c ioc.Dic) grid.Service[Tile] {
-		return service.NewService[Tile](c)
-	})
+func Pkg[Tile grid.TileConstraint](config config[Tile]) ioc.Pkg {
+	return ioc.NewPkg(func(b ioc.Builder) {
+		ioc.Register(b, func(c ioc.Dic) grid.Service[Tile] {
+			return service.NewService[Tile](c)
+		})
 
-	ioc.Wrap(b, func(c ioc.Dic, b codec.Builder) {
-		b.
-			// components
-			Register(grid.SquareGridComponent[Tile]{})
-	})
+		ioc.Wrap(b, func(c ioc.Dic, b codec.Builder) {
+			b.
+				// components
+				Register(grid.SquareGridComponent[Tile]{})
+		})
 
-	if pkg.hoverEvent == nil {
-		return
-	}
-	ioc.Wrap(b, func(c ioc.Dic, collider collider.Service) {
-		policy := gridcollider.NewColliderWithPolicy[Tile](
-			c,
-			pkg.hoverEvent,
-		)
-		collider.AddRayFallThroughPolicy(policy)
+		if config.hoverEvent == nil {
+			return
+		}
+		ioc.Wrap(b, func(c ioc.Dic, collider collider.Service) {
+			policy := gridcollider.NewColliderWithPolicy[Tile](
+				c,
+				config.hoverEvent,
+			)
+			collider.AddRayFallThroughPolicy(policy)
+		})
 	})
 }

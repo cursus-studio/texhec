@@ -18,7 +18,7 @@ func TestCodec(t *testing.T) {
 		t.Error(err)
 		return
 	}
-	valueT := reflect.TypeOf(value)
+	valueT := reflect.TypeFor[Type]()
 	decodedT := reflect.TypeOf(decoded)
 	if decodedT != valueT {
 		t.Errorf("unexpected types mismatch (original) %v != (decoded) %v", valueT, decodedT)

@@ -5,14 +5,7 @@ import (
 	"github.com/ogiusek/ioc/v2"
 )
 
-type pkg struct{}
-
-// package registers example singleton world
-func Package() ioc.Pkg {
-	return pkg{}
-}
-
-func (pkg pkg) Register(b ioc.Builder) {
+var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 	ioc.Register(b, func(c ioc.Dic) events.Builder {
 		return events.NewBuilder()
 	})
@@ -22,4 +15,4 @@ func (pkg pkg) Register(b ioc.Builder) {
 	ioc.Register(b, func(c ioc.Dic) World {
 		return NewWorld()
 	})
-}
+})

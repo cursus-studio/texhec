@@ -7,14 +7,10 @@ import (
 	"github.com/ogiusek/ioc/v2"
 )
 
-type clonerPkg[Component any] struct{}
-
-func PackageT[Component any]() ioc.Pkg {
-	return clonerPkg[Component]{}
-}
-
-func (clonerPkg[Component]) Register(b ioc.Builder) {
-	ioc.Wrap(b, func(c ioc.Dic, b internal.Service) {
-		b.Add(ecs.GetComponentsArray[Component](ioc.Get[ecs.World](c)))
+func PkgT[Component any]() ioc.Pkg {
+	return ioc.NewPkg(func(b ioc.Builder) {
+		ioc.Wrap(b, func(c ioc.Dic, b internal.Service) {
+			b.Add(ecs.GetComponentsArray[Component](ioc.Get[ecs.World](c)))
+		})
 	})
 }

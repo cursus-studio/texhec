@@ -11,18 +11,12 @@ import (
 	"github.com/ogiusek/ioc/v2"
 )
 
-type pkg struct{}
-
-func Package() ioc.Pkg {
-	return pkg{}
-}
-
-func (pkg) Register(b ioc.Builder) {
+var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 	for _, pkg := range []ioc.Pkg{
-		prototypepkg.PackageT[transition.EasingComponent](),
-		prototypepkg.PackageT[transition.EasingFunctionComponent](),
+		prototypepkg.PkgT[transition.EasingComponent](),
+		prototypepkg.PkgT[transition.EasingFunctionComponent](),
 	} {
-		pkg.Register(b)
+		pkg(b)
 	}
 	ioc.Wrap(b, func(c ioc.Dic, b codec.Builder) {
 		b.
@@ -42,4 +36,4 @@ func (pkg) Register(b ioc.Builder) {
 	ioc.Register(b, func(c ioc.Dic) transition.Service {
 		return service.NewService(c)
 	})
-}
+})

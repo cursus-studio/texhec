@@ -8,13 +8,7 @@ import (
 	"github.com/ogiusek/ioc/v2"
 )
 
-type pkg struct{}
-
-func Package() ioc.Pkg {
-	return pkg{}
-}
-
-func (pkg) Register(b ioc.Builder) {
+var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 	ioc.Wrap(b, func(c ioc.Dic, b codec.Builder) {
 		b.
 			// events
@@ -24,4 +18,4 @@ func (pkg) Register(b ioc.Builder) {
 	ioc.Register(b, func(c ioc.Dic) settings.System {
 		return internal.NewSystem(c)
 	})
-}
+})

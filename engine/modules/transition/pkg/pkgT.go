@@ -9,28 +9,23 @@ import (
 	"github.com/ogiusek/ioc/v2"
 )
 
-type pkgT[Component transition.LerpConstraint[Component]] struct {
-}
-
-func PackageT[Component transition.LerpConstraint[Component]]() ioc.Pkg {
-	return pkgT[Component]{}
-}
-
-func (pkgT[Component]) Register(b ioc.Builder) {
-	for _, pkg := range []ioc.Pkg{
-		prototypepkg.PackageT[transition.TransitionComponent[Component]](),
-	} {
-		pkg.Register(b)
-	}
-	ioc.Wrap(b, func(c ioc.Dic, b codec.Builder) {
-		b.
-			// components
-			Register(transition.TransitionComponent[Component]{}).
-			// events
-			Register(transition.TransitionEvent[Component]{})
-	})
-	ioc.Wrap(b, func(c ioc.Dic, b transitionimpl.Builder) {
-		sys := transitionimpl.NewSysT[Component](c)
-		b.Register(sys)
+func PkgT[Component transition.LerpConstraint[Component]]() ioc.Pkg {
+	return ioc.NewPkg(func(b ioc.Builder) {
+		for _, pkg := range []ioc.Pkg{
+			prototypepkg.PkgT[transition.TransitionComponent[Component]](),
+		} {
+			pkg(b)
+		}
+		ioc.Wrap(b, func(c ioc.Dic, b codec.Builder) {
+			b.
+				// components
+				Register(transition.TransitionComponent[Component]{}).
+				// events
+				Register(transition.TransitionEvent[Component]{})
+		})
+		ioc.Wrap(b, func(c ioc.Dic, b transitionimpl.Builder) {
+			sys := transitionimpl.NewSysT[Component](c)
+			b.Register(sys)
+		})
 	})
 }

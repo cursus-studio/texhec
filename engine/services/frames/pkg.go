@@ -9,21 +9,21 @@ import (
 	"github.com/ogiusek/ioc/v2"
 )
 
-type pkg struct {
+type config struct {
 	tps,
 	fps int
 }
 
-func Package(tps, fps int) ioc.Pkg {
-	return pkg{
+func NewConfig(tps, fps int) config {
+	return config{
 		tps: tps,
 		fps: fps,
 	}
 }
 
-func (pkg pkg) Register(b ioc.Builder) {
+var Pkg = ioc.NewPkgT(func(b ioc.Builder, config config) {
 	ioc.Register(b, func(c ioc.Dic) Builder {
-		return NewBuilder(pkg.tps, pkg.fps)
+		return NewBuilder(config.tps, config.fps)
 	})
 
 	ioc.Register(b, func(c ioc.Dic) Frames {
@@ -40,4 +40,4 @@ func (pkg pkg) Register(b ioc.Builder) {
 			ioc.Get[Frames](c).Stop()
 		})
 	})
-}
+})

@@ -4,17 +4,10 @@ import (
 	"github.com/ogiusek/ioc/v2"
 )
 
-type pkg struct {
-}
-
-func Package() ioc.Pkg {
-	return pkg{}
-}
-
-func (pkg) Register(b ioc.Builder) {
+var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 	ioc.Register(b, func(c ioc.Dic) Factory {
 		return &factory{
 			make([]func(TextureArray), 0),
 		}
 	})
-}
+})

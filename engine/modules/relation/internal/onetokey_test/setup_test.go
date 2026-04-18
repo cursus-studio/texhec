@@ -19,10 +19,9 @@ type Setup struct {
 }
 
 func NewSetup() Setup {
-	b := ioc.NewBuilder()
-	pkgs := []ioc.Pkg{
-		ecs.Package(),
-		relationpkg.SpatialRelationPackage(
+	c := ioc.NewContainer(
+		ecs.Pkg,
+		relationpkg.SpatialRelationPkg(
 			func(w ecs.World) ecs.DirtySet {
 				dirtySet := ecs.NewDirtySet()
 				ecs.GetComponentsArray[Component](w).AddDirtySet(dirtySet)
@@ -37,12 +36,7 @@ func NewSetup() Setup {
 			},
 			func(index uint32) uint32 { return index },
 		),
-	}
-	for _, pkg := range pkgs {
-		pkg.Register(b)
-	}
-
-	c := b.Build()
+	)
 
 	w := ioc.Get[ecs.World](c)
 	return Setup{

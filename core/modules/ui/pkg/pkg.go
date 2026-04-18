@@ -14,28 +14,28 @@ import (
 	"github.com/veandco/go-sdl2/sdl"
 )
 
-type pkg struct {
+type config struct {
 	animationDuration time.Duration
 	bgTimePerFrame    time.Duration
 }
 
-func Package(
+func NewConfig(
 	animationDuration time.Duration,
 	bgTimePerFrame time.Duration,
-) ioc.Pkg {
-	return pkg{
+) config {
+	return config{
 		animationDuration,
 		bgTimePerFrame,
 	}
 }
 
-func (pkg pkg) Register(b ioc.Builder) {
+var Pkg = ioc.NewPkgT(func(b ioc.Builder, config config) {
 	for _, pkg := range []ioc.Pkg{
-		prototypepkg.PackageT[ui.AnimatedBackgroundComponent](),
-		prototypepkg.PackageT[ui.CursorCameraComponent](),
-		prototypepkg.PackageT[ui.UiCameraComponent](),
+		prototypepkg.PkgT[ui.AnimatedBackgroundComponent](),
+		prototypepkg.PkgT[ui.CursorCameraComponent](),
+		prototypepkg.PkgT[ui.UiCameraComponent](),
 	} {
-		pkg.Register(b)
+		pkg(b)
 	}
 	ioc.Wrap(b, func(c ioc.Dic, b codec.Builder) {
 		b.
@@ -48,13 +48,13 @@ func (pkg pkg) Register(b ioc.Builder) {
 	})
 
 	ioc.Register(b, func(c ioc.Dic) ui.Service {
-		return uiservice.NewService(c, pkg.animationDuration, pkg.bgTimePerFrame)
+		return uiservice.NewService(c, config.animationDuration, config.bgTimePerFrame)
 	})
 	ioc.Register(b, func(c ioc.Dic) ui.System {
 		eventsBuilder := ioc.Get[events.Builder](c)
 		return ecs.NewSystemRegister(func() error {
 			errs := ecs.RegisterSystems(
-				systems.NewSystem(c, pkg.bgTimePerFrame),
+				systems.NewSystem(c, config.bgTimePerFrame),
 				systems.NewCursorSystem(c),
 			)
 			if len(errs) != 0 {
@@ -71,4 +71,4 @@ func (pkg pkg) Register(b ioc.Builder) {
 			return nil
 		})
 	})
-}
+})

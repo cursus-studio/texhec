@@ -8,28 +8,18 @@ import (
 	"github.com/ogiusek/ioc/v2"
 )
 
-type mapRelationPkg[IndexType comparable] struct {
-	queryFactory   func(ecs.World) ecs.DirtySet
-	componentIndex func(ecs.World) func(ecs.EntityID) (IndexType, bool)
-}
-
-func MapRelationPackage[IndexType comparable](
+func MapRelationPkg[IndexType comparable](
 	queryFactory func(ecs.World) ecs.DirtySet,
 	componentIndex func(ecs.World) func(entity ecs.EntityID) (indexType IndexType, ok bool),
 ) ioc.Pkg {
-	return mapRelationPkg[IndexType]{
-		queryFactory:   queryFactory,
-		componentIndex: componentIndex,
-	}
-}
-
-func (pkg mapRelationPkg[IndexType]) Register(b ioc.Builder) {
-	ioc.Register(b, func(c ioc.Dic) relation.Service[IndexType] {
-		w := ioc.Get[ecs.World](c)
-		return onetokey.NewMapIndex(
-			w,
-			pkg.queryFactory,
-			pkg.componentIndex(w),
-		)
+	return ioc.NewPkg(func(b ioc.Builder) {
+		ioc.Register(b, func(c ioc.Dic) relation.Service[IndexType] {
+			w := ioc.Get[ecs.World](c)
+			return onetokey.NewMapIndex(
+				w,
+				queryFactory,
+				componentIndex(w),
+			)
+		})
 	})
 }

@@ -11,52 +11,34 @@ import (
 	"github.com/ogiusek/ioc/v2"
 )
 
-type pkg struct {
-	defaultPos         transform.PosComponent
-	defaultRot         transform.RotationComponent
-	defaultSize        transform.SizeComponent
-	defaultPivot       transform.PivotPointComponent
-	defaultParentPivot transform.ParentPivotPointComponent
-}
-
-func Package() ioc.Pkg {
-	return pkg{
-		transform.NewPos(0, 0, 0),
-		transform.NewRotation(mgl32.QuatIdent()),
-		transform.NewSize(1, 1, 1),
-		transform.NewPivotPoint(.5, .5, .5),
-		transform.NewParentPivotPoint(.5, .5, .5),
-	}
-}
-
-func (pkg pkg) Register(b ioc.Builder) {
+var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 	for _, pkg := range []ioc.Pkg{
-		prototypepkg.PackageT[transform.PosComponent](),
-		prototypepkg.PackageT[transform.RotationComponent](),
-		prototypepkg.PackageT[transform.SizeComponent](),
+		prototypepkg.PkgT[transform.PosComponent](),
+		prototypepkg.PkgT[transform.RotationComponent](),
+		prototypepkg.PkgT[transform.SizeComponent](),
 
-		prototypepkg.PackageT[transform.MaxSizeComponent](),
-		prototypepkg.PackageT[transform.MinSizeComponent](),
+		prototypepkg.PkgT[transform.MaxSizeComponent](),
+		prototypepkg.PkgT[transform.MinSizeComponent](),
 
-		prototypepkg.PackageT[transform.AspectRatioComponent](),
-		prototypepkg.PackageT[transform.PivotPointComponent](),
+		prototypepkg.PkgT[transform.AspectRatioComponent](),
+		prototypepkg.PkgT[transform.PivotPointComponent](),
 
-		prototypepkg.PackageT[transform.ParentComponent](),
-		prototypepkg.PackageT[transform.ParentPivotPointComponent](),
+		prototypepkg.PkgT[transform.ParentComponent](),
+		prototypepkg.PkgT[transform.ParentPivotPointComponent](),
 		//
-		transitionpkg.PackageT[transform.PosComponent](),
-		transitionpkg.PackageT[transform.RotationComponent](),
-		transitionpkg.PackageT[transform.SizeComponent](),
+		transitionpkg.PkgT[transform.PosComponent](),
+		transitionpkg.PkgT[transform.RotationComponent](),
+		transitionpkg.PkgT[transform.SizeComponent](),
 
-		transitionpkg.PackageT[transform.MaxSizeComponent](),
-		transitionpkg.PackageT[transform.MinSizeComponent](),
+		transitionpkg.PkgT[transform.MaxSizeComponent](),
+		transitionpkg.PkgT[transform.MinSizeComponent](),
 
-		transitionpkg.PackageT[transform.AspectRatioComponent](),
-		transitionpkg.PackageT[transform.PivotPointComponent](),
+		transitionpkg.PkgT[transform.AspectRatioComponent](),
+		transitionpkg.PkgT[transform.PivotPointComponent](),
 
-		transitionpkg.PackageT[transform.ParentPivotPointComponent](),
+		transitionpkg.PkgT[transform.ParentPivotPointComponent](),
 	} {
-		pkg.Register(b)
+		pkg(b)
 	}
 	ioc.Wrap(b, func(c ioc.Dic, b codec.Builder) {
 		b.
@@ -77,11 +59,10 @@ func (pkg pkg) Register(b ioc.Builder) {
 
 	ioc.Register(b, func(c ioc.Dic) transform.Service {
 		return transformservice.NewService(c,
-			pkg.defaultRot,
-			pkg.defaultSize,
-			pkg.defaultPivot,
-			pkg.defaultParentPivot,
+			transform.NewRotation(mgl32.QuatIdent()),
+			transform.NewSize(1, 1, 1),
+			transform.NewPivotPoint(.5, .5, .5),
+			transform.NewParentPivotPoint(.5, .5, .5),
 		)
 	})
-
-}
+})

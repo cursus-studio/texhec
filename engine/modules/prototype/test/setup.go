@@ -31,20 +31,14 @@ type Setup struct {
 }
 
 func NewSetup() Setup {
-	b := ioc.NewBuilder()
-
-	for _, pkg := range []ioc.Pkg{
-		logger.Package(true, func(c ioc.Dic, message string) { print(message) }),
-		clock.Package(time.RFC3339Nano),
-		ecs.Package(),
-		prototypepkg.Package(),
-		prototypepkg.PackageT[Cloned1Component](),
-		prototypepkg.PackageT[Cloned2Component](),
-	} {
-		pkg.Register(b)
-	}
-
-	c := b.Build()
+	c := ioc.NewContainer(
+		logger.Pkg(logger.NewConfig(true, func(c ioc.Dic, message string) { print(message) })),
+		clock.Pkg(time.RFC3339Nano),
+		ecs.Pkg,
+		prototypepkg.Pkg,
+		prototypepkg.PkgT[Cloned1Component](),
+		prototypepkg.PkgT[Cloned2Component](),
+	)
 
 	s := ioc.GetServices[Setup](c)
 

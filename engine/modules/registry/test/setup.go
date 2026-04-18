@@ -22,24 +22,20 @@ type TagValueComponent struct {
 }
 
 func NewSetup() Setup {
-	b := ioc.NewBuilder()
-
-	pkgs := []ioc.Pkg{
-		clock.Package(time.RFC3339Nano),
-		logger.Package(true, func(c ioc.Dic, message string) { print(message) }),
-		ecs.Package(),
-		uuidpkg.Package(),
-		registrypkg.Package(),
-	}
-	for _, pkg := range pkgs {
-		pkg.Register(b)
-	}
-	ioc.Wrap(b, func(c ioc.Dic, registry registry.Service) {
-		world := ioc.Get[ecs.World](c)
-		registry.Register("tag", func(entity ecs.EntityID, structTagValue string) {
-			ecs.SaveComponent(world, entity, TagValueComponent{structTagValue})
-		})
-	})
-	c := b.Build()
+	c := ioc.NewContainer(
+		clock.Pkg(time.RFC3339Nano),
+		logger.Pkg(logger.NewConfig(true, func(c ioc.Dic, message string) { print(message) })),
+		ecs.Pkg,
+		uuidpkg.Pkg,
+		registrypkg.Pkg,
+		func(b ioc.Builder) {
+			ioc.Wrap(b, func(c ioc.Dic, registry registry.Service) {
+				world := ioc.Get[ecs.World](c)
+				registry.Register("tag", func(entity ecs.EntityID, structTagValue string) {
+					ecs.SaveComponent(world, entity, TagValueComponent{structTagValue})
+				})
+			})
+		},
+	)
 	return ioc.GetServices[Setup](c)
 }

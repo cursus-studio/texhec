@@ -19,13 +19,7 @@ import (
 	"github.com/ogiusek/ioc/v2"
 )
 
-type pkg struct{}
-
-func Package() ioc.Pkg {
-	return pkg{}
-}
-
-func (pkg) Register(b ioc.Builder) {
+var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 	ioc.Register(b, func(c ioc.Dic) gamescenes.CreditsBuilder {
 		return func(sceneParent ecs.EntityID) {
 			world := ioc.GetServices[gamescenes.World](c)
@@ -83,4 +77,4 @@ func (pkg) Register(b ioc.Builder) {
 			world.Text.Content().Set(btn, text.TextComponent{Text: strings.ToUpper("return to menu")})
 		}
 	})
-}
+})

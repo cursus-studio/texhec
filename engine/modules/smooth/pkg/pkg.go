@@ -58,21 +58,13 @@ func SmoothComponent[Component transition.LerpConstraint[Component]](config Conf
 	})
 }
 
-type pkg struct {
-	config Config
-}
-
-func Package(config Config) ioc.Pkg {
-	return pkg{config}
-}
-
-func (pkg pkg) Register(b ioc.Builder) {
-	for _, register := range pkg.config.services {
+var Pkg = ioc.NewPkgT(func(b ioc.Builder, config Config) {
+	for _, register := range config.services {
 		register(b)
 	}
 	ioc.Register(b, func(c ioc.Dic) smooth.StartSystem {
 		return ecs.NewSystemRegister(func() error {
-			for _, system := range pkg.config.firstSystems {
+			for _, system := range config.firstSystems {
 				if err := system(c).Register(); err != nil {
 					return err
 				}
@@ -83,7 +75,7 @@ func (pkg pkg) Register(b ioc.Builder) {
 
 	ioc.Register(b, func(c ioc.Dic) smooth.StopSystem {
 		return ecs.NewSystemRegister(func() error {
-			for _, system := range pkg.config.lastSystems {
+			for _, system := range config.lastSystems {
 				if err := system(c).Register(); err != nil {
 					return err
 				}
@@ -91,4 +83,4 @@ func (pkg pkg) Register(b ioc.Builder) {
 			return nil
 		})
 	})
-}
+})

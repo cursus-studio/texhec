@@ -25,13 +25,7 @@ import (
 	"github.com/ogiusek/ioc/v2"
 )
 
-type pkg struct{}
-
-func Package() ioc.Pkg {
-	return pkg{}
-}
-
-func (pkg) Register(b ioc.Builder) {
+var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 	// register specific files
 	ioc.Wrap(b, func(c ioc.Dic, b assets.Service) {
 		b.Register("blank texture", func(_ assets.PathComponent) (assets.Asset, error) {
@@ -202,4 +196,4 @@ func (pkg) Register(b ioc.Builder) {
 			transitionService.EasingFunction().Set(entity, transition.NewEasingFunction(easing))
 		})
 	})
-}
+})

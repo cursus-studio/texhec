@@ -29,25 +29,20 @@ type Setup struct {
 }
 
 func NewSetup() Setup {
-	b := ioc.NewBuilder()
-
-	for _, pkg := range []ioc.Pkg{
-		logger.Package(true, func(c ioc.Dic, message string) { print(message) }),
-		clock.Package(time.RFC3339Nano),
-		ecs.Package(),
-		codec.Package(),
-		uuidpkg.Package(),
-		recordpkg.Package(),
-	} {
-		pkg.Register(b)
-	}
-
-	ioc.Wrap(b, func(c ioc.Dic, b codec.Builder) {
-		b.
-			Register(Component{})
-	})
-
-	c := b.Build()
+	c := ioc.NewContainer(
+		logger.Pkg(logger.NewConfig(true, func(c ioc.Dic, message string) { print(message) })),
+		clock.Pkg(time.RFC3339Nano),
+		ecs.Pkg,
+		codec.Pkg,
+		uuidpkg.Pkg,
+		recordpkg.Pkg,
+		func(b ioc.Builder) {
+			ioc.Wrap(b, func(c ioc.Dic, b codec.Builder) {
+				b.
+					Register(Component{})
+			})
+		},
+	)
 
 	s := Setup{
 		Codec:  ioc.Get[codec.Codec](c),

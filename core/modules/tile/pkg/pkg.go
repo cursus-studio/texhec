@@ -22,27 +22,23 @@ import (
 	"engine/services/codec"
 	"engine/services/ecs"
 	gtexture "engine/services/graphics/texture"
+	"engine/services/graphics/vao/vbo"
 	"fmt"
 	"image"
 	"os"
 	"strconv"
 	"strings"
+	"unsafe"
 
+	"github.com/go-gl/gl/v4.5-core/gl"
 	"github.com/ogiusek/ioc/v2"
 )
 
-type pkg struct {
-}
-
-func Package() ioc.Pkg {
-	return pkg{}
-}
-
-func (pkg pkg) Register(b ioc.Builder) {
+var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 	for _, pkg := range []ioc.Pkg{
-		gridpkg.Package[tile.ID](tile.NewHoverEvent),
-		gridpkg.Package[tile.Obstruction](nil),
-		relationpkg.SpatialRelationPackage(
+		gridpkg.Pkg[tile.ID](gridpkg.NewConfig[tile.ID](tile.NewHoverEvent)),
+		gridpkg.Pkg[tile.Obstruction](gridpkg.NewConfig[tile.Obstruction](nil)),
+		relationpkg.SpatialRelationPkg(
 			func(w ecs.World) ecs.DirtySet {
 				dirtySet := ecs.NewDirtySet()
 				ecs.GetComponentsArray[tile.TypeComponent](w).AddDirtySet(dirtySet)
@@ -57,21 +53,42 @@ func (pkg pkg) Register(b ioc.Builder) {
 			},
 			func(index tile.ID) uint32 { return uint32(index) },
 		),
-		tilerenderer.Package(),
-		prototypepkg.PackageT[tile.TypeComponent](),
-		prototypepkg.PackageT[tile.PosComponent](),
-		prototypepkg.PackageT[tile.SizeComponent](),
-		prototypepkg.PackageT[tile.RotComponent](),
-		prototypepkg.PackageT[tile.LayerComponent](),
+		prototypepkg.PkgT[tile.TypeComponent](),
+		prototypepkg.PkgT[tile.PosComponent](),
+		prototypepkg.PkgT[tile.SizeComponent](),
+		prototypepkg.PkgT[tile.RotComponent](),
+		prototypepkg.PkgT[tile.LayerComponent](),
 
-		prototypepkg.PackageT[tile.ObstructionComponent](),
+		prototypepkg.PkgT[tile.ObstructionComponent](),
 
-		prototypepkg.PackageT[tile.SpeedComponent](),
+		prototypepkg.PkgT[tile.SpeedComponent](),
 
-		transitionpkg.PackageT[tile.PosComponent](),
-		transitionpkg.PackageT[tile.RotComponent](),
+		transitionpkg.PkgT[tile.PosComponent](),
+		transitionpkg.PkgT[tile.RotComponent](),
 	} {
-		pkg.Register(b)
+		pkg(b)
+	}
+
+	{ // tilerenderer
+		// TODO
+		// currently doesn't support animated tiles
+		// always renderes first frame if something is animated
+		ioc.Register(b, func(c ioc.Dic) tile.SystemRenderer {
+			return ecs.NewSystemRegister(func() error { return tilerenderer.NewSystem(c) })
+		})
+
+		ioc.Register(b, func(c ioc.Dic) vbo.VBOFactory[tile.ID] {
+			return func() vbo.VBOSetter[tile.ID] {
+				vbo := vbo.NewVBO[tile.ID](func() {
+					var i uint32 = 0
+
+					gl.VertexAttribIPointerWithOffset(i, 1, gl.UNSIGNED_BYTE,
+						int32(unsafe.Sizeof(tile.ID(0))), uintptr(0))
+					gl.EnableVertexAttribArray(i)
+				})
+				return vbo
+			}
+		})
 	}
 
 	ioc.Wrap(b, func(c ioc.Dic, b codec.Builder) {
@@ -211,4 +228,4 @@ func (pkg pkg) Register(b ioc.Builder) {
 			world.Tile().Speed().Set(entity, speed)
 		})
 	})
-}
+})

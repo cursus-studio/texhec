@@ -8,17 +8,13 @@ import (
 	"github.com/ogiusek/ioc/v2"
 )
 
-type pkg struct{}
-
-func Package() ioc.Pkg { return pkg{} }
-
-func (pkg) Register(b ioc.Builder) {
+var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 	for _, pkg := range []ioc.Pkg{
-		prototypepkg.PackageT[collider.Component](),
+		prototypepkg.PkgT[collider.Component](),
 	} {
-		pkg.Register(b)
+		pkg(b)
 	}
 	ioc.Register(b, func(c ioc.Dic) collider.Service {
 		return collisions.NewService(c, 1000)
 	})
-}
+})

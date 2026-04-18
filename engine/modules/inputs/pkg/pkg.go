@@ -15,29 +15,23 @@ import (
 	"github.com/veandco/go-sdl2/sdl"
 )
 
-type pkg struct{}
-
-func Package() ioc.Pkg {
-	return pkg{}
-}
-
-func (pkg) Register(b ioc.Builder) {
+var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 	for _, pkg := range []ioc.Pkg{
-		prototypepkg.PackageT[inputs.HoveredComponent](),
-		prototypepkg.PackageT[inputs.DraggedComponent](),
-		prototypepkg.PackageT[inputs.StackComponent](),
-		prototypepkg.PackageT[inputs.StackedComponent](),
-		prototypepkg.PackageT[inputs.KeepSelectedComponent](),
-		prototypepkg.PackageT[inputs.LeftClickComponent](),
-		prototypepkg.PackageT[inputs.DoubleLeftClickComponent](),
-		prototypepkg.PackageT[inputs.RightClickComponent](),
-		prototypepkg.PackageT[inputs.DoubleRightClickComponent](),
-		prototypepkg.PackageT[inputs.MouseEnterComponent](),
-		prototypepkg.PackageT[inputs.MouseLeaveComponent](),
-		prototypepkg.PackageT[inputs.HoverComponent](),
-		prototypepkg.PackageT[inputs.DragComponent](),
+		prototypepkg.PkgT[inputs.HoveredComponent](),
+		prototypepkg.PkgT[inputs.DraggedComponent](),
+		prototypepkg.PkgT[inputs.StackComponent](),
+		prototypepkg.PkgT[inputs.StackedComponent](),
+		prototypepkg.PkgT[inputs.KeepSelectedComponent](),
+		prototypepkg.PkgT[inputs.LeftClickComponent](),
+		prototypepkg.PkgT[inputs.DoubleLeftClickComponent](),
+		prototypepkg.PkgT[inputs.RightClickComponent](),
+		prototypepkg.PkgT[inputs.DoubleRightClickComponent](),
+		prototypepkg.PkgT[inputs.MouseEnterComponent](),
+		prototypepkg.PkgT[inputs.MouseLeaveComponent](),
+		prototypepkg.PkgT[inputs.HoverComponent](),
+		prototypepkg.PkgT[inputs.DragComponent](),
 	} {
-		pkg.Register(b)
+		pkg(b)
 	}
 	ioc.Wrap(b, func(c ioc.Dic, b codec.Builder) {
 		b.
@@ -97,4 +91,4 @@ func (pkg) Register(b ioc.Builder) {
 	ioc.Register(b, func(c ioc.Dic) inputs.ShutdownSystem {
 		return systems.NewQuitSystem(c)
 	})
-}
+})

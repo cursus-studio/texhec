@@ -9,19 +9,12 @@ import (
 	"github.com/ogiusek/ioc/v2"
 )
 
-type pkg struct {
-}
-
-func Package() ioc.Pkg {
-	return pkg{}
-}
-
-func (pkg) Register(b ioc.Builder) {
+var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 	for _, pkg := range []ioc.Pkg{
-		prototypepkg.PackageT[groups.GroupsComponent](),
-		prototypepkg.PackageT[groups.InheritGroupsComponent](),
+		prototypepkg.PkgT[groups.GroupsComponent](),
+		prototypepkg.PkgT[groups.InheritGroupsComponent](),
 	} {
-		pkg.Register(b)
+		pkg(b)
 	}
 	ioc.Wrap(b, func(c ioc.Dic, b codec.Builder) {
 		b.
@@ -31,4 +24,4 @@ func (pkg) Register(b ioc.Builder) {
 	ioc.Register(b, func(c ioc.Dic) groups.Service {
 		return internal.NewService(c)
 	})
-}
+})

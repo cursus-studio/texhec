@@ -64,13 +64,7 @@ type GameBuilder scene.Scene
 type SettingsBuilder scene.Scene
 type CreditsBuilder scene.Scene
 
-type pkg struct{}
-
-func Package() ioc.Pkg {
-	return pkg{}
-}
-
-func (pkg) Register(b ioc.Builder) {
+var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 	ioc.Wrap(b, func(c ioc.Dic, b scene.Service) {
 		b.SetScene(MenuID, scene.Scene(ioc.Get[MenuBuilder](c)))
 		b.SetScene(GameID, scene.Scene(ioc.Get[GameBuilder](c)))
@@ -153,4 +147,4 @@ func (pkg) Register(b ioc.Builder) {
 			}
 		})
 	})
-}
+})

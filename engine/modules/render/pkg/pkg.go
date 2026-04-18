@@ -24,23 +24,17 @@ import (
 	"github.com/ogiusek/ioc/v2"
 )
 
-type pkg struct{}
-
-func Package() ioc.Pkg {
-	return pkg{}
-}
-
-func (pkg) Register(b ioc.Builder) {
+var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 	for _, pkg := range []ioc.Pkg{
-		transitionpkg.PackageT[render.ColorComponent](),
-		transitionpkg.PackageT[render.TextureFrameComponent](),
+		transitionpkg.PkgT[render.ColorComponent](),
+		transitionpkg.PkgT[render.TextureFrameComponent](),
 
-		prototypepkg.PackageT[render.MeshComponent](),
-		prototypepkg.PackageT[render.TextureComponent](),
-		prototypepkg.PackageT[render.TextureFrameComponent](),
-		prototypepkg.PackageT[render.ColorComponent](),
+		prototypepkg.PkgT[render.MeshComponent](),
+		prototypepkg.PkgT[render.TextureComponent](),
+		prototypepkg.PkgT[render.TextureFrameComponent](),
+		prototypepkg.PkgT[render.ColorComponent](),
 	} {
-		pkg.Register(b)
+		pkg(b)
 	}
 
 	ioc.Register(b, func(c ioc.Dic) vbo.VBOFactory[render.Vertex] {
@@ -167,4 +161,4 @@ func (pkg) Register(b ioc.Builder) {
 		b.Register("gif", gifHandler)
 		b.Register("gif-trim", gifTrimHandler)
 	})
-}
+})

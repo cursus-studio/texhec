@@ -33,23 +33,21 @@ type Setup struct {
 }
 
 func NewSetup() Setup {
-	b := ioc.NewBuilder()
-	for _, pkg := range []ioc.Pkg{
-		logger.Package(true, func(c ioc.Dic, message string) { print(message) }),
-		clock.Package(time.RFC3339Nano),
-		ecs.Package(),
-		codec.Package(),
-		hierarchypkg.Package(),
-		connectionpkg.Package(),
-	} {
-		pkg.Register(b)
-	}
-	ioc.Wrap(b, func(c ioc.Dic, builder codec.Builder) {
-		builder.Register(
-			Message{},
-		)
-	})
-	c := b.Build()
+	c := ioc.NewContainer(
+		logger.Pkg(logger.NewConfig(true, func(c ioc.Dic, message string) { print(message) })),
+		clock.Pkg(time.RFC3339Nano),
+		ecs.Pkg,
+		codec.Pkg,
+		hierarchypkg.Pkg,
+		connectionpkg.Pkg,
+		func(b ioc.Builder) {
+			ioc.Wrap(b, func(c ioc.Dic, builder codec.Builder) {
+				builder.Register(
+					Message{},
+				)
+			})
+		},
+	)
 	s := ioc.GetServices[Setup](c)
 	s.Message.Content = "example message"
 	s.Network = "tcp"

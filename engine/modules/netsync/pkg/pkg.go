@@ -14,17 +14,7 @@ import (
 	"github.com/ogiusek/ioc/v2"
 )
 
-type pkg struct {
-	config Config
-}
-
-func Package(config Config) ioc.Pkg {
-	return pkg{
-		config,
-	}
-}
-
-func (pkg pkg) Register(b ioc.Builder) {
+var Pkg = ioc.NewPkgT(func(b ioc.Builder, config Config) {
 	ioc.Wrap(b, func(c ioc.Dic, b codec.Builder) {
 		b.
 			// client
@@ -43,10 +33,10 @@ func (pkg pkg) Register(b ioc.Builder) {
 	})
 
 	ioc.Register(b, func(c ioc.Dic) *server.Service {
-		return server.NewService(c, *pkg.config.config)
+		return server.NewService(c, *config.config)
 	})
 	ioc.Register(b, func(c ioc.Dic) *client.Service {
-		return client.NewService(c, *pkg.config.config)
+		return client.NewService(c, *config.config)
 	})
 	ioc.Register(b, func(c ioc.Dic) netsync.StartSystem {
 		clientService := ioc.Get[*client.Service](c)
@@ -96,4 +86,4 @@ func (pkg pkg) Register(b ioc.Builder) {
 			return nil
 		})
 	})
-}
+})

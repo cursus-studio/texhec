@@ -6,28 +6,28 @@ import (
 	"github.com/ogiusek/ioc/v2"
 )
 
-type pkg struct {
+type config struct {
 	panicOnWarn bool
 	print       func(c ioc.Dic, message string)
 }
 
-func Package(
+func NewConfig(
 	panicOnWarn bool,
 	print func(c ioc.Dic, message string),
-) ioc.Pkg {
-	return pkg{
+) config {
+	return config{
 		panicOnWarn: panicOnWarn,
 		print:       print,
 	}
 }
 
-func (pkg pkg) Register(b ioc.Builder) {
+var Pkg = ioc.NewPkgT(func(b ioc.Builder, config config) {
 	ioc.Register(b, func(c ioc.Dic) Logger {
 		return &logger{
-			PanicOnError: pkg.panicOnWarn,
+			PanicOnError: config.panicOnWarn,
 			Clock:        ioc.Get[clock.Clock](c),
-			Print:        func(s string) { pkg.print(c, s) },
+			Print:        func(s string) { config.print(c, s) },
 			Panic:        func(s string) { panic(s) },
 		}
 	})
-}
+})

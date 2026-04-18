@@ -21,31 +21,31 @@ import (
 	"github.com/veandco/go-sdl2/sdl"
 )
 
-type pkg struct {
+type config struct {
 	minZoom, maxZoom float32
 }
 
-func Package(minZoom, maxZoom float32) ioc.Pkg {
-	return pkg{
+func NewConfig(minZoom, maxZoom float32) config {
+	return config{
 		minZoom: minZoom,
 		maxZoom: maxZoom,
 	}
 }
 
-func (pkg pkg) Register(b ioc.Builder) {
+var Pkg = ioc.NewPkgT(func(b ioc.Builder, config config) {
 	for _, pkg := range []ioc.Pkg{
-		prototypepkg.PackageT[camera.Component](),
-		prototypepkg.PackageT[camera.MobileCameraComponent](),
-		prototypepkg.PackageT[camera.CameraLimitsComponent](),
-		prototypepkg.PackageT[camera.ViewportComponent](),
-		prototypepkg.PackageT[camera.NormalizedViewportComponent](),
+		prototypepkg.PkgT[camera.Component](),
+		prototypepkg.PkgT[camera.MobileCameraComponent](),
+		prototypepkg.PkgT[camera.CameraLimitsComponent](),
+		prototypepkg.PkgT[camera.ViewportComponent](),
+		prototypepkg.PkgT[camera.NormalizedViewportComponent](),
 
-		prototypepkg.PackageT[camera.OrthoComponent](),
-		prototypepkg.PackageT[camera.OrthoResolutionComponent](),
-		prototypepkg.PackageT[camera.PerspectiveComponent](),
-		prototypepkg.PackageT[camera.DynamicPerspectiveComponent](),
+		prototypepkg.PkgT[camera.OrthoComponent](),
+		prototypepkg.PkgT[camera.OrthoResolutionComponent](),
+		prototypepkg.PkgT[camera.PerspectiveComponent](),
+		prototypepkg.PkgT[camera.DynamicPerspectiveComponent](),
 	} {
-		pkg.Register(b)
+		pkg(b)
 	}
 	ioc.Wrap(b, func(c ioc.Dic, b codec.Builder) {
 		b.
@@ -204,7 +204,7 @@ func (pkg pkg) Register(b ioc.Builder) {
 				// todo change this to change ortho and size according to viewport
 				projectionsys.NewUpdateProjectionsSystem(c),
 				mobilecamerasys.NewScrollSystem(c,
-					pkg.minZoom, pkg.maxZoom, // min and max zoom
+					config.minZoom, config.maxZoom, // min and max zoom
 				),
 				mobilecamerasys.NewDragSystem(c,
 					sdl.BUTTON_LEFT,
@@ -220,4 +220,4 @@ func (pkg pkg) Register(b ioc.Builder) {
 			return nil
 		})
 	})
-}
+})
