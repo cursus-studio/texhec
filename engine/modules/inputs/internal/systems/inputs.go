@@ -1,6 +1,7 @@
 package systems
 
 import (
+	"engine"
 	"engine/modules/inputs"
 	"engine/services/ecs"
 	"engine/services/frames"
@@ -11,14 +12,14 @@ import (
 )
 
 type inputsSystem struct {
-	Inputs        mediainputs.Api `inject:"1"`
-	EventsBuilder events.Builder  `inject:"1"`
+	engine.EngineWorld `inject:""`
+	Inputs             mediainputs.Api `inject:""`
 }
 
 func NewInputsSystem(c ioc.Dic) inputs.System {
 	return ecs.NewSystemRegister(func() error {
 		s := ioc.GetServices[*inputsSystem](c)
-		events.Listen(s.EventsBuilder, s.Listen)
+		events.Listen(s.EventsBuilder(), s.Listen)
 		return nil
 	})
 }

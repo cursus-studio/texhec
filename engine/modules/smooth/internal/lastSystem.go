@@ -13,8 +13,8 @@ import (
 func NewLastSystem[Component transition.LerpConstraint[Component]](c ioc.Dic) smooth.StopSystem {
 	return ecs.NewSystemRegister(func() error {
 		s := ioc.GetServices[*system[Component]](c)
-		events.Listen(s.EventsBuilder, func(tick frames.TickEvent) {
-			r, ok := s.Record.Entity().Stop(s.Service.recordingID)
+		events.Listen(s.EventsBuilder(), func(tick frames.TickEvent) {
+			r, ok := s.Record().Entity().Stop(s.Service.recordingID)
 			if !ok {
 				return
 			}

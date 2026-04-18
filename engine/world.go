@@ -25,44 +25,53 @@ import (
 	"engine/modules/uuid"
 	"engine/modules/warmup"
 	"engine/services/clock"
+	"engine/services/codec"
+	"engine/services/console"
 	"engine/services/ecs"
+	"engine/services/graphics/texturearray"
 	"engine/services/logger"
 	"engine/services/media/window"
+	"engine/services/runtime"
 
 	"github.com/ogiusek/events"
+	"github.com/ogiusek/ioc/v2"
 )
 
-type World struct {
-	ecs.World  `inject:"1"`
-	Assets     assets.Service     `inject:"1"`
-	Audio      audio.Service      `inject:"1"`
-	Batcher    batcher.Service    `inject:"1"`
-	Camera     camera.Service     `inject:"1"`
-	Collider   collider.Service   `inject:"1"`
-	Connection connection.Service `inject:"1"`
-	Groups     groups.Service     `inject:"1"`
-	Hierarchy  hierarchy.Service  `inject:"1"`
-	Inputs     inputs.Service     `inject:"1"`
-	Layout     layout.Service     `inject:"1"`
-	Metadata   metadata.Service   `inject:"1"`
-	NetSync    netsync.Service    `inject:"1"`
-	Noise      noise.Service      `inject:"1"`
-	Prototype  prototype.Service  `inject:"1"`
-	Record     record.Service     `inject:"1"`
-	Registry   registry.Service   `inject:"1"`
-	Render     render.Service     `inject:"1"`
-	Scene      scene.Service      `inject:"1"`
-	Text       text.Service       `inject:"1"`
-	Transform  transform.Service  `inject:"1"`
-	Transition transition.Service `inject:"1"`
-	UUID       uuid.Service       `inject:"1"`
-	WarmUp     warmup.Service     `inject:"1"`
+type EngineWorld struct {
+	World      ioc.Lazy[ecs.World]          `inject:""`
+	Assets     ioc.Lazy[assets.Service]     `inject:""`
+	Audio      ioc.Lazy[audio.Service]      `inject:""`
+	Batcher    ioc.Lazy[batcher.Service]    `inject:""`
+	Camera     ioc.Lazy[camera.Service]     `inject:""`
+	Collider   ioc.Lazy[collider.Service]   `inject:""`
+	Connection ioc.Lazy[connection.Service] `inject:""`
+	Groups     ioc.Lazy[groups.Service]     `inject:""`
+	Hierarchy  ioc.Lazy[hierarchy.Service]  `inject:""`
+	Inputs     ioc.Lazy[inputs.Service]     `inject:""`
+	Layout     ioc.Lazy[layout.Service]     `inject:""`
+	Metadata   ioc.Lazy[metadata.Service]   `inject:""`
+	NetSync    ioc.Lazy[netsync.Service]    `inject:""`
+	Noise      ioc.Lazy[noise.Service]      `inject:""`
+	Prototype  ioc.Lazy[prototype.Service]  `inject:""`
+	Record     ioc.Lazy[record.Service]     `inject:""`
+	Registry   ioc.Lazy[registry.Service]   `inject:""`
+	Render     ioc.Lazy[render.Service]     `inject:""`
+	Scene      ioc.Lazy[scene.Service]      `inject:""`
+	Text       ioc.Lazy[text.Service]       `inject:""`
+	Transform  ioc.Lazy[transform.Service]  `inject:""`
+	Transition ioc.Lazy[transition.Service] `inject:""`
+	UUID       ioc.Lazy[uuid.Service]       `inject:""`
+	WarmUp     ioc.Lazy[warmup.Service]     `inject:""`
 
-	Clock  clock.Clock   `inject:"1"`
-	Logger logger.Logger `inject:"1"`
+	Clock   ioc.Lazy[clock.Clock]     `inject:""`
+	Codec   ioc.Lazy[codec.Codec]     `inject:""`
+	Console ioc.Lazy[console.Console] `inject:""`
+	Logger  ioc.Lazy[logger.Logger]   `inject:""`
+	Runtime ioc.Lazy[runtime.Runtime] `inject:""`
 
-	EventsBuilder events.Builder `inject:"1"`
-	Events        events.Events  `inject:"1"`
+	EventsBuilder ioc.Lazy[events.Builder] `inject:""`
+	Events        ioc.Lazy[events.Events]  `inject:""`
 
-	Window window.Api `inject:"1"`
+	Window              ioc.Lazy[window.Api]           `inject:""`
+	TextureArrayFactory ioc.Lazy[texturearray.Factory] `inject:""`
 }

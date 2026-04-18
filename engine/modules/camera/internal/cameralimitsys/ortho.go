@@ -1,35 +1,31 @@
 package cameralimitsys
 
 import (
+	"engine"
 	"engine/modules/camera"
 	"engine/modules/transform"
 	"engine/services/ecs"
-	"engine/services/logger"
 
 	"github.com/go-gl/mathgl/mgl32"
 	"github.com/ogiusek/ioc/v2"
 )
 
 type orthoSys struct {
-	World     ecs.World         `inject:"1"`
-	Transform transform.Service `inject:"1"`
-	Camera    camera.Service    `inject:"1"`
+	engine.EngineWorld `inject:""`
 
 	dirtySet ecs.DirtySet
-
-	Logger logger.Logger `inject:"1"`
 }
 
 func NewOrthoSys(c ioc.Dic) camera.System {
 	s := ioc.GetServices[*orthoSys](c)
 	s.dirtySet = ecs.NewDirtySet()
 
-	s.Transform.AddDirtySet(s.dirtySet)
-	s.Camera.Limits().AddDirtySet(s.dirtySet)
-	s.Camera.Ortho().AddDirtySet(s.dirtySet)
-	s.Camera.Viewport().AddDirtySet(s.dirtySet)
-	s.Camera.NormalizedViewport().AddDirtySet(s.dirtySet)
-	s.Transform.AbsolutePos().BeforeGet(s.BeforeGet)
+	s.Transform().AddDirtySet(s.dirtySet)
+	s.Camera().Limits().AddDirtySet(s.dirtySet)
+	s.Camera().Ortho().AddDirtySet(s.dirtySet)
+	s.Camera().Viewport().AddDirtySet(s.dirtySet)
+	s.Camera().NormalizedViewport().AddDirtySet(s.dirtySet)
+	s.Transform().AbsolutePos().BeforeGet(s.BeforeGet)
 
 	return nil
 }
@@ -46,20 +42,20 @@ func (s *orthoSys) BeforeGet() {
 	saves := []save{}
 
 	for _, entity := range ei {
-		limits, ok := s.Camera.Limits().Get(entity)
+		limits, ok := s.Camera().Limits().Get(entity)
 		if !ok {
 			continue
 		}
-		ortho, ok := s.Camera.Ortho().Get(entity)
+		ortho, ok := s.Camera().Ortho().Get(entity)
 		if !ok {
 			continue
 		}
 
-		pos, ok := s.Transform.AbsolutePos().Get(entity)
+		pos, ok := s.Transform().AbsolutePos().Get(entity)
 		if !ok {
 			continue
 		}
-		x, y, w, h := s.Camera.GetViewport(entity)
+		x, y, w, h := s.Camera().GetViewport(entity)
 		halfWidth := float32(w-x) / 2 / ortho.Zoom
 		halfHeight := float32(h-y) / 2 / ortho.Zoom
 
@@ -97,6 +93,6 @@ func (s *orthoSys) BeforeGet() {
 		saves = append(saves, save{entity, pos})
 	}
 	for _, save := range saves {
-		s.Transform.AbsolutePos().Set(save.entity, save.pos)
+		s.Transform().AbsolutePos().Set(save.entity, save.pos)
 	}
 }

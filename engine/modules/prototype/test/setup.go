@@ -1,7 +1,7 @@
 package test
 
 import (
-	"engine/modules/prototype"
+	"engine"
 	prototypepkg "engine/modules/prototype/pkg"
 	"engine/services/clock"
 	"engine/services/ecs"
@@ -23,11 +23,10 @@ type NotClonedComponent struct {
 }
 
 type Setup struct {
-	World     ecs.World         `inject:"1"`
-	Prototype prototype.Service `inject:"1"`
-	Cloned1   ecs.ComponentsArray[Cloned1Component]
-	Cloned2   ecs.ComponentsArray[Cloned2Component]
-	NotCloned ecs.ComponentsArray[NotClonedComponent]
+	engine.EngineWorld `inject:""`
+	Cloned1            ecs.ComponentsArray[Cloned1Component]
+	Cloned2            ecs.ComponentsArray[Cloned2Component]
+	NotCloned          ecs.ComponentsArray[NotClonedComponent]
 }
 
 func NewSetup() Setup {
@@ -42,9 +41,9 @@ func NewSetup() Setup {
 
 	s := ioc.GetServices[Setup](c)
 
-	s.Cloned1 = ecs.GetComponentsArray[Cloned1Component](s.World)
-	s.Cloned2 = ecs.GetComponentsArray[Cloned2Component](s.World)
-	s.NotCloned = ecs.GetComponentsArray[NotClonedComponent](s.World)
+	s.Cloned1 = ecs.GetComponentsArray[Cloned1Component](s.World())
+	s.Cloned2 = ecs.GetComponentsArray[Cloned2Component](s.World())
+	s.NotCloned = ecs.GetComponentsArray[NotClonedComponent](s.World())
 
 	return s
 }

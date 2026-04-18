@@ -1,11 +1,9 @@
 package test
 
 import (
-	"engine/modules/hierarchy"
+	"engine"
 	hierarchypkg "engine/modules/hierarchy/pkg"
-	"engine/modules/layout"
 	layoutpkg "engine/modules/layout/pkg"
-	"engine/modules/transform"
 	transformpkg "engine/modules/transform/pkg"
 	"engine/services/clock"
 	"engine/services/ecs"
@@ -18,11 +16,8 @@ import (
 )
 
 type Setup struct {
-	World     ecs.World         `inject:"1"`
-	Hierarchy hierarchy.Service `inject:"1"`
-	Transform transform.Service `inject:"1"`
-	Layout    layout.Service    `inject:"1"`
-	T         *testing.T
+	engine.EngineWorld `inject:""`
+	T                  *testing.T
 }
 
 func NewSetup(t *testing.T) Setup {
@@ -42,14 +37,14 @@ func NewSetup(t *testing.T) Setup {
 func (s Setup) Expect(entity ecs.EntityID, x, y float32) {
 	s.T.Helper()
 	expected := mgl32.Vec3{x, y, 1}
-	pos, _ := s.Transform.AbsolutePos().Get(entity)
+	pos, _ := s.Transform().AbsolutePos().Get(entity)
 	if pos.Pos != expected {
-		pivot, _ := s.Transform.PivotPoint().Get(entity)
-		parentPivot, _ := s.Transform.ParentPivotPoint().Get(entity)
-		size, _ := s.Transform.AbsoluteSize().Get(entity)
+		pivot, _ := s.Transform().PivotPoint().Get(entity)
+		parentPivot, _ := s.Transform().ParentPivotPoint().Get(entity)
+		size, _ := s.Transform().AbsoluteSize().Get(entity)
 
-		parent, _ := s.Hierarchy.Parent(entity)
-		pSize, _ := s.Transform.AbsoluteSize().Get(parent)
+		parent, _ := s.Hierarchy().Parent(entity)
+		pSize, _ := s.Transform().AbsoluteSize().Get(parent)
 		s.T.Errorf(
 			"expected %v and got %v (pivot %v, parent %v, size %v, pSize %v)",
 			expected,

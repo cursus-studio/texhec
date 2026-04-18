@@ -37,7 +37,7 @@ func (s *system) NewBatch(batchKey batchKey) (*batch, error) {
 	// mesh
 	VAO, ok := s.meshes[batchKey.mesh.ID]
 	if !ok {
-		meshAsset, err := assets.GetAsset[render.MeshAsset](s.Assets, batchKey.mesh.ID)
+		meshAsset, err := assets.GetAsset[render.MeshAsset](s.Assets(), batchKey.mesh.ID)
 		if err != nil {
 			return nil, err
 		}
@@ -52,11 +52,11 @@ func (s *system) NewBatch(batchKey batchKey) (*batch, error) {
 	// texture
 	textureArr, ok := s.textures[batchKey.texture.Asset]
 	if !ok {
-		textureAsset, err := assets.GetAsset[render.TextureAsset](s.Assets, batchKey.texture.Asset)
+		textureAsset, err := assets.GetAsset[render.TextureAsset](s.Assets(), batchKey.texture.Asset)
 		if err != nil {
 			return nil, err
 		}
-		textureArr, err = s.TextureArrayFactory.NewFromSlice(textureAsset.Images())
+		textureArr, err = s.TextureArrayFactory().NewFromSlice(textureAsset.Images())
 		if err != nil {
 			return nil, err
 		}
@@ -90,10 +90,10 @@ func (s *batch) Upsert(entity ecs.EntityID) {
 		s.Entities.Add(entity)
 		index, ok = s.Entities.GetIndex(entity)
 	}
-	model := s.system.Transform.Mat4(entity)
-	color, _ := s.system.Render.Color().Get(entity)
-	textureFrame, _ := s.system.Render.TextureFrame().Get(entity)
-	groups, _ := s.system.Groups.Component().Get(entity)
+	model := s.system.Transform().Mat4(entity)
+	color, _ := s.system.Render().Color().Get(entity)
+	textureFrame, _ := s.system.Render().TextureFrame().Get(entity)
+	groups, _ := s.system.Groups().Component().Get(entity)
 
 	frame := int32(textureFrame.GetFrame(s.TextureArray.ImagesCount))
 

@@ -11,8 +11,6 @@ import (
 //
 
 type assetsService struct {
-	World ecs.World `inject:"1"`
-
 	*extensions
 	path  ecs.ComponentsArray[assets.PathComponent]
 	cache ecs.ComponentsArray[assets.CacheComponent]
@@ -21,11 +19,12 @@ type assetsService struct {
 }
 
 func NewService(c ioc.Dic) assets.Service {
-	s := ioc.GetServices[*assetsService](c)
+	s := &assetsService{}
+	s.extensions = NewExtensions(c)
 
 	s.extensions = NewExtensions(c)
-	s.path = ecs.GetComponentsArray[assets.PathComponent](s.World)
-	s.cache = ecs.GetComponentsArray[assets.CacheComponent](s.World)
+	s.path = ecs.GetComponentsArray[assets.PathComponent](s.World())
+	s.cache = ecs.GetComponentsArray[assets.CacheComponent](s.World())
 
 	s.cached = datastructures.NewSparseArray[ecs.EntityID, assets.Asset]()
 

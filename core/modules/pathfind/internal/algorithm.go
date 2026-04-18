@@ -44,8 +44,8 @@ func (s *service) findPath(
 	size tile.SizeComponent,
 	obstruction tile.ObstructionComponent,
 ) (path []tile.PosComponent, ok bool) {
-	obstructionGridEntity := s.Tile.ObstructionGrid().GetEntities()[0]
-	obstructed, ok := s.Tile.ObstructionGrid().Get(obstructionGridEntity)
+	obstructionGridEntity := s.Tile().ObstructionGrid().GetEntities()[0]
+	obstructed, ok := s.Tile().ObstructionGrid().Get(obstructionGridEntity)
 	if !ok {
 		return nil, false
 	}
@@ -99,7 +99,7 @@ func (s *service) findPath(
 			}
 
 			step := tile.NewStep(neighborCoords.X, neighborCoords.Y)
-			if !s.Tile.CanStep(current.coords, size, obstruction, step) {
+			if !s.Tile().CanStep(current.coords, size, obstruction, step) {
 				continue
 			}
 

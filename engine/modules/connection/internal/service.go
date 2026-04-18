@@ -2,26 +2,18 @@ package internal
 
 import (
 	"encoding/binary"
+	"engine"
 	"engine/modules/connection"
-	"engine/modules/hierarchy"
-	"engine/services/codec"
 	"engine/services/datastructures"
 	"engine/services/ecs"
-	"engine/services/logger"
 	"io"
 	"net"
 
-	"github.com/ogiusek/events"
 	"github.com/ogiusek/ioc/v2"
 )
 
 type service struct {
-	EventsBuilder events.Builder `inject:"1"`
-
-	World     ecs.World         `inject:"1"`
-	Codec     codec.Codec       `inject:"1"`
-	Logger    logger.Logger     `inject:"1"`
-	Hierarchy hierarchy.Service `inject:"1"`
+	engine.EngineWorld `inject:""`
 
 	listenersDirtySet ecs.DirtySet
 	listeners         datastructures.Set[net.Listener]
@@ -36,11 +28,11 @@ func NewService(c ioc.Dic) connection.Service {
 	s := ioc.GetServices[*service](c)
 	s.listenersDirtySet = ecs.NewDirtySet()
 	s.listeners = datastructures.NewSet[net.Listener]()
-	s.listenersArray = ecs.GetComponentsArray[connection.ListenerComponent](s.World)
+	s.listenersArray = ecs.GetComponentsArray[connection.ListenerComponent](s.World())
 
 	s.connectionDirtySet = ecs.NewDirtySet()
 	s.connections = datastructures.NewSet[connection.Conn]()
-	s.connectionArray = ecs.GetComponentsArray[connection.ConnectionComponent](s.World)
+	s.connectionArray = ecs.GetComponentsArray[connection.ConnectionComponent](s.World())
 
 	s.listenersArray.AddDirtySet(s.listenersDirtySet)
 	s.listenersArray.OnUpsert(s.BeforeListenerGet)
@@ -117,7 +109,7 @@ func (s *service) Host(addr string) error {
 	if err != nil {
 		return err
 	}
-	s.AddListener(s.World.NewEntity(), listener)
+	s.AddListener(s.World().NewEntity(), listener)
 	return nil
 }
 
@@ -126,7 +118,7 @@ func (s *service) Connect(addr string) error {
 	if err != nil {
 		return err
 	}
-	s.AddConnection(s.World.NewEntity(), rawConn)
+	s.AddConnection(s.World().NewEntity(), rawConn)
 	return nil
 }
 
@@ -151,12 +143,12 @@ func (s *service) AddListener(entity ecs.EntityID, rawListener net.Listener) {
 			if err != nil {
 				break
 			}
-			clientEntity := s.World.NewEntity()
-			s.Hierarchy.SetParent(clientEntity, entity)
+			clientEntity := s.World().NewEntity()
+			s.Hierarchy().SetParent(clientEntity, entity)
 			s.AddConnection(clientEntity, rawConn)
 		}
 		if comp, ok := s.listenersArray.Get(entity); ok && comp.Listener() == rawListener {
-			s.World.RemoveEntity(entity)
+			s.World().RemoveEntity(entity)
 		}
 
 		_ = rawListener.Close()
@@ -183,9 +175,9 @@ func (s *service) AddConnection(entity ecs.EntityID, rawConn net.Conn) {
 				break
 			}
 
-			message, err := s.Codec.Decode(messageBytes)
+			message, err := s.Codec().Decode(messageBytes)
 			if err != nil {
-				s.Logger.Warn(err)
+				s.Logger().Warn(err)
 				continue
 			}
 			// f.logger.Info(fmt.Sprintf("received '***' type '%v'", reflect.TypeOf(message).String()))
@@ -193,7 +185,7 @@ func (s *service) AddConnection(entity ecs.EntityID, rawConn net.Conn) {
 			conn.messages <- message
 		}
 		if connComp, ok := s.connectionArray.Get(entity); ok && connComp.Conn() == conn {
-			s.World.RemoveEntity(entity)
+			s.World().RemoveEntity(entity)
 		}
 		close(conn.messages)
 		_ = rawConn.Close()

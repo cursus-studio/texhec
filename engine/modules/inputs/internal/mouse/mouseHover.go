@@ -1,10 +1,10 @@
 package mouse
 
 import (
+	"engine"
 	"engine/modules/inputs"
 	"engine/modules/inputs/internal/service"
 	"engine/services/ecs"
-	"engine/services/logger"
 	"slices"
 
 	"github.com/ogiusek/events"
@@ -12,12 +12,8 @@ import (
 )
 
 type hoverSystem struct {
-	EventsBuilder events.Builder `inject:"1"`
-	Events        events.Events  `inject:"1"`
-	World         ecs.World      `inject:"1"`
-	Inputs        inputs.Service `inject:"1"`
-	Logger        logger.Logger  `inject:"1"`
-	targets       []inputs.Target
+	engine.EngineWorld `inject:""`
+	targets            []inputs.Target
 }
 
 func NewHoverSystem(c ioc.Dic) inputs.System {
@@ -25,22 +21,22 @@ func NewHoverSystem(c ioc.Dic) inputs.System {
 		s := ioc.GetServices[*hoverSystem](c)
 		s.targets = nil
 
-		events.Listen(s.EventsBuilder, s.Listen)
+		events.Listen(s.EventsBuilder(), s.Listen)
 		return nil
 	})
 }
 
 func (s *hoverSystem) handleMouseLeave(entity ecs.EntityID) {
-	s.Inputs.Hovered().Remove(entity)
+	s.Inputs().Hovered().Remove(entity)
 
-	mouseLeave, ok := s.Inputs.MouseLeave().Get(entity)
+	mouseLeave, ok := s.Inputs().MouseLeave().Get(entity)
 	if !ok {
 		return
 	}
 	if event, ok := mouseLeave.Event.(inputs.ApplyEntityEvent); ok {
 		mouseLeave.Event = event.ApplyEntity(entity)
 	}
-	events.EmitAny(s.Events, mouseLeave.Event)
+	events.EmitAny(s.Events(), mouseLeave.Event)
 }
 
 func (s *hoverSystem) Listen(event service.RayChangedTargetEvent) {
@@ -65,15 +61,15 @@ func (s *hoverSystem) Listen(event service.RayChangedTargetEvent) {
 	}
 
 	for _, target := range entered {
-		s.Inputs.Hovered().Set(target.Entity, inputs.HoveredComponent{Camera: target.Camera})
-		mouseEnter, ok := s.Inputs.MouseEnter().Get(target.Entity)
+		s.Inputs().Hovered().Set(target.Entity, inputs.HoveredComponent{Camera: target.Camera})
+		mouseEnter, ok := s.Inputs().MouseEnter().Get(target.Entity)
 		if !ok {
 			continue
 		}
 		if e, ok := mouseEnter.Event.(inputs.ApplyEntityEvent); ok {
 			mouseEnter.Event = e.ApplyEntity(target.Entity)
 		}
-		events.EmitAny(s.Events, mouseEnter.Event)
+		events.EmitAny(s.Events(), mouseEnter.Event)
 	}
 	s.targets = event.Targets
 

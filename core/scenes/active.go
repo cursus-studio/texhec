@@ -46,17 +46,17 @@ const (
 	MusicChannel
 )
 
-type World struct {
-	engine.World `inject:"1"`
+type GameWorld struct {
+	engine.EngineWorld `inject:""`
 
 	// game
-	Definitions definitions.Definitions `inject:"1"`
-	Deploy      deploy.Service          `inject:"1"`
-	Generation  generation.Service      `inject:"1"`
-	Pathfind    pathfind.Service        `inject:"1"`
-	Player      player.Service          `inject:"1"`
-	Tile        tile.Service            `inject:"1"`
-	Ui          ui.Service              `inject:"1"`
+	Definitions ioc.Lazy[definitions.Definitions] `inject:""`
+	Deploy      ioc.Lazy[deploy.Service]          `inject:""`
+	Generation  ioc.Lazy[generation.Service]      `inject:""`
+	Pathfind    ioc.Lazy[pathfind.Service]        `inject:""`
+	Player      ioc.Lazy[player.Service]          `inject:""`
+	Tile        ioc.Lazy[tile.Service]            `inject:""`
+	Ui          ioc.Lazy[ui.Service]              `inject:""`
 }
 
 type MenuBuilder scene.Scene

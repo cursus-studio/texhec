@@ -9,7 +9,7 @@ import (
 	"core/modules/tile/internal/tilerenderer"
 	"core/modules/tile/internal/tileservice"
 	"core/modules/tile/internal/tilesystem"
-	"engine"
+	gamescenes "core/scenes"
 	"engine/modules/assets"
 	"engine/modules/collider"
 	gridpkg "engine/modules/grid/pkg"
@@ -36,8 +36,8 @@ import (
 
 var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 	for _, pkg := range []ioc.Pkg{
-		gridpkg.Pkg[tile.ID](gridpkg.NewConfig[tile.ID](tile.NewHoverEvent)),
-		gridpkg.Pkg[tile.Obstruction](gridpkg.NewConfig[tile.Obstruction](nil)),
+		gridpkg.Pkg(gridpkg.NewConfig[tile.ID](tile.NewHoverEvent)),
+		gridpkg.Pkg(gridpkg.NewConfig[tile.Obstruction](nil)),
 		relationpkg.SpatialRelationPkg(
 			func(w ecs.World) ecs.DirtySet {
 				dirtySet := ecs.NewDirtySet()
@@ -153,12 +153,7 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 	})
 
 	ioc.Wrap(b, func(c ioc.Dic, b registry.Service) {
-		type World struct {
-			engine.World `inject:"1"`
-			Tile         ioc.Lazy[tile.Service] `inject:"1"`
-			Definitions  definitions.Assets     `inject:"1"`
-		}
-		world := ioc.GetServices[World](c)
+		world := ioc.GetServices[gamescenes.GameWorld](c)
 		var counter tile.ID
 		b.Register("object", func(entity ecs.EntityID, structTagValue string) {
 			var layer tile.Coord
@@ -172,11 +167,11 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 			}
 			world.Tile().Rot().Set(entity, tile.NewRot(0))
 			world.Tile().Layer().Set(entity, tile.NewLayer(layer))
-			world.Render.Mesh().Set(entity, render.NewMesh(world.Definitions.SquareMesh))
-			world.Render.Texture().Set(entity, render.NewTexture(entity))
-			world.Groups.Component().Set(entity, groups.EmptyGroups().Ptr().Enable(definitions.GameGroup).Val())
+			world.Render().Mesh().Set(entity, render.NewMesh(world.Definitions().SquareMesh))
+			world.Render().Texture().Set(entity, render.NewTexture(entity))
+			world.Groups().Component().Set(entity, groups.EmptyGroups().Ptr().Enable(definitions.GameGroup).Val())
 
-			world.Collider.Component().Set(entity, collider.NewCollider(world.Definitions.SquareCollider))
+			world.Collider().Component().Set(entity, collider.NewCollider(world.Definitions().SquareCollider))
 		})
 		b.Register("tile", func(entity ecs.EntityID, structTagValue string) {
 			counter++
@@ -199,17 +194,17 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 			errInvalidFormat := fmt.Errorf("size should be in format \"1x1\" where first number is width and second is height")
 			xy := strings.Split(structTagValue, "x")
 			if len(xy) != 2 {
-				world.Logger.Warn(errInvalidFormat)
+				world.Logger().Warn(errInvalidFormat)
 				return
 			}
 			x, err := strconv.Atoi(xy[0])
 			if err != nil {
-				world.Logger.Warn(errInvalidFormat)
+				world.Logger().Warn(errInvalidFormat)
 				return
 			}
 			y, err := strconv.Atoi(xy[1])
 			if err != nil {
-				world.Logger.Warn(errInvalidFormat)
+				world.Logger().Warn(errInvalidFormat)
 				return
 			}
 			world.Tile().Size().Set(entity, tile.NewSize(x, y))
@@ -217,12 +212,12 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 		b.Register("speed", func(entity ecs.EntityID, structTagValue string) {
 			v, err := strconv.Atoi(structTagValue)
 			if err != nil {
-				world.Logger.Warn(err)
+				world.Logger().Warn(err)
 				return
 			}
 			speed := tile.NewSpeed(v)
 			if int(speed.InvSpeed) != v {
-				world.Logger.Warn(fmt.Errorf("speed has to be clamped between 0 and 255"))
+				world.Logger().Warn(fmt.Errorf("speed has to be clamped between 0 and 255"))
 				return
 			}
 			world.Tile().Speed().Set(entity, speed)

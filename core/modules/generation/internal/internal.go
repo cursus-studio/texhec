@@ -1,12 +1,9 @@
 package internal
 
 import (
-	"core/modules/definitions"
-	"core/modules/deploy"
 	"core/modules/generation"
-	"core/modules/player"
 	"core/modules/tile"
-	"engine"
+	gamescenes "core/scenes"
 	"engine/modules/batcher"
 	"engine/modules/collider"
 	"engine/modules/grid"
@@ -46,12 +43,8 @@ func (c *Config) AddChance(tileType ecs.EntityID, chanceInProcent int) {
 //
 
 type service struct {
-	engine.World `inject:"1"`
-	Definitions  definitions.Definitions `inject:"1"`
-	Tile         tile.Service            `inject:"1"`
-	Deploy       deploy.Service          `inject:"1"`
-	Player       player.Service          `inject:"1"`
-	C            ioc.Dic
+	gamescenes.GameWorld `inject:""`
+	C                    ioc.Dic
 }
 
 func NewService(c ioc.Dic) generation.Service {
@@ -67,9 +60,9 @@ func (s *service) Chances() (*Config, []tile.ID) {
 	types := []tile.ID{}
 
 	for _, chance := range config.chances {
-		tileComp, ok := s.Tile.TileType().Get(chance.tileType)
+		tileComp, ok := s.Tile().TileType().Get(chance.tileType)
 		if !ok {
-			s.Logger.Warn(fmt.Errorf("\"%v\" isn't a tile tile and therefor cannot be used in generation", chance.tileType))
+			s.Logger().Warn(fmt.Errorf("\"%v\" isn't a tile tile and therefor cannot be used in generation", chance.tileType))
 			continue
 		}
 		types = append(types, slices.Repeat([]tile.ID{tileComp.ID}, chance.chance)...)
@@ -98,7 +91,7 @@ func (s *service) Generate(c generation.Config) batcher.Task {
 	// generate batch
 	multiplier := 1. / 4
 
-	noise := s.Noise.NewNoise(c.Seed).AddValue(
+	noise := s.Noise().NewNoise(c.Seed).AddValue(
 		noise.NewLayer(100*multiplier, .10),
 		noise.NewLayer(100*multiplier, .10),
 		noise.NewLayer(040*multiplier, .10),
@@ -186,33 +179,33 @@ func (s *service) Generate(c generation.Config) batcher.Task {
 		for j := range config.tilesPerJob {
 			gridI := grid.Index(i*config.tilesPerJob + j)
 			tileType := gridStateComponent.GetTile(gridI)
-			entity, ok := s.Tile.GetTileType(tileType)
+			entity, ok := s.Tile().GetTileType(tileType)
 			if !ok {
 				continue
 			}
-			obstruction, _ := s.Tile.Obstruction().Get(entity)
+			obstruction, _ := s.Tile().Obstruction().Get(entity)
 			obstructGridComponent.SetTile(gridI, obstruction.Obstruction)
 		}
 	})
 
 	// flush batch
 	flushBatch := batcher.NewBatch(1, func(i int) {
-		size := s.Tile.GetTileSize()
+		size := s.Tile().GetTileSize()
 		size.Size[0] *= float32(c.Size.X)
 		size.Size[1] *= float32(c.Size.Y)
 
-		s.Transform.Size().Set(c.Entity, size)
-		s.Transform.PivotPoint().Set(c.Entity, transform.NewPivotPoint(0, 0, .5))
+		s.Transform().Size().Set(c.Entity, size)
+		s.Transform().PivotPoint().Set(c.Entity, transform.NewPivotPoint(0, 0, .5))
 
-		s.Collider.Component().Set(c.Entity, collider.NewCollider(s.Definitions.SquareCollider))
-		s.Inputs.Stack().Set(c.Entity, inputs.StackComponent{})
-		s.Tile.TileGrid().Set(c.Entity, gridStateComponent)
-		s.Tile.ObstructionGrid().Set(c.Entity, obstructGridComponent)
+		s.Collider().Component().Set(c.Entity, collider.NewCollider(s.Definitions().SquareCollider))
+		s.Inputs().Stack().Set(c.Entity, inputs.StackComponent{})
+		s.Tile().TileGrid().Set(c.Entity, gridStateComponent)
+		s.Tile().ObstructionGrid().Set(c.Entity, obstructGridComponent)
 
-		playerEntity := s.NewEntity()
-		s.Metadata.Name().Set(playerEntity, metadata.NewName("john"))
-		player2Entity := s.NewEntity()
-		s.Metadata.Name().Set(player2Entity, metadata.NewName("anna"))
+		playerEntity := s.World().NewEntity()
+		s.Metadata().Name().Set(playerEntity, metadata.NewName("john"))
+		player2Entity := s.World().NewEntity()
+		s.Metadata().Name().Set(player2Entity, metadata.NewName("anna"))
 
 		// generates objects
 		type Deployed struct {
@@ -220,8 +213,8 @@ func (s *service) Generate(c generation.Config) batcher.Task {
 			Player ecs.EntityID
 		}
 		toDeploy := []Deployed{
-			{s.Definitions.Constructs.Farm, playerEntity},
-			{s.Definitions.Units.Tank, player2Entity},
+			{s.Definitions().Objects().Farm, playerEntity},
+			{s.Definitions().Objects().Tank, player2Entity},
 		}
 		for index := grid.Index(1); index < gridStateComponent.GetLastIndex(); index++ {
 			if len(toDeploy) == 0 {
@@ -229,7 +222,7 @@ func (s *service) Generate(c generation.Config) batcher.Task {
 			}
 			coords := gridStateComponent.GetCoords(index)
 			deployed := toDeploy[0]
-			if _, err := s.Deploy.Deploy(deployed.Blueprint, deployed.Player, coords); err == nil {
+			if _, err := s.Deploy().Deploy(deployed.Blueprint, deployed.Player, coords); err == nil {
 				toDeploy = toDeploy[1:]
 			}
 		}
@@ -237,7 +230,7 @@ func (s *service) Generate(c generation.Config) batcher.Task {
 
 	// task
 
-	task := s.Batcher.NewTask()
+	task := s.Batcher().NewTask()
 	task.AddConcurrentBatch(generateBatch)
 	task.AddConcurrentBatch(applyBatch)
 	for range 2 {

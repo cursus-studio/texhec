@@ -2,8 +2,8 @@ package tilerenderer
 
 import (
 	"core/modules/tile"
+	gamescenes "core/scenes"
 	_ "embed"
-	"engine"
 	"engine/modules/assets"
 	"engine/modules/render"
 	"engine/services/datastructures"
@@ -55,9 +55,7 @@ type locations struct {
 }
 
 type system struct {
-	TextureArrayFactory texturearray.Factory `inject:"1"`
-	engine.World        `inject:"1"`
-	Tile                tile.Service `inject:"1"`
+	gamescenes.GameWorld `inject:""`
 
 	program   program.Program
 	locations locations
@@ -123,14 +121,14 @@ func NewSystem(c ioc.Dic) error {
 	s.textures = datastructures.NewSparseArray[uint32, image.Image]()
 
 	s.tilesDirtySet = ecs.NewDirtySet()
-	s.Tile.TileType().AddDirtySet(s.tilesDirtySet)
+	s.Tile().TileType().AddDirtySet(s.tilesDirtySet)
 
 	s.gridDirtySet = ecs.NewDirtySet()
-	s.Tile.TileGrid().AddDirtySet(s.gridDirtySet)
+	s.Tile().TileGrid().AddDirtySet(s.gridDirtySet)
 
 	s.batches = datastructures.NewSparseArray[ecs.EntityID, Batch]()
 
-	events.Listen(s.EventsBuilder, s.ListenRender)
+	events.Listen(s.EventsBuilder(), s.ListenRender)
 	return nil
 }
 
@@ -138,16 +136,16 @@ func (s *system) ListenRender(render render.RenderEvent) {
 	{ // rare reload. it reloads definitions, buffers, texture arrays (not optimal because currently its used once)
 		dirtyTiles := s.tilesDirtySet.Get()
 		for _, entity := range dirtyTiles {
-			tileComp, ok := s.Tile.TileType().Get(entity)
+			tileComp, ok := s.Tile().TileType().Get(entity)
 			if !ok {
 				continue
 			}
 
 			id := uint32(s.ids.Size())
 			s.ids.Set(tileComp.ID, id)
-			texture, err := assets.GetAsset[tile.BiomAsset](s.Assets, entity)
+			texture, err := assets.GetAsset[tile.BiomAsset](s.Assets(), entity)
 			if err != nil {
-				s.Logger.Warn(err)
+				s.Logger().Warn(err)
 				continue
 			}
 
@@ -164,9 +162,9 @@ func (s *system) ListenRender(render render.RenderEvent) {
 			}
 		}
 		if len(dirtyTiles) != 0 {
-			highLodTextureArray, err := s.TextureArrayFactory.New(s.textures)
+			highLodTextureArray, err := s.TextureArrayFactory().New(s.textures)
 			if err != nil {
-				s.Logger.Warn(err)
+				s.Logger().Warn(err)
 				return
 			}
 
@@ -176,14 +174,14 @@ func (s *system) ListenRender(render render.RenderEvent) {
 				img = gtexture.NewImage(img).Scale(2, 2).Opaque().Image()
 				lowLodTextures.Set(texture, img)
 			}
-			lowLodTextureArray, err := s.TextureArrayFactory.New(lowLodTextures)
+			lowLodTextureArray, err := s.TextureArrayFactory().New(lowLodTextures)
 			if err != nil {
-				s.Logger.Warn(err)
+				s.Logger().Warn(err)
 				return
 			}
 
 			dirtySet := ecs.NewDirtySet()
-			s.Tile.TileGrid().AddDirtySet(dirtySet)
+			s.Tile().TileGrid().AddDirtySet(dirtySet)
 
 			for _, t := range s.lodTextureArrays {
 				t.Release()
@@ -208,7 +206,7 @@ func (s *system) ListenRender(render render.RenderEvent) {
 	// reload per grid buffers
 	for _, entity := range s.gridDirtySet.Get() {
 		batch, batchOk := s.batches.Get(entity)
-		grid, compOk := s.Tile.TileGrid().Get(entity)
+		grid, compOk := s.Tile().TileGrid().Get(entity)
 
 		if !batchOk && !compOk {
 			continue
@@ -244,32 +242,32 @@ func (s *system) ListenRender(render render.RenderEvent) {
 	s.program.Bind()
 	s.vao.Bind()
 	var lod int
-	if ortho, ok := s.Camera.Ortho().Get(render.Camera); ok && ortho.Zoom < .25 {
+	if ortho, ok := s.Camera().Ortho().Get(render.Camera); ok && ortho.Zoom < .25 {
 		lod = 1
 	}
 	s.lodTextureArrays[lod].Bind()
 
-	cameraGroups, _ := s.Groups.Component().Get(render.Camera)
-	cameraMatrix := s.Camera.Mat4(render.Camera)
+	cameraGroups, _ := s.Groups().Component().Get(render.Camera)
+	cameraMatrix := s.Camera().Mat4(render.Camera)
 
 	for _, entity := range s.batches.GetIndices() {
 		batch, ok := s.batches.Get(entity)
 		if !ok {
 			continue
 		}
-		if groups, _ := s.Groups.Component().Get(entity); !cameraGroups.SharesAnyGroup(groups) {
+		if groups, _ := s.Groups().Component().Get(entity); !cameraGroups.SharesAnyGroup(groups) {
 			continue
 		}
 		batch.buffer.Bind()
 
-		grid, _ := s.Tile.TileGrid().Get(entity)
+		grid, _ := s.Tile().TileGrid().Get(entity)
 
 		gl.Uniform1ui(s.locations.Width, uint32(grid.Width()))
 		gl.Uniform1ui(s.locations.Height, uint32(grid.Height()))
 		gl.Uniform1f(s.locations.WidthInv, 2/float32(grid.Width()))
 		gl.Uniform1f(s.locations.HeightInv, 2/float32(grid.Height()))
 
-		mvp := cameraMatrix.Mul4(s.Transform.Mat4(entity))
+		mvp := cameraMatrix.Mul4(s.Transform().Mat4(entity))
 		gl.UniformMatrix4fv(s.locations.Mvp, 1, false, &mvp[0])
 
 		verticesCount := (grid.Width() + 1) * (grid.Height() + 1)

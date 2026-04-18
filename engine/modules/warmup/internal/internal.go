@@ -1,6 +1,7 @@
 package internal
 
 import (
+	"engine"
 	"engine/modules/warmup"
 
 	"github.com/ogiusek/events"
@@ -8,7 +9,7 @@ import (
 )
 
 type service struct {
-	Events events.Events `inject:"1"`
+	engine.EngineWorld `inject:""`
 }
 
 func NewService(c ioc.Dic) warmup.Service {
@@ -16,5 +17,5 @@ func NewService(c ioc.Dic) warmup.Service {
 }
 
 func (s *service) WarmUp() {
-	events.Emit(s.Events, warmup.Event{})
+	events.Emit(s.Events(), warmup.Event{})
 }

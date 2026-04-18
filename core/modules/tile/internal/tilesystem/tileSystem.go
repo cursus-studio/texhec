@@ -3,7 +3,7 @@ package tilesystem
 import (
 	"core/modules/tile"
 	"core/modules/ui"
-	"engine"
+	gamescenes "core/scenes"
 	"engine/modules/grid"
 	"engine/modules/inputs"
 	"engine/modules/transform"
@@ -20,9 +20,7 @@ import (
 var invSpeedTable [256]tile.Coord
 
 type system struct {
-	engine.World `inject:"1"`
-	Ui           ui.Service   `inject:"1"`
-	Tile         tile.Service `inject:"1"`
+	gamescenes.GameWorld `inject:""`
 
 	dirtyDeployedSet  ecs.DirtySet
 	dirtyTransformSet ecs.DirtySet
@@ -38,65 +36,65 @@ func NewSystem(c ioc.Dic) tile.System {
 	return ecs.NewSystemRegister(func() error {
 		s := ioc.GetServices[*system](c)
 
-		s.tileSize = s.Tile.GetTileSize()
+		s.tileSize = s.Tile().GetTileSize()
 		s.dirtyDeployedSet = ecs.NewDirtySet()
 		s.dirtyTransformSet = ecs.NewDirtySet()
 		s.selectedEvent = nil
 
 		//
-		s.Tile.Pos().AddDirtySet(s.dirtyTransformSet)
-		s.Tile.Size().AddDirtySet(s.dirtyTransformSet)
-		s.Tile.Rot().AddDirtySet(s.dirtyTransformSet)
+		s.Tile().Pos().AddDirtySet(s.dirtyTransformSet)
+		s.Tile().Size().AddDirtySet(s.dirtyTransformSet)
+		s.Tile().Rot().AddDirtySet(s.dirtyTransformSet)
 
-		s.Transform.PivotPoint().AddDependency(s.Tile.Pos())
-		s.Transform.Pos().AddDependency(s.Tile.Pos())
-		s.Transform.Size().AddDependency(s.Tile.Size())
-		s.Transform.Rotation().AddDependency(s.Tile.Rot())
+		s.Transform().PivotPoint().AddDependency(s.Tile().Pos())
+		s.Transform().Pos().AddDependency(s.Tile().Pos())
+		s.Transform().Size().AddDependency(s.Tile().Size())
+		s.Transform().Rotation().AddDependency(s.Tile().Rot())
 
-		s.Transform.PivotPoint().BeforeGet(s.BeforeTransformGet)
-		s.Transform.Pos().BeforeGet(s.BeforeTransformGet)
-		s.Transform.Size().BeforeGet(s.BeforeTransformGet)
-		s.Transform.Rotation().BeforeGet(s.BeforeTransformGet)
-
-		//
-
-		s.Tile.Deployed().AddDirtySet(s.dirtyDeployedSet)
-		s.Inputs.Stack().AddDependency(s.Tile.Deployed())
-
-		s.Inputs.Stack().BeforeGet(s.BeforeStackGet)
+		s.Transform().PivotPoint().BeforeGet(s.BeforeTransformGet)
+		s.Transform().Pos().BeforeGet(s.BeforeTransformGet)
+		s.Transform().Size().BeforeGet(s.BeforeTransformGet)
+		s.Transform().Rotation().BeforeGet(s.BeforeTransformGet)
 
 		//
 
-		events.Listen(s.EventsBuilder, s.OnTick)
-		events.Listen(s.EventsBuilder, s.OnUnselect)
-		events.Listen(s.EventsBuilder, s.OnSelect)
-		events.Listen(s.EventsBuilder, s.OnHover)
+		s.Tile().Deployed().AddDirtySet(s.dirtyDeployedSet)
+		s.Inputs().Stack().AddDependency(s.Tile().Deployed())
+
+		s.Inputs().Stack().BeforeGet(s.BeforeStackGet)
+
+		//
+
+		events.Listen(s.EventsBuilder(), s.OnTick)
+		events.Listen(s.EventsBuilder(), s.OnUnselect)
+		events.Listen(s.EventsBuilder(), s.OnSelect)
+		events.Listen(s.EventsBuilder(), s.OnHover)
 		return nil
 	})
 }
 
 func (s *system) BeforeStackGet() {
 	for _, entity := range s.dirtyDeployedSet.Get() {
-		if _, ok := s.Tile.Deployed().Get(entity); !ok {
-			s.Inputs.Stack().Remove(entity)
+		if _, ok := s.Tile().Deployed().Get(entity); !ok {
+			s.Inputs().Stack().Remove(entity)
 			continue
 		}
 
-		s.Inputs.Stack().Set(entity, inputs.StackComponent{})
+		s.Inputs().Stack().Set(entity, inputs.StackComponent{})
 	}
 }
 
 func (s *system) BeforeTransformGet() {
 	for _, entity := range s.dirtyTransformSet.Get() {
-		pos, ok := s.Tile.Pos().Get(entity)
+		pos, ok := s.Tile().Pos().Get(entity)
 		if !ok {
-			s.Transform.Size().Remove(entity)
-			s.Inputs.Stack().Remove(entity)
+			s.Transform().Size().Remove(entity)
+			s.Inputs().Stack().Remove(entity)
 			continue
 		}
-		size, _ := s.Tile.Size().Get(entity)
-		rot, _ := s.Tile.Rot().Get(entity)
-		layer, _ := s.Tile.Layer().Get(entity)
+		size, _ := s.Tile().Size().Get(entity)
+		rot, _ := s.Tile().Rot().Get(entity)
+		layer, _ := s.Tile().Layer().Get(entity)
 
 		transformPos := transform.NewPos(
 			s.tileSize.Size.X()*float32(pos.X),
@@ -110,10 +108,10 @@ func (s *system) BeforeTransformGet() {
 		)
 		transformRot := transform.NewRotation(rot.Quat())
 
-		s.Transform.PivotPoint().Set(entity, transform.NewPivotPoint(0, 0, .5))
-		s.Transform.Pos().Set(entity, transformPos)
-		s.Transform.Size().Set(entity, transformSize)
-		s.Transform.Rotation().Set(entity, transformRot)
+		s.Transform().PivotPoint().Set(entity, transform.NewPivotPoint(0, 0, .5))
+		s.Transform().Pos().Set(entity, transformPos)
+		s.Transform().Size().Set(entity, transformSize)
+		s.Transform().Rotation().Set(entity, transformRot)
 	}
 }
 
@@ -127,40 +125,40 @@ var (
 func abs[Number constraints.Float | constraints.Integer](n Number) Number { return max(-n, n) }
 
 func (s *system) OnTick(e frames.TickEvent) {
-	entities := s.Tile.Step().GetEntities()
+	entities := s.Tile().Step().GetEntities()
 	{
 		cp := make([]ecs.EntityID, len(entities))
 		copy(cp, entities)
 		entities = cp
 	}
 	for _, entity := range entities {
-		step, ok := s.Tile.Step().Get(entity)
+		step, ok := s.Tile().Step().Get(entity)
 		if !ok {
 			continue
 		}
-		pos, ok := s.Tile.Pos().Get(entity)
+		pos, ok := s.Tile().Pos().Get(entity)
 		if !ok {
-			s.Tile.Step().Remove(entity)
-			s.Logger.Warn(tile.ErrPositionAndSpeedIsRequiredToStep)
+			s.Tile().Step().Remove(entity)
+			s.Logger().Warn(tile.ErrPositionAndSpeedIsRequiredToStep)
 			continue
 		}
-		speed, ok := s.Tile.Speed().Get(entity)
+		speed, ok := s.Tile().Speed().Get(entity)
 		if !ok {
-			s.Tile.Step().Remove(entity)
-			s.Logger.Warn(tile.ErrPositionAndSpeedIsRequiredToStep)
+			s.Tile().Step().Remove(entity)
+			s.Logger().Warn(tile.ErrPositionAndSpeedIsRequiredToStep)
 			continue
 		}
 		arrived := tile.Coord(step.X) == pos.X && tile.Coord(step.Y) == pos.Y
 		if arrived {
-			s.Tile.Step().Remove(entity)
+			s.Tile().Step().Remove(entity)
 			continue
 		}
-		size, _ := s.Tile.Size().Get(entity)
-		obstruction, _ := s.Tile.Obstruction().Get(entity)
+		size, _ := s.Tile().Size().Get(entity)
+		obstruction, _ := s.Tile().Obstruction().Get(entity)
 		aligned, isFirstStep := pos.Aligned()
-		if isFirstStep && !s.Tile.CanStep(aligned, size, obstruction, step) {
-			s.Tile.Step().Remove(entity)
-			s.Logger.Warn(tile.ErrInvalidStep)
+		if isFirstStep && !s.Tile().CanStep(aligned, size, obstruction, step) {
+			s.Tile().Step().Remove(entity)
+			s.Logger().Warn(tile.ErrInvalidStep)
 			continue
 		}
 
@@ -180,7 +178,7 @@ func (s *system) OnTick(e frames.TickEvent) {
 			pos.Y = max(pos.Y-stepSpeed, tile.Coord(step.Y))
 			rot = rotDown
 		} else {
-			s.Logger.Warn(fmt.Errorf("tile system isn't able to handle StepComponent"))
+			s.Logger().Warn(fmt.Errorf("tile system isn't able to handle StepComponent"))
 		}
 		const epsilon tile.Coord = 1e-3
 		if abs(tile.Coord(step.X)-pos.X) < epsilon {
@@ -189,15 +187,15 @@ func (s *system) OnTick(e frames.TickEvent) {
 		if abs(tile.Coord(step.Y)-pos.Y) < epsilon {
 			pos.Y = tile.Coord(step.Y)
 		}
-		s.Tile.Pos().Set(entity, pos)
+		s.Tile().Pos().Set(entity, pos)
 
 		if isFirstStep {
-			s.Tile.Rot().Set(entity, rot)
+			s.Tile().Rot().Set(entity, rot)
 		}
 
 		arrived = tile.Coord(step.X) == pos.X && tile.Coord(step.Y) == pos.Y
 		if arrived {
-			s.Tile.Step().Remove(entity)
+			s.Tile().Step().Remove(entity)
 		}
 	}
 }
@@ -216,9 +214,9 @@ func (s *system) OnHover(e tile.HoverEvent) {
 	if s.selectedEvent == nil {
 		return
 	}
-	grid, ok := s.Tile.TileGrid().Get(e.Grid)
+	grid, ok := s.Tile().TileGrid().Get(e.Grid)
 	if !ok {
-		s.Logger.Warn(fmt.Errorf("grid doesn't exist"))
+		s.Logger().Warn(fmt.Errorf("grid doesn't exist"))
 		return
 	}
 	coords := grid.GetCoords(e.Tile)
@@ -229,5 +227,5 @@ func (s *system) OnHover(e tile.HoverEvent) {
 	if event, ok := s.selectedEvent.HoverEvent.(tile.ApplyCoordsEvent); ok {
 		s.selectedEvent.HoverEvent = event.ApplyCoords(coords)
 	}
-	events.EmitAny(s.Events, s.selectedEvent.HoverEvent)
+	events.EmitAny(s.Events(), s.selectedEvent.HoverEvent)
 }

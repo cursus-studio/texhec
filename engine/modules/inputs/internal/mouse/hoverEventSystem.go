@@ -1,6 +1,7 @@
 package mouse
 
 import (
+	"engine"
 	"engine/modules/inputs"
 	"engine/services/ecs"
 	"engine/services/frames"
@@ -10,24 +11,20 @@ import (
 )
 
 type hoverEventSystem struct {
-	World  ecs.World      `inject:"1"`
-	Inputs inputs.Service `inject:"1"`
-
-	EventsBuilder events.Builder `inject:"1"`
-	Events        events.Events  `inject:"1"`
+	engine.EngineWorld `inject:""`
 }
 
 func NewHoverEventsSystem(c ioc.Dic) inputs.System {
 	return ecs.NewSystemRegister(func() error {
 		s := ioc.GetServices[*hoverEventSystem](c)
-		events.Listen(s.EventsBuilder, s.Listen)
+		events.Listen(s.EventsBuilder(), s.Listen)
 		return nil
 	})
 }
 
 func (s *hoverEventSystem) Listen(event frames.FrameEvent) {
-	for _, entity := range s.Inputs.Hovered().GetEntities() {
-		eventsComponent, ok := s.Inputs.Hover().Get(entity)
+	for _, entity := range s.Inputs().Hovered().GetEntities() {
+		eventsComponent, ok := s.Inputs().Hover().Get(entity)
 		if !ok {
 			continue
 		}
@@ -36,7 +33,7 @@ func (s *hoverEventSystem) Listen(event frames.FrameEvent) {
 			eventsComponent.Event = e.ApplyEntity(entity)
 		}
 		if setter, ok := eventsComponent.Event.(inputs.EventTargetSetter); ok {
-			for _, data := range s.Inputs.StackedData() {
+			for _, data := range s.Inputs().StackedData() {
 				if data.Entity != entity {
 					continue
 				}
@@ -45,6 +42,6 @@ func (s *hoverEventSystem) Listen(event frames.FrameEvent) {
 			}
 
 		}
-		events.EmitAny(s.Events, eventsComponent.Event)
+		events.EmitAny(s.Events(), eventsComponent.Event)
 	}
 }

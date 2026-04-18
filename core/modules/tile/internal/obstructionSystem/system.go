@@ -2,7 +2,7 @@ package obstructionsystem
 
 import (
 	"core/modules/tile"
-	"engine"
+	gamescenes "core/scenes"
 	"engine/modules/record"
 	"engine/services/ecs"
 	"errors"
@@ -11,8 +11,7 @@ import (
 )
 
 type system struct {
-	engine.World `inject:"1"`
-	Tile         tile.Service `inject:"1"`
+	gamescenes.GameWorld `inject:""`
 
 	config        record.Config
 	recordingID   record.RecordingID
@@ -36,11 +35,11 @@ func NewSystem(c ioc.Dic) tile.System {
 		s.obstructionGetter = record.AddToConfig[tile.ObstructionComponent](s.config)
 		s.deployedGetter = record.AddToConfig[tile.DeployedComponent](s.config)
 
-		s.Tile.Pos().AddDirtySet(s.dirtyEntities)
-		s.Tile.Size().AddDirtySet(s.dirtyEntities)
-		s.Tile.Obstruction().AddDirtySet(s.dirtyEntities)
-		s.Tile.Deployed().AddDirtySet(s.dirtyEntities)
-		s.Tile.ObstructionGrid().BeforeGet(s.BeforeGet)
+		s.Tile().Pos().AddDirtySet(s.dirtyEntities)
+		s.Tile().Size().AddDirtySet(s.dirtyEntities)
+		s.Tile().Obstruction().AddDirtySet(s.dirtyEntities)
+		s.Tile().Deployed().AddDirtySet(s.dirtyEntities)
+		s.Tile().ObstructionGrid().BeforeGet(s.BeforeGet)
 		return nil
 	})
 }
@@ -49,20 +48,20 @@ func (s *system) BeforeGet() {
 	if len(s.dirtyEntities.Get()) == 0 {
 		return
 	}
-	if len(s.Tile.ObstructionGrid().GetEntities()) == 0 {
+	if len(s.Tile().ObstructionGrid().GetEntities()) == 0 {
 		return
 	}
-	obstructionGridEntity := s.Tile.ObstructionGrid().GetEntities()[0]
-	obstructionGrid, ok := s.Tile.ObstructionGrid().Get(obstructionGridEntity)
+	obstructionGridEntity := s.Tile().ObstructionGrid().GetEntities()[0]
+	obstructionGrid, ok := s.Tile().ObstructionGrid().Get(obstructionGridEntity)
 	if !ok {
-		s.Logger.Warn(errors.New("didn't found obstruction grid"))
+		s.Logger().Warn(errors.New("didn't found obstruction grid"))
 		return
 	}
 
 	var entities []ecs.EntityID
-	recording, ok := s.Record.Entity().Stop(s.recordingID)
+	recording, ok := s.Record().Entity().Stop(s.recordingID)
 	if !ok {
-		entities = s.Tile.Deployed().GetEntities()
+		entities = s.Tile().Deployed().GetEntities()
 		goto entityLoop
 	} else {
 		entities = recording.Entities.GetIndices()
@@ -88,7 +87,7 @@ func (s *system) BeforeGet() {
 		for _, coords := range aabb.Tiles {
 			index, ok := obstructionGrid.GetIndex(coords.Coords())
 			if !ok {
-				s.Logger.Warn(tile.ErrInvalidPosition)
+				s.Logger().Warn(tile.ErrInvalidPosition)
 				continue
 			}
 			obstructionGrid.SetTile(index, obstructionGrid.GetTile(index)&^obstruction.Obstruction)
@@ -98,27 +97,27 @@ func (s *system) BeforeGet() {
 	// add new positions
 entityLoop:
 	for _, entity := range entities {
-		if _, ok := s.Tile.Deployed().Get(entity); !ok {
+		if _, ok := s.Tile().Deployed().Get(entity); !ok {
 			continue
 		}
-		pos, ok := s.Tile.Pos().Get(entity)
+		pos, ok := s.Tile().Pos().Get(entity)
 		if !ok {
 			continue
 		}
-		size, _ := s.Tile.Size().Get(entity)
-		obstruction, _ := s.Tile.Obstruction().Get(entity)
+		size, _ := s.Tile().Size().Get(entity)
+		obstruction, _ := s.Tile().Obstruction().Get(entity)
 		aabb := tile.NewAABB(pos, size)
 		for _, coords := range aabb.Tiles {
 			index, ok := obstructionGrid.GetIndex(coords.Coords())
 			if !ok {
-				s.Logger.Warn(tile.ErrInvalidPosition)
+				s.Logger().Warn(tile.ErrInvalidPosition)
 				continue
 			}
 			if obstructionGrid.GetTile(index)&obstruction.Obstruction == 0 {
 				continue
 			}
-			s.RemoveEntity(entity)
-			s.Logger.Warn(tile.ErrPositionIsOccupied)
+			s.World().RemoveEntity(entity)
+			s.Logger().Warn(tile.ErrPositionIsOccupied)
 			continue entityLoop
 		}
 		for _, coords := range aabb.Tiles {
@@ -128,6 +127,6 @@ entityLoop:
 		}
 	}
 
-	s.recordingID = s.Record.Entity().StartBackwardsRecording(s.config)
-	s.Tile.ObstructionGrid().Set(obstructionGridEntity, obstructionGrid)
+	s.recordingID = s.Record().Entity().StartBackwardsRecording(s.config)
+	s.Tile().ObstructionGrid().Set(obstructionGridEntity, obstructionGrid)
 }

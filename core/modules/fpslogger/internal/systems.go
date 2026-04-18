@@ -1,7 +1,7 @@
 package internal
 
 import (
-	"engine/services/console"
+	gamescenes "core/scenes"
 	"engine/services/ecs"
 	"engine/services/frames"
 	"fmt"
@@ -12,9 +12,7 @@ import (
 )
 
 type logsSystem struct {
-	World         ecs.World       `inject:"1"`
-	Console       console.Console `inject:"1"`
-	EventsBuilder events.Builder  `inject:"1"`
+	gamescenes.GameWorld `inject:""`
 
 	frames []time.Time
 }
@@ -23,7 +21,7 @@ func NewFpsLoggerSystem(c ioc.Dic) ecs.SystemRegister {
 	return ecs.NewSystemRegister(func() error {
 		s := ioc.GetServices[*logsSystem](c)
 		s.frames = make([]time.Time, 60)
-		events.Listen(s.EventsBuilder, s.Listen)
+		events.Listen(s.EventsBuilder(), s.Listen)
 		return nil
 	})
 }
@@ -46,8 +44,8 @@ func (system *logsSystem) Listen(args frames.FrameEvent) {
 
 	text := "----------------------------------------------------------------\n"
 	text += fmt.Sprintf("now %s\n", time.Now().Format(format))
-	text += fmt.Sprintf("fps %d, entities %d\n", len(system.frames), len(system.World.GetEntities()))
+	text += fmt.Sprintf("fps %d, entities %d\n", len(system.frames), len(system.World().GetEntities()))
 
-	system.Console.Print(text)
-	system.Console.Flush()
+	system.Console().Print(text)
+	system.Console().Flush()
 }

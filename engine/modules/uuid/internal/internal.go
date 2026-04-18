@@ -1,6 +1,7 @@
 package internal
 
 import (
+	"engine"
 	"engine/modules/relation"
 	"engine/modules/uuid"
 	"engine/services/ecs"
@@ -9,16 +10,16 @@ import (
 )
 
 type service struct {
-	World                       ecs.World `inject:"1"`
-	relation.Service[uuid.UUID] `inject:"1"`
-	uuid.Factory                `inject:"1"`
+	engine.EngineWorld          `inject:""`
+	relation.Service[uuid.UUID] `inject:""`
+	uuid.Factory                `inject:""`
 
 	uuidArray ecs.ComponentsArray[uuid.Component]
 }
 
 func NewService(c ioc.Dic) uuid.Service {
 	t := ioc.GetServices[*service](c)
-	t.uuidArray = ecs.GetComponentsArray[uuid.Component](t.World)
+	t.uuidArray = ecs.GetComponentsArray[uuid.Component](t.World())
 	return t
 }
 

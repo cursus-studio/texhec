@@ -21,8 +21,8 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 
 	ioc.Wrap(b, func(c ioc.Dic, r registry.Service) {
 		type World struct {
-			Config *internal.Config `inject:"1"`
-			Logger logger.Logger    `inject:"1"`
+			Config *internal.Config `inject:""`
+			Logger logger.Logger    `inject:""`
 		}
 		r.Register("generate", func(entity ecs.EntityID, structTagValue string) {
 			world := ioc.GetServices[World](c)

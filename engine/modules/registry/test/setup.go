@@ -1,6 +1,7 @@
 package test
 
 import (
+	"engine"
 	"engine/modules/registry"
 	registrypkg "engine/modules/registry/pkg"
 	uuidpkg "engine/modules/uuid/pkg"
@@ -13,8 +14,7 @@ import (
 )
 
 type Setup struct {
-	World   ecs.World        `inject:"1"`
-	Service registry.Service `inject:"1"`
+	engine.EngineWorld `inject:""`
 }
 
 type TagValueComponent struct {

@@ -1,9 +1,8 @@
 package test
 
 import (
-	"engine/modules/assets"
+	"engine"
 	assetspkg "engine/modules/assets/pkg"
-	"engine/modules/registry"
 	registrypkg "engine/modules/registry/pkg"
 	uuidpkg "engine/modules/uuid/pkg"
 	"engine/services/clock"
@@ -15,10 +14,7 @@ import (
 )
 
 type setup struct {
-	World  ecs.World      `inject:"1"`
-	Assets assets.Service `inject:"1"`
-
-	Registry registry.Service `inject:"1"`
+	engine.EngineWorld `inject:""`
 }
 
 func NewSetup() setup {

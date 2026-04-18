@@ -2,7 +2,7 @@ package test
 
 import (
 	"encoding/binary"
-	"engine/modules/connection"
+	"engine"
 	connectionpkg "engine/modules/connection/pkg"
 	hierarchypkg "engine/modules/hierarchy/pkg"
 	"engine/services/clock"
@@ -23,9 +23,7 @@ type Message struct {
 var mutex sync.Mutex
 
 type Setup struct {
-	World      ecs.World          `inject:"1"`
-	Connection connection.Service `inject:"1"`
-	Codec      codec.Codec        `inject:"1"`
+	engine.EngineWorld `inject:""`
 
 	Message Message
 	Network string
@@ -63,7 +61,7 @@ func (s *Setup) Sleep() {
 }
 
 func (s *Setup) Send(conn net.Conn, message Message) error {
-	bytes, err := s.Codec.Encode(message)
+	bytes, err := s.Codec().Encode(message)
 	if err != nil {
 		return err
 	}

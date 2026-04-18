@@ -1,6 +1,7 @@
 package internal
 
 import (
+	"engine"
 	"engine/modules/metadata"
 	"engine/services/ecs"
 
@@ -8,7 +9,7 @@ import (
 )
 
 type service struct {
-	World ecs.World `inject:"1"`
+	engine.EngineWorld `inject:""`
 
 	name        ecs.ComponentsArray[metadata.NameComponent]
 	description ecs.ComponentsArray[metadata.DescriptionComponent]
@@ -16,8 +17,8 @@ type service struct {
 
 func NewService(c ioc.Dic) metadata.Service {
 	s := ioc.GetServices[*service](c)
-	s.name = ecs.GetComponentsArray[metadata.NameComponent](s.World)
-	s.description = ecs.GetComponentsArray[metadata.DescriptionComponent](s.World)
+	s.name = ecs.GetComponentsArray[metadata.NameComponent](s.World())
+	s.description = ecs.GetComponentsArray[metadata.DescriptionComponent](s.World())
 	return s
 }
 

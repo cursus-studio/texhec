@@ -6,7 +6,7 @@ import (
 	"core/modules/player"
 	"core/modules/tile"
 	"core/modules/ui"
-	"engine"
+	gamescenes "core/scenes"
 	"engine/modules/grid"
 	"engine/modules/groups"
 	"engine/modules/inputs"
@@ -19,10 +19,7 @@ import (
 )
 
 type service struct {
-	engine.World `inject:"1"`
-	Tile         tile.Service       `inject:"1"`
-	Player       player.Service     `inject:"1"`
-	Definitions  definitions.Assets `inject:"1"`
+	gamescenes.GameWorld `inject:""`
 
 	component ecs.ComponentsArray[deploy.Component]
 	link      ecs.ComponentsArray[deploy.LinkComponent]
@@ -31,13 +28,13 @@ type service struct {
 func NewService(c ioc.Dic) deploy.Service {
 	s := ioc.GetServices[*service](c)
 
-	s.component = ecs.GetComponentsArray[deploy.Component](s.World)
-	s.link = ecs.GetComponentsArray[deploy.LinkComponent](s.World)
+	s.component = ecs.GetComponentsArray[deploy.Component](s.World())
+	s.link = ecs.GetComponentsArray[deploy.LinkComponent](s.World())
 
-	events.Listen(s.EventsBuilder, s.Unselect)
-	events.Listen(s.EventsBuilder, s.Execute)
-	events.Listen(s.EventsBuilder, s.Preview)
-	events.Listen(s.EventsBuilder, s.Select)
+	events.Listen(s.EventsBuilder(), s.Unselect)
+	events.Listen(s.EventsBuilder(), s.Execute)
+	events.Listen(s.EventsBuilder(), s.Preview)
+	events.Listen(s.EventsBuilder(), s.Select)
 
 	return s
 }
@@ -54,83 +51,83 @@ func (s *service) Deploy(
 
 	// - is position occuped
 	pos := tile.NewPos(coords.Coords())
-	size, _ := s.Tile.Size().Get(blueprint)
-	obstruction, _ := s.Tile.Obstruction().Get(blueprint)
+	size, _ := s.Tile().Size().Get(blueprint)
+	obstruction, _ := s.Tile().Obstruction().Get(blueprint)
 	aabb := tile.NewAABB(pos, size)
-	if collisions := s.Tile.Collisions(aabb, obstruction.Obstruction); len(collisions) != 0 {
+	if collisions := s.Tile().Collisions(aabb, obstruction.Obstruction); len(collisions) != 0 {
 		return 0, tile.ErrPositionIsOccupied
 	}
 
 	// place
-	deployed := s.Prototype.Clone(blueprint)
-	s.Hierarchy.SetParent(deployed, s.Scene.Scene())
+	deployed := s.Prototype().Clone(blueprint)
+	s.Hierarchy().SetParent(deployed, s.Scene().Scene())
 
-	s.Player.Owner().Set(deployed, player.NewOwner(owner))
-	s.Tile.Deployed().Set(deployed, tile.NewDeployed())
-	s.Inputs.LeftClick().Set(deployed, inputs.NewLeftClick(tile.NewClickEntityEvent()))
-	s.Tile.Pos().Set(deployed, pos)
-	events.Emit(s.Events, ui.HideUiEvent{})
+	s.Player().Owner().Set(deployed, player.NewOwner(owner))
+	s.Tile().Deployed().Set(deployed, tile.NewDeployed())
+	s.Inputs().LeftClick().Set(deployed, inputs.NewLeftClick(tile.NewClickEntityEvent()))
+	s.Tile().Pos().Set(deployed, pos)
+	events.Emit(s.Events(), ui.HideUiEvent{})
 	return deployed, nil
 }
 
 func (s *service) Unselect(e ui.HideUiEvent) {
-	for _, entity := range s.Tile.Placeholder().GetEntities() {
-		s.RemoveEntity(entity)
+	for _, entity := range s.Tile().Placeholder().GetEntities() {
+		s.World().RemoveEntity(entity)
 	}
 }
 func (s *service) Select(e deploy.SelectEvent) {
-	events.Emit(s.Events, tile.NewSelectEvent(deploy.NewPreviewEvent(e.By, e.Blueprint)))
+	events.Emit(s.Events(), tile.NewSelectEvent(deploy.NewPreviewEvent(e.By, e.Blueprint)))
 }
 func (s *service) Preview(e deploy.PreviewEvent) {
-	for _, entity := range s.Tile.Placeholder().GetEntities() {
-		s.RemoveEntity(entity)
+	for _, entity := range s.Tile().Placeholder().GetEntities() {
+		s.World().RemoveEntity(entity)
 	}
 	var collisions []grid.Coords
-	placeholderEntity := s.Prototype.Clone(e.Blueprint)
-	s.Hierarchy.SetParent(placeholderEntity, s.Scene.Scene())
-	s.Tile.Layer().Set(placeholderEntity, tile.NewLayer(definitions.PlaceholderLayer))
+	placeholderEntity := s.Prototype().Clone(e.Blueprint)
+	s.Hierarchy().SetParent(placeholderEntity, s.Scene().Scene())
+	s.Tile().Layer().Set(placeholderEntity, tile.NewLayer(definitions.PlaceholderLayer))
 
 	pos := tile.NewPos(e.Coords.Coords())
-	s.Tile.Pos().Set(placeholderEntity, pos)
-	s.Tile.Placeholder().Set(placeholderEntity, tile.NewPlaceholder())
-	size, _ := s.Tile.Size().Get(e.Blueprint)
+	s.Tile().Pos().Set(placeholderEntity, pos)
+	s.Tile().Placeholder().Set(placeholderEntity, tile.NewPlaceholder())
+	size, _ := s.Tile().Size().Get(e.Blueprint)
 
 	{ // check can place:
 		// - is position occupied
-		blueprintObstruction, _ := s.Tile.Obstruction().Get(e.Blueprint)
+		blueprintObstruction, _ := s.Tile().Obstruction().Get(e.Blueprint)
 		aabb := tile.NewAABB(pos, size)
-		collisions = s.Tile.Collisions(aabb, blueprintObstruction.Obstruction)
+		collisions = s.Tile().Collisions(aabb, blueprintObstruction.Obstruction)
 		if len(collisions) != 0 {
 			goto cannotPlace
 		}
 
 		// place
-		s.Render.Color().Set(placeholderEntity, render.NewColor(mgl32.Vec4{0, 1, 0, 1}))
-		s.Inputs.LeftClick().Set(placeholderEntity, inputs.NewLeftClick(deploy.NewExecuteEvent(e.By, e.Blueprint).ApplyCoords(e.Coords)))
+		s.Render().Color().Set(placeholderEntity, render.NewColor(mgl32.Vec4{0, 1, 0, 1}))
+		s.Inputs().LeftClick().Set(placeholderEntity, inputs.NewLeftClick(deploy.NewExecuteEvent(e.By, e.Blueprint).ApplyCoords(e.Coords)))
 		return
 	}
 cannotPlace:
 	// place indicator on occupied tiles
 	for _, collision := range collisions {
-		entity := s.Prototype.Clone(s.Definitions.Blank)
-		s.Hierarchy.SetParent(entity, s.Scene.Scene())
+		entity := s.Prototype().Clone(s.Definitions().Blank)
+		s.Hierarchy().SetParent(entity, s.Scene().Scene())
 
-		s.Tile.Layer().Set(entity, tile.NewLayer(definitions.PlaceholderTileLayer))
-		s.Render.Mesh().Set(entity, render.NewMesh(s.Definitions.SquareMesh))
-		s.Render.Texture().Set(entity, render.NewTexture(s.Definitions.Blank))
-		s.Groups.Component().Set(entity, groups.EmptyGroups().Ptr().Enable(definitions.GameGroup).Val())
+		s.Tile().Layer().Set(entity, tile.NewLayer(definitions.PlaceholderTileLayer))
+		s.Render().Mesh().Set(entity, render.NewMesh(s.Definitions().SquareMesh))
+		s.Render().Texture().Set(entity, render.NewTexture(s.Definitions().Blank))
+		s.Groups().Component().Set(entity, groups.EmptyGroups().Ptr().Enable(definitions.GameGroup).Val())
 
-		s.Tile.Layer().Set(entity, tile.NewLayer(definitions.PlaceholderTileLayer))
-		s.Tile.Pos().Set(entity, tile.NewPos(collision.Coords()))
-		s.Tile.Placeholder().Set(entity, tile.NewPlaceholder())
-		s.Render.Color().Set(entity, render.NewColor(mgl32.Vec4{1, 0, 0, 1}))
+		s.Tile().Layer().Set(entity, tile.NewLayer(definitions.PlaceholderTileLayer))
+		s.Tile().Pos().Set(entity, tile.NewPos(collision.Coords()))
+		s.Tile().Placeholder().Set(entity, tile.NewPlaceholder())
+		s.Render().Color().Set(entity, render.NewColor(mgl32.Vec4{1, 0, 0, 1}))
 	}
-	s.Render.Color().Set(placeholderEntity, render.NewColor(mgl32.Vec4{1, 0, 0, 1}))
+	s.Render().Color().Set(placeholderEntity, render.NewColor(mgl32.Vec4{1, 0, 0, 1}))
 }
 func (s *service) Execute(e deploy.ExecuteEvent) {
 	// remove placeholder entities
-	for _, entity := range s.Tile.Placeholder().GetEntities() {
-		s.RemoveEntity(entity)
+	for _, entity := range s.Tile().Placeholder().GetEntities() {
+		s.World().RemoveEntity(entity)
 	}
 
 	// pay
@@ -138,37 +135,37 @@ func (s *service) Execute(e deploy.ExecuteEvent) {
 
 	// check can place
 	pos := tile.NewPos(e.Coords.Coords())
-	size, _ := s.Tile.Size().Get(e.Blueprint)
-	blueprintObstruction, _ := s.Tile.Obstruction().Get(e.Blueprint)
+	size, _ := s.Tile().Size().Get(e.Blueprint)
+	blueprintObstruction, _ := s.Tile().Obstruction().Get(e.Blueprint)
 
-	obstructionGridEntity := s.Tile.ObstructionGrid().GetEntities()[0]
-	obstructed, ok := s.Tile.ObstructionGrid().Get(obstructionGridEntity)
+	obstructionGridEntity := s.Tile().ObstructionGrid().GetEntities()[0]
+	obstructed, ok := s.Tile().ObstructionGrid().Get(obstructionGridEntity)
 	if !ok {
-		s.Logger.Warn(tile.ErrPositionIsOccupied)
+		s.Logger().Warn(tile.ErrPositionIsOccupied)
 		return
 	}
 	aabb := tile.NewAABB(pos, size)
 	for _, coords := range aabb.Tiles {
 		index, ok := obstructed.GetIndex(coords.Coords())
 		if !ok {
-			s.Logger.Warn(tile.ErrPositionIsOccupied)
+			s.Logger().Warn(tile.ErrPositionIsOccupied)
 			return
 		}
 		coordsObstruction := obstructed.GetTile(index)
 		if blueprintObstruction.Obstruction&coordsObstruction != 0 {
-			s.Logger.Warn(tile.ErrPositionIsOccupied)
+			s.Logger().Warn(tile.ErrPositionIsOccupied)
 			return
 		}
 	}
 
 	// place
-	deployed := s.Prototype.Clone(e.Blueprint)
-	s.Hierarchy.SetParent(deployed, s.Scene.Scene())
-	if owner, ok := s.Player.Owner().Get(e.By); ok {
-		s.Player.Owner().Set(deployed, owner)
+	deployed := s.Prototype().Clone(e.Blueprint)
+	s.Hierarchy().SetParent(deployed, s.Scene().Scene())
+	if owner, ok := s.Player().Owner().Get(e.By); ok {
+		s.Player().Owner().Set(deployed, owner)
 	}
-	s.Tile.Deployed().Set(deployed, tile.NewDeployed())
-	s.Inputs.LeftClick().Set(deployed, inputs.NewLeftClick(tile.NewClickEntityEvent()))
-	s.Tile.Pos().Set(deployed, tile.NewPos(e.Coords.Coords()))
-	events.Emit(s.Events, ui.HideUiEvent{})
+	s.Tile().Deployed().Set(deployed, tile.NewDeployed())
+	s.Inputs().LeftClick().Set(deployed, inputs.NewLeftClick(tile.NewClickEntityEvent()))
+	s.Tile().Pos().Set(deployed, tile.NewPos(e.Coords.Coords()))
+	events.Emit(s.Events(), ui.HideUiEvent{})
 }

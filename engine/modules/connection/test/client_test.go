@@ -32,25 +32,25 @@ func TestClient(t *testing.T) {
 		}
 	}()
 
-	if connections := len(s.Connection.Component().GetEntities()); connections != 0 {
+	if connections := len(s.Connection().Component().GetEntities()); connections != 0 {
 		t.Errorf("Expected 0 connection not %v", connections)
 		return
 	}
 
 	// connect
-	if err := s.Connection.Connect(s.Addr); err != nil {
+	if err := s.Connection().Connect(s.Addr); err != nil {
 		t.Errorf("Unexpected error when hosting: \"%v\"", err)
 		return
 	}
 
-	if connections := len(s.Connection.Component().GetEntities()); connections != 1 {
+	if connections := len(s.Connection().Component().GetEntities()); connections != 1 {
 		t.Errorf("Expected 1 connection not %v", connections)
 		return
 	}
 
 	// communication
 	s.Sleep()
-	connection, _ := s.Connection.Component().Get(s.Connection.Component().GetEntities()[0])
+	connection, _ := s.Connection().Component().Get(s.Connection().Component().GetEntities()[0])
 	var message any
 	select {
 	case message = <-connection.Conn().Messages():
@@ -69,7 +69,7 @@ func TestClient(t *testing.T) {
 
 	s.Sleep()
 
-	if connections := len(s.Connection.Component().GetEntities()); connections != 0 {
+	if connections := len(s.Connection().Component().GetEntities()); connections != 0 {
 		t.Errorf("Expected 0 connection not %v", connections)
 		return
 	}

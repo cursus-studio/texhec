@@ -1,9 +1,9 @@
 package internal
 
 import (
+	"engine"
 	"engine/modules/noise"
 	"engine/modules/seed"
-	"engine/services/logger"
 	"math"
 
 	"github.com/go-gl/mathgl/mgl64"
@@ -11,10 +11,10 @@ import (
 )
 
 type factory struct {
-	Logger logger.Logger `inject:"1"`
-	Seed   seed.Seed
-	Layers []noise.LayerConfig
-	Noises []noise.Noise
+	engine.EngineWorld `inject:""`
+	Seed               seed.Seed
+	Layers             []noise.LayerConfig
+	Noises             []noise.Noise
 }
 
 func NewFactory(c ioc.Dic, seed seed.Seed) noise.Factory {

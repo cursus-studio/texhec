@@ -1,17 +1,15 @@
 package client
 
 import (
+	"engine"
 	"engine/modules/connection"
-	"engine/modules/netsync"
 	"engine/modules/netsync/internal/clienttypes"
 	"engine/modules/netsync/internal/config"
 	"engine/modules/netsync/internal/servertypes"
 	"engine/modules/record"
-	"engine/modules/uuid"
 	"engine/services/datastructures"
 	"engine/services/ecs"
 	"engine/services/frames"
-	"engine/services/logger"
 	"errors"
 	"fmt"
 	"reflect"
@@ -34,17 +32,8 @@ type recordedPrediction struct {
 // - apply server event
 // - apply predicted event (starts and ends prediction)
 type Service struct {
+	engine.EngineWorld `inject:""`
 	config.Config
-
-	EventsBuilder events.Builder     `inject:"1"`
-	Events        events.Events      `inject:"1"`
-	World         ecs.World          `inject:"1"`
-	NetSync       netsync.Service    `inject:"1"`
-	Connection    connection.Service `inject:"1"`
-	Record        record.Service     `inject:"1"`
-	UUID          uuid.Service       `inject:"1"`
-
-	Logger logger.Logger `inject:"1"`
 
 	recordNextEvent    bool
 	predictions        []savedPrediction
@@ -89,7 +78,7 @@ func NewService(c ioc.Dic, config config.Config) *Service {
 			t.ListenTransparentEvent(a.(servertypes.TransparentEventDTO))
 		},
 	}
-	events.Listen(t.EventsBuilder, func(frames.FrameEvent) {
+	events.Listen(t.EventsBuilder(), func(frames.FrameEvent) {
 		t.loadConnections()
 		conn := t.getConnection()
 		if conn == nil {
@@ -101,7 +90,7 @@ func NewService(c ioc.Dic, config config.Config) *Service {
 		for len(t.toRemove) != 0 {
 			entity := t.toRemove[0]
 			t.toRemove = t.toRemove[1:]
-			t.World.RemoveEntity(entity)
+			t.World().RemoveEntity(entity)
 			t.listeners.Remove(entity)
 		}
 		for len(t.messagesFromServer) != 0 {
@@ -111,7 +100,7 @@ func NewService(c ioc.Dic, config config.Config) *Service {
 			messageType := reflect.TypeOf(message)
 			listener, ok := listeners[messageType]
 			if !ok {
-				t.Logger.Warn(fmt.Errorf("invalid listener of type '%v' called", messageType.String()))
+				t.Logger().Warn(fmt.Errorf("invalid listener of type '%v' called", messageType.String()))
 				_ = conn.Close()
 				return
 			}
@@ -119,8 +108,8 @@ func NewService(c ioc.Dic, config config.Config) *Service {
 		}
 	})
 
-	t.NetSync.Server().AddDirtySet(t.dirtySet)
-	t.Connection.Component().AddDirtySet(t.dirtySet)
+	t.NetSync().Server().AddDirtySet(t.dirtySet)
+	t.Connection().Component().AddDirtySet(t.dirtySet)
 
 	return t
 }
@@ -141,19 +130,19 @@ func (t *Service) BeforeEventRecord(event any) {
 	}
 
 	if len(t.predictions) > t.MaxPredictions {
-		t.Logger.Warn(ErrExceededPredictions)
+		t.Logger().Warn(ErrExceededPredictions)
 		t.undoPredictions()
 		// reconciliate
 		if err := clientConn.Send(clienttypes.FetchStateDTO{}); err != nil {
-			t.Logger.Warn(err)
+			t.Logger().Warn(err)
 		}
 		return
 	}
 
-	t.recordingID = t.Record.UUID().StartBackwardsRecording(t.RecordConfig)
+	t.recordingID = t.Record().UUID().StartBackwardsRecording(t.RecordConfig)
 	t.recordedPrediction = &recordedPrediction{
 		PredictedEvent: clienttypes.PredictedEvent{
-			ID:    t.UUID.NewUUID(),
+			ID:    t.UUID().NewUUID(),
 			Event: event,
 		},
 	}
@@ -172,7 +161,7 @@ func (t *Service) BeforeEvent(event any) {
 
 	dto := clienttypes.EmitEventDTO(t.recordedPrediction.PredictedEvent)
 	if err := clientConn.Send(dto); err != nil {
-		t.Logger.Warn(err)
+		t.Logger().Warn(err)
 	}
 }
 
@@ -186,7 +175,7 @@ func (t *Service) AfterEvent(event any) {
 		return
 	}
 
-	recording, ok := t.Record.UUID().Stop(t.recordingID)
+	recording, ok := t.Record().UUID().Stop(t.recordingID)
 	t.recordingID = 0
 	if !ok {
 		return
@@ -212,7 +201,7 @@ func (t *Service) OnTransparentEvent(event any) {
 
 	t.sentTransparentEvent = true
 	err := conn.Send(clienttypes.TransparentEventDTO{Event: event})
-	t.Logger.Warn(err)
+	t.Logger().Warn(err)
 }
 
 func (t *Service) ListenSendChange(dto servertypes.SendChangeDTO) {
@@ -230,13 +219,13 @@ func (t *Service) ListenSendChange(dto servertypes.SendChangeDTO) {
 			}
 		}
 		t.applyPredictedEvents(reEmitedEvents)
-		t.Logger.Warn(dto.Error)
+		t.Logger().Warn(dto.Error)
 		return
 	}
 	// check is event predicted. if is then remove first event from queue
 	// if isn't then undo predictions, emit server event(as not recordable), emit all predicted events again
 	if len(t.predictions) == 0 {
-		t.Record.UUID().Apply(t.RecordConfig, dto.Changes)
+		t.Record().UUID().Apply(t.RecordConfig, dto.Changes)
 		return
 	}
 	if t.predictions[0].PredictedEvent.ID == dto.EventID {
@@ -255,7 +244,7 @@ func (t *Service) ListenSendChange(dto servertypes.SendChangeDTO) {
 		// }
 	}
 	predictedEvents := t.undoPredictions()
-	t.Record.UUID().Apply(t.RecordConfig, dto.Changes)
+	t.Record().UUID().Apply(t.RecordConfig, dto.Changes)
 	// reApplied events are events without applied event
 	reEmitedEvents := make([]clienttypes.PredictedEvent, 0, len(predictedEvents))
 	for _, predictedEvent := range predictedEvents {
@@ -274,12 +263,12 @@ func (t *Service) ListenSendState(dto servertypes.SendStateDTO) {
 	}
 	if dto.Error != nil {
 		t.predictions = nil
-		t.Logger.Warn(dto.Error)
+		t.Logger().Warn(dto.Error)
 		_ = conn.Close()
 		return
 	}
 	t.predictions = nil
-	t.Record.UUID().Apply(t.RecordConfig, dto.State)
+	t.Record().UUID().Apply(t.RecordConfig, dto.State)
 }
 
 func (t *Service) ListenTransparentEvent(dto servertypes.TransparentEventDTO) {
@@ -288,11 +277,11 @@ func (t *Service) ListenTransparentEvent(dto servertypes.TransparentEventDTO) {
 		return
 	}
 	if dto.Error != nil {
-		t.Logger.Warn(dto.Error)
+		t.Logger().Warn(dto.Error)
 		return
 	}
 	t.receivedTransparentEvent = true
-	events.EmitAny(t.Events, dto.Event)
+	events.EmitAny(t.Events(), dto.Event)
 }
 
 // private methods
@@ -303,25 +292,25 @@ func (t *Service) loadConnections() {
 		return
 	}
 	if len(ei) != 1 {
-		t.Logger.Warn(errors.New("has more than one server"))
+		t.Logger().Warn(errors.New("has more than one server"))
 		return
 	}
 	entity := ei[0]
 	if ok := t.listeners.Get(entity); ok {
 		return
 	}
-	if _, ok := t.NetSync.Server().Get(entity); !ok {
+	if _, ok := t.NetSync().Server().Get(entity); !ok {
 		return
 	}
 	t.listeners.Add(entity)
-	comp, ok := t.Connection.Component().Get(entity)
+	comp, ok := t.Connection().Component().Get(entity)
 	if !ok {
 		return
 	}
 	conn := comp.Conn()
 	messages := conn.Messages()
 	if err := conn.Send(clienttypes.FetchStateDTO{}); err != nil {
-		t.Logger.Warn(err)
+		t.Logger().Warn(err)
 		return
 	}
 	go func(entity ecs.EntityID) {
@@ -349,7 +338,7 @@ func (t *Service) undoPredictions() []clienttypes.PredictedEvent {
 		// snapshots = append([]record.UUIDRecording{prediction.Snapshot}, snapshots...)
 		snapshots = append(snapshots, prediction.Snapshot)
 	}
-	t.Record.UUID().Apply(t.RecordConfig, snapshots...)
+	t.Record().UUID().Apply(t.RecordConfig, snapshots...)
 	t.predictions = nil
 	return unDoneEvents
 }
@@ -357,15 +346,15 @@ func (t *Service) undoPredictions() []clienttypes.PredictedEvent {
 func (t *Service) applyPredictedEvents(predictedEvents []clienttypes.PredictedEvent) {
 	for _, predictedEvent := range predictedEvents[1:] {
 		t.recordNextEvent = false
-		events.EmitAny(t.Events, predictedEvent.Event)
+		events.EmitAny(t.Events(), predictedEvent.Event)
 	}
 }
 
 func (t *Service) getConnection() connection.Conn {
 	var conn connection.Conn
-	if entities := t.NetSync.Server().GetEntities(); len(entities) == 1 {
+	if entities := t.NetSync().Server().GetEntities(); len(entities) == 1 {
 		server := entities[0]
-		comp, ok := t.Connection.Component().Get(server)
+		comp, ok := t.Connection().Component().Get(server)
 		if ok {
 			conn = comp.Conn()
 		}

@@ -14,18 +14,18 @@ func TestHost(t *testing.T) {
 		return
 	}
 
-	if listeners := len(s.Connection.Listener().GetEntities()); listeners != 0 {
+	if listeners := len(s.Connection().Listener().GetEntities()); listeners != 0 {
 		t.Errorf("Expected 0 listener not %v", listeners)
 		return
 	}
 
 	// host
-	if err := s.Connection.Host(s.Addr); err != nil {
+	if err := s.Connection().Host(s.Addr); err != nil {
 		t.Errorf("Unexpected error when hosting: \"%v\"", err)
 		return
 	}
 
-	if listeners := len(s.Connection.Listener().GetEntities()); listeners != 1 {
+	if listeners := len(s.Connection().Listener().GetEntities()); listeners != 1 {
 		t.Errorf("Expected 1 listener not %v", listeners)
 		return
 	}
@@ -39,7 +39,7 @@ func TestHost(t *testing.T) {
 
 	s.Sleep()
 
-	if connections := len(s.Connection.Component().GetEntities()); connections != 1 {
+	if connections := len(s.Connection().Component().GetEntities()); connections != 1 {
 		t.Errorf("Expected 1 connection not %v", connections)
 		return
 	}
@@ -54,11 +54,11 @@ func TestHost(t *testing.T) {
 
 	s.Sleep()
 
-	if connections := len(s.Connection.Component().GetEntities()); connections != 0 {
+	if connections := len(s.Connection().Component().GetEntities()); connections != 0 {
 		t.Errorf("Expected 0 connection not %v", connections)
 		return
 	}
 
-	listener, _ := s.Connection.Listener().Get(s.Connection.Listener().GetEntities()[0])
+	listener, _ := s.Connection().Listener().Get(s.Connection().Listener().GetEntities()[0])
 	_ = listener.Listener().Close()
 }

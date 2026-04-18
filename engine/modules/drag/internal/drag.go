@@ -1,9 +1,8 @@
 package internal
 
 import (
-	"engine/modules/camera"
+	"engine"
 	"engine/modules/drag"
-	"engine/modules/transform"
 
 	"github.com/go-gl/mathgl/mgl32"
 	"github.com/ogiusek/events"
@@ -11,9 +10,7 @@ import (
 )
 
 type s struct {
-	EventsBuilder events.Builder    `inject:"1"`
-	Transform     transform.Service `inject:"1"`
-	Camera        camera.Service    `inject:"1"`
+	engine.EngineWorld `inject:""`
 }
 
 func NewSystem(c ioc.Dic) drag.System {
@@ -21,22 +18,22 @@ func NewSystem(c ioc.Dic) drag.System {
 }
 
 func (s s) Register() error {
-	events.Listen(s.EventsBuilder, func(event drag.DraggableEvent) {
+	events.Listen(s.EventsBuilder(), func(event drag.DraggableEvent) {
 		entity := event.Entity
 
-		pos, _ := s.Transform.AbsolutePos().Get(entity)
-		rot, _ := s.Transform.AbsoluteRotation().Get(entity)
+		pos, _ := s.Transform().AbsolutePos().Get(entity)
+		rot, _ := s.Transform().AbsoluteRotation().Get(entity)
 
-		fromRay := s.Camera.ShootRay(event.Drag.Camera, event.Drag.From)
-		toRay := s.Camera.ShootRay(event.Drag.Camera, event.Drag.To)
+		fromRay := s.Camera().ShootRay(event.Drag.Camera, event.Drag.From)
+		toRay := s.Camera().ShootRay(event.Drag.Camera, event.Drag.To)
 
 		posDiff := toRay.Pos.Sub(fromRay.Pos)
 		pos.Pos = pos.Pos.Add(posDiff)
-		s.Transform.AbsolutePos().Set(entity, pos)
+		s.Transform().AbsolutePos().Set(entity, pos)
 
 		rotDiff := mgl32.QuatBetweenVectors(toRay.Direction, fromRay.Direction)
 		rot.Rotation = rot.Rotation.Mul(rotDiff)
-		s.Transform.AbsoluteRotation().Set(entity, rot)
+		s.Transform().AbsoluteRotation().Set(entity, rot)
 	})
 	return nil
 }

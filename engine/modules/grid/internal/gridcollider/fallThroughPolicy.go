@@ -1,11 +1,11 @@
 package gridcollider
 
 import (
+	"engine"
 	"engine/modules/collider"
 	"engine/modules/grid"
 	"engine/modules/inputs"
 	"engine/services/ecs"
-	"engine/services/logger"
 
 	"github.com/ogiusek/events"
 	"github.com/ogiusek/ioc/v2"
@@ -32,12 +32,8 @@ func (ClickEvent[Tile]) SetTarget(target inputs.Target) inputs.EventTargetSetter
 //
 
 type squareFallThroughPolicy[Tile grid.TileConstraint] struct {
-	EventsBuilder events.Builder     `inject:"1"`
-	Events        events.Events      `inject:"1"`
-	World         ecs.World          `inject:"1"`
-	Grid          grid.Service[Tile] `inject:"1"`
-	Inputs        inputs.Service     `inject:"1"`
-	Logger        logger.Logger      `inject:"1"`
+	engine.EngineWorld `inject:""`
+	Grid               grid.Service[Tile] `inject:""`
 
 	zero          Tile
 	dirtyEntities ecs.DirtySet
@@ -54,9 +50,9 @@ func NewColliderWithPolicy[Tile grid.TileConstraint](
 	s.hoverEvent = hoverEvent
 
 	s.Grid.Component().AddDirtySet(s.dirtyEntities)
-	s.Inputs.LeftClick().BeforeGet(s.BeforeGet)
+	s.Inputs().LeftClick().BeforeGet(s.BeforeGet)
 
-	events.Listen(s.EventsBuilder, s.OnHover)
+	events.Listen(s.EventsBuilder(), s.OnHover)
 
 	return s
 }
@@ -64,11 +60,11 @@ func NewColliderWithPolicy[Tile grid.TileConstraint](
 func (t *squareFallThroughPolicy[Tile]) BeforeGet() {
 	entities := t.dirtyEntities.Get()
 	for _, entity := range entities {
-		if !t.World.EntityExists(entity) {
+		if !t.World().EntityExists(entity) {
 			continue
 		}
-		t.Inputs.Hover().Set(entity, inputs.NewHoverComponent(HoverEvent[Tile]{}))
-		t.Inputs.LeftClick().Set(entity, inputs.NewLeftClick(ClickEvent[Tile]{}))
+		t.Inputs().Hover().Set(entity, inputs.NewHoverComponent(HoverEvent[Tile]{}))
+		t.Inputs().LeftClick().Set(entity, inputs.NewLeftClick(ClickEvent[Tile]{}))
 	}
 }
 
@@ -115,5 +111,5 @@ func (t *squareFallThroughPolicy[Tile]) OnHover(e HoverEvent[Tile]) {
 		return
 	}
 	event := t.hoverEvent(e.Target.Entity, index)
-	events.EmitAny(t.Events, event)
+	events.EmitAny(t.Events(), event)
 }

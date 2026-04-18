@@ -1,6 +1,7 @@
 package test
 
 import (
+	"engine"
 	"engine/modules/noise"
 	"engine/modules/noise/internal"
 	noisepkg "engine/modules/noise/pkg"
@@ -14,9 +15,9 @@ import (
 )
 
 type Setup struct {
-	Noise noise.Service `inject:"1"`
-	T     *testing.T
-	Layer noise.LayerConfig
+	engine.EngineWorld `inject:""`
+	T                  *testing.T
+	Layer              noise.LayerConfig
 }
 
 func NewSetup(t *testing.T) Setup {

@@ -1,8 +1,8 @@
 package internal
 
 import (
+	"engine"
 	"engine/modules/assets"
-	"engine/services/logger"
 	"fmt"
 	"strings"
 
@@ -10,8 +10,8 @@ import (
 )
 
 type extensions struct {
-	Logger     logger.Logger `inject:"1"`
-	extensions map[string]func(assets.PathComponent) (assets.Asset, error)
+	engine.EngineWorld `inject:""`
+	extensions         map[string]func(assets.PathComponent) (assets.Asset, error)
 }
 
 func NewExtensions(c ioc.Dic) *extensions {
@@ -26,7 +26,7 @@ func (s *extensions) Register(
 ) {
 	extension = strings.Trim(extension, ".")
 	if _, ok := s.extensions[extension]; ok {
-		s.Logger.Warn(fmt.Errorf("extension \"%v\" is already taken", extension))
+		s.Logger().Warn(fmt.Errorf("extension \"%v\" is already taken", extension))
 		return
 	}
 	s.extensions[extension] = dispatcher

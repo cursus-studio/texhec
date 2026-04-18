@@ -23,7 +23,7 @@ func TestNoisesDistributions(t *testing.T) {
 		},
 	}
 	for testName, noiseAdd := range tests {
-		noise := noiseAdd(s.Noise.NewNoise(seed.New(1)))
+		noise := noiseAdd(s.Noise().NewNoise(seed.New(1)))
 		s.TestDistribution(testName, noise.Build())
 	}
 }
