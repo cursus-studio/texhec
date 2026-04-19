@@ -3,12 +3,8 @@ package test
 import (
 	"encoding/binary"
 	"engine"
-	connectionpkg "engine/modules/connection/pkg"
-	hierarchypkg "engine/modules/hierarchy/pkg"
-	"engine/services/clock"
+	"engine/mock"
 	"engine/services/codec"
-	"engine/services/ecs"
-	"engine/services/logger"
 	"net"
 	"sync"
 	"time"
@@ -32,12 +28,7 @@ type Setup struct {
 
 func NewSetup() Setup {
 	c := ioc.NewContainer(
-		logger.Pkg(logger.NewConfig(true, func(c ioc.Dic, message string) { print(message) })),
-		clock.Pkg(time.RFC3339Nano),
-		ecs.Pkg,
-		codec.Pkg,
-		hierarchypkg.Pkg,
-		connectionpkg.Pkg,
+		mock.Pkg,
 		func(b ioc.Builder) {
 			ioc.Wrap(b, func(c ioc.Dic, builder codec.Builder) {
 				builder.Register(

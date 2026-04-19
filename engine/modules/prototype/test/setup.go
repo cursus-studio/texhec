@@ -2,11 +2,9 @@ package test
 
 import (
 	"engine"
+	"engine/mock"
 	prototypepkg "engine/modules/prototype/pkg"
-	"engine/services/clock"
 	"engine/services/ecs"
-	"engine/services/logger"
-	"time"
 
 	"github.com/ogiusek/ioc/v2"
 )
@@ -31,10 +29,7 @@ type Setup struct {
 
 func NewSetup() Setup {
 	c := ioc.NewContainer(
-		logger.Pkg(logger.NewConfig(true, func(c ioc.Dic, message string) { print(message) })),
-		clock.Pkg(time.RFC3339Nano),
-		ecs.Pkg,
-		prototypepkg.Pkg,
+		mock.Pkg,
 		prototypepkg.PkgT[Cloned1Component](),
 		prototypepkg.PkgT[Cloned2Component](),
 	)

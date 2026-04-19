@@ -16,13 +16,13 @@ func (a *asset) Release() {
 //
 
 type Definitions struct {
-	Asset ecs.EntityID `path:"asset.png"`
+	Asset ecs.EntityID `path:"asset.mocked"`
 }
 
 func TestAssets(t *testing.T) {
 	setup := NewSetup()
 	fetched := false
-	setup.Assets().Register("png", func(path assets.PathComponent) (assets.Asset, error) {
+	setup.Assets().Register("mocked", func(path assets.PathComponent) (assets.Asset, error) {
 		fetched = true
 		return &asset{}, nil
 	})

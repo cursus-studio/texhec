@@ -1,12 +1,9 @@
 package test
 
 import (
+	"engine/mock"
 	"engine/modules/hierarchy"
-	"engine/modules/hierarchy/pkg"
-	"engine/services/clock"
 	"engine/services/ecs"
-	"engine/services/logger"
-	"time"
 
 	"github.com/ogiusek/ioc/v2"
 )
@@ -18,10 +15,7 @@ type Setup struct {
 
 func NewSetup() Setup {
 	c := ioc.NewContainer(
-		logger.Pkg(logger.NewConfig(true, func(c ioc.Dic, message string) { print(message) })),
-		clock.Pkg(time.RFC3339Nano),
-		ecs.Pkg,
-		hierarchypkg.Pkg,
+		mock.Pkg,
 	)
 	return Setup{
 		ioc.Get[ecs.World](c),

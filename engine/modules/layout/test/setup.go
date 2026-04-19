@@ -2,14 +2,9 @@ package test
 
 import (
 	"engine"
-	hierarchypkg "engine/modules/hierarchy/pkg"
-	layoutpkg "engine/modules/layout/pkg"
-	transformpkg "engine/modules/transform/pkg"
-	"engine/services/clock"
+	"engine/mock"
 	"engine/services/ecs"
-	"engine/services/logger"
 	"testing"
-	"time"
 
 	"github.com/go-gl/mathgl/mgl32"
 	"github.com/ogiusek/ioc/v2"
@@ -22,12 +17,7 @@ type Setup struct {
 
 func NewSetup(t *testing.T) Setup {
 	c := ioc.NewContainer(
-		logger.Pkg(logger.NewConfig(true, func(c ioc.Dic, message string) { print(message) })),
-		clock.Pkg(time.RFC3339Nano),
-		ecs.Pkg,
-		hierarchypkg.Pkg,
-		transformpkg.Pkg,
-		layoutpkg.Pkg,
+		mock.Pkg,
 	)
 	setup := ioc.GetServices[Setup](c)
 	setup.T = t

@@ -2,14 +2,11 @@ package test
 
 import (
 	"engine"
+	"engine/mock"
 	"engine/modules/noise"
 	"engine/modules/noise/internal"
-	noisepkg "engine/modules/noise/pkg"
-	"engine/services/clock"
-	"engine/services/logger"
 	"math"
 	"testing"
-	"time"
 
 	"github.com/ogiusek/ioc/v2"
 )
@@ -22,9 +19,7 @@ type Setup struct {
 
 func NewSetup(t *testing.T) Setup {
 	c := ioc.NewContainer(
-		logger.Pkg(logger.NewConfig(true, func(c ioc.Dic, message string) { print(message) })),
-		clock.Pkg(time.RFC3339Nano),
-		noisepkg.Pkg,
+		mock.Pkg,
 	)
 	setup := ioc.GetServices[Setup](c)
 	setup.T = t

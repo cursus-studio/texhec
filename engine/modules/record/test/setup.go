@@ -1,15 +1,11 @@
 package test
 
 import (
+	"engine/mock"
 	"engine/modules/record"
-	recordpkg "engine/modules/record/pkg"
 	"engine/modules/uuid"
-	uuidpkg "engine/modules/uuid/pkg"
-	"engine/services/clock"
 	"engine/services/codec"
 	"engine/services/ecs"
-	"engine/services/logger"
-	"time"
 
 	"github.com/ogiusek/ioc/v2"
 )
@@ -30,12 +26,7 @@ type Setup struct {
 
 func NewSetup() Setup {
 	c := ioc.NewContainer(
-		logger.Pkg(logger.NewConfig(true, func(c ioc.Dic, message string) { print(message) })),
-		clock.Pkg(time.RFC3339Nano),
-		ecs.Pkg,
-		codec.Pkg,
-		uuidpkg.Pkg,
-		recordpkg.Pkg,
+		mock.Pkg,
 		func(b ioc.Builder) {
 			ioc.Wrap(b, func(c ioc.Dic, b codec.Builder) {
 				b.
