@@ -20,21 +20,8 @@ func NewDeploy(deployable ...ecs.EntityID) Component {
 
 //
 
-type LinkComponent struct {
-	Deploy ecs.EntityID
-}
-
-func NewLink(deploy ecs.EntityID) LinkComponent {
-	return LinkComponent{
-		deploy,
-	}
-}
-
-//
-
 type Service interface {
 	Component() ecs.ComponentsArray[Component]
-	Link() ecs.ComponentsArray[LinkComponent]
 
 	// deploy differs from execute event by who deploys.
 	// execute adds costs and everything where deploy just deploys without any costs (its deployed by system)

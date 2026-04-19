@@ -76,7 +76,11 @@ type Tiles struct {
 }
 
 type Objects struct {
-	Farm ecs.EntityID `path:"constructs/farm.png" name:"farm" object:"construct" obstruction:"lowland" size:"2x2"`
+	Farm    ecs.EntityID `path:"constructs/farm.png" name:"farm" object:"construct" obstruction:"lowland" size:"2x2"`
+	HouseT1 ecs.EntityID `path:"constructs/houseT1.png" name:"house t1" object:"construct" obstruction:"lowland" size:"1x1"`
+	HouseT2 ecs.EntityID `path:"constructs/houseT2.png" name:"house t2" object:"construct" obstruction:"lowland" size:"2x2"`
+	HouseT3 ecs.EntityID `path:"constructs/houseT3.png" name:"house t3" object:"construct" obstruction:"lowland" size:"3x3"`
+	HouseT4 ecs.EntityID `path:"constructs/houseT4.png" name:"house t4" object:"construct" obstruction:"lowland" size:"4x4"`
 
 	Tank ecs.EntityID `path:"units/tank.png" name:"tank" object:"unit" obstruction:"lowland" speed:"2"`
 }

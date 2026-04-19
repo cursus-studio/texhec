@@ -30,21 +30,17 @@ func NewSystem(c ioc.Dic) ecs.SystemRegister {
 }
 
 func (s *system) OnClickEntity(e tile.ClickEntityEvent) {
-	link, ok := s.Deploy().Link().Get(e.Entity)
+	link, ok := s.Metadata().Link().Get(e.Entity)
 	if !ok {
 		s.Logger().Warn(errors.New("expected entity to have link component"))
 		return
 	}
-	name, ok := s.Metadata().Name().Get(link.Deploy)
+	name, ok := s.Metadata().Name().Get(link.Entity)
 	if !ok {
 		s.Logger().Warn(errors.New("expected link to have name component"))
 		return
 	}
-	deployed, ok := s.Deploy().Component().Get(link.Deploy)
-	if !ok {
-		s.Logger().Warn(errors.New("expected link to have deploy component"))
-		return
-	}
+	deployed, _ := s.Deploy().Component().Get(link.Entity)
 	owner, ok := s.Player().Owner().Get(e.Entity)
 	if !ok {
 		s.Logger().Warn(errors.New("object without owner cannot build"))
@@ -62,8 +58,13 @@ func (s *system) OnClickEntity(e tile.ClickEntityEvent) {
 	}
 	btns := []Button{
 		{fmt.Sprintf("%v's %v", playerName.Name, name.Name), nil},
-		{"Can deploy", nil},
 	}
+
+	// deploy
+	if len(deployed.Deployable) == 0 {
+		goto skipDeploy
+	}
+	btns = append(btns, Button{"Can deploy", nil})
 	for _, deployed := range deployed.Deployable {
 		name, ok := s.Metadata().Name().Get(deployed)
 		if !ok {
@@ -73,6 +74,7 @@ func (s *system) OnClickEntity(e tile.ClickEntityEvent) {
 		btn := Button{fmt.Sprintf("%v", name.Name), deploy.NewSelectEvent(e.Entity, deployed)}
 		btns = append(btns, btn)
 	}
+skipDeploy:
 	if _, ok := s.Tile().Speed().Get(e.Entity); ok {
 		btns = append(btns, Button{"Move", pathfind.NewSelectEvent(e.Entity)})
 	}

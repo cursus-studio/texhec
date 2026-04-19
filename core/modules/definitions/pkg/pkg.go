@@ -73,14 +73,8 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 		def, err := registry.GetRegistry[definitions.Objects](world.Registry())
 		world.Logger().Warn(err)
 
-		{
-			world.Deploy().Component().Set(def.Tank, deploy.NewDeploy(def.Tank, def.Farm))
-			world.Deploy().Link().Set(def.Tank, deploy.NewLink(def.Tank))
-		}
-		{
-			world.Deploy().Component().Set(def.Farm, deploy.NewDeploy(def.Tank, def.Farm))
-			world.Deploy().Link().Set(def.Farm, deploy.NewLink(def.Farm))
-		}
+		world.Deploy().Component().Set(def.Tank, deploy.NewDeploy(def.Tank, def.Farm))
+		world.Deploy().Component().Set(def.Farm, deploy.NewDeploy(def.Tank, def.Farm, def.HouseT1, def.HouseT2, def.HouseT3, def.HouseT4))
 		return def
 	})
 	ioc.Register(b, func(c ioc.Dic) definitions.Hud {

@@ -22,14 +22,12 @@ type service struct {
 	gamescenes.GameWorld `inject:""`
 
 	component ecs.ComponentsArray[deploy.Component]
-	link      ecs.ComponentsArray[deploy.LinkComponent]
 }
 
 func NewService(c ioc.Dic) deploy.Service {
 	s := ioc.GetServices[*service](c)
 
 	s.component = ecs.GetComponentsArray[deploy.Component](s.World())
-	s.link = ecs.GetComponentsArray[deploy.LinkComponent](s.World())
 
 	events.Listen(s.EventsBuilder(), s.Unselect)
 	events.Listen(s.EventsBuilder(), s.Execute)
@@ -40,7 +38,6 @@ func NewService(c ioc.Dic) deploy.Service {
 }
 
 func (s *service) Component() ecs.ComponentsArray[deploy.Component] { return s.component }
-func (s *service) Link() ecs.ComponentsArray[deploy.LinkComponent]  { return s.link }
 
 func (s *service) Deploy(
 	blueprint,
