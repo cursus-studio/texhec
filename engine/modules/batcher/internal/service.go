@@ -5,7 +5,6 @@ import (
 	"engine/modules/batcher"
 	"engine/services/ecs"
 	"engine/services/frames"
-	"time"
 
 	"github.com/ogiusek/events"
 	"github.com/ogiusek/ioc/v2"
@@ -14,19 +13,16 @@ import (
 type Service struct {
 	engine.EngineWorld `inject:""`
 
-	workers    int
-	timeBudget time.Duration
-	tasks      []batcher.Task
+	workers int
+	tasks   []batcher.Task
 }
 
 func NewService(
 	c ioc.Dic,
 	workers int,
-	frameLoadingBudget time.Duration,
 ) *Service {
 	s := ioc.GetServices[*Service](c)
 	s.workers = workers
-	s.timeBudget = frameLoadingBudget
 	return s
 }
 
@@ -55,8 +51,7 @@ func (s *Service) Listen(frames.FrameEvent) {
 		s.WarmUp().WarmUp()
 	}
 
-	start := s.Clock().Now()
-	for s.Clock().Now().Sub(start) < s.timeBudget {
+	for s.Frames().FrameBudgetLeft() > 0 {
 		task.Step()
 		if task.Progress() != 1 {
 			continue

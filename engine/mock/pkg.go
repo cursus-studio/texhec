@@ -19,6 +19,7 @@ import (
 	registrypkg "engine/modules/registry/pkg"
 	renderpkg "engine/modules/render/pkg"
 	scenepkg "engine/modules/scene/pkg"
+	smoothpkg "engine/modules/smooth/pkg"
 	"engine/modules/text"
 	textpkg "engine/modules/text/pkg"
 	transformpkg "engine/modules/transform/pkg"
@@ -30,11 +31,11 @@ import (
 	"engine/services/console"
 	"engine/services/datastructures"
 	"engine/services/ecs"
+	"engine/services/frames"
 	"engine/services/graphics/texturearray"
 	"engine/services/logger"
 	"engine/services/media/window"
 	"engine/services/runtime"
-	"time"
 
 	"github.com/go-gl/mathgl/mgl32"
 	"github.com/ogiusek/ioc/v2"
@@ -42,10 +43,9 @@ import (
 
 var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 	pkgs := []ioc.Pkg{
-		ecs.Pkg,
 		assetspkg.Pkg,
 		audiopkg.Pkg,
-		batcherpkg.Pkg(batcherpkg.NewConfig(1, time.Second)),
+		batcherpkg.Pkg,
 		camerapkg.Pkg,
 		colliderpkg.Pkg,
 		connectionpkg.Pkg,
@@ -61,6 +61,7 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 		registrypkg.Pkg,
 		renderpkg.Pkg,
 		scenepkg.Pkg,
+		smoothpkg.Pkg,
 		textpkg.Pkg(textpkg.NewConfig(
 			func(c ioc.Dic) text.FontFamilyComponent {
 				return text.FontFamilyComponent{}
@@ -108,6 +109,11 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 		clock.Pkg,
 		codec.Pkg,
 		console.Pkg,
+		ecs.Pkg,
+		// graphics {
+		texturearray.Pkg,
+		// }
+		frames.Pkg(frames.NewConfig(1, 60)),
 		logger.Pkg(logger.NewConfig(
 			true,
 			func(c ioc.Dic) func(message string) { return func(message string) { print(message) } },
@@ -115,7 +121,6 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 		runtime.Pkg,
 
 		window.Pkg(window.NewConfig(nil, nil)),
-		texturearray.Pkg,
 	}
 	for _, pkg := range pkgs {
 		pkg(b)

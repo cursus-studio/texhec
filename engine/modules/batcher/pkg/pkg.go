@@ -3,32 +3,16 @@ package batcherpkg
 import (
 	"engine/modules/batcher"
 	"engine/modules/batcher/internal"
-	"time"
+	"runtime"
 
 	"github.com/ogiusek/ioc/v2"
 )
 
-type config struct {
-	workers            int
-	frameLoadingBudget time.Duration
-}
-
-func NewConfig(
-	workers int,
-	frameLoadingBudget time.Duration,
-) config {
-	return config{
-		workers,
-		frameLoadingBudget,
-	}
-}
-
-var Pkg = ioc.NewPkgT(func(b ioc.Builder, config config) {
+var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 	ioc.Register(b, func(c ioc.Dic) *internal.Service {
 		return internal.NewService(
 			c,
-			config.workers,
-			config.frameLoadingBudget,
+			max(1, runtime.NumCPU()-1),
 		)
 	})
 

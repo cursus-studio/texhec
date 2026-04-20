@@ -6,3 +6,5 @@ import (
 
 type StartSystem ecs.SystemRegister
 type StopSystem ecs.SystemRegister
+
+type Service any

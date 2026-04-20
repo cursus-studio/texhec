@@ -19,6 +19,7 @@ import (
 	"engine/modules/registry"
 	"engine/modules/render"
 	"engine/modules/scene"
+	"engine/modules/smooth"
 	"engine/modules/text"
 	"engine/modules/transform"
 	"engine/modules/transition"
@@ -28,6 +29,7 @@ import (
 	"engine/services/codec"
 	"engine/services/console"
 	"engine/services/ecs"
+	"engine/services/frames"
 	"engine/services/graphics/texturearray"
 	"engine/services/logger"
 	"engine/services/media/window"
@@ -38,7 +40,10 @@ import (
 )
 
 type EngineWorld struct {
-	World      ioc.Lazy[ecs.World]          `inject:""`
+	World         ioc.Lazy[ecs.World]      `inject:""`
+	EventsBuilder ioc.Lazy[events.Builder] `inject:""`
+	Events        ioc.Lazy[events.Events]  `inject:""`
+
 	Assets     ioc.Lazy[assets.Service]     `inject:""`
 	Audio      ioc.Lazy[audio.Service]      `inject:""`
 	Batcher    ioc.Lazy[batcher.Service]    `inject:""`
@@ -57,6 +62,7 @@ type EngineWorld struct {
 	Registry   ioc.Lazy[registry.Service]   `inject:""`
 	Render     ioc.Lazy[render.Service]     `inject:""`
 	Scene      ioc.Lazy[scene.Service]      `inject:""`
+	Smooth     ioc.Lazy[smooth.Service]     `inject:""`
 	Text       ioc.Lazy[text.Service]       `inject:""`
 	Transform  ioc.Lazy[transform.Service]  `inject:""`
 	Transition ioc.Lazy[transition.Service] `inject:""`
@@ -66,12 +72,11 @@ type EngineWorld struct {
 	Clock   ioc.Lazy[clock.Clock]     `inject:""`
 	Codec   ioc.Lazy[codec.Codec]     `inject:""`
 	Console ioc.Lazy[console.Console] `inject:""`
-	Logger  ioc.Lazy[logger.Logger]   `inject:""`
-	Runtime ioc.Lazy[runtime.Runtime] `inject:""`
-
-	EventsBuilder ioc.Lazy[events.Builder] `inject:""`
-	Events        ioc.Lazy[events.Events]  `inject:""`
-
-	Window              ioc.Lazy[window.Api]           `inject:""`
+	Frames  ioc.Lazy[frames.Frames]   `inject:""`
+	// graphics {
 	TextureArrayFactory ioc.Lazy[texturearray.Factory] `inject:""`
+	// }
+	Logger  ioc.Lazy[logger.Logger]   `inject:""`
+	Window  ioc.Lazy[window.Api]      `inject:""`
+	Runtime ioc.Lazy[runtime.Runtime] `inject:""`
 }

@@ -13,6 +13,9 @@ var (
 )
 
 type Frames interface {
+	FrameBudget() time.Duration
+	FrameBudgetLeft() time.Duration
+
 	Run() error
 	Stop()
 }
@@ -21,34 +24,44 @@ type frames struct {
 	Running bool
 	TPS,
 	FPS int
+
+	TickDuration,
+	FrameDuration time.Duration
+
+	LastFrameTime time.Time
+
 	TickProgress time.Duration
 	Events       events.Events
 	Clock        clock.Clock
 }
 
+func (frames *frames) FrameBudget() time.Duration {
+	return frames.FrameDuration
+}
+func (frames *frames) FrameBudgetLeft() time.Duration {
+	return max(0, frames.LastFrameTime.Add(frames.FrameDuration).Sub(frames.Clock.Now()))
+}
+
 func (frames *frames) StartLoop() {
-	frameDuration := time.Second / time.Duration(frames.FPS)
-	tickDuration := time.Second / time.Duration(frames.TPS)
-	ticker := time.NewTicker(frameDuration)
+	ticker := time.NewTicker(frames.FrameDuration)
 	defer ticker.Stop()
 
-	var lastFrameTime time.Time
-	lastFrameTime = frames.Clock.Now()
+	frames.LastFrameTime = frames.Clock.Now()
 
 	for frames.Running {
 		<-ticker.C
-		currentTime := time.Now()
+		currentTime := frames.Clock.Now()
 
-		delta := currentTime.Sub(lastFrameTime)
+		delta := currentTime.Sub(frames.LastFrameTime)
+		frames.LastFrameTime = currentTime
+
 		frameEvent := NewFrameEvent(delta)
 		frames.TickProgress += delta
-		for frames.TickProgress > tickDuration {
-			frames.TickProgress -= tickDuration
-			events.Emit(frames.Events, TickEvent{tickDuration})
+		for frames.TickProgress > frames.TickDuration {
+			frames.TickProgress -= frames.TickDuration
+			events.Emit(frames.Events, TickEvent{frames.TickDuration})
 		}
 		events.Emit(frames.Events, frameEvent)
-
-		lastFrameTime = currentTime
 	}
 }
 

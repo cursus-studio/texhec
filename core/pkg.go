@@ -65,7 +65,6 @@ import (
 	"engine/services/media"
 	appruntime "engine/services/runtime"
 	"fmt"
-	"runtime"
 	"time"
 
 	"github.com/go-gl/gl/v4.5-core/gl"
@@ -153,7 +152,7 @@ func getDic() ioc.Dic {
 		codec.Pkg,
 		appruntime.Pkg,
 
-		assetspkg.Pkg("assets/"),
+		assetspkg.Pkg,
 		logger.Pkg(logger.NewConfig(
 			true,
 			func(c ioc.Dic) func(message string) { return ioc.Get[console.Console](c).PrintPermanent },
@@ -161,7 +160,6 @@ func getDic() ioc.Dic {
 		console.Pkg,
 		media.Pkg(media.NewConfig(window, ctx)),
 		frames.Pkg(frames.NewConfig(1, 60)),
-		// frames.Pkg(1, 10000),
 		scenepkg.Pkg,
 
 		gtexture.Pkg,
@@ -228,7 +226,7 @@ func getDic() ioc.Dic {
 		transformpkg.Pkg,
 		hierarchypkg.Pkg,
 		uuidpkg.Pkg,
-		batcherpkg.Pkg(batcherpkg.NewConfig(max(1, runtime.NumCPU()-1), time.Second/60)),
+		batcherpkg.Pkg,
 		connectionpkg.Pkg,
 		metadatapkg.Pkg,
 		netsyncpkg.Pkg(func() netsyncpkg.Config {
@@ -260,13 +258,10 @@ func getDic() ioc.Dic {
 		}()),
 		recordpkg.Pkg,
 		registrypkg.Pkg,
-		smoothpkg.Pkg(func() smoothpkg.Config {
-			config := smoothpkg.NewConfig()
-			smoothpkg.SmoothComponent[render.ColorComponent](config)
-			smoothpkg.SmoothComponent[tile.PosComponent](config)
-			smoothpkg.SmoothComponent[tile.RotComponent](config)
-			return config
-		}()),
+		smoothpkg.Pkg,
+		smoothpkg.PkgT[render.ColorComponent](),
+		smoothpkg.PkgT[tile.PosComponent](),
+		smoothpkg.PkgT[tile.RotComponent](),
 		transitionpkg.Pkg,
 		layoutpkg.Pkg,
 		loadingpkg.Pkg,
