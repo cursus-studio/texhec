@@ -1,6 +1,7 @@
 package service
 
 import (
+	"engine"
 	"engine/modules/render"
 	"engine/services/ecs"
 	"fmt"
@@ -11,19 +12,19 @@ import (
 )
 
 type service struct {
-	World             ecs.World `inject:"1"`
-	colorArray        ecs.ComponentsArray[render.ColorComponent]
-	meshArray         ecs.ComponentsArray[render.MeshComponent]
-	textureArray      ecs.ComponentsArray[render.TextureComponent]
-	textureFrameArray ecs.ComponentsArray[render.TextureFrameComponent]
+	engine.EngineWorld `inject:""`
+	colorArray         ecs.ComponentsArray[render.ColorComponent]
+	meshArray          ecs.ComponentsArray[render.MeshComponent]
+	textureArray       ecs.ComponentsArray[render.TextureComponent]
+	textureFrameArray  ecs.ComponentsArray[render.TextureFrameComponent]
 }
 
 func NewService(c ioc.Dic) render.Service {
 	s := ioc.GetServices[*service](c)
-	s.colorArray = ecs.GetComponentsArray[render.ColorComponent](s.World)
-	s.meshArray = ecs.GetComponentsArray[render.MeshComponent](s.World)
-	s.textureArray = ecs.GetComponentsArray[render.TextureComponent](s.World)
-	s.textureFrameArray = ecs.GetComponentsArray[render.TextureFrameComponent](s.World)
+	s.colorArray = ecs.GetComponentsArray[render.ColorComponent](s.World())
+	s.meshArray = ecs.GetComponentsArray[render.MeshComponent](s.World())
+	s.textureArray = ecs.GetComponentsArray[render.TextureComponent](s.World())
+	s.textureFrameArray = ecs.GetComponentsArray[render.TextureFrameComponent](s.World())
 
 	// defaults
 	s.colorArray.SetEmpty(render.NewColor(mgl32.Vec4{1, 1, 1, 1}))

@@ -21,10 +21,18 @@ func (format DateFormat) Format(date time.Time) string { return date.Format(form
 // impl
 
 type Clock interface {
+	GetDateFormat() DateFormat
+	SetDateFormat(DateFormat)
+
 	Now() time.Time
 }
 
-type clock struct{}
+type clock struct {
+	format DateFormat
+}
+
+func (clock *clock) GetDateFormat() DateFormat  { return clock.format }
+func (clock *clock) SetDateFormat(f DateFormat) { clock.format = f }
 
 func (clock *clock) Now() time.Time {
 	return time.Now()
@@ -32,19 +40,10 @@ func (clock *clock) Now() time.Time {
 
 // package
 
-type pkg struct {
-	dateFormat DateFormat
-}
-
-func Package(
-	dateFormat DateFormat,
-) ioc.Pkg {
-	return pkg{
-		dateFormat: dateFormat,
-	}
-}
-
-func (pkg pkg) Register(b ioc.Builder) {
-	ioc.RegisterSingleton(b, func(c ioc.Dic) Clock { return &clock{} })
-	ioc.RegisterSingleton(b, func(c ioc.Dic) DateFormat { return pkg.dateFormat })
-}
+var Pkg = ioc.NewPkg(func(b ioc.Builder) {
+	ioc.Register(b, func(c ioc.Dic) Clock {
+		return &clock{
+			DateFormat(time.RFC3339Nano),
+		}
+	})
+})

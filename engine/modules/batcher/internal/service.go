@@ -1,37 +1,28 @@
 package internal
 
 import (
+	"engine"
 	"engine/modules/batcher"
-	"engine/modules/warmup"
-	"engine/services/clock"
 	"engine/services/ecs"
 	"engine/services/frames"
-	"engine/services/logger"
-	"time"
 
 	"github.com/ogiusek/events"
 	"github.com/ogiusek/ioc/v2"
 )
 
 type Service struct {
-	EventsBuilder events.Builder `inject:"1"`
-	Clock         clock.Clock    `inject:"1"`
-	WarmUp        warmup.Service `inject:"1"`
-	Logger        logger.Logger  `inject:"1"`
+	engine.EngineWorld `inject:""`
 
-	workers    int
-	timeBudget time.Duration
-	tasks      []batcher.Task
+	workers int
+	tasks   []batcher.Task
 }
 
 func NewService(
 	c ioc.Dic,
 	workers int,
-	frameLoadingBudget time.Duration,
 ) *Service {
 	s := ioc.GetServices[*Service](c)
 	s.workers = workers
-	s.timeBudget = frameLoadingBudget
 	return s
 }
 
@@ -46,7 +37,7 @@ func (s *Service) Progress() float32 {
 
 func (s *Service) System() batcher.System {
 	return ecs.NewSystemRegister(func() error {
-		events.Listen(s.EventsBuilder, s.Listen)
+		events.Listen(s.EventsBuilder(), s.Listen)
 		return nil
 	})
 }
@@ -57,11 +48,10 @@ func (s *Service) Listen(frames.FrameEvent) {
 	}
 	task := s.tasks[0]
 	if task.Progress() == 0 {
-		s.WarmUp.WarmUp()
+		s.WarmUp().WarmUp()
 	}
 
-	start := s.Clock.Now()
-	for s.Clock.Now().Sub(start) < s.timeBudget {
+	for s.Frames().FrameBudgetLeft() > 0 {
 		task.Step()
 		if task.Progress() != 1 {
 			continue

@@ -4,6 +4,8 @@ import (
 	"core/modules/tile"
 	"engine/modules/groups"
 	"engine/services/ecs"
+
+	"github.com/ogiusek/ioc/v2"
 )
 
 const (
@@ -49,13 +51,12 @@ type Hud struct {
 // In DI container
 // Definitions have more dependencies
 type Definitions struct {
-	Assets     `ignore:""`
-	Hud        Hud
-	Tiles      Tiles
-	Constructs Constructs
-	Units      Units
+	Assets
+	Hud     ioc.Lazy[Hud]     `inject:""`
+	Tiles   ioc.Lazy[Tiles]   `inject:""`
+	Objects ioc.Lazy[Objects] `inject:""`
 
-	Transitions Transitions
+	Transitions ioc.Lazy[Transitions] `inject:""`
 }
 
 type Transitions struct {
@@ -74,10 +75,12 @@ type Tiles struct {
 	Mountain ecs.EntityID `path:"tiles/mountain.biom" tile:"" generate:"5" obstruction:"water lowland"`
 }
 
-type Constructs struct {
-	Farm ecs.EntityID `path:"constructs/farm.png" name:"farm" object:"construct" obstruction:"lowland" size:"2x2"`
-}
+type Objects struct {
+	Farm    ecs.EntityID `path:"constructs/farm.png" name:"farm" object:"construct" obstruction:"lowland" size:"2x2"`
+	HouseT1 ecs.EntityID `path:"constructs/houseT1.png" name:"house t1" object:"construct" obstruction:"lowland" size:"1x1"`
+	HouseT2 ecs.EntityID `path:"constructs/houseT2.png" name:"house t2" object:"construct" obstruction:"lowland" size:"2x2"`
+	HouseT3 ecs.EntityID `path:"constructs/houseT3.png" name:"house t3" object:"construct" obstruction:"lowland" size:"3x3"`
+	HouseT4 ecs.EntityID `path:"constructs/houseT4.png" name:"house t4" object:"construct" obstruction:"lowland" size:"4x4"`
 
-type Units struct {
 	Tank ecs.EntityID `path:"units/tank.png" name:"tank" object:"unit" obstruction:"lowland" speed:"2"`
 }

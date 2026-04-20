@@ -7,18 +7,11 @@ import (
 	"github.com/ogiusek/ioc/v2"
 )
 
-type pkg struct {
-}
-
-func Package() ioc.Pkg {
-	return pkg{}
-}
-
-func (pkg) Register(b ioc.Builder) {
-	ioc.RegisterSingleton(b, func(c ioc.Dic) internal.Service {
+var Pkg = ioc.NewPkg(func(b ioc.Builder) {
+	ioc.Register(b, func(c ioc.Dic) internal.Service {
 		return internal.NewService(c)
 	})
-	ioc.RegisterSingleton(b, func(c ioc.Dic) prototype.Service {
+	ioc.Register(b, func(c ioc.Dic) prototype.Service {
 		return ioc.Get[internal.Service](c)
 	})
-}
+})

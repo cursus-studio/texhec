@@ -3,8 +3,7 @@ package definitionspkg
 import (
 	"core/modules/definitions"
 	"core/modules/deploy"
-	"core/modules/tile"
-	"engine"
+	gamescenes "core/scenes"
 	"engine/modules/assets"
 	"engine/modules/collider"
 	"engine/modules/groups"
@@ -25,15 +24,9 @@ import (
 	"github.com/ogiusek/ioc/v2"
 )
 
-type pkg struct{}
-
-func Package() ioc.Pkg {
-	return pkg{}
-}
-
-func (pkg) Register(b ioc.Builder) {
+var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 	// register specific files
-	ioc.WrapService(b, func(c ioc.Dic, b assets.Service) {
+	ioc.Wrap(b, func(c ioc.Dic, b assets.Service) {
 		b.Register("blank texture", func(_ assets.PathComponent) (assets.Asset, error) {
 			img := image.NewRGBA(image.Rect(0, 0, 1, 1))
 			white := color.RGBA{255, 255, 255, 255}
@@ -69,81 +62,86 @@ func (pkg) Register(b ioc.Builder) {
 		})
 	})
 
-	ioc.RegisterSingleton(b, func(c ioc.Dic) definitions.Assets {
-		world := ioc.GetServices[engine.World](c)
-		def, err := registry.GetRegistry[definitions.Assets](world.Registry)
-		world.Logger.Warn(err)
+	ioc.Register(b, func(c ioc.Dic) definitions.Tiles {
+		world := ioc.GetServices[gamescenes.GameWorld](c)
+		def, err := registry.GetRegistry[definitions.Tiles](world.Registry())
+		world.Logger().Warn(err)
+		return def
+	})
+	ioc.Register(b, func(c ioc.Dic) definitions.Objects {
+		world := ioc.GetServices[gamescenes.GameWorld](c)
+		def, err := registry.GetRegistry[definitions.Objects](world.Registry())
+		world.Logger().Warn(err)
+
+		world.Deploy().Component().Set(def.Tank, deploy.NewDeploy(def.Tank, def.Farm))
+		world.Deploy().Component().Set(def.Farm, deploy.NewDeploy(def.Tank, def.Farm, def.HouseT1, def.HouseT2, def.HouseT3, def.HouseT4))
+		return def
+	})
+	ioc.Register(b, func(c ioc.Dic) definitions.Hud {
+		world := ioc.GetServices[gamescenes.GameWorld](c)
+		def, err := registry.GetRegistry[definitions.Hud](world.Registry())
+		world.Logger().Warn(err)
+
+		{
+			btnAsset, err := assets.GetAsset[render.TextureAsset](world.Assets(), def.Btn)
+			if err != nil {
+				world.Logger().Warn(err)
+			}
+			btnAspectRatio := btnAsset.AspectRatio()
+			world.Groups().Inherit().Set(def.Btn, groups.InheritGroupsComponent{})
+			world.Groups().Component().Set(def.Btn, groups.EmptyGroups())
+
+			world.Transform().AspectRatio().Set(def.Btn, transform.NewAspectRatio(float32(btnAspectRatio.Dx()), float32(btnAspectRatio.Dy()), 0, transform.PrimaryAxisX))
+			world.Transform().Parent().Set(def.Btn, transform.NewParent(transform.RelativePos|transform.RelativeSizeX))
+			world.Transform().MaxSize().Set(def.Btn, transform.NewMaxSize(0, 50, 0))
+			world.Transform().Size().Set(def.Btn, transform.NewSize(1, 50, 1))
+
+			world.Render().Mesh().Set(def.Btn, render.NewMesh(world.Definitions().SquareMesh))
+			world.Render().Texture().Set(def.Btn, render.NewTexture(def.Btn))
+
+			world.Collider().Component().Set(def.Btn, collider.NewCollider(world.Definitions().SquareCollider))
+			world.Inputs().KeepSelected().Set(def.Btn, inputs.KeepSelectedComponent{})
+
+			world.Text().Align().Set(def.Btn, text.TextAlignComponent{Vertical: .5, Horizontal: .5})
+			world.Text().FontSize().Set(def.Btn, text.FontSizeComponent{FontSize: 24})
+		}
+		{
+			btnAsset, err := assets.GetAsset[render.TextureAsset](world.Assets(), def.Btn)
+			if err != nil {
+				world.Logger().Warn(err)
+			}
+			btnAspectRatio := btnAsset.AspectRatio()
+			world.Groups().Inherit().Set(def.Text, groups.InheritGroupsComponent{})
+			world.Groups().Component().Set(def.Text, groups.EmptyGroups())
+
+			world.Transform().Size().Set(def.Text, transform.NewSize(150, 50, 1))
+			world.Transform().AspectRatio().Set(def.Text, transform.NewAspectRatio(float32(btnAspectRatio.Dx()), float32(btnAspectRatio.Dy()), 0, transform.PrimaryAxisX))
+			world.Transform().Parent().Set(def.Text, transform.NewParent(transform.RelativePos))
+
+			world.Render().Mesh().Set(def.Text, render.NewMesh(world.Definitions().SquareMesh))
+			world.Render().Texture().Set(def.Text, render.NewTexture(def.Btn))
+			world.Render().Color().Set(def.Text, render.NewColor(mgl32.Vec4{0, 0, 0, 0}))
+
+			world.Collider().Component().Set(def.Text, collider.NewCollider(world.Definitions().SquareCollider))
+			world.Inputs().KeepSelected().Set(def.Text, inputs.KeepSelectedComponent{})
+
+			world.Text().Align().Set(def.Text, text.TextAlignComponent{Vertical: .5, Horizontal: .5})
+			world.Text().FontSize().Set(def.Text, text.FontSizeComponent{FontSize: 24})
+		}
+		return def
+	})
+	ioc.Register(b, func(c ioc.Dic) definitions.Transitions {
+		world := ioc.GetServices[gamescenes.GameWorld](c)
+		def, err := registry.GetRegistry[definitions.Transitions](world.Registry())
+		world.Logger().Warn(err)
 		return def
 	})
 
-	type World struct {
-		engine.World `inject:"1"`
-		Tile         tile.Service   `inject:"1"`
-		Deploy       deploy.Service `inject:"1"`
-	}
-
-	ioc.RegisterSingleton(b, func(c ioc.Dic) definitions.Definitions {
-		world := ioc.GetServices[World](c)
-		def, err := registry.GetRegistry[definitions.Definitions](world.Registry)
-		world.Logger.Warn(err)
-
-		def.Assets = ioc.Get[definitions.Assets](c)
-
-		{
-			world.Deploy.Component().Set(def.Units.Tank, deploy.NewDeploy(def.Units.Tank, def.Constructs.Farm))
-			world.Deploy.Link().Set(def.Units.Tank, deploy.NewLink(def.Units.Tank))
-		}
-		{
-			world.Deploy.Component().Set(def.Constructs.Farm, deploy.NewDeploy(def.Units.Tank, def.Constructs.Farm))
-			world.Deploy.Link().Set(def.Constructs.Farm, deploy.NewLink(def.Constructs.Farm))
-		}
-		{
-			btnAsset, err := assets.GetAsset[render.TextureAsset](world.Assets, def.Hud.Btn)
-			if err != nil {
-				world.Logger.Warn(err)
-			}
-			btnAspectRatio := btnAsset.AspectRatio()
-			world.Groups.Inherit().Set(def.Hud.Btn, groups.InheritGroupsComponent{})
-			world.Groups.Component().Set(def.Hud.Btn, groups.EmptyGroups())
-
-			world.Transform.AspectRatio().Set(def.Hud.Btn, transform.NewAspectRatio(float32(btnAspectRatio.Dx()), float32(btnAspectRatio.Dy()), 0, transform.PrimaryAxisX))
-			world.Transform.Parent().Set(def.Hud.Btn, transform.NewParent(transform.RelativePos|transform.RelativeSizeX))
-			world.Transform.MaxSize().Set(def.Hud.Btn, transform.NewMaxSize(0, 50, 0))
-			world.Transform.Size().Set(def.Hud.Btn, transform.NewSize(1, 50, 1))
-
-			world.Render.Mesh().Set(def.Hud.Btn, render.NewMesh(def.SquareMesh))
-			world.Render.Texture().Set(def.Hud.Btn, render.NewTexture(def.Hud.Btn))
-
-			world.Collider.Component().Set(def.Hud.Btn, collider.NewCollider(def.SquareCollider))
-			world.Inputs.KeepSelected().Set(def.Hud.Btn, inputs.KeepSelectedComponent{})
-
-			world.Text.Align().Set(def.Hud.Btn, text.TextAlignComponent{Vertical: .5, Horizontal: .5})
-			world.Text.FontSize().Set(def.Hud.Btn, text.FontSizeComponent{FontSize: 24})
-		}
-		{
-			btnAsset, err := assets.GetAsset[render.TextureAsset](world.Assets, def.Hud.Btn)
-			if err != nil {
-				world.Logger.Warn(err)
-			}
-			btnAspectRatio := btnAsset.AspectRatio()
-			world.Groups.Inherit().Set(def.Hud.Text, groups.InheritGroupsComponent{})
-			world.Groups.Component().Set(def.Hud.Text, groups.EmptyGroups())
-
-			world.Transform.Size().Set(def.Hud.Text, transform.NewSize(150, 50, 1))
-			world.Transform.AspectRatio().Set(def.Hud.Text, transform.NewAspectRatio(float32(btnAspectRatio.Dx()), float32(btnAspectRatio.Dy()), 0, transform.PrimaryAxisX))
-			world.Transform.Parent().Set(def.Hud.Text, transform.NewParent(transform.RelativePos))
-
-			world.Render.Mesh().Set(def.Hud.Text, render.NewMesh(def.SquareMesh))
-			world.Render.Texture().Set(def.Hud.Text, render.NewTexture(def.Hud.Btn))
-			world.Render.Color().Set(def.Hud.Text, render.NewColor(mgl32.Vec4{0, 0, 0, 0}))
-
-			world.Collider.Component().Set(def.Hud.Text, collider.NewCollider(def.SquareCollider))
-			world.Inputs.KeepSelected().Set(def.Hud.Text, inputs.KeepSelectedComponent{})
-
-			world.Text.Align().Set(def.Hud.Text, text.TextAlignComponent{Vertical: .5, Horizontal: .5})
-			world.Text.FontSize().Set(def.Hud.Text, text.FontSizeComponent{FontSize: 24})
-		}
-
+	ioc.Register(b, func(c ioc.Dic) definitions.Definitions {
+		world := ioc.GetServices[gamescenes.GameWorld](c)
+		def, err := registry.GetRegistry[definitions.Definitions](world.Registry())
+		world.Logger().Warn(err)
+		world.Logger().Warn(c.InjectServices(&def))
 		return def
 	})
 
@@ -192,7 +190,7 @@ func (pkg) Register(b ioc.Builder) {
 		},
 	}
 
-	ioc.WrapService(b, func(c ioc.Dic, b registry.Service) {
+	ioc.Wrap(b, func(c ioc.Dic, b registry.Service) {
 		b.Register("transition", func(entity ecs.EntityID, structTagValue string) {
 			transitionService := ioc.Get[transition.Service](c)
 			easing, ok := transitions[structTagValue]
@@ -202,4 +200,4 @@ func (pkg) Register(b ioc.Builder) {
 			transitionService.EasingFunction().Set(entity, transition.NewEasingFunction(easing))
 		})
 	})
-}
+})

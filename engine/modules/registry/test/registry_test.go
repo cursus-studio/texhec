@@ -13,7 +13,7 @@ func TestUnusedFieldError(t *testing.T) {
 	}
 	s := NewSetup()
 	instance := TestedStruct{}
-	if err := s.Service.Populate(&instance); err != nil {
+	if err := s.Registry().Populate(&instance); err != nil {
 		t.Errorf("unexpected err \"%v\"", err)
 	}
 }
@@ -24,7 +24,7 @@ func TestUsedField(t *testing.T) {
 	}
 	s := NewSetup()
 	instance := TestedStruct{}
-	if err := s.Service.Populate(&instance); err != nil {
+	if err := s.Registry().Populate(&instance); err != nil {
 		t.Errorf("unexpected err \"%v\"", err)
 	}
 }
@@ -35,7 +35,7 @@ func TestWrongInput(t *testing.T) {
 	}
 	s := NewSetup()
 	instance := TestedStruct{}
-	if err := s.Service.Populate(instance); !errors.Is(err, registry.ErrExpectedPointerToAStruct) {
+	if err := s.Registry().Populate(instance); !errors.Is(err, registry.ErrExpectedPointerToAStruct) {
 		t.Errorf("unexpected err \"%v\"", err)
 	}
 }

@@ -22,7 +22,18 @@ func NewDescription(description string) DescriptionComponent {
 
 //
 
+type LinkComponent struct {
+	Entity ecs.EntityID
+}
+
+func NewLink(entity ecs.EntityID) LinkComponent {
+	return LinkComponent{entity}
+}
+
+//
+
 type Service interface {
 	Name() ecs.ComponentsArray[NameComponent]
 	Description() ecs.ComponentsArray[DescriptionComponent]
+	Link() ecs.ComponentsArray[LinkComponent]
 }

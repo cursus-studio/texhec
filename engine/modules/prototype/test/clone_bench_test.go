@@ -5,20 +5,20 @@ import "testing"
 func BenchmarkClone1(b *testing.B) {
 	s := NewSetup()
 
-	cloned := s.World.NewEntity()
+	cloned := s.World().NewEntity()
 	cloned1Comp := Cloned1Component{1}
 	s.Cloned1.Set(cloned, cloned1Comp)
 
 	b.ResetTimer()
 	for b.Loop() {
-		s.Prototype.Clone(cloned)
+		s.Prototype().Clone(cloned)
 	}
 }
 
 func BenchmarkClone2(b *testing.B) {
 	s := NewSetup()
 
-	cloned := s.World.NewEntity()
+	cloned := s.World().NewEntity()
 	cloned1Comp := Cloned1Component{1}
 	cloned2Comp := Cloned2Component{1}
 	s.Cloned1.Set(cloned, cloned1Comp)
@@ -26,20 +26,20 @@ func BenchmarkClone2(b *testing.B) {
 
 	b.ResetTimer()
 	for b.Loop() {
-		s.Prototype.Clone(cloned)
+		s.Prototype().Clone(cloned)
 	}
 }
 
 func BenchmarkManual1Clone(b *testing.B) {
 	s := NewSetup()
 
-	cloned := s.World.NewEntity()
+	cloned := s.World().NewEntity()
 	cloned1Comp := Cloned1Component{1}
 	s.Cloned1.Set(cloned, cloned1Comp)
 
 	b.ResetTimer()
 	for b.Loop() {
-		clone := s.World.NewEntity()
+		clone := s.World().NewEntity()
 		if clonedComp, ok := s.Cloned1.Get(clone); ok {
 			s.Cloned1.Set(clone, clonedComp)
 		}
@@ -49,7 +49,7 @@ func BenchmarkManual1Clone(b *testing.B) {
 func BenchmarkManual2Clone(b *testing.B) {
 	s := NewSetup()
 
-	cloned := s.World.NewEntity()
+	cloned := s.World().NewEntity()
 	cloned1Comp := Cloned1Component{1}
 	cloned2Comp := Cloned2Component{1}
 	s.Cloned1.Set(cloned, cloned1Comp)
@@ -57,7 +57,7 @@ func BenchmarkManual2Clone(b *testing.B) {
 
 	b.ResetTimer()
 	for b.Loop() {
-		clone := s.World.NewEntity()
+		clone := s.World().NewEntity()
 		if clonedComp, ok := s.Cloned1.Get(clone); ok {
 			s.Cloned1.Set(clone, clonedComp)
 		}

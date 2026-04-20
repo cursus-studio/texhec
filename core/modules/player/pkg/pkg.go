@@ -8,19 +8,13 @@ import (
 	"github.com/ogiusek/ioc/v2"
 )
 
-type pkg struct{}
-
-func Package() ioc.Pkg {
-	return pkg{}
-}
-
-func (pkg) Register(b ioc.Builder) {
+var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 	for _, pkg := range []ioc.Pkg{
-		prototypepkg.PackageT[player.OwnerComponent](),
+		prototypepkg.PkgT[player.OwnerComponent](),
 	} {
-		pkg.Register(b)
+		pkg(b)
 	}
-	ioc.RegisterSingleton(b, func(c ioc.Dic) player.Service {
+	ioc.Register(b, func(c ioc.Dic) player.Service {
 		return internal.NewService(c)
 	})
-}
+})

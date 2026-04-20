@@ -9,26 +9,22 @@ import (
 	"github.com/ogiusek/ioc/v2"
 )
 
-type pkg struct {
-	parentDirectory string
-}
+// can later append many parent directories
+var parentDirectory = "assets/"
 
-func Package(parentDirectory string) ioc.Pkg {
+var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 	if len(parentDirectory) != 0 && parentDirectory[len(parentDirectory)-1] != '/' {
 		parentDirectory += "/"
 	}
-	return pkg{parentDirectory}
-}
 
-func (pkg pkg) Register(b ioc.Builder) {
-	ioc.RegisterSingleton(b, func(c ioc.Dic) assets.Service {
+	ioc.Register(b, func(c ioc.Dic) assets.Service {
 		return internal.NewService(c)
 	})
-	ioc.WrapService(b, func(c ioc.Dic, registry registry.Service) {
+	ioc.Wrap(b, func(c ioc.Dic, registry registry.Service) {
 		registry.Register("path", func(entity ecs.EntityID, structTagValue string) {
 			assetsService := ioc.Get[assets.Service](c)
-			path := assets.NewPath(pkg.parentDirectory + structTagValue)
+			path := assets.NewPath(parentDirectory + structTagValue)
 			assetsService.Path().Set(entity, path)
 		})
 	})
-}
+})

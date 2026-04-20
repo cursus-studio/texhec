@@ -3,7 +3,7 @@ package tileservice
 import (
 	"core/modules/definitions"
 	"core/modules/tile"
-	"engine"
+	gamescenes "core/scenes"
 	"engine/modules/grid"
 	"engine/modules/relation"
 	"engine/modules/transform"
@@ -14,10 +14,10 @@ import (
 )
 
 type service struct {
-	engine.World           `inject:"1"`
-	TileGridService        grid.Service[tile.ID]          `inject:"1"`
-	ObstructionGridService grid.Service[tile.Obstruction] `inject:"1"`
-	TileTypeRelation       relation.Service[tile.ID]      `inject:"1"`
+	gamescenes.GameWorld   `inject:""`
+	TileGridService        grid.Service[tile.ID]          `inject:""`
+	ObstructionGridService grid.Service[tile.Obstruction] `inject:""`
+	TileTypeRelation       relation.Service[tile.ID]      `inject:""`
 
 	tile ecs.ComponentsArray[tile.TypeComponent]
 
@@ -37,20 +37,20 @@ type service struct {
 
 func NewService(c ioc.Dic) tile.Service {
 	s := ioc.GetServices[*service](c)
-	s.tile = ecs.GetComponentsArray[tile.TypeComponent](s.World)
+	s.tile = ecs.GetComponentsArray[tile.TypeComponent](s.World())
 
-	s.pos = ecs.GetComponentsArray[tile.PosComponent](s.World)
-	s.size = ecs.GetComponentsArray[tile.SizeComponent](s.World)
-	s.rot = ecs.GetComponentsArray[tile.RotComponent](s.World)
-	s.layer = ecs.GetComponentsArray[tile.LayerComponent](s.World)
+	s.pos = ecs.GetComponentsArray[tile.PosComponent](s.World())
+	s.size = ecs.GetComponentsArray[tile.SizeComponent](s.World())
+	s.rot = ecs.GetComponentsArray[tile.RotComponent](s.World())
+	s.layer = ecs.GetComponentsArray[tile.LayerComponent](s.World())
 
-	s.placeholder = ecs.GetComponentsArray[tile.PlaceholderComponent](s.World)
+	s.placeholder = ecs.GetComponentsArray[tile.PlaceholderComponent](s.World())
 
-	s.obstruction = ecs.GetComponentsArray[tile.ObstructionComponent](s.World)
-	s.deployed = ecs.GetComponentsArray[tile.DeployedComponent](s.World)
+	s.obstruction = ecs.GetComponentsArray[tile.ObstructionComponent](s.World())
+	s.deployed = ecs.GetComponentsArray[tile.DeployedComponent](s.World())
 
-	s.speed = ecs.GetComponentsArray[tile.SpeedComponent](s.World)
-	s.step = ecs.GetComponentsArray[tile.StepComponent](s.World)
+	s.speed = ecs.GetComponentsArray[tile.SpeedComponent](s.World())
+	s.step = ecs.GetComponentsArray[tile.StepComponent](s.World())
 
 	s.size.SetEmpty(tile.NewSize(1, 1))
 	s.layer.SetEmpty(tile.NewLayer(definitions.TileLayer))

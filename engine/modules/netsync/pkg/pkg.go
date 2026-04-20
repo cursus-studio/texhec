@@ -14,18 +14,8 @@ import (
 	"github.com/ogiusek/ioc/v2"
 )
 
-type pkg struct {
-	config Config
-}
-
-func Package(config Config) ioc.Pkg {
-	return pkg{
-		config,
-	}
-}
-
-func (pkg pkg) Register(b ioc.Builder) {
-	ioc.WrapService(b, func(c ioc.Dic, b codec.Builder) {
+var Pkg = ioc.NewPkgT(func(b ioc.Builder, config Config) {
+	ioc.Wrap(b, func(c ioc.Dic, b codec.Builder) {
 		b.
 			// client
 			Register(clienttypes.PredictedEvent{}).
@@ -38,17 +28,17 @@ func (pkg pkg) Register(b ioc.Builder) {
 			Register(servertypes.TransparentEventDTO{})
 	})
 
-	ioc.RegisterSingleton(b, func(c ioc.Dic) netsync.Service {
+	ioc.Register(b, func(c ioc.Dic) netsync.Service {
 		return service.NewService(c)
 	})
 
-	ioc.RegisterSingleton(b, func(c ioc.Dic) *server.Service {
-		return server.NewService(c, *pkg.config.config)
+	ioc.Register(b, func(c ioc.Dic) *server.Service {
+		return server.NewService(c, *config.config)
 	})
-	ioc.RegisterSingleton(b, func(c ioc.Dic) *client.Service {
-		return client.NewService(c, *pkg.config.config)
+	ioc.Register(b, func(c ioc.Dic) *client.Service {
+		return client.NewService(c, *config.config)
 	})
-	ioc.RegisterSingleton(b, func(c ioc.Dic) netsync.StartSystem {
+	ioc.Register(b, func(c ioc.Dic) netsync.StartSystem {
 		clientService := ioc.Get[*client.Service](c)
 		serverService := ioc.Get[*server.Service](c)
 		eventsBuilder := ioc.Get[events.Builder](c)
@@ -75,7 +65,7 @@ func (pkg pkg) Register(b ioc.Builder) {
 			return nil
 		})
 	})
-	ioc.RegisterSingleton(b, func(c ioc.Dic) netsync.StopSystem {
+	ioc.Register(b, func(c ioc.Dic) netsync.StopSystem {
 		clientService := ioc.Get[*client.Service](c)
 		serverService := ioc.Get[*server.Service](c)
 		eventsBuilder := ioc.Get[events.Builder](c)
@@ -96,4 +86,4 @@ func (pkg pkg) Register(b ioc.Builder) {
 			return nil
 		})
 	})
-}
+})

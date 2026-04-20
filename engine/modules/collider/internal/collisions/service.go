@@ -1,13 +1,12 @@
 package collisions
 
 import (
+	"engine"
 	"engine/modules/assets"
 	"engine/modules/collider"
 	"engine/modules/groups"
-	"engine/modules/transform"
 	"engine/services/datastructures"
 	"engine/services/ecs"
-	"engine/services/logger"
 	"errors"
 	"slices"
 
@@ -17,11 +16,7 @@ import (
 
 type service struct {
 	// shared
-	Logger    logger.Logger     `inject:"1"`
-	World     ecs.World         `inject:"1"`
-	Groups    groups.Service    `inject:"1"`
-	Transform transform.Service `inject:"1"`
-	Assets    assets.Service    `inject:"1"`
+	engine.EngineWorld `inject:""`
 
 	colliderArray ecs.ComponentsArray[collider.Component]
 
@@ -40,14 +35,14 @@ func NewService(c ioc.Dic,
 	t := ioc.GetServices[*service](c)
 
 	t.dirtySet = ecs.NewDirtySet()
-	t.colliderArray = ecs.GetComponentsArray[collider.Component](t.World)
+	t.colliderArray = ecs.GetComponentsArray[collider.Component](t.World())
 	t.chunkSize = chunkSize
 	t.chunks = make(map[mgl32.Vec2]datastructures.Set[ecs.EntityID])
 	t.entitiesPositions = make(map[ecs.EntityID][]mgl32.Vec2)
 	t.rayFallTroughPolicies = make([]collider.FallTroughPolicy, 0)
 
-	t.Transform.AddDirtySet(t.dirtySet)
-	colliderArray := ecs.GetComponentsArray[collider.Component](t.World)
+	t.Transform().AddDirtySet(t.dirtySet)
+	colliderArray := ecs.GetComponentsArray[collider.Component](t.World())
 	colliderArray.AddDirtySet(t.dirtySet)
 
 	return t
@@ -91,7 +86,7 @@ func (t *service) ApplyChanges() {
 		if _, ok := t.colliderArray.Get(entity); !ok {
 			continue
 		}
-		aabb := TransformAABB(t.Transform, entity)
+		aabb := TransformAABB(t.Transform(), entity)
 		positions := t.getPositions(aabb)
 		t.entitiesPositions[entity] = positions
 		for _, position := range positions {
@@ -132,7 +127,7 @@ func (t *service) Component() ecs.ComponentsArray[collider.Component] { return t
 
 func (t *service) CollidesWithRay(entity ecs.EntityID, ray collider.Ray) *collider.ObjectRayCollision {
 	t.ApplyChanges()
-	entityGroups, ok := t.Groups.Component().Get(entity)
+	entityGroups, ok := t.Groups().Component().Get(entity)
 	if !ok {
 		entityGroups = groups.DefaultGroups()
 	}
@@ -140,7 +135,7 @@ func (t *service) CollidesWithRay(entity ecs.EntityID, ray collider.Ray) *collid
 		return nil
 	}
 
-	aabb := TransformAABB(t.Transform, entity)
+	aabb := TransformAABB(t.Transform(), entity)
 	if ok, _ := RayAABBIntersect(ray, aabb); !ok {
 		return nil
 	}
@@ -149,16 +144,16 @@ func (t *service) CollidesWithRay(entity ecs.EntityID, ray collider.Ray) *collid
 	if !ok {
 		return nil
 	}
-	colliderAsset, err := assets.GetAsset[collider.ColliderAsset](t.Assets, colliderComponent.ID)
+	colliderAsset, err := assets.GetAsset[collider.ColliderAsset](t.Assets(), colliderComponent.ID)
 	if err != nil {
 		// invalid internal state
-		t.Logger.Warn(err)
+		t.Logger().Warn(err)
 		return nil
 	}
 
 	//
 
-	ray.Apply(t.Transform.Mat4(entity).Inv())
+	ray.Apply(t.Transform().Mat4(entity).Inv())
 
 	aabbs := colliderAsset.AABBs()
 	ranges := colliderAsset.Ranges()
@@ -221,7 +216,7 @@ func (t *service) CollidesWithRay(entity ecs.EntityID, ray collider.Ray) *collid
 
 func (t *service) CollidesWithObject(entityA ecs.EntityID, entityB ecs.EntityID) *collider.ObjectObjectCollision {
 	t.ApplyChanges()
-	t.Logger.Warn(errors.New("501"))
+	t.Logger().Warn(errors.New("501"))
 	return nil
 }
 
@@ -308,7 +303,7 @@ func (t *service) RaycastAll(ray collider.Ray) []collider.ObjectRayCollision {
 
 func (t *service) NarrowCollisions(entity ecs.EntityID) []ecs.EntityID {
 	t.ApplyChanges()
-	t.Logger.Warn(errors.New("501"))
+	t.Logger().Warn(errors.New("501"))
 	return nil
 }
 func (t *service) AddRayFallThroughPolicy(rayFallTroughPolicy collider.FallTroughPolicy) {

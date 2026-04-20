@@ -1,13 +1,10 @@
 package mouse
 
 import (
-	"engine/modules/camera"
-	"engine/modules/collider"
+	"engine"
 	"engine/modules/inputs"
 	"engine/modules/inputs/internal/service"
 	"engine/services/ecs"
-	"engine/services/logger"
-	"engine/services/media/window"
 	"slices"
 
 	"github.com/ogiusek/events"
@@ -22,14 +19,7 @@ func NewShootRayEvent() ShootRayEvent {
 }
 
 type cameraRaySystem struct {
-	World    ecs.World        `inject:"1"`
-	Camera   camera.Service   `inject:"1"`
-	Collider collider.Service `inject:"1"`
-
-	EventsBuilder events.Builder `inject:"1"`
-	Events        events.Events  `inject:"1"`
-	Logger        logger.Logger  `inject:"1"`
-	Window        window.Api     `inject:"1"`
+	engine.EngineWorld `inject:""`
 
 	targets []inputs.Target
 }
@@ -39,9 +29,9 @@ func NewCameraRaySystem(c ioc.Dic) inputs.System {
 		s := ioc.GetServices[*cameraRaySystem](c)
 		s.targets = nil
 
-		events.ListenE(s.EventsBuilder, s.Listen)
-		events.Listen(s.EventsBuilder, func(sdl.MouseButtonEvent) {
-			events.Emit(s.EventsBuilder.Events(), ShootRayEvent{})
+		events.ListenE(s.EventsBuilder(), s.Listen)
+		events.Listen(s.EventsBuilder(), func(sdl.MouseButtonEvent) {
+			events.Emit(s.Events(), ShootRayEvent{})
 		})
 
 		return nil
@@ -49,13 +39,13 @@ func NewCameraRaySystem(c ioc.Dic) inputs.System {
 }
 
 func (s *cameraRaySystem) Listen(args ShootRayEvent) error {
-	mousePos := s.Window.GetMousePos()
+	mousePos := s.Window().GetMousePos()
 
 	targets := []inputs.Target{}
-	for _, cameraEntity := range s.Camera.OrderedCameras() {
-		ray := s.Camera.ShootRay(cameraEntity, mousePos)
+	for _, cameraEntity := range s.Camera().OrderedCameras() {
+		ray := s.Camera().ShootRay(cameraEntity, mousePos)
 
-		cameraCollisions := s.Collider.RaycastAll(ray)
+		cameraCollisions := s.Collider().RaycastAll(ray)
 		for _, collision := range cameraCollisions {
 			target := inputs.Target{
 				ObjectRayCollision: collision,
@@ -66,8 +56,8 @@ func (s *cameraRaySystem) Listen(args ShootRayEvent) error {
 	}
 
 	slices.SortFunc(targets, func(a, b inputs.Target) int {
-		p1, _ := s.Camera.Priority().Get(a.Camera)
-		p2, _ := s.Camera.Priority().Get(b.Camera)
+		p1, _ := s.Camera().Priority().Get(a.Camera)
+		p2, _ := s.Camera().Priority().Get(b.Camera)
 		if p1.Priority > p2.Priority {
 			return -1
 		}
@@ -91,7 +81,7 @@ func (s *cameraRaySystem) Listen(args ShootRayEvent) error {
 
 	targetsCopy := make([]inputs.Target, len(s.targets))
 	copy(targetsCopy, s.targets)
-	events.Emit(s.Events, service.RayChangedTargetEvent{
+	events.Emit(s.Events(), service.RayChangedTargetEvent{
 		Targets: targetsCopy,
 	})
 

@@ -2,13 +2,6 @@ package runtime
 
 import (
 	"engine/services/httperrors"
-
-	"github.com/ogiusek/ioc/v2"
-)
-
-const (
-	OrderStop ioc.Order = iota
-	OrderCleanUp
 )
 
 type Builder interface {
@@ -16,6 +9,7 @@ type Builder interface {
 	OnStart(func(Runtime))
 	OnStartOnMainThread(func(Runtime)) error
 	OnStop(func(Runtime))
+	OnCleanUp(func(Runtime))
 	Build() Runtime
 }
 
@@ -24,6 +18,7 @@ type builder struct {
 	onStart             []func(Runtime)
 	onStartOnMainThread func(Runtime)
 	onStop              []func(Runtime)
+	onCleanUp           []func(Runtime)
 }
 
 func newBuilder() Builder {
@@ -50,6 +45,10 @@ func (b *builder) OnStop(listener func(Runtime)) {
 	b.onStop = append(b.onStop, listener)
 }
 
+func (b *builder) OnCleanUp(listener func(Runtime)) {
+	b.onCleanUp = append(b.onCleanUp, listener)
+}
+
 func (b *builder) Build() Runtime {
 	return NewRuntime(
 		func(r Runtime) {
@@ -65,6 +64,9 @@ func (b *builder) Build() Runtime {
 		},
 		func(r Runtime) {
 			for _, listner := range b.onStop {
+				listner(r)
+			}
+			for _, listner := range b.onCleanUp {
 				listner(r)
 			}
 		},

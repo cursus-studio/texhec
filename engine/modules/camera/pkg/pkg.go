@@ -21,33 +21,22 @@ import (
 	"github.com/veandco/go-sdl2/sdl"
 )
 
-type pkg struct {
-	minZoom, maxZoom float32
-}
-
-func Package(minZoom, maxZoom float32) ioc.Pkg {
-	return pkg{
-		minZoom: minZoom,
-		maxZoom: maxZoom,
-	}
-}
-
-func (pkg pkg) Register(b ioc.Builder) {
+var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 	for _, pkg := range []ioc.Pkg{
-		prototypepkg.PackageT[camera.Component](),
-		prototypepkg.PackageT[camera.MobileCameraComponent](),
-		prototypepkg.PackageT[camera.CameraLimitsComponent](),
-		prototypepkg.PackageT[camera.ViewportComponent](),
-		prototypepkg.PackageT[camera.NormalizedViewportComponent](),
+		prototypepkg.PkgT[camera.Component](),
+		prototypepkg.PkgT[camera.MobileCameraComponent](),
+		prototypepkg.PkgT[camera.CameraLimitsComponent](),
+		prototypepkg.PkgT[camera.ViewportComponent](),
+		prototypepkg.PkgT[camera.NormalizedViewportComponent](),
 
-		prototypepkg.PackageT[camera.OrthoComponent](),
-		prototypepkg.PackageT[camera.OrthoResolutionComponent](),
-		prototypepkg.PackageT[camera.PerspectiveComponent](),
-		prototypepkg.PackageT[camera.DynamicPerspectiveComponent](),
+		prototypepkg.PkgT[camera.OrthoComponent](),
+		prototypepkg.PkgT[camera.OrthoResolutionComponent](),
+		prototypepkg.PkgT[camera.PerspectiveComponent](),
+		prototypepkg.PkgT[camera.DynamicPerspectiveComponent](),
 	} {
-		pkg.Register(b)
+		pkg(b)
 	}
-	ioc.WrapService(b, func(c ioc.Dic, b codec.Builder) {
+	ioc.Wrap(b, func(c ioc.Dic, b codec.Builder) {
 		b.
 			// camera components
 			Register(camera.Component{}).
@@ -63,17 +52,17 @@ func (pkg pkg) Register(b ioc.Builder) {
 			// events
 			Register(camera.ChangedResolutionEvent{})
 	})
-	ioc.RegisterSingleton(b, func(c ioc.Dic) service.Service {
+	ioc.Register(b, func(c ioc.Dic) service.Service {
 		return service.NewService(c)
 	})
-	ioc.RegisterSingleton(b, func(c ioc.Dic) camera.Service {
+	ioc.Register(b, func(c ioc.Dic) camera.Service {
 		return ioc.Get[service.Service](c)
 	})
 
-	ioc.RegisterSingleton(b, func(c ioc.Dic) camera.CameraUp { return camera.CameraUp(mgl32.Vec3{0, 1, 0}) })
-	ioc.RegisterSingleton(b, func(c ioc.Dic) camera.CameraForward { return camera.CameraForward(mgl32.Vec3{0, 0, -1}) })
+	ioc.Register(b, func(c ioc.Dic) camera.CameraUp { return camera.CameraUp(mgl32.Vec3{0, 1, 0}) })
+	ioc.Register(b, func(c ioc.Dic) camera.CameraForward { return camera.CameraForward(mgl32.Vec3{0, 0, -1}) })
 
-	ioc.WrapService(b, func(c ioc.Dic, s service.Service) {
+	ioc.Wrap(b, func(c ioc.Dic, s service.Service) {
 		transform := ioc.Get[transform.Service](c)
 		cameraService := s
 		// transform := ioc.Get[transform.Service](c)
@@ -155,7 +144,7 @@ func (pkg pkg) Register(b ioc.Builder) {
 		}())
 	})
 
-	ioc.RegisterSingleton(b, func(c ioc.Dic) camera.System {
+	ioc.Register(b, func(c ioc.Dic) camera.System {
 		return ecs.NewSystemRegister(func() error {
 			w := ioc.Get[ecs.World](c)
 			eventsBuilder := ioc.Get[events.Builder](c)
@@ -203,9 +192,7 @@ func (pkg pkg) Register(b ioc.Builder) {
 				}),
 				// todo change this to change ortho and size according to viewport
 				projectionsys.NewUpdateProjectionsSystem(c),
-				mobilecamerasys.NewScrollSystem(c,
-					pkg.minZoom, pkg.maxZoom, // min and max zoom
-				),
+				mobilecamerasys.NewScrollSystem(c),
 				mobilecamerasys.NewDragSystem(c,
 					sdl.BUTTON_LEFT,
 				),
@@ -220,4 +207,4 @@ func (pkg pkg) Register(b ioc.Builder) {
 			return nil
 		})
 	})
-}
+})

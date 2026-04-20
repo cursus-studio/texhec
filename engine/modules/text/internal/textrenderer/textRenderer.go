@@ -42,7 +42,7 @@ func (s *textRenderer) ensureFontExists(asset ecs.EntityID) error {
 	if err != nil {
 		return err
 	}
-	batch, err := NewFontBatch(s.TextureArrayFactory, font)
+	batch, err := NewFontBatch(s.TextureArrayFactory(), font)
 	if err != nil {
 		return err
 	}
@@ -56,8 +56,8 @@ func (s *textRenderer) ListenRender(render rendersys.RenderEvent) {
 		// get used fonts
 		fonts := datastructures.NewSparseArray[FontKey, ecs.EntityID]()
 		fonts.Set(s.FontsKeys.GetKey(s.defaultTextAsset), s.defaultTextAsset)
-		for _, font := range s.Text.FontFamily().GetEntities() {
-			family, ok := s.Text.FontFamily().Get(font)
+		for _, font := range s.Text().FontFamily().GetEntities() {
+			family, ok := s.Text().FontFamily().Get(font)
 			if !ok {
 				continue
 			}
@@ -81,7 +81,7 @@ func (s *textRenderer) ListenRender(render rendersys.RenderEvent) {
 
 		// add freshly added fonts
 		for _, value := range fonts.GetValues() {
-			s.Logger.Warn(s.ensureFontExists(value))
+			s.Logger().Warn(s.ensureFontExists(value))
 		}
 
 		//
@@ -106,16 +106,16 @@ func (s *textRenderer) ListenRender(render rendersys.RenderEvent) {
 
 	// render layouts
 	s.program.Bind()
-	cameraGroups, _ := s.Groups.Component().Get(render.Camera)
-	cameraMatrix := s.Camera.Mat4(render.Camera)
+	cameraGroups, _ := s.Groups().Component().Get(render.Camera)
+	cameraMatrix := s.Camera().Mat4(render.Camera)
 
 	for _, entity := range s.layoutsBatches.GetIndices() {
-		entityColor, ok := s.Text.Color().Get(entity)
+		entityColor, ok := s.Text().Color().Get(entity)
 		if !ok {
 			entityColor = s.defaultColor
 		}
 
-		entityGroups, ok := s.Groups.Component().Get(entity)
+		entityGroups, ok := s.Groups().Component().Get(entity)
 		if !ok {
 			entityGroups = groups.DefaultGroups()
 		}
@@ -133,9 +133,9 @@ func (s *textRenderer) ListenRender(render rendersys.RenderEvent) {
 			continue
 		}
 
-		pos, _ := s.Transform.AbsolutePos().Get(entity)
-		rot, _ := s.Transform.AbsoluteRotation().Get(entity)
-		size, _ := s.Transform.AbsoluteSize().Get(entity)
+		pos, _ := s.Transform().AbsolutePos().Get(entity)
+		rot, _ := s.Transform().AbsoluteRotation().Get(entity)
+		size, _ := s.Transform().AbsoluteSize().Get(entity)
 
 		{
 			translation := mgl32.Translate3D(pos.Pos.Elem())

@@ -15,19 +15,14 @@ type Logger interface {
 type logger struct {
 	PanicOnError bool
 	Clock        clock.Clock
-	Print        func(string)
+	Flush        func(string)
 	Panic        func(string)
 }
 
 func (logger *logger) Info(format string, a ...any) {
 	message := fmt.Sprintf(format, a...)
 	msg := fmt.Sprintf("\033[34m[ Info ]\033[0m %s \033[34m\n%s\033[0m\n", logger.Clock.Now(), message)
-	logger.Print(msg)
-}
-
-func TestWarning(logger Logger) {
-	// print("hihi %v")
-	logger.Info("hihi %v")
+	logger.Flush(msg)
 }
 
 func (logger *logger) Warn(err error) {
@@ -38,7 +33,7 @@ func (logger *logger) Warn(err error) {
 	if logger.PanicOnError {
 		logger.Panic(message)
 	} else {
-		logger.Print(message)
+		logger.Flush(message)
 	}
 }
 

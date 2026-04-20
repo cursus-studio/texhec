@@ -11,24 +11,18 @@ import (
 	"github.com/ogiusek/ioc/v2"
 )
 
-type pkg struct{}
-
-func Package() ioc.Pkg {
-	return pkg{}
-}
-
-func (pkg) Register(b ioc.Builder) {
-	ioc.RegisterSingleton(b, func(c ioc.Dic) *internal.Config {
+var Pkg = ioc.NewPkg(func(b ioc.Builder) {
+	ioc.Register(b, func(c ioc.Dic) *internal.Config {
 		return internal.NewConfig()
 	})
-	ioc.RegisterSingleton(b, func(c ioc.Dic) generation.Service {
+	ioc.Register(b, func(c ioc.Dic) generation.Service {
 		return internal.NewService(c)
 	})
 
-	ioc.WrapService(b, func(c ioc.Dic, r registry.Service) {
+	ioc.Wrap(b, func(c ioc.Dic, r registry.Service) {
 		type World struct {
-			Config *internal.Config `inject:"1"`
-			Logger logger.Logger    `inject:"1"`
+			Config *internal.Config `inject:""`
+			Logger logger.Logger    `inject:""`
 		}
 		r.Register("generate", func(entity ecs.EntityID, structTagValue string) {
 			world := ioc.GetServices[World](c)
@@ -39,4 +33,4 @@ func (pkg) Register(b ioc.Builder) {
 			}
 		})
 	})
-}
+})

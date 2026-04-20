@@ -2,11 +2,8 @@ package instancing
 
 import (
 	_ "embed"
-	"engine/modules/assets"
-	"engine/modules/camera"
-	"engine/modules/groups"
+	"engine"
 	"engine/modules/render"
-	"engine/modules/transform"
 	"engine/services/datastructures"
 	"engine/services/ecs"
 	"engine/services/graphics/program"
@@ -14,8 +11,6 @@ import (
 	"engine/services/graphics/texturearray"
 	"engine/services/graphics/vao"
 	"engine/services/graphics/vao/vbo"
-	"engine/services/logger"
-	"engine/services/media/window"
 
 	"github.com/go-gl/gl/v4.5-core/gl"
 	"github.com/ogiusek/events"
@@ -36,18 +31,8 @@ type locations struct {
 //
 
 type system struct {
-	EventsBuilder events.Builder    `inject:"1"`
-	World         ecs.World         `inject:"1"`
-	Render        render.Service    `inject:"1"`
-	Camera        camera.Service    `inject:"1"`
-	Groups        groups.Service    `inject:"1"`
-	Transform     transform.Service `inject:"1"`
-
-	Assets              assets.Service                `inject:"1"`
-	Window              window.Api                    `inject:"1"`
-	Logger              logger.Logger                 `inject:"1"`
-	VboFactory          vbo.VBOFactory[render.Vertex] `inject:"1"`
-	TextureArrayFactory texturearray.Factory          `inject:"1"`
+	engine.EngineWorld `inject:""`
+	VboFactory         vbo.VBOFactory[render.Vertex] `inject:""`
 
 	// batches
 	dirtyEntities   ecs.DirtySet
@@ -101,13 +86,13 @@ func NewSystem(c ioc.Dic) render.SystemRenderer {
 		s.program = p
 		s.locations = locations
 
-		s.Render.Color().AddDirtySet(s.dirtyEntities)
-		s.Render.TextureFrame().AddDirtySet(s.dirtyEntities)
-		s.Transform.AddDirtySet(s.dirtyEntities)
-		s.Render.Mesh().AddDirtySet(s.dirtyEntities)
-		s.Render.Texture().AddDirtySet(s.dirtyEntities)
+		s.Render().Color().AddDirtySet(s.dirtyEntities)
+		s.Render().TextureFrame().AddDirtySet(s.dirtyEntities)
+		s.Transform().AddDirtySet(s.dirtyEntities)
+		s.Render().Mesh().AddDirtySet(s.dirtyEntities)
+		s.Render().Texture().AddDirtySet(s.dirtyEntities)
 
-		events.ListenE(s.EventsBuilder, s.ListenRender)
+		events.ListenE(s.EventsBuilder(), s.ListenRender)
 		return nil
 	})
 }
@@ -121,10 +106,10 @@ func (s *system) ListenRender(render render.RenderEvent) error {
 	for _, entity := range s.dirtyEntities.Get() {
 		batchKey, batchKeyOk := batchKey{}, true
 		if batchKeyOk {
-			batchKey.mesh, batchKeyOk = s.Render.Mesh().Get(entity)
+			batchKey.mesh, batchKeyOk = s.Render().Mesh().Get(entity)
 		}
 		if batchKeyOk {
-			batchKey.texture, batchKeyOk = s.Render.Texture().Get(entity)
+			batchKey.texture, batchKeyOk = s.Render().Texture().Get(entity)
 		}
 
 		oldBatchKey, oldBatchKeyOk := s.entitiesBatches.Get(entity)
@@ -157,10 +142,10 @@ func (s *system) ListenRender(render render.RenderEvent) error {
 	s.program.Bind()
 
 	for _, batch := range s.batches {
-		camMatrix := s.Camera.Mat4(render.Camera)
+		camMatrix := s.Camera().Mat4(render.Camera)
 		gl.UniformMatrix4fv(s.locations.Camera, 1, false, &camMatrix[0])
 
-		camGroups, _ := s.Groups.Component().Get(render.Camera)
+		camGroups, _ := s.Groups().Component().Get(render.Camera)
 		gl.Uniform1ui(s.locations.CameraGroups, camGroups.Mask)
 
 		batch.Render()

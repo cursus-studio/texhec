@@ -1,9 +1,9 @@
 package service
 
 import (
+	"engine"
 	"engine/modules/inputs"
 	"engine/services/ecs"
-	"engine/services/logger"
 
 	"github.com/ogiusek/events"
 	"github.com/ogiusek/ioc/v2"
@@ -14,9 +14,7 @@ type RayChangedTargetEvent struct {
 }
 
 type service struct {
-	Logger        logger.Logger  `inject:"1"`
-	World         ecs.World      `inject:"1"`
-	EventsBuilder events.Builder `inject:"1"`
+	engine.EngineWorld `inject:""`
 
 	hovered ecs.ComponentsArray[inputs.HoveredComponent]
 	dragged ecs.ComponentsArray[inputs.DraggedComponent]
@@ -43,31 +41,31 @@ type service struct {
 
 func NewService(c ioc.Dic) inputs.Service {
 	t := ioc.GetServices[*service](c)
-	t.hovered = ecs.GetComponentsArray[inputs.HoveredComponent](t.World)
-	t.dragged = ecs.GetComponentsArray[inputs.DraggedComponent](t.World)
-	t.stacked = ecs.GetComponentsArray[inputs.StackedComponent](t.World)
+	t.hovered = ecs.GetComponentsArray[inputs.HoveredComponent](t.World())
+	t.dragged = ecs.GetComponentsArray[inputs.DraggedComponent](t.World())
+	t.stacked = ecs.GetComponentsArray[inputs.StackedComponent](t.World())
 
-	t.keepSelected = ecs.GetComponentsArray[inputs.KeepSelectedComponent](t.World)
+	t.keepSelected = ecs.GetComponentsArray[inputs.KeepSelectedComponent](t.World())
 
-	t.leftClick = ecs.GetComponentsArray[inputs.LeftClickComponent](t.World)
-	t.doubleLeftClick = ecs.GetComponentsArray[inputs.DoubleLeftClickComponent](t.World)
+	t.leftClick = ecs.GetComponentsArray[inputs.LeftClickComponent](t.World())
+	t.doubleLeftClick = ecs.GetComponentsArray[inputs.DoubleLeftClickComponent](t.World())
 
-	t.rightClick = ecs.GetComponentsArray[inputs.RightClickComponent](t.World)
-	t.doubleRightClick = ecs.GetComponentsArray[inputs.DoubleRightClickComponent](t.World)
+	t.rightClick = ecs.GetComponentsArray[inputs.RightClickComponent](t.World())
+	t.doubleRightClick = ecs.GetComponentsArray[inputs.DoubleRightClickComponent](t.World())
 
-	t.mouseEnter = ecs.GetComponentsArray[inputs.MouseEnterComponent](t.World)
-	t.mouseLeave = ecs.GetComponentsArray[inputs.MouseLeaveComponent](t.World)
+	t.mouseEnter = ecs.GetComponentsArray[inputs.MouseEnterComponent](t.World())
+	t.mouseLeave = ecs.GetComponentsArray[inputs.MouseLeaveComponent](t.World())
 
-	t.mouseHover = ecs.GetComponentsArray[inputs.HoverComponent](t.World)
-	t.mouseDrag = ecs.GetComponentsArray[inputs.DragComponent](t.World)
+	t.mouseHover = ecs.GetComponentsArray[inputs.HoverComponent](t.World())
+	t.mouseDrag = ecs.GetComponentsArray[inputs.DragComponent](t.World())
 
-	t.stack = ecs.GetComponentsArray[inputs.StackComponent](t.World)
+	t.stack = ecs.GetComponentsArray[inputs.StackComponent](t.World())
 
-	ecs.GetComponentsArray[inputs.StackComponent](t.World)
+	ecs.GetComponentsArray[inputs.StackComponent](t.World())
 
 	stack := []inputs.Target{}
 	t.stackData = &stack
-	events.Listen(t.EventsBuilder, func(e RayChangedTargetEvent) {
+	events.Listen(t.EventsBuilder(), func(e RayChangedTargetEvent) {
 		*t.stackData = e.Targets
 	})
 	return t

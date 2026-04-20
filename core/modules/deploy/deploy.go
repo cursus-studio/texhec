@@ -15,23 +15,13 @@ func NewDeploy(deployable ...ecs.EntityID) Component {
 	}
 }
 
-//
-
-type LinkComponent struct {
-	Deploy ecs.EntityID
-}
-
-func NewLink(deploy ecs.EntityID) LinkComponent {
-	return LinkComponent{
-		deploy,
-	}
-}
+// TODO:
+// - when unit moves below deployed building it doesn't turn red
 
 //
 
 type Service interface {
 	Component() ecs.ComponentsArray[Component]
-	Link() ecs.ComponentsArray[LinkComponent]
 
 	// deploy differs from execute event by who deploys.
 	// execute adds costs and everything where deploy just deploys without any costs (its deployed by system)

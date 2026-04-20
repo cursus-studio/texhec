@@ -10,14 +10,8 @@ import (
 	"github.com/veandco/go-sdl2/sdl"
 )
 
-type pkg struct{}
-
-func Package() ioc.Pkg {
-	return pkg{}
-}
-
-func (pkg) Register(b ioc.Builder) {
-	ioc.RegisterSingleton(b, func(c ioc.Dic) Api {
+var Pkg = ioc.NewPkg(func(b ioc.Builder) {
+	ioc.Register(b, func(c ioc.Dic) Api {
 		return newInputsApi(
 			ioc.Get[logger.Logger](c),
 			ioc.Get[clock.Clock](c),
@@ -25,9 +19,9 @@ func (pkg) Register(b ioc.Builder) {
 		)
 	})
 
-	ioc.WrapService(b, func(c ioc.Dic, b events.Builder) {
+	ioc.Wrap(b, func(c ioc.Dic, b events.Builder) {
 		events.Listen(b, func(qe sdl.QuitEvent) {
 			ioc.Get[runtime.Runtime](c).Stop()
 		})
 	})
-}
+})

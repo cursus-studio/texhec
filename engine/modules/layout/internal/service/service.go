@@ -1,20 +1,16 @@
 package service
 
 import (
-	"engine/modules/hierarchy"
+	"engine"
 	"engine/modules/layout"
 	"engine/modules/transform"
 	"engine/services/ecs"
-	"engine/services/logger"
 
 	"github.com/ogiusek/ioc/v2"
 )
 
 type service struct {
-	Logger    logger.Logger     `inject:"1"`
-	World     ecs.World         `inject:"1"`
-	Hierarchy hierarchy.Service `inject:"1"`
-	Transform transform.Service `inject:"1"`
+	engine.EngineWorld `inject:""`
 
 	align         ecs.ComponentsArray[layout.AlignComponent]
 	order         ecs.ComponentsArray[layout.OrderComponent]
@@ -26,9 +22,9 @@ type service struct {
 func NewLayoutService(c ioc.Dic,
 ) layout.Service {
 	t := ioc.GetServices[*service](c)
-	t.align = ecs.GetComponentsArray[layout.AlignComponent](t.World)
-	t.order = ecs.GetComponentsArray[layout.OrderComponent](t.World)
-	t.gap = ecs.GetComponentsArray[layout.GapComponent](t.World)
+	t.align = ecs.GetComponentsArray[layout.AlignComponent](t.World())
+	t.order = ecs.GetComponentsArray[layout.OrderComponent](t.World())
+	t.gap = ecs.GetComponentsArray[layout.GapComponent](t.World())
 	t.dirtyParents = ecs.NewDirtySet()
 	t.dirtyChildren = ecs.NewDirtySet()
 	t.Init()
@@ -46,21 +42,21 @@ func (t *service) Init() {
 	t.align.SetEmpty(layout.NewAlign(.5, .5))
 	t.gap.SetEmpty(layout.NewGap(0))
 
-	t.Transform.AbsolutePos().AddDependency(t.align)
-	t.Transform.AbsolutePos().AddDependency(t.order)
-	t.Transform.AbsolutePos().AddDependency(t.gap)
+	t.Transform().AbsolutePos().AddDependency(t.align)
+	t.Transform().AbsolutePos().AddDependency(t.order)
+	t.Transform().AbsolutePos().AddDependency(t.gap)
 
 	t.align.AddDirtySet(t.dirtyParents)
 	t.order.AddDirtySet(t.dirtyParents)
 	t.gap.AddDirtySet(t.dirtyParents)
-	t.Transform.AddDirtySet(t.dirtyParents)
+	t.Transform().AddDirtySet(t.dirtyParents)
 
-	t.Transform.AddDirtySet(t.dirtyChildren)
-	t.Hierarchy.Component().AddDirtySet(t.dirtyChildren)
+	t.Transform().AddDirtySet(t.dirtyChildren)
+	t.Hierarchy().Component().AddDirtySet(t.dirtyChildren)
 
 	// before get trigger
-	t.Transform.AbsolutePos().BeforeGet(t.BeforeGet)
-	t.Transform.AbsoluteSize().BeforeGet(t.BeforeGet)
+	t.Transform().AbsolutePos().BeforeGet(t.BeforeGet)
+	t.Transform().AbsoluteSize().BeforeGet(t.BeforeGet)
 }
 
 type save struct {
@@ -72,7 +68,7 @@ type save struct {
 
 func (t *service) BeforeGet() {
 	for _, child := range t.dirtyChildren.Get() {
-		if parent, ok := t.Hierarchy.Parent(child); ok {
+		if parent, ok := t.Hierarchy().Parent(child); ok {
 			t.dirtyParents.Dirty(parent)
 		}
 	}
@@ -91,14 +87,14 @@ func (t *service) BeforeGet() {
 	}
 
 	for _, save := range saves {
-		t.Transform.Pos().Set(save.entity, save.pos)
-		t.Transform.PivotPoint().Set(save.entity, save.pivot)
-		t.Transform.ParentPivotPoint().Set(save.entity, save.parentPivot)
+		t.Transform().Pos().Set(save.entity, save.pos)
+		t.Transform().PivotPoint().Set(save.entity, save.pivot)
+		t.Transform().ParentPivotPoint().Set(save.entity, save.parentPivot)
 	}
 }
 
 func (t *service) handleParentChildren(parent ecs.EntityID) []save {
-	children := t.Hierarchy.Children(parent).GetIndices()
+	children := t.Hierarchy().Children(parent).GetIndices()
 	if len(children) == 0 {
 		return nil
 	}
@@ -113,12 +109,12 @@ func (t *service) handleParentChildren(parent ecs.EntityID) []save {
 	// including gaps
 	var totalSize float32 = 0
 	for _, child := range children {
-		size, _ := t.Transform.AbsoluteSize().Get(child)
+		size, _ := t.Transform().AbsoluteSize().Get(child)
 		totalSize += size.Size[order.Order] + gap.Gap
 	}
 	totalSize -= gap.Gap
 
-	size, _ := t.Transform.AbsoluteSize().Get(parent)
+	size, _ := t.Transform().AbsoluteSize().Get(parent)
 	progress := totalSize - size.Size[order.Primary()]
 	progress *= align.Primary
 
@@ -146,7 +142,7 @@ func (t *service) handleParentChildren(parent ecs.EntityID) []save {
 		saves = append(saves, save)
 
 		// update progress
-		size, _ := t.Transform.AbsoluteSize().Get(child)
+		size, _ := t.Transform().AbsoluteSize().Get(child)
 		progress -= size.Size[order.Primary()] + gap.Gap
 	}
 

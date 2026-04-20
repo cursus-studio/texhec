@@ -2,13 +2,9 @@ package test
 
 import (
 	"encoding/binary"
-	"engine/modules/connection"
-	connectionpkg "engine/modules/connection/pkg"
-	hierarchypkg "engine/modules/hierarchy/pkg"
-	"engine/services/clock"
+	"engine"
+	"engine/mock"
 	"engine/services/codec"
-	"engine/services/ecs"
-	"engine/services/logger"
 	"net"
 	"sync"
 	"time"
@@ -23,9 +19,7 @@ type Message struct {
 var mutex sync.Mutex
 
 type Setup struct {
-	World      ecs.World          `inject:"1"`
-	Connection connection.Service `inject:"1"`
-	Codec      codec.Codec        `inject:"1"`
+	engine.EngineWorld `inject:""`
 
 	Message Message
 	Network string
@@ -33,23 +27,16 @@ type Setup struct {
 }
 
 func NewSetup() Setup {
-	b := ioc.NewBuilder()
-	for _, pkg := range []ioc.Pkg{
-		logger.Package(true, func(c ioc.Dic, message string) { print(message) }),
-		clock.Package(time.RFC3339Nano),
-		ecs.Package(),
-		codec.Package(),
-		hierarchypkg.Package(),
-		connectionpkg.Package(),
-	} {
-		pkg.Register(b)
-	}
-	ioc.WrapService(b, func(c ioc.Dic, builder codec.Builder) {
-		builder.Register(
-			Message{},
-		)
-	})
-	c := b.Build()
+	c := ioc.NewContainer(
+		mock.Pkg,
+		func(b ioc.Builder) {
+			ioc.Wrap(b, func(c ioc.Dic, builder codec.Builder) {
+				builder.Register(
+					Message{},
+				)
+			})
+		},
+	)
 	s := ioc.GetServices[Setup](c)
 	s.Message.Content = "example message"
 	s.Network = "tcp"
@@ -65,7 +52,7 @@ func (s *Setup) Sleep() {
 }
 
 func (s *Setup) Send(conn net.Conn, message Message) error {
-	bytes, err := s.Codec.Encode(message)
+	bytes, err := s.Codec().Encode(message)
 	if err != nil {
 		return err
 	}

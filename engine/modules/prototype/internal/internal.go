@@ -1,6 +1,7 @@
 package internal
 
 import (
+	"engine"
 	"engine/modules/prototype"
 	"engine/services/ecs"
 
@@ -14,8 +15,7 @@ type Service interface {
 }
 
 type service struct {
-	World  ecs.World     `inject:"1"`
-	Events events.Events `inject:"1"`
+	engine.EngineWorld `inject:""`
 
 	arrays []ecs.AnyComponentArray
 }
@@ -30,7 +30,7 @@ func (s *service) Add(array ecs.AnyComponentArray) {
 }
 
 func (s *service) Clone(cloned ecs.EntityID) ecs.EntityID {
-	clone := s.World.NewEntity()
+	clone := s.World().NewEntity()
 	s.CloneTo(cloned, clone)
 	return clone
 }
@@ -41,5 +41,5 @@ func (s *service) CloneTo(cloned, clone ecs.EntityID) {
 			_ = arr.SetAny(clone, comp)
 		}
 	}
-	events.Emit(s.Events, prototype.NewCloneEvent(cloned, clone))
+	events.Emit(s.Events(), prototype.NewCloneEvent(cloned, clone))
 }

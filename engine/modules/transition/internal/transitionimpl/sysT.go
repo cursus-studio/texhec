@@ -1,20 +1,17 @@
 package transitionimpl
 
 import (
+	"engine"
 	"engine/modules/transition"
 	"engine/services/ecs"
 	"engine/services/frames"
-	"engine/services/logger"
 
 	"github.com/ogiusek/events"
 	"github.com/ogiusek/ioc/v2"
 )
 
 type sysT[Component transition.LerpConstraint[Component]] struct {
-	World         ecs.World          `inject:"1"`
-	Logger        logger.Logger      `inject:"1"`
-	Transition    transition.Service `inject:"1"`
-	EventsBuilder events.Builder     `inject:"1"`
+	engine.EngineWorld `inject:""`
 
 	dirtySet ecs.DirtySet
 
@@ -28,14 +25,14 @@ func NewSysT[Component transition.LerpConstraint[Component]](c ioc.Dic) transiti
 		s := ioc.GetServices[*sysT[Component]](c)
 
 		s.dirtySet = ecs.NewDirtySet()
-		s.transitionArray = ecs.GetComponentsArray[transition.TransitionComponent[Component]](s.World)
-		s.easingArray = ecs.GetComponentsArray[transition.EasingComponent](s.World)
-		s.componentArray = ecs.GetComponentsArray[Component](s.World)
+		s.transitionArray = ecs.GetComponentsArray[transition.TransitionComponent[Component]](s.World())
+		s.easingArray = ecs.GetComponentsArray[transition.EasingComponent](s.World())
+		s.componentArray = ecs.GetComponentsArray[Component](s.World())
 
-		events.Listen(s.EventsBuilder, s.ListenTransition)
+		events.Listen(s.EventsBuilder(), s.ListenTransition)
 
 		s.transitionArray.AddDirtySet(s.dirtySet)
-		events.Listen(s.EventsBuilder, s.ListenFrame)
+		events.Listen(s.EventsBuilder(), s.ListenFrame)
 
 		return nil
 	})
@@ -62,7 +59,7 @@ func (s *sysT[Component]) ListenFrame(event frames.FrameEvent) {
 
 		easingComponent, ok := s.easingArray.Get(entity)
 		if ok {
-			if fn, ok := s.Transition.EasingFunction().Get(easingComponent.ID); ok {
+			if fn, ok := s.Transition().EasingFunction().Get(easingComponent.ID); ok {
 				progress = fn.EasingFunction(progress)
 			}
 		}

@@ -1,10 +1,10 @@
 package internal
 
 import (
+	"engine"
 	"engine/modules/registry"
 	"engine/modules/uuid"
 	"engine/services/ecs"
-	"engine/services/logger"
 	"errors"
 	"fmt"
 	"reflect"
@@ -13,9 +13,7 @@ import (
 )
 
 type service struct {
-	Logger logger.Logger `inject:"1"`
-	World  ecs.World     `inject:"1"`
-	UUID   uuid.Service  `inject:"1"`
+	engine.EngineWorld `inject:""`
 
 	tags        []string
 	handlers    []func(ecs.EntityID, string)
@@ -30,7 +28,7 @@ func NewService(c ioc.Dic) registry.Service {
 
 func (s *service) Register(structTagKey string, handler func(entity ecs.EntityID, structTagValue string)) {
 	if _, ok := s.presentTags[structTagKey]; ok {
-		s.Logger.Warn(errors.Join(
+		s.Logger().Warn(errors.Join(
 			fmt.Errorf("already registered struct tag key"),
 			fmt.Errorf("struct tag is already registered \"%v\"", structTagKey),
 		))
@@ -59,9 +57,9 @@ func (s *service) populateValue(v reflect.Value) error {
 			continue
 		}
 
-		entity := s.World.NewEntity()
+		entity := s.World().NewEntity()
 		fieldValue.Set(reflect.ValueOf(entity))
-		s.UUID.Component().Set(entity, uuid.New(s.UUID.NewUUID()))
+		s.UUID().Component().Set(entity, uuid.New(s.UUID().NewUUID()))
 
 		for tagIndex, tagName := range s.tags {
 			tagValue, ok := fieldType.Tag.Lookup(tagName)

@@ -11,44 +11,37 @@ import (
 	"github.com/ogiusek/ioc/v2"
 )
 
-type pkg struct {
-}
-
-func Package() ioc.Pkg {
-	return pkg{}
-}
-
-func (pkg) Register(b ioc.Builder) {
+var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 	for _, pkg := range []ioc.Pkg{
-		prototypepkg.PackageT[uuid.Component](),
+		prototypepkg.PkgT[uuid.Component](),
+		relationpkg.MapRelationPkg(
+			func(w ecs.World) ecs.DirtySet {
+				set := ecs.NewDirtySet()
+				ecs.GetComponentsArray[uuid.Component](w).AddDirtySet(set)
+				return set
+			},
+			func(w ecs.World) func(entity ecs.EntityID) (indexType uuid.UUID, ok bool) {
+				uniqueArray := ecs.GetComponentsArray[uuid.Component](w)
+				return func(entity ecs.EntityID) (indexType uuid.UUID, ok bool) {
+					component, ok := uniqueArray.Get(entity)
+					if !ok {
+						return uuid.UUID{}, false
+					}
+					return component.ID, true
+				}
+			},
+		),
 	} {
-		pkg.Register(b)
+		pkg(b)
 	}
-	ioc.WrapService(b, func(_ ioc.Dic, b codec.Builder) {
+	ioc.Wrap(b, func(_ ioc.Dic, b codec.Builder) {
 		b.
 			Register(uuid.UUID{}).
 			Register(uuid.Component{})
 	})
-	ioc.RegisterSingleton(b, func(c ioc.Dic) uuid.Factory { return internal.NewFactory() })
-	relationpkg.MapRelationPackage(
-		func(w ecs.World) ecs.DirtySet {
-			set := ecs.NewDirtySet()
-			ecs.GetComponentsArray[uuid.Component](w).AddDirtySet(set)
-			return set
-		},
-		func(w ecs.World) func(entity ecs.EntityID) (indexType uuid.UUID, ok bool) {
-			uniqueArray := ecs.GetComponentsArray[uuid.Component](w)
-			return func(entity ecs.EntityID) (indexType uuid.UUID, ok bool) {
-				component, ok := uniqueArray.Get(entity)
-				if !ok {
-					return uuid.UUID{}, false
-				}
-				return component.ID, true
-			}
-		},
-	).Register(b)
+	ioc.Register(b, func(c ioc.Dic) uuid.Factory { return internal.NewFactory() })
 
-	ioc.RegisterSingleton(b, func(c ioc.Dic) uuid.Service {
+	ioc.Register(b, func(c ioc.Dic) uuid.Service {
 		return internal.NewService(c)
 	})
-}
+})

@@ -24,26 +24,20 @@ import (
 	"github.com/ogiusek/ioc/v2"
 )
 
-type pkg struct{}
-
-func Package() ioc.Pkg {
-	return pkg{}
-}
-
-func (pkg) Register(b ioc.Builder) {
+var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 	for _, pkg := range []ioc.Pkg{
-		transitionpkg.PackageT[render.ColorComponent](),
-		transitionpkg.PackageT[render.TextureFrameComponent](),
+		transitionpkg.PkgT[render.ColorComponent](),
+		transitionpkg.PkgT[render.TextureFrameComponent](),
 
-		prototypepkg.PackageT[render.MeshComponent](),
-		prototypepkg.PackageT[render.TextureComponent](),
-		prototypepkg.PackageT[render.TextureFrameComponent](),
-		prototypepkg.PackageT[render.ColorComponent](),
+		prototypepkg.PkgT[render.MeshComponent](),
+		prototypepkg.PkgT[render.TextureComponent](),
+		prototypepkg.PkgT[render.TextureFrameComponent](),
+		prototypepkg.PkgT[render.ColorComponent](),
 	} {
-		pkg.Register(b)
+		pkg(b)
 	}
 
-	ioc.RegisterSingleton(b, func(c ioc.Dic) vbo.VBOFactory[render.Vertex] {
+	ioc.Register(b, func(c ioc.Dic) vbo.VBOFactory[render.Vertex] {
 		return func() vbo.VBOSetter[render.Vertex] {
 			vbo := vbo.NewVBO[render.Vertex](func() {
 				gl.VertexAttribPointerWithOffset(0, 3, gl.FLOAT, false,
@@ -58,11 +52,11 @@ func (pkg) Register(b ioc.Builder) {
 		}
 	})
 
-	ioc.RegisterSingleton(b, func(c ioc.Dic) render.Service {
+	ioc.Register(b, func(c ioc.Dic) render.Service {
 		return service.NewService(c)
 	})
 
-	ioc.RegisterSingleton(b, func(c ioc.Dic) render.System {
+	ioc.Register(b, func(c ioc.Dic) render.System {
 		return ecs.NewSystemRegister(func() error {
 			errs := ecs.RegisterSystems(
 				systems.NewErrorLogger(c),
@@ -75,7 +69,7 @@ func (pkg) Register(b ioc.Builder) {
 		})
 	})
 
-	ioc.RegisterSingleton(b, func(c ioc.Dic) render.SystemRenderer {
+	ioc.Register(b, func(c ioc.Dic) render.SystemRenderer {
 		return ecs.NewSystemRegister(func() error {
 			errs := ecs.RegisterSystems(
 				instancing.NewSystem(c),
@@ -87,7 +81,7 @@ func (pkg) Register(b ioc.Builder) {
 		})
 	})
 
-	ioc.WrapService(b, func(c ioc.Dic, b assets.Service) {
+	ioc.Wrap(b, func(c ioc.Dic, b assets.Service) {
 		imageHandler := func(id assets.PathComponent) (assets.Asset, error) {
 			source, err := os.ReadFile(id.Path)
 			if err != nil {
@@ -167,4 +161,4 @@ func (pkg) Register(b ioc.Builder) {
 		b.Register("gif", gifHandler)
 		b.Register("gif-trim", gifTrimHandler)
 	})
-}
+})

@@ -8,21 +8,15 @@ import (
 	"github.com/ogiusek/ioc/v2"
 )
 
-type pkg struct{}
-
-func Package() ioc.Pkg {
-	return pkg{}
-}
-
-func (pkg) Register(b ioc.Builder) {
+var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 	for _, pkg := range []ioc.Pkg{
-		prototypepkg.PackageT[layout.AlignComponent](),
-		prototypepkg.PackageT[layout.GapComponent](),
-		prototypepkg.PackageT[layout.OrderComponent](),
+		prototypepkg.PkgT[layout.AlignComponent](),
+		prototypepkg.PkgT[layout.GapComponent](),
+		prototypepkg.PkgT[layout.OrderComponent](),
 	} {
-		pkg.Register(b)
+		pkg(b)
 	}
-	ioc.RegisterSingleton(b, func(c ioc.Dic) layout.Service {
+	ioc.Register(b, func(c ioc.Dic) layout.Service {
 		return service.NewLayoutService(c)
 	})
-}
+})

@@ -9,33 +9,35 @@ import (
 	"github.com/veandco/go-sdl2/sdl"
 )
 
-type pkg struct {
-	pkgs []ioc.Pkg
+type config struct {
+	w   *sdl.Window
+	ctx sdl.GLContext
 }
 
-func Package(
+func NewConfig(
 	w *sdl.Window,
 	ctx sdl.GLContext,
-) pkg {
-	return pkg{
-		pkgs: []ioc.Pkg{
-			audio.Package(),
-			inputs.Package(),
-			window.Package(w, ctx),
-		},
+) config {
+	return config{
+		w,
+		ctx,
 	}
 }
 
-func (pkg pkg) Register(b ioc.Builder) {
-	for _, pkg := range pkg.pkgs {
-		pkg.Register(b)
+var Pkg = ioc.NewPkgT(func(b ioc.Builder, config config) {
+	for _, pkg := range []ioc.Pkg{
+		audio.Pkg,
+		inputs.Pkg,
+		window.Pkg(window.NewConfig(config.w, config.ctx)),
+	} {
+		pkg(b)
 	}
 
-	ioc.RegisterSingleton(b, func(c ioc.Dic) Api {
+	ioc.Register(b, func(c ioc.Dic) Api {
 		return newApi(
 			ioc.Get[inputs.Api](c),
 			ioc.Get[window.Api](c),
 			ioc.Get[audio.Api](c),
 		)
 	})
-}
+})

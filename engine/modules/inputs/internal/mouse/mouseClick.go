@@ -1,9 +1,9 @@
 package mouse
 
 import (
+	"engine"
 	"engine/modules/inputs"
 	"engine/services/ecs"
-	"engine/services/logger"
 	"engine/services/media/window"
 	"errors"
 	"slices"
@@ -21,14 +21,7 @@ var (
 )
 
 type clickSystem struct {
-	Logger logger.Logger `inject:"1"`
-
-	World  ecs.World      `inject:"1"`
-	Inputs inputs.Service `inject:"1"`
-
-	EventsBuilder events.Builder `inject:"1"`
-	Events        events.Events  `inject:"1"`
-	Window        window.Api     `inject:"1"`
+	engine.EngineWorld `inject:""`
 
 	maxMoved,
 
@@ -47,8 +40,8 @@ func NewClickSystem(c ioc.Dic) inputs.System {
 		s := ioc.GetServices[*clickSystem](c)
 		s.maxMoved = 3
 
-		events.Listen(s.EventsBuilder, s.ListenClick)
-		events.Listen(s.EventsBuilder, s.ListenMove)
+		events.Listen(s.EventsBuilder(), s.ListenClick)
+		events.Listen(s.EventsBuilder(), s.ListenMove)
 		return nil
 	})
 }
@@ -68,12 +61,12 @@ func (s *clickSystem) ListenMove(event sdl.MouseMotionEvent) {
 	}
 
 	if s.emitDrag {
-		events.Emit(s.Events, dragEvent)
+		events.Emit(s.Events(), dragEvent)
 	}
 
 	if s.movedEntity != nil {
 		entity := *s.movedEntity
-		dragComponent, ok := s.Inputs.Drag().Get(entity)
+		dragComponent, ok := s.Inputs().Drag().Get(entity)
 		if !ok {
 			goto cleanUp
 		}
@@ -84,7 +77,7 @@ func (s *clickSystem) ListenMove(event sdl.MouseMotionEvent) {
 		if e, ok := dragComponent.Event.(inputs.ApplyEntityEvent); ok {
 			dragComponent.Event = e.ApplyEntity(entity)
 		}
-		events.EmitAny(s.Events, dragComponent.Event)
+		events.EmitAny(s.Events(), dragComponent.Event)
 	}
 
 cleanUp:
@@ -101,7 +94,7 @@ func (s *clickSystem) ListenClick(event sdl.MouseButtonEvent) {
 	copy(stackedBefore, s.stacked)
 
 	var stacked []inputs.Target
-	stacked = append(stacked, s.Inputs.StackedData()...)
+	stacked = append(stacked, s.Inputs().StackedData()...)
 
 	var target *inputs.Target
 
@@ -140,12 +133,12 @@ func (s *clickSystem) ListenClick(event sdl.MouseButtonEvent) {
 			break
 		}
 
-		if _, ok := s.Inputs.KeepSelected().Get(target.Entity); ok {
+		if _, ok := s.Inputs().KeepSelected().Get(target.Entity); ok {
 			s.emitDrag = false
 			break
 		}
 		s.movedFrom = &pos
-		hover, _ := s.Inputs.Hovered().Get(target.Entity)
+		hover, _ := s.Inputs().Hovered().Get(target.Entity)
 		s.movingCamera = hover.Camera
 
 	case sdl.RELEASED:
@@ -156,7 +149,7 @@ func (s *clickSystem) ListenClick(event sdl.MouseButtonEvent) {
 			break
 		}
 
-		if _, ok := s.Inputs.KeepSelected().Get(target.Entity); !ok && s.moved > s.maxMoved {
+		if _, ok := s.Inputs().KeepSelected().Get(target.Entity); !ok && s.moved > s.maxMoved {
 			break
 		}
 
@@ -164,28 +157,28 @@ func (s *clickSystem) ListenClick(event sdl.MouseButtonEvent) {
 
 		switch event.Button {
 		case sdl.BUTTON_LEFT:
-			if comp, ok := s.Inputs.LeftClick().Get(target.Entity); ok {
+			if comp, ok := s.Inputs().LeftClick().Get(target.Entity); ok {
 				eventToEmit = comp.Event
 			}
 			switch event.Clicks {
 			case 2:
-				if comp, ok := s.Inputs.DoubleLeftClick().Get(target.Entity); ok {
+				if comp, ok := s.Inputs().DoubleLeftClick().Get(target.Entity); ok {
 					eventToEmit = comp.Event
 				}
 			}
 		case sdl.BUTTON_RIGHT:
-			if comp, ok := s.Inputs.RightClick().Get(target.Entity); ok {
+			if comp, ok := s.Inputs().RightClick().Get(target.Entity); ok {
 				eventToEmit = comp.Event
 			}
 			switch event.Clicks {
 			case 2:
-				if comp, ok := s.Inputs.DoubleRightClick().Get(target.Entity); ok {
+				if comp, ok := s.Inputs().DoubleRightClick().Get(target.Entity); ok {
 					eventToEmit = comp.Event
 				}
 			}
 		}
 
-		if _, ok := s.Inputs.Stack().Get(target.Entity); !ok {
+		if _, ok := s.Inputs().Stack().Get(target.Entity); !ok {
 			s.stacked = nil
 		} else if len(s.stacked) != 0 && s.stacked[0] == *target {
 			s.stacked = s.stacked[:1]
@@ -200,7 +193,7 @@ func (s *clickSystem) ListenClick(event sdl.MouseButtonEvent) {
 			if e, ok := eventToEmit.(inputs.ApplyEntityEvent); ok {
 				eventToEmit = e.ApplyEntity(target.Entity)
 			}
-			events.EmitAny(s.Events, eventToEmit)
+			events.EmitAny(s.Events(), eventToEmit)
 		}
 	}
 
@@ -221,10 +214,10 @@ func (s *clickSystem) ListenClick(event sdl.MouseButtonEvent) {
 	}
 
 	for _, added := range added {
-		s.Inputs.Stacked().Set(added, inputs.StackedComponent{})
+		s.Inputs().Stacked().Set(added, inputs.StackedComponent{})
 	}
 
 	for _, removed := range removed {
-		s.Inputs.Stacked().Remove(removed)
+		s.Inputs().Stacked().Remove(removed)
 	}
 }

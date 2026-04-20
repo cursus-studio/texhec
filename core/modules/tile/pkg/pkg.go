@@ -9,7 +9,7 @@ import (
 	"core/modules/tile/internal/tilerenderer"
 	"core/modules/tile/internal/tileservice"
 	"core/modules/tile/internal/tilesystem"
-	"engine"
+	gamescenes "core/scenes"
 	"engine/modules/assets"
 	"engine/modules/collider"
 	gridpkg "engine/modules/grid/pkg"
@@ -22,27 +22,23 @@ import (
 	"engine/services/codec"
 	"engine/services/ecs"
 	gtexture "engine/services/graphics/texture"
+	"engine/services/graphics/vao/vbo"
 	"fmt"
 	"image"
 	"os"
 	"strconv"
 	"strings"
+	"unsafe"
 
+	"github.com/go-gl/gl/v4.5-core/gl"
 	"github.com/ogiusek/ioc/v2"
 )
 
-type pkg struct {
-}
-
-func Package() ioc.Pkg {
-	return pkg{}
-}
-
-func (pkg pkg) Register(b ioc.Builder) {
+var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 	for _, pkg := range []ioc.Pkg{
-		gridpkg.Package[tile.ID](tile.NewHoverEvent),
-		gridpkg.Package[tile.Obstruction](nil),
-		relationpkg.SpatialRelationPackage(
+		gridpkg.Pkg(gridpkg.NewConfig[tile.ID](tile.NewHoverEvent)),
+		gridpkg.Pkg(gridpkg.NewConfig[tile.Obstruction](nil)),
+		relationpkg.SpatialRelationPkg(
 			func(w ecs.World) ecs.DirtySet {
 				dirtySet := ecs.NewDirtySet()
 				ecs.GetComponentsArray[tile.TypeComponent](w).AddDirtySet(dirtySet)
@@ -57,34 +53,55 @@ func (pkg pkg) Register(b ioc.Builder) {
 			},
 			func(index tile.ID) uint32 { return uint32(index) },
 		),
-		tilerenderer.Package(),
-		prototypepkg.PackageT[tile.TypeComponent](),
-		prototypepkg.PackageT[tile.PosComponent](),
-		prototypepkg.PackageT[tile.SizeComponent](),
-		prototypepkg.PackageT[tile.RotComponent](),
-		prototypepkg.PackageT[tile.LayerComponent](),
+		prototypepkg.PkgT[tile.TypeComponent](),
+		prototypepkg.PkgT[tile.PosComponent](),
+		prototypepkg.PkgT[tile.SizeComponent](),
+		prototypepkg.PkgT[tile.RotComponent](),
+		prototypepkg.PkgT[tile.LayerComponent](),
 
-		prototypepkg.PackageT[tile.ObstructionComponent](),
+		prototypepkg.PkgT[tile.ObstructionComponent](),
 
-		prototypepkg.PackageT[tile.SpeedComponent](),
+		prototypepkg.PkgT[tile.SpeedComponent](),
 
-		transitionpkg.PackageT[tile.PosComponent](),
-		transitionpkg.PackageT[tile.RotComponent](),
+		transitionpkg.PkgT[tile.PosComponent](),
+		transitionpkg.PkgT[tile.RotComponent](),
 	} {
-		pkg.Register(b)
+		pkg(b)
 	}
 
-	ioc.WrapService(b, func(c ioc.Dic, b codec.Builder) {
+	{ // tilerenderer
+		// TODO
+		// currently doesn't support animated tiles
+		// always renderes first frame if something is animated
+		ioc.Register(b, func(c ioc.Dic) tile.SystemRenderer {
+			return ecs.NewSystemRegister(func() error { return tilerenderer.NewSystem(c) })
+		})
+
+		ioc.Register(b, func(c ioc.Dic) vbo.VBOFactory[tile.ID] {
+			return func() vbo.VBOSetter[tile.ID] {
+				vbo := vbo.NewVBO[tile.ID](func() {
+					var i uint32 = 0
+
+					gl.VertexAttribIPointerWithOffset(i, 1, gl.UNSIGNED_BYTE,
+						int32(unsafe.Sizeof(tile.ID(0))), uintptr(0))
+					gl.EnableVertexAttribArray(i)
+				})
+				return vbo
+			}
+		})
+	}
+
+	ioc.Wrap(b, func(c ioc.Dic, b codec.Builder) {
 		b.
 			// events
 			Register(tile.HoverEvent{})
 	})
 
-	ioc.RegisterSingleton(b, func(c ioc.Dic) tile.Service {
+	ioc.Register(b, func(c ioc.Dic) tile.Service {
 		return tileservice.NewService(c)
 	})
 
-	ioc.RegisterSingleton(b, func(c ioc.Dic) tile.System {
+	ioc.Register(b, func(c ioc.Dic) tile.System {
 		systems := []tile.System{
 			tilesystem.NewSystem(c),
 			clicksystem.NewSystem(c),
@@ -100,7 +117,7 @@ func (pkg pkg) Register(b ioc.Builder) {
 		})
 	})
 
-	ioc.WrapService(b, func(c ioc.Dic, b assets.Service) {
+	ioc.Wrap(b, func(c ioc.Dic, b assets.Service) {
 		b.Register("biom", func(path assets.PathComponent) (assets.Asset, error) {
 			images := [6][]image.Image{}
 			directory, _ := strings.CutSuffix(path.Path, ".biom")
@@ -135,12 +152,8 @@ func (pkg pkg) Register(b ioc.Builder) {
 		})
 	})
 
-	ioc.WrapService(b, func(c ioc.Dic, b registry.Service) {
-		type World struct {
-			engine.World `inject:"1"`
-			Tile         tile.Service       `inject:"1"`
-			Definitions  definitions.Assets `inject:"1"`
-		}
+	ioc.Wrap(b, func(c ioc.Dic, b registry.Service) {
+		world := ioc.GetServices[gamescenes.GameWorld](c)
 		var counter tile.ID
 		b.Register("object", func(entity ecs.EntityID, structTagValue string) {
 			var layer tile.Coord
@@ -152,22 +165,19 @@ func (pkg pkg) Register(b ioc.Builder) {
 			default:
 				return
 			}
-			world := ioc.GetServices[World](c)
-			world.Tile.Rot().Set(entity, tile.NewRot(0))
-			world.Tile.Layer().Set(entity, tile.NewLayer(layer))
-			world.Render.Mesh().Set(entity, render.NewMesh(world.Definitions.SquareMesh))
-			world.Render.Texture().Set(entity, render.NewTexture(entity))
-			world.Groups.Component().Set(entity, groups.EmptyGroups().Ptr().Enable(definitions.GameGroup).Val())
+			world.Tile().Rot().Set(entity, tile.NewRot(0))
+			world.Tile().Layer().Set(entity, tile.NewLayer(layer))
+			world.Render().Mesh().Set(entity, render.NewMesh(world.Definitions().SquareMesh))
+			world.Render().Texture().Set(entity, render.NewTexture(entity))
+			world.Groups().Component().Set(entity, groups.EmptyGroups().Ptr().Enable(definitions.GameGroup).Val())
 
-			world.Collider.Component().Set(entity, collider.NewCollider(world.Definitions.SquareCollider))
+			world.Collider().Component().Set(entity, collider.NewCollider(world.Definitions().SquareCollider))
 		})
 		b.Register("tile", func(entity ecs.EntityID, structTagValue string) {
 			counter++
-			tileService := ioc.Get[tile.Service](c)
-			tileService.TileType().Set(entity, tile.NewTileType(counter))
+			world.Tile().TileType().Set(entity, tile.NewTileType(counter))
 		})
 		b.Register("obstruction", func(entity ecs.EntityID, structTagValue string) {
-			world := ioc.GetServices[World](c)
 			var obstruction tile.Obstruction
 			if strings.Contains(structTagValue, "water") {
 				obstruction |= definitions.WaterObstruction
@@ -178,41 +188,39 @@ func (pkg pkg) Register(b ioc.Builder) {
 			if strings.Contains(structTagValue, "air") {
 				obstruction |= definitions.AirspaceObstruction
 			}
-			world.Tile.Obstruction().Set(entity, tile.NewObstruction(obstruction))
+			world.Tile().Obstruction().Set(entity, tile.NewObstruction(obstruction))
 		})
 		b.Register("size", func(entity ecs.EntityID, structTagValue string) {
 			errInvalidFormat := fmt.Errorf("size should be in format \"1x1\" where first number is width and second is height")
-			world := ioc.GetServices[World](c)
 			xy := strings.Split(structTagValue, "x")
 			if len(xy) != 2 {
-				world.Logger.Warn(errInvalidFormat)
+				world.Logger().Warn(errInvalidFormat)
 				return
 			}
 			x, err := strconv.Atoi(xy[0])
 			if err != nil {
-				world.Logger.Warn(errInvalidFormat)
+				world.Logger().Warn(errInvalidFormat)
 				return
 			}
 			y, err := strconv.Atoi(xy[1])
 			if err != nil {
-				world.Logger.Warn(errInvalidFormat)
+				world.Logger().Warn(errInvalidFormat)
 				return
 			}
-			world.Tile.Size().Set(entity, tile.NewSize(x, y))
+			world.Tile().Size().Set(entity, tile.NewSize(x, y))
 		})
 		b.Register("speed", func(entity ecs.EntityID, structTagValue string) {
-			world := ioc.GetServices[World](c)
 			v, err := strconv.Atoi(structTagValue)
 			if err != nil {
-				world.Logger.Warn(err)
+				world.Logger().Warn(err)
 				return
 			}
 			speed := tile.NewSpeed(v)
 			if int(speed.InvSpeed) != v {
-				world.Logger.Warn(fmt.Errorf("speed has to be clamped between 0 and 255"))
+				world.Logger().Warn(fmt.Errorf("speed has to be clamped between 0 and 255"))
 				return
 			}
-			world.Tile.Speed().Set(entity, speed)
+			world.Tile().Speed().Set(entity, speed)
 		})
 	})
-}
+})

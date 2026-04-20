@@ -1,10 +1,9 @@
 package service
 
 import (
+	"engine"
 	"engine/modules/camera"
 	"engine/modules/collider"
-	"engine/modules/groups"
-	"engine/modules/transform"
 	"engine/services/datastructures"
 	"engine/services/ecs"
 	"engine/services/media/window"
@@ -41,10 +40,7 @@ type projectionComponent struct {
 }
 
 type service struct {
-	World     ecs.World         `inject:"1"`
-	Transform transform.Service `inject:"1"`
-	Groups    groups.Service    `inject:"1"`
-	Window    window.Api        `inject:"1"`
+	engine.EngineWorld `inject:""`
 
 	cameraArray      ecs.ComponentsArray[camera.Component]
 	priorityArray    ecs.ComponentsArray[camera.PriorityComponent]
@@ -68,23 +64,23 @@ type service struct {
 
 func NewService(c ioc.Dic) Service {
 	s := ioc.GetServices[*service](c)
-	s.cameraArray = ecs.GetComponentsArray[camera.Component](s.World)
-	s.priorityArray = ecs.GetComponentsArray[camera.PriorityComponent](s.World)
-	s.projectionsArray = ecs.GetComponentsArray[projectionComponent](s.World)
+	s.cameraArray = ecs.GetComponentsArray[camera.Component](s.World())
+	s.priorityArray = ecs.GetComponentsArray[camera.PriorityComponent](s.World())
+	s.projectionsArray = ecs.GetComponentsArray[projectionComponent](s.World())
 
 	s.projectionIDs = make(map[reflect.Type]projectionID)
 	s.projections = datastructures.NewSparseArray[projectionID, ProjectionData]()
 	s.dirtySet = ecs.NewDirtySet()
 
-	s.mobileCamera = ecs.GetComponentsArray[camera.MobileCameraComponent](s.World)
-	s.cameraLimits = ecs.GetComponentsArray[camera.CameraLimitsComponent](s.World)
-	s.viewport = ecs.GetComponentsArray[camera.ViewportComponent](s.World)
-	s.normalizedViewport = ecs.GetComponentsArray[camera.NormalizedViewportComponent](s.World)
+	s.mobileCamera = ecs.GetComponentsArray[camera.MobileCameraComponent](s.World())
+	s.cameraLimits = ecs.GetComponentsArray[camera.CameraLimitsComponent](s.World())
+	s.viewport = ecs.GetComponentsArray[camera.ViewportComponent](s.World())
+	s.normalizedViewport = ecs.GetComponentsArray[camera.NormalizedViewportComponent](s.World())
 
-	s.ortho = ecs.GetComponentsArray[camera.OrthoComponent](s.World)
-	s.orthoResolution = ecs.GetComponentsArray[camera.OrthoResolutionComponent](s.World)
-	s.perspective = ecs.GetComponentsArray[camera.PerspectiveComponent](s.World)
-	s.dynamicPerspective = ecs.GetComponentsArray[camera.DynamicPerspectiveComponent](s.World)
+	s.ortho = ecs.GetComponentsArray[camera.OrthoComponent](s.World())
+	s.orthoResolution = ecs.GetComponentsArray[camera.OrthoResolutionComponent](s.World())
+	s.perspective = ecs.GetComponentsArray[camera.PerspectiveComponent](s.World())
+	s.dynamicPerspective = ecs.GetComponentsArray[camera.DynamicPerspectiveComponent](s.World())
 
 	s.projectionsArray.BeforeGet(s.BeforeGet)
 	s.cameraArray.AddDirtySet(s.dirtySet)
@@ -146,10 +142,10 @@ func (t *service) GetViewport(entity ecs.EntityID) (x, y, w, h int32) {
 	}
 	normalizedViewportComponent, ok := t.normalizedViewport.Get(entity)
 	if ok {
-		return normalizedViewportComponent.Viewport(t.Window.Window().GetSize())
+		return normalizedViewportComponent.Viewport(t.Window().Window().GetSize())
 	}
 
-	w, h = t.Window.Window().GetSize()
+	w, h = t.Window().Window().GetSize()
 	return 0, 0, w, h
 }
 func (t *service) Mat4(entity ecs.EntityID) mgl32.Mat4 {
@@ -174,7 +170,7 @@ func (t *service) ShootRay(camera ecs.EntityID, mousePos window.MousePos) collid
 	}
 
 	ray := data.ShootRay(camera, mousePos)
-	groups, _ := t.Groups.Component().Get(camera)
+	groups, _ := t.Groups().Component().Get(camera)
 	ray.Groups = groups
 	return ray
 }

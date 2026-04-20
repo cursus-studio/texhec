@@ -5,7 +5,7 @@ import "testing"
 func TestClone(t *testing.T) {
 	s := NewSetup()
 
-	cloned := s.World.NewEntity()
+	cloned := s.World().NewEntity()
 	cloned1Comp := Cloned1Component{1}
 	cloned2Comp := Cloned2Component{1}
 	notClonedComp := NotClonedComponent{1}
@@ -13,7 +13,7 @@ func TestClone(t *testing.T) {
 	s.Cloned2.Set(cloned, cloned2Comp)
 	s.NotCloned.Set(cloned, notClonedComp)
 
-	clone := s.Prototype.Clone(cloned)
+	clone := s.Prototype().Clone(cloned)
 	if clonedComp1Cp, ok := s.Cloned1.Get(clone); !ok {
 		t.Errorf("clonedComponent didn't got cloned ")
 		return

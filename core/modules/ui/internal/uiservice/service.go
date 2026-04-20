@@ -1,9 +1,8 @@
 package uiservice
 
 import (
-	"core/modules/definitions"
 	"core/modules/ui"
-	"engine"
+	gamescenes "core/scenes"
 	"engine/modules/transform"
 	"engine/modules/transition"
 	"engine/services/ecs"
@@ -19,8 +18,7 @@ type menuComponent struct {
 type childrenComponent struct{}
 
 type service struct {
-	Definitions  definitions.Definitions `inject:"1"`
-	engine.World `inject:"1"`
+	gamescenes.GameWorld `inject:""`
 
 	animationDuration time.Duration
 
@@ -42,13 +40,13 @@ func NewService(
 	t.animationDuration = animationDuration
 	t.bgTimePerFrame = bgTimePerFrame
 
-	t.uiCameraArray = ecs.GetComponentsArray[ui.UiCameraComponent](t.World)
-	t.cursorCameraArray = ecs.GetComponentsArray[ui.CursorCameraComponent](t.World)
-	t.animatedBackgroundArray = ecs.GetComponentsArray[ui.AnimatedBackgroundComponent](t.World)
-	t.menuArray = ecs.GetComponentsArray[menuComponent](t.World)
-	t.childrenWrapperArray = ecs.GetComponentsArray[childrenComponent](t.World)
+	t.uiCameraArray = ecs.GetComponentsArray[ui.UiCameraComponent](t.World())
+	t.cursorCameraArray = ecs.GetComponentsArray[ui.CursorCameraComponent](t.World())
+	t.animatedBackgroundArray = ecs.GetComponentsArray[ui.AnimatedBackgroundComponent](t.World())
+	t.menuArray = ecs.GetComponentsArray[menuComponent](t.World())
+	t.childrenWrapperArray = ecs.GetComponentsArray[childrenComponent](t.World())
 
-	events.Listen(t.EventsBuilder, func(e ui.HideUiEvent) {
+	events.Listen(t.EventsBuilder(), func(e ui.HideUiEvent) {
 		t.Hide()
 	})
 
@@ -61,8 +59,8 @@ func (t *service) ResetChildWrapper() {
 	t.EnsureExists()
 
 	for _, childWrapper := range t.childrenWrapperArray.GetEntities() {
-		for _, child := range t.Hierarchy.Children(childWrapper).GetIndices() {
-			t.RemoveEntity(child)
+		for _, child := range t.Hierarchy().Children(childWrapper).GetIndices() {
+			t.World().RemoveEntity(child)
 		}
 	}
 }
@@ -81,7 +79,7 @@ func (t *service) Show() []ecs.EntityID {
 	for _, menu := range t.menuArray.GetEntities() {
 		if component, _ := t.menuArray.Get(menu); !component.Visible {
 			t.menuArray.Set(menu, menuComponent{true})
-			events.Emit(t.Events, transition.NewTransitionEvent(
+			events.Emit(t.Events(), transition.NewTransitionEvent(
 				menu,
 				transform.NewPivotPoint(0, 1, .5),
 				transform.NewPivotPoint(1, 1, .5),
@@ -98,7 +96,7 @@ func (t *service) Hide() {
 	for _, menu := range t.menuArray.GetEntities() {
 		if component, _ := t.menuArray.Get(menu); component.Visible {
 			t.menuArray.Set(menu, menuComponent{false})
-			events.Emit(t.Events, transition.NewTransitionEvent(
+			events.Emit(t.Events(), transition.NewTransitionEvent(
 				menu,
 				transform.NewPivotPoint(1, 1, .5),
 				transform.NewPivotPoint(0, 1, .5),

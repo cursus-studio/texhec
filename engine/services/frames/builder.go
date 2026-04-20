@@ -5,13 +5,6 @@ import (
 	"time"
 
 	"github.com/ogiusek/events"
-	"github.com/ogiusek/ioc/v2"
-)
-
-const (
-	// before scene listeners are executed
-	HandleInputs ioc.Order = iota
-	FlushDraw
 )
 
 type FrameEvent struct {
@@ -63,7 +56,11 @@ func (b *builder) Build(events events.Events, clock clock.Clock) Frames {
 		Running: false,
 		TPS:     b.tps,
 		FPS:     b.fps,
-		Events:  events,
-		Clock:   clock,
+
+		TickDuration:  time.Second / time.Duration(b.tps),
+		FrameDuration: time.Second / time.Duration(b.fps),
+
+		Events: events,
+		Clock:  clock,
 	}
 }

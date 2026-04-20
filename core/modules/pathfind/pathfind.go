@@ -30,8 +30,10 @@ type Service interface {
 }
 
 // TODO:
-// - each tick check each component and add tile.Step for each without tile.Step
-// - follow patterns in deploy module how to add hover effects
+// - add path caching (best would be improving its performance)
+// - add more security to ensure 2 objects cannot move to the same tile in one tick (this causes error currently)
+// - improve errors
+// - look on `HPA*` and `JPS`
 
 // Select object.
 // Add in gui some indicator.

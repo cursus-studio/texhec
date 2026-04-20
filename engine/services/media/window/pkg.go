@@ -7,35 +7,35 @@ import (
 	"github.com/veandco/go-sdl2/sdl"
 )
 
-type pkg struct {
+type config struct {
 	window  *sdl.Window
 	context sdl.GLContext
 }
 
-func Package(
+func NewConfig(
 	window *sdl.Window,
 	context sdl.GLContext,
-) ioc.Pkg {
-	return pkg{
+) config {
+	return config{
 		window:  window,
 		context: context,
 	}
 }
 
-func (pkg pkg) Register(b ioc.Builder) {
-	ioc.RegisterSingleton(b, func(c ioc.Dic) Api {
+var Pkg = ioc.NewPkgT(func(b ioc.Builder, config config) {
+	ioc.Register(b, func(c ioc.Dic) Api {
 		return newApi(
-			pkg.window,
-			pkg.context,
+			config.window,
+			config.context,
 		)
 	})
 
-	ioc.WrapServiceInOrder(b, runtimeservice.OrderCleanUp, func(c ioc.Dic, b runtimeservice.Builder) {
-		b.OnStop(func(r runtimeservice.Runtime) {
+	ioc.Wrap(b, func(c ioc.Dic, b runtimeservice.Builder) {
+		b.OnCleanUp(func(r runtimeservice.Runtime) {
 			api := ioc.Get[Api](c)
 			sdl.GLDeleteContext(api.Ctx())
 			_ = api.Window().Destroy()
 			sdl.Quit()
 		})
 	})
-}
+})

@@ -1,34 +1,26 @@
 package test
 
 import (
+	"engine"
+	"engine/mock"
 	"engine/modules/noise"
 	"engine/modules/noise/internal"
-	noisepkg "engine/modules/noise/pkg"
-	"engine/services/clock"
-	"engine/services/logger"
 	"math"
 	"testing"
-	"time"
 
 	"github.com/ogiusek/ioc/v2"
 )
 
 type Setup struct {
-	Noise noise.Service `inject:"1"`
-	T     *testing.T
-	Layer noise.LayerConfig
+	engine.EngineWorld `inject:""`
+	T                  *testing.T
+	Layer              noise.LayerConfig
 }
 
 func NewSetup(t *testing.T) Setup {
-	b := ioc.NewBuilder()
-	for _, pkg := range []ioc.Pkg{
-		logger.Package(true, func(c ioc.Dic, message string) { print(message) }),
-		clock.Package(time.RFC3339Nano),
-		noisepkg.Package(),
-	} {
-		pkg.Register(b)
-	}
-	c := b.Build()
+	c := ioc.NewContainer(
+		mock.Pkg,
+	)
 	setup := ioc.GetServices[Setup](c)
 	setup.T = t
 	setup.Layer = noise.NewLayer(1, 1)

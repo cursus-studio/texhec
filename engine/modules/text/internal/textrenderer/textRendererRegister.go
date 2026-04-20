@@ -2,17 +2,13 @@ package textrenderer
 
 import (
 	_ "embed"
-	"engine/modules/camera"
-	"engine/modules/groups"
+	"engine"
 	"engine/modules/text"
-	"engine/modules/transform"
 	"engine/services/datastructures"
 	"engine/services/ecs"
 	"engine/services/graphics/program"
 	"engine/services/graphics/shader"
-	"engine/services/graphics/texturearray"
 	"engine/services/graphics/vao/vbo"
-	"engine/services/logger"
 
 	"github.com/go-gl/gl/v4.5-core/gl"
 	"github.com/ogiusek/events"
@@ -29,18 +25,11 @@ var geomSource string
 var fragSource string
 
 type textRendererRegister struct {
-	EventsBuilder       events.Builder        `inject:"1"`
-	World               ecs.World             `inject:"1"`
-	Camera              camera.Service        `inject:"1"`
-	Groups              groups.Service        `inject:"1"`
-	Transform           transform.Service     `inject:"1"`
-	Text                text.Service          `inject:"1"`
-	FontService         FontService           `inject:"1"`
-	VboFactory          vbo.VBOFactory[Glyph] `inject:"1"`
-	LayoutService       LayoutService         `inject:"1"`
-	Logger              logger.Logger         `inject:"1"`
-	TextureArrayFactory texturearray.Factory  `inject:"1"`
-	FontsKeys           FontKeys              `inject:"1"`
+	engine.EngineWorld `inject:""`
+	FontService        FontService           `inject:""`
+	VboFactory         vbo.VBOFactory[Glyph] `inject:""`
+	LayoutService      LayoutService         `inject:""`
+	FontsKeys          FontKeys              `inject:""`
 
 	defaultTextAsset    ecs.EntityID
 	defaultColor        text.TextColorComponent
@@ -108,22 +97,22 @@ func (f *textRendererRegister) Register() error {
 		layoutsBatches: datastructures.NewSparseArray[ecs.EntityID, layoutBatch](),
 	}
 
-	renderer.Transform.AddDirtySet(renderer.dirtyEntities)
+	renderer.Transform().AddDirtySet(renderer.dirtyEntities)
 
 	arrays := []ecs.AnyComponentArray{
-		ecs.GetComponentsArray[text.TextComponent](f.World),
-		ecs.GetComponentsArray[text.BreakComponent](f.World),
-		ecs.GetComponentsArray[text.FontFamilyComponent](f.World),
+		ecs.GetComponentsArray[text.TextComponent](f.World()),
+		ecs.GetComponentsArray[text.BreakComponent](f.World()),
+		ecs.GetComponentsArray[text.FontFamilyComponent](f.World()),
 		// ecs.GetComponentsArray[text.Overflow](w),
-		ecs.GetComponentsArray[text.FontSizeComponent](f.World),
-		ecs.GetComponentsArray[text.TextAlignComponent](f.World),
+		ecs.GetComponentsArray[text.FontSizeComponent](f.World()),
+		ecs.GetComponentsArray[text.TextAlignComponent](f.World()),
 	}
 
 	for _, array := range arrays {
 		array.AddDirtySet(renderer.dirtyEntities)
 	}
 
-	events.Listen(f.EventsBuilder, renderer.ListenRender)
+	events.Listen(f.EventsBuilder(), renderer.ListenRender)
 
 	return nil
 }

@@ -46,17 +46,17 @@ const (
 	MusicChannel
 )
 
-type World struct {
-	engine.World `inject:"1"`
+type GameWorld struct {
+	engine.EngineWorld `inject:""`
 
 	// game
-	Definitions definitions.Definitions `inject:"1"`
-	Deploy      deploy.Service          `inject:"1"`
-	Generation  generation.Service      `inject:"1"`
-	Pathfind    pathfind.Service        `inject:"1"`
-	Player      player.Service          `inject:"1"`
-	Tile        tile.Service            `inject:"1"`
-	Ui          ui.Service              `inject:"1"`
+	Definitions ioc.Lazy[definitions.Definitions] `inject:""`
+	Deploy      ioc.Lazy[deploy.Service]          `inject:""`
+	Generation  ioc.Lazy[generation.Service]      `inject:""`
+	Pathfind    ioc.Lazy[pathfind.Service]        `inject:""`
+	Player      ioc.Lazy[player.Service]          `inject:""`
+	Tile        ioc.Lazy[tile.Service]            `inject:""`
+	Ui          ioc.Lazy[ui.Service]              `inject:""`
 }
 
 type MenuBuilder scene.Scene
@@ -64,21 +64,15 @@ type GameBuilder scene.Scene
 type SettingsBuilder scene.Scene
 type CreditsBuilder scene.Scene
 
-type pkg struct{}
-
-func Package() ioc.Pkg {
-	return pkg{}
-}
-
-func (pkg) Register(b ioc.Builder) {
-	ioc.WrapService(b, func(c ioc.Dic, b scene.Service) {
+var Pkg = ioc.NewPkg(func(b ioc.Builder) {
+	ioc.Wrap(b, func(c ioc.Dic, b scene.Service) {
 		b.SetScene(MenuID, scene.Scene(ioc.Get[MenuBuilder](c)))
 		b.SetScene(GameID, scene.Scene(ioc.Get[GameBuilder](c)))
 		b.SetScene(SettingsID, scene.Scene(ioc.Get[SettingsBuilder](c)))
 		b.SetScene(CreditsID, scene.Scene(ioc.Get[CreditsBuilder](c)))
 	})
 
-	ioc.WrapService(b, func(c ioc.Dic, b runtime.Builder) {
+	ioc.Wrap(b, func(c ioc.Dic, b runtime.Builder) {
 		b.BeforeStart(func(r runtime.Runtime) {
 			logger := ioc.Get[logger.Logger](c)
 			eventsBuilder := ioc.Get[events.Builder](c)
@@ -153,4 +147,4 @@ func (pkg) Register(b ioc.Builder) {
 			}
 		})
 	})
-}
+})

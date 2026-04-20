@@ -1,10 +1,9 @@
 package textrenderer
 
 import (
+	"engine"
 	"engine/modules/text"
-	"engine/modules/transform"
 	"engine/services/ecs"
-	"engine/services/logger"
 	"unicode/utf8"
 
 	"github.com/go-gl/mathgl/mgl32"
@@ -29,14 +28,9 @@ type LayoutService interface {
 }
 
 type layoutService struct {
-	Logger logger.Logger `inject:"1"`
-
-	World     ecs.World         `inject:"1"`
-	Transform transform.Service `inject:"1"`
-	Text      text.Service      `inject:"1"`
-
-	FontService FontService `inject:"1"`
-	FontsKeys   FontKeys    `inject:"1"`
+	engine.EngineWorld `inject:""`
+	FontService        FontService `inject:""`
+	FontsKeys          FontKeys    `inject:""`
 
 	defaultFontFamily text.FontFamilyComponent
 	defaultFontSize   text.FontSizeComponent
@@ -81,16 +75,16 @@ type line struct {
 func (s *layoutService) EntityLayout(entity ecs.EntityID) (Layout, error) {
 	// TODO add overflow read, text align read and transform modification
 
-	size, _ := s.Transform.AbsoluteSize().Get(entity)
-	textComponent, ok := s.Text.Content().Get(entity)
+	size, _ := s.Transform().AbsoluteSize().Get(entity)
+	textComponent, ok := s.Text().Content().Get(entity)
 	if !ok {
 		return Layout{}, nil
 	}
-	fontFamily, ok := s.Text.FontFamily().Get(entity)
+	fontFamily, ok := s.Text().FontFamily().Get(entity)
 	if !ok {
 		fontFamily = s.defaultFontFamily
 	}
-	fontSize, ok := s.Text.FontSize().Get(entity)
+	fontSize, ok := s.Text().FontSize().Get(entity)
 	if !ok {
 		fontSize = s.defaultFontSize
 	}
@@ -98,11 +92,11 @@ func (s *layoutService) EntityLayout(entity ecs.EntityID) (Layout, error) {
 	// if err != nil {
 	// 	overflow = s.defaultOverflow
 	// }
-	breakComponent, ok := s.Text.Break().Get(entity)
+	breakComponent, ok := s.Text().Break().Get(entity)
 	if !ok {
 		breakComponent = s.defaultBreak
 	}
-	textAlign, ok := s.Text.Align().Get(entity)
+	textAlign, ok := s.Text().Align().Get(entity)
 	if !ok {
 		textAlign = s.defaultTextAlign
 	}

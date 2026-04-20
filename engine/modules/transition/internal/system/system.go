@@ -1,10 +1,10 @@
 package system
 
 import (
+	"engine"
 	"engine/modules/transition"
 	"engine/services/ecs"
 	"engine/services/frames"
-	"engine/services/logger"
 	"slices"
 
 	"github.com/ogiusek/events"
@@ -12,10 +12,7 @@ import (
 )
 
 type system struct {
-	World         ecs.World      `inject:"1"`
-	Logger        logger.Logger  `inject:"1"`
-	EventsBuilder events.Builder `inject:"1"`
-	Events        events.Events  `inject:"1"`
+	engine.EngineWorld `inject:""`
 
 	delayed []*transition.DelayedEvent
 }
@@ -24,8 +21,8 @@ func NewSystem(c ioc.Dic) transition.System {
 	s := ioc.GetServices[*system](c)
 
 	return ecs.NewSystemRegister(func() error {
-		events.Listen(s.EventsBuilder, s.ListenDelayed)
-		events.Listen(s.EventsBuilder, s.ListenFrame)
+		events.Listen(s.EventsBuilder(), s.ListenDelayed)
+		events.Listen(s.EventsBuilder(), s.ListenFrame)
 		return nil
 	})
 }
@@ -46,7 +43,7 @@ func (s *system) ListenFrame(e frames.FrameEvent) {
 			continue
 		}
 
-		events.EmitAny(s.Events, event.Event)
+		events.EmitAny(s.Events(), event.Event)
 		toOld++
 	}
 

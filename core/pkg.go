@@ -65,7 +65,6 @@ import (
 	"engine/services/media"
 	appruntime "engine/services/runtime"
 	"fmt"
-	"runtime"
 	"time"
 
 	"github.com/go-gl/gl/v4.5-core/gl"
@@ -129,44 +128,62 @@ func getDic() ioc.Dic {
 
 	// path
 
-	pkgs := []ioc.Pkg{
-		clock.Package(time.RFC3339Nano),
-		ecs.Package(),
-		codec.Package(),
-		appruntime.Package(),
+	// pkgs with medium configuration
+	// - assets
+	// - logger
+	// - media
+	// - frames
+	// - ui
+	// - batcher
+	// - smoothpkg
 
-		assetspkg.Package("assets/"),
-		logger.Package(true, func(c ioc.Dic, message string) {
-			ioc.Get[console.Console](c).PrintPermanent(message)
-		}),
-		console.Package(),
-		media.Package(window, ctx),
-		frames.Package(1, 60),
-		// frames.Package(1, 10000),
-		scenepkg.Package(),
+	// pkgs with heavy configuration:
+	// - text
+	// - netsync
 
-		gtexture.Package(),
-		texturearray.Package(),
-		tilepkg.Package(),
-		generationpkg.Package(),
-		uipkg.Package(
+	// easiest:
+	// - frames
+	// - smoothpkg
+	// - batcher
+
+	return ioc.NewContainer(
+		clock.Pkg,
+		ecs.Pkg,
+		codec.Pkg,
+		appruntime.Pkg,
+
+		assetspkg.Pkg,
+		logger.Pkg(logger.NewConfig(
+			true,
+			func(c ioc.Dic) func(message string) { return ioc.Get[console.Console](c).PrintPermanent },
+		)),
+		console.Pkg,
+		media.Pkg(media.NewConfig(window, ctx)),
+		frames.Pkg(frames.NewConfig(1, 60)),
+		scenepkg.Pkg,
+
+		gtexture.Pkg,
+		texturearray.Pkg,
+		tilepkg.Pkg,
+		generationpkg.Pkg,
+		uipkg.Pkg(uipkg.NewConfig(
 			time.Millisecond*300, // animation duration
 			time.Second/12,       // bgTimePerFrame
-		),
-		settingspkg.Package(),
+		)),
+		settingspkg.Pkg,
 
 		//
 
 		// engine packages
-		audiopkg.Package(),
-		camerapkg.Package(.01, 10),
-		colliderpkg.Package(),
-		dragpkg.Package(),
-		groupspkg.Package(),
-		inputspkg.Package(),
-		prototypepkg.Package(),
-		renderpkg.Package(),
-		textpkg.Package(
+		audiopkg.Pkg,
+		camerapkg.Pkg,
+		colliderpkg.Pkg,
+		dragpkg.Pkg,
+		groupspkg.Pkg,
+		inputspkg.Pkg,
+		prototypepkg.Pkg,
+		renderpkg.Pkg,
+		textpkg.Pkg(textpkg.NewConfig(
 			func(c ioc.Dic) text.FontFamilyComponent {
 				asset := ioc.Get[definitions.Definitions](c).FontAsset
 				return text.FontFamilyComponent{FontFamily: asset}
@@ -205,14 +222,14 @@ func getDic() ioc.Dic {
 			64,
 			// 0.8125, // suggested (52/64)
 			0.8, // arbitrary number works for some reason
-		),
-		transformpkg.Package(),
-		hierarchypkg.Package(),
-		uuidpkg.Package(),
-		batcherpkg.Package(max(1, runtime.NumCPU()-1), time.Second/60),
-		connectionpkg.Package(),
-		metadatapkg.Package(),
-		netsyncpkg.Package(func() netsyncpkg.Config {
+		)),
+		transformpkg.Pkg,
+		hierarchypkg.Pkg,
+		uuidpkg.Pkg,
+		batcherpkg.Pkg,
+		connectionpkg.Pkg,
+		metadatapkg.Pkg,
+		netsyncpkg.Pkg(func() netsyncpkg.Config {
 			config := netsyncpkg.NewConfig(
 				150, // max predictions
 			)
@@ -239,64 +256,55 @@ func getDic() ioc.Dic {
 
 			return config
 		}()),
-		recordpkg.Package(),
-		registrypkg.Package(),
-		smoothpkg.Package(func() smoothpkg.Config {
-			config := smoothpkg.NewConfig()
-			smoothpkg.SmoothComponent[render.ColorComponent](config)
-			smoothpkg.SmoothComponent[tile.PosComponent](config)
-			smoothpkg.SmoothComponent[tile.RotComponent](config)
-			return config
-		}()),
-		transitionpkg.Package(),
-		layoutpkg.Package(),
-		loadingpkg.Package(),
-		noisepkg.Package(),
-		warmuppkg.Package(),
+		recordpkg.Pkg,
+		registrypkg.Pkg,
+		smoothpkg.Pkg,
+		smoothpkg.PkgT[render.ColorComponent](),
+		smoothpkg.PkgT[tile.PosComponent](),
+		smoothpkg.PkgT[tile.RotComponent](),
+		transitionpkg.Pkg,
+		layoutpkg.Pkg,
+		loadingpkg.Pkg,
+		noisepkg.Pkg,
+		warmuppkg.Pkg,
 
 		// game packages
-		deploypkg.Package(),
-		pathfindpkg.Package(),
-		fpsloggerpkg.Package(),
-		playerpkg.Package(),
+		deploypkg.Pkg,
+		pathfindpkg.Pkg,
+		fpsloggerpkg.Pkg,
+		playerpkg.Pkg,
 
-		gamescenes.Package(),
-		definitionspkg.Package(),
+		gamescenes.Pkg,
+		definitionspkg.Pkg,
 
-		creditsscene.Package(),
-		gamescene.Package(),
-		menuscene.Package(),
-		settingsscene.Package(),
-	}
+		creditsscene.Pkg,
+		gamescene.Pkg,
+		menuscene.Pkg,
+		settingsscene.Pkg,
+		func(b ioc.Builder) {
+			ioc.Wrap(b, func(c ioc.Dic, f gtexture.Factory) {
+				f.Wrap(func(t gtexture.Texture) {
+					t.Bind()
+					defer gl.BindTexture(gl.TEXTURE_2D, 0)
 
-	b := ioc.NewBuilder()
-	for _, pkg := range pkgs {
-		pkg.Register(b)
-	}
+					gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE)
+					gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE)
+					gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST)
+					gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST)
+				})
+			})
 
-	ioc.WrapService(b, func(c ioc.Dic, f gtexture.Factory) {
-		f.Wrap(func(t gtexture.Texture) {
-			t.Bind()
-			defer gl.BindTexture(gl.TEXTURE_2D, 0)
+			ioc.Wrap(b, func(c ioc.Dic, f texturearray.Factory) {
+				f.Wrap(func(ta texturearray.TextureArray) {
+					ta.Bind()
+					defer gl.BindTexture(gl.TEXTURE_2D_ARRAY, 0)
 
-			gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE)
-			gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE)
-			gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST)
-			gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST)
-		})
-	})
-
-	ioc.WrapService(b, func(c ioc.Dic, f texturearray.Factory) {
-		f.Wrap(func(ta texturearray.TextureArray) {
-			ta.Bind()
-			defer gl.BindTexture(gl.TEXTURE_2D_ARRAY, 0)
-
-			gl.TexParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE)
-			gl.TexParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE)
-			gl.TexParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_MAG_FILTER, gl.NEAREST)
-			gl.TexParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_MIN_FILTER, gl.NEAREST)
-		})
-	})
-
-	return b.Build()
+					gl.TexParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE)
+					gl.TexParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE)
+					gl.TexParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_MAG_FILTER, gl.NEAREST)
+					gl.TexParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_MIN_FILTER, gl.NEAREST)
+				})
+			})
+		},
+	)
 }

@@ -1,6 +1,7 @@
 package service
 
 import (
+	"engine"
 	"engine/modules/transition"
 	"engine/services/ecs"
 
@@ -8,15 +9,15 @@ import (
 )
 
 type service struct {
-	World          ecs.World `inject:"1"`
-	easing         ecs.ComponentsArray[transition.EasingComponent]
-	easingFunction ecs.ComponentsArray[transition.EasingFunctionComponent]
+	engine.EngineWorld `inject:""`
+	easing             ecs.ComponentsArray[transition.EasingComponent]
+	easingFunction     ecs.ComponentsArray[transition.EasingFunctionComponent]
 }
 
 func NewService(c ioc.Dic) transition.Service {
 	t := ioc.GetServices[*service](c)
-	t.easing = ecs.GetComponentsArray[transition.EasingComponent](t.World)
-	t.easingFunction = ecs.GetComponentsArray[transition.EasingFunctionComponent](t.World)
+	t.easing = ecs.GetComponentsArray[transition.EasingComponent](t.World())
+	t.easingFunction = ecs.GetComponentsArray[transition.EasingFunctionComponent](t.World())
 
 	return t
 }
