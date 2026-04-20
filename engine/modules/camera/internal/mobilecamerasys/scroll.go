@@ -14,16 +14,11 @@ import (
 
 type scrollSystem struct {
 	engine.EngineWorld `inject:""`
-
-	minZoom, maxZoom float32
 }
 
-func NewScrollSystem(c ioc.Dic,
-	minZoom, maxZoom float32) camera.System {
+func NewScrollSystem(c ioc.Dic) camera.System {
 	return ecs.NewSystemRegister(func() error {
 		s := ioc.GetServices[*scrollSystem](c)
-		s.minZoom = minZoom // e.g. 0.1
-		s.maxZoom = maxZoom // e.g. 5
 		events.Listen(s.EventsBuilder(), s.Listen)
 		return nil
 	})
@@ -51,7 +46,9 @@ func (s *scrollSystem) Listen(event sdl.MouseWheelEvent) {
 
 		// apply zoom
 		ortho.Zoom *= mul
-		ortho.Zoom = max(min(ortho.Zoom, s.maxZoom), s.minZoom)
+		if limits, ok := s.Camera().Limits().Get(cameraEntity); ok {
+			ortho.Zoom = max(min(ortho.Zoom, limits.MaxZoom), limits.MinZoom)
+		}
 
 		s.Camera().Ortho().Set(cameraEntity, ortho)
 

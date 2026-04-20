@@ -34,10 +34,13 @@ func NewMobileCamera() MobileCameraComponent { return MobileCameraComponent{} }
 
 //
 
-type CameraLimitsComponent struct{ Min, Max mgl32.Vec3 }
+type CameraLimitsComponent struct {
+	MinZoom, MaxZoom float32
+	Min, Max         mgl32.Vec3
+}
 
-func NewCameraLimits(min, max mgl32.Vec3) CameraLimitsComponent {
-	return CameraLimitsComponent{min, max}
+func NewCameraLimits(minZ, maxZ float32, min, max mgl32.Vec3) CameraLimitsComponent {
+	return CameraLimitsComponent{minZ, maxZ, min, max}
 }
 
 //

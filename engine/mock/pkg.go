@@ -43,10 +43,10 @@ import (
 var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 	pkgs := []ioc.Pkg{
 		ecs.Pkg,
-		assetspkg.Pkg(""),
+		assetspkg.Pkg,
 		audiopkg.Pkg,
 		batcherpkg.Pkg(batcherpkg.NewConfig(1, time.Second)),
-		camerapkg.Pkg(camerapkg.NewConfig(.1, 10)),
+		camerapkg.Pkg,
 		colliderpkg.Pkg,
 		connectionpkg.Pkg,
 		groupspkg.Pkg,
@@ -105,10 +105,13 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 		uuidpkg.Pkg,
 		warmuppkg.Pkg,
 
-		clock.Pkg(time.RFC3339Nano),
+		clock.Pkg,
 		codec.Pkg,
 		console.Pkg,
-		logger.Pkg(logger.NewConfig(true, func(c ioc.Dic, message string) { print(message) })),
+		logger.Pkg(logger.NewConfig(
+			true,
+			func(c ioc.Dic) func(message string) { return func(message string) { print(message) } },
+		)),
 		runtime.Pkg,
 
 		window.Pkg(window.NewConfig(nil, nil)),

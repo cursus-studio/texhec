@@ -129,16 +129,35 @@ func getDic() ioc.Dic {
 
 	// path
 
+	// pkgs with medium configuration
+	// - assets
+	// - logger
+	// - media
+	// - frames
+	// - ui
+	// - batcher
+	// - smoothpkg
+
+	// pkgs with heavy configuration:
+	// - text
+	// - netsync
+
+	// easiest:
+	// - frames
+	// - smoothpkg
+	// - batcher
+
 	return ioc.NewContainer(
-		clock.Pkg(time.RFC3339Nano),
+		clock.Pkg,
 		ecs.Pkg,
 		codec.Pkg,
 		appruntime.Pkg,
 
 		assetspkg.Pkg("assets/"),
-		logger.Pkg(logger.NewConfig(true, func(c ioc.Dic, message string) {
-			ioc.Get[console.Console](c).PrintPermanent(message)
-		})),
+		logger.Pkg(logger.NewConfig(
+			true,
+			func(c ioc.Dic) func(message string) { return ioc.Get[console.Console](c).PrintPermanent },
+		)),
 		console.Pkg,
 		media.Pkg(media.NewConfig(window, ctx)),
 		frames.Pkg(frames.NewConfig(1, 60)),
@@ -159,7 +178,7 @@ func getDic() ioc.Dic {
 
 		// engine packages
 		audiopkg.Pkg,
-		camerapkg.Pkg(camerapkg.NewConfig(.01, 10)),
+		camerapkg.Pkg,
 		colliderpkg.Pkg,
 		dragpkg.Pkg,
 		groupspkg.Pkg,

@@ -21,18 +21,7 @@ import (
 	"github.com/veandco/go-sdl2/sdl"
 )
 
-type config struct {
-	minZoom, maxZoom float32
-}
-
-func NewConfig(minZoom, maxZoom float32) config {
-	return config{
-		minZoom: minZoom,
-		maxZoom: maxZoom,
-	}
-}
-
-var Pkg = ioc.NewPkgT(func(b ioc.Builder, config config) {
+var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 	for _, pkg := range []ioc.Pkg{
 		prototypepkg.PkgT[camera.Component](),
 		prototypepkg.PkgT[camera.MobileCameraComponent](),
@@ -203,9 +192,7 @@ var Pkg = ioc.NewPkgT(func(b ioc.Builder, config config) {
 				}),
 				// todo change this to change ortho and size according to viewport
 				projectionsys.NewUpdateProjectionsSystem(c),
-				mobilecamerasys.NewScrollSystem(c,
-					config.minZoom, config.maxZoom, // min and max zoom
-				),
+				mobilecamerasys.NewScrollSystem(c),
 				mobilecamerasys.NewDragSystem(c,
 					sdl.BUTTON_LEFT,
 				),

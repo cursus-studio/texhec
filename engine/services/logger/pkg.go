@@ -8,16 +8,16 @@ import (
 
 type config struct {
 	panicOnWarn bool
-	print       func(c ioc.Dic, message string)
+	flush       func(c ioc.Dic) func(message string)
 }
 
 func NewConfig(
 	panicOnWarn bool,
-	print func(c ioc.Dic, message string),
+	flush func(c ioc.Dic) func(message string),
 ) config {
 	return config{
 		panicOnWarn: panicOnWarn,
-		print:       print,
+		flush:       flush,
 	}
 }
 
@@ -26,7 +26,7 @@ var Pkg = ioc.NewPkgT(func(b ioc.Builder, config config) {
 		return &logger{
 			PanicOnError: config.panicOnWarn,
 			Clock:        ioc.Get[clock.Clock](c),
-			Print:        func(s string) { config.print(c, s) },
+			Flush:        config.flush(c),
 			Panic:        func(s string) { panic(s) },
 		}
 	})

@@ -9,7 +9,10 @@ import (
 	"github.com/ogiusek/ioc/v2"
 )
 
-var Pkg = ioc.NewPkgT(func(b ioc.Builder, parentDirectory string) {
+// can later append many parent directories
+var parentDirectory = "assets/"
+
+var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 	if len(parentDirectory) != 0 && parentDirectory[len(parentDirectory)-1] != '/' {
 		parentDirectory += "/"
 	}
