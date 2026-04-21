@@ -82,7 +82,7 @@ func (s *service) Preview(e deploy.PreviewEvent) {
 	var collisions []grid.Coords
 	placeholderEntity := s.Prototype().Clone(e.Blueprint)
 	s.Hierarchy().SetParent(placeholderEntity, s.Scene().Scene())
-	s.Tile().Layer().Set(placeholderEntity, tile.NewLayer(definitions.PlaceholderLayer))
+	s.Tile().Layer().Set(placeholderEntity, tile.NewLayer(definitions.ObjectPlaceholderLayer))
 
 	pos := tile.NewPos(e.Coords.Coords())
 	s.Tile().Pos().Set(placeholderEntity, pos)
@@ -109,12 +109,12 @@ cannotPlace:
 		entity := s.Prototype().Clone(s.Definitions().Blank)
 		s.Hierarchy().SetParent(entity, s.Scene().Scene())
 
-		s.Tile().Layer().Set(entity, tile.NewLayer(definitions.PlaceholderTileLayer))
+		s.Tile().Layer().Set(entity, tile.NewLayer(definitions.TilePlaceholderLayer))
 		s.Render().Mesh().Set(entity, render.NewMesh(s.Definitions().SquareMesh))
 		s.Render().Texture().Set(entity, render.NewTexture(s.Definitions().Blank))
 		s.Groups().Component().Set(entity, groups.EmptyGroups().Ptr().Enable(definitions.GameGroup).Val())
 
-		s.Tile().Layer().Set(entity, tile.NewLayer(definitions.PlaceholderTileLayer))
+		s.Tile().Layer().Set(entity, tile.NewLayer(definitions.TilePlaceholderLayer))
 		s.Tile().Pos().Set(entity, tile.NewPos(collision.Coords()))
 		s.Tile().Placeholder().Set(entity, tile.NewPlaceholder())
 		s.Render().Color().Set(entity, render.NewColor(mgl32.Vec4{1, 0, 0, 1}))

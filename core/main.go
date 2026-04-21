@@ -19,12 +19,12 @@ import (
 func main() {
 	print("started\n")
 
-	{ // go tool pprof -http=:8080 cpu.pprof.cp
+	{ // go tool pprof -http=:8080 ignore.cpu.pprof
 		name := ""
 		if len(os.Args) > 1 {
 			name = os.Args[1]
 		}
-		f, err := os.Create(fmt.Sprintf("cpu.pprof%v.cp", name))
+		f, err := os.Create(fmt.Sprintf("ignore.cpu.pprof%v", name))
 		if err != nil {
 			panic(err)
 		}

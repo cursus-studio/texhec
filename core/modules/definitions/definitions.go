@@ -17,9 +17,10 @@ const (
 const (
 	TileLayer tile.Coord = iota + 1
 	ConstructLayer
+	PathLayer
 	UnitLayer
-	PlaceholderTileLayer
-	PlaceholderLayer
+	TilePlaceholderLayer
+	ObjectPlaceholderLayer
 )
 
 const (
@@ -46,6 +47,9 @@ type Hud struct {
 	Settings    ecs.EntityID `path:"hud/settings.png-trim"`
 	Background1 ecs.EntityID `path:"hud/bg1.gif-trim"`
 	Background2 ecs.EntityID `path:"hud/bg2.gif-trim"`
+
+	Can    ecs.EntityID `path:"hud/can.png-trim"`
+	Cannot ecs.EntityID `path:"hud/cannot.png-trim"`
 }
 
 // In DI container
@@ -71,7 +75,8 @@ type Transitions struct {
 type Tiles struct {
 	Water    ecs.EntityID `path:"tiles/water.biom" tile:"" generate:"35" obstruction:"lowland"`
 	Sand     ecs.EntityID `path:"tiles/sand.biom" tile:"" generate:"15" obstruction:"water"`
-	Grass    ecs.EntityID `path:"tiles/grass.biom" tile:"" generate:"45" obstruction:"water"`
+	Texhec   ecs.EntityID `path:"tiles/texhec.biom" tile:"" generate:"5" obstruction:"water"`
+	Grass    ecs.EntityID `path:"tiles/grass.biom" tile:"" generate:"40" obstruction:"water"`
 	Mountain ecs.EntityID `path:"tiles/mountain.biom" tile:"" generate:"5" obstruction:"water lowland"`
 }
 
