@@ -6,6 +6,7 @@
 - [Module vs Service](#module-vs-service)
 - [Module structure](#module-structure)
 - [Module readme schema](#module-readme-schema)
+- [Implicit dependency graph](#implicit-dependency-graph)
 - [Engine](#engine)
 - [Technical challenges](#technical-challenges)
 - [Graphics](#graphics)
@@ -25,7 +26,8 @@ We achieved framework which reduced boilerplate and allowed us to write 40+ modu
 [More about **ECS** framework](/engine/services/ecs/readme/README.md)
 [More about **IOC** framework](https://github.com/ogiusek/ioc)
 
-#### Why golang
+## Architectural choices
+### Why golang
 Others would **discard golang** due to **garbage collector**.\
 In reality garbage collector isn't an inconvenience because we follow **DOD** and\
 we do not have enough pointers to be an inconvenience.
@@ -36,26 +38,26 @@ In reality using golang has benefits:
 - it lacks decades of building technical debt
 - aligned philosophies (simplicity creates performance not other way around)
 
-#### Dependencies
+### Dependencies
+Dependencies are only added if necessary.
 - `sdl2`
 - `opengl`
 - `opengl math`
 - `golang constraints`
 - `golang images and text (used only to generate image per letter)`
-- `thread safe hash map`
 - `google uuid`
 
 Dependencies which are written by me:
 - `ioc`
 - `events`
 
-#### Module vs Service
+### Module vs Service
 Service is something separate from game engine which is basis for it.\
 After creating **ECS** service i attempt to migrate everything to a module.\
 Modules also have more struct rules and have dedicated file structure.\
 Services are more detached from alone game engine and have less strict rules.
 
-#### Module structure
+### Module structure
 ```
 modules/
 └─ `$module_name`/
@@ -70,7 +72,7 @@ modules/
 ```
 Everything in module file structure is optional and should be only added if used.
 
-#### Module readme schema
+### Module readme schema
 ```md
 # Module_name
 ## Architecture
@@ -86,7 +88,73 @@ Code snippets of `Service` and of how to use it.
 - [module](/engine/modules/module_name/readme/README.md)
 ```
 
-#### Engine
+### Implicit dependency graph
+#### How explicit dependency graph looks ?
+```modules/mod3/internal.go
+type service struct {
+    Dep1 mod1.Service `inject:""`
+    Dep2 mod2.Service `inject:""`
+}
+```
+This explicitly states all used dependencies.
+
+**Pros**:
+- Easier to read module dependencies
+- Faster
+**Cons**:
+- Additional maintenance cost and loc
+- Fragments the engine
+
+#### How implicit dependency graph looks ?
+```engine.go
+type EngineWorld struct {
+    Dep1 ioc.Lazy[mod1.Service] `inject:""`
+    Dep2 ioc.Lazy[mod2.Service] `inject:""`
+    Dep3 ioc.Lazy[mod3.Service] `inject:""`
+}
+```
+
+```modules/mod3/internal.go
+type service struct {
+    engine.EngineWorld `inject:""`
+}
+```
+
+**Pros**:
+- Easy wiring (wiring becomes a matter of 2 loc per module)
+- Centralizes the app and treats it as a single object
+**Cons**:
+- Less performant (Additional boolean check within the lambda during access)
+
+This makes additions to engine a piece of cake and reduces boilerplate and allows for circular dependencies.
+While circular dependencies are a bad practice additional technical effort for each module
+to explicitly ensure they won't occur isn't a way to avoid them.
+
+#### Conclusion
+The choice of implicit dependency management provides:
+- Developer velocity
+- Less code to maintain
+For the price of:
+- Performance (Additional if check during any service access)
+
+Why performance cost high-performance project is negligible:
+- Bool and pointer are so small that they'll always be loaded into memory so there won't be a cache miss (biggest performance cost)
+- While the boolean check has a cost, it is negligible compared to calling the most expensive methods (these which need optimization) methods like pathfinding on 1M tiles map
+
+This trade of is a no brainer for scenario where one developer builds whole game/simulation engine from scratch.
+Developer velocity is everything in this scenario and this minor price is well worth it.
+This project isn't in asm for a reason.
+
+What, contrary to appearances, is not a price:
+- ##### safety
+All dependencies are resolved at startup so there won't be circular dependencies at runtime.
+- ##### promoption of bad practices
+Some could argue that this promotes circular dependencies but
+maintaining this rule shouldn't be at a cost of boilerplate.
+Code isn't about enforcing rules its about composition of functionalities.
+Forbidding functionalities in code BECAUSE, with no technical reason is a bad practice.
+
+### Engine
 Engine is the core which can be re-used in other projects.\
 It defines ecs framework and basic engine modules like `transform` or `hierarchy`
 
@@ -99,7 +167,7 @@ Cherry picked readmes to show project complexity:
 - [record](/engine/modules/record/readme/README.md)
 - [transform](/engine/modules/transform/readme/README.md)
 
-##### **Most modules have unfinished readmes.**
+#### **Most modules have unfinished readmes.**
 
 Engine modules:
 - [assets](/engine/modules/assets/readme/README.md)
@@ -144,14 +212,14 @@ Engine services:
 - [media (placeholder)](/engine/services/media/readme/README.md)
 - [runtime (placeholder)](/engine/services/runtime/readme/README.md)
 
-#### Technical challenges
+### Technical challenges
 Each and every module had unique challenges and they are described in these readmes.
 
 Biggest challenge of the whole project was architecture.\
 Finding file structure which allows for most logic with least friction between modules.\
 Current approach reduces whole friction to a few interface files and often in a single `Service` interface.
 
-### Graphics
+## Graphics
 
 Example map generated in a matter of seconds and rendered in less than 6ms\
 using 5 years old Intel® Core™ i5-8350U × 8 Intel® and UHD Graphics 620 (KBL GT2):
