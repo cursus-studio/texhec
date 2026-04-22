@@ -59,7 +59,6 @@ import (
 	"engine/services/console"
 	"engine/services/datastructures"
 	"engine/services/ecs"
-	"engine/services/frames"
 	"engine/services/graphics/texture"
 	"engine/services/graphics/texturearray"
 	"engine/services/logger"
@@ -140,7 +139,6 @@ func getDic() ioc.Dic {
 		)),
 		console.Pkg,
 		media.Pkg(media.NewConfig(window, ctx)),
-		frames.Pkg(frames.NewConfig(1, 60)),
 		scenepkg.Pkg,
 
 		gtexture.Pkg,
