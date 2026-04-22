@@ -7,6 +7,7 @@ import (
 	"engine/modules/groups"
 	"engine/modules/inputs"
 	"engine/modules/layout"
+	"engine/modules/loop"
 	"engine/modules/scene"
 	"engine/modules/text"
 	"engine/modules/transform"
@@ -63,7 +64,7 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 				{"play", scene.NewChangeSceneEvent(gamescenes.GameID)},
 				{"settings", scene.NewChangeSceneEvent(gamescenes.SettingsID)},
 				{"credits", scene.NewChangeSceneEvent(gamescenes.CreditsID)},
-				{"exit", inputs.QuitEvent{}},
+				{"exit", loop.NewStopEvent()},
 			}
 
 			for _, button := range buttons {

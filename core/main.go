@@ -74,11 +74,11 @@ func main() {
 			events.Listen(eventsBuilder, func(e sdl.KeyboardEvent) {
 				if e.Keysym.Sym == sdl.K_q {
 					logger.Info("quiting program due to pressing 'Q'")
-					events.Emit(eventsBuilder.Events(), inputs.NewQuitEvent())
+					events.Emit(eventsBuilder.Events(), loop.NewStopEvent())
 				}
 				if e.Keysym.Sym == sdl.K_ESCAPE {
 					logger.Info("quiting program due to pressing 'ESC'")
-					events.Emit(eventsBuilder.Events(), inputs.NewQuitEvent())
+					events.Emit(eventsBuilder.Events(), loop.NewStopEvent())
 				}
 				if e.State == sdl.PRESSED && e.Keysym.Sym == sdl.K_f {
 					logger.Info("toggling screen size due to pressing 'F'")
@@ -122,8 +122,6 @@ func main() {
 
 			ioc.Get[smooth.StopSystem](c),
 			ioc.Get[netsync.StopSystem](c),
-
-			ioc.Get[inputs.ShutdownSystem](c), // after batcher and before render system
 
 			// render
 			ioc.Get[render.System](c),
