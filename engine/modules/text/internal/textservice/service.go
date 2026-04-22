@@ -1,15 +1,15 @@
 package textservice
 
 import (
+	"engine"
 	"engine/modules/text"
 	"engine/services/ecs"
-	"engine/services/logger"
+
+	"github.com/ogiusek/ioc/v2"
 )
 
 type service struct {
-	logger logger.Logger
-
-	world ecs.World
+	engine.EngineWorld `inject:""`
 
 	breakArray      ecs.ComponentsArray[text.BreakComponent]
 	textArray       ecs.ComponentsArray[text.TextComponent]
@@ -19,20 +19,15 @@ type service struct {
 	fontSizeArray   ecs.ComponentsArray[text.FontSizeComponent]
 }
 
-func NewService(
-	w ecs.World,
-	logger logger.Logger,
-) text.Service {
-	return &service{
-		logger,
-		w,
-		ecs.GetComponentsArray[text.BreakComponent](w),
-		ecs.GetComponentsArray[text.TextComponent](w),
-		ecs.GetComponentsArray[text.TextAlignComponent](w),
-		ecs.GetComponentsArray[text.TextColorComponent](w),
-		ecs.GetComponentsArray[text.FontFamilyComponent](w),
-		ecs.GetComponentsArray[text.FontSizeComponent](w),
-	}
+func NewService(c ioc.Dic) text.Service {
+	s := ioc.GetServices[*service](c)
+	s.breakArray = ecs.GetComponentsArray[text.BreakComponent](s.World())
+	s.textArray = ecs.GetComponentsArray[text.TextComponent](s.World())
+	s.textAlignArray = ecs.GetComponentsArray[text.TextAlignComponent](s.World())
+	s.textColorArray = ecs.GetComponentsArray[text.TextColorComponent](s.World())
+	s.fontFamilyArray = ecs.GetComponentsArray[text.FontFamilyComponent](s.World())
+	s.fontSizeArray = ecs.GetComponentsArray[text.FontSizeComponent](s.World())
+	return s
 }
 
 func (t *service) Break() ecs.ComponentsArray[text.BreakComponent]     { return t.breakArray }

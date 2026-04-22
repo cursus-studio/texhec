@@ -22,8 +22,6 @@ import (
 	"engine/modules/text"
 	"engine/modules/transition"
 	"engine/services/ecs"
-	"engine/services/logger"
-	"engine/services/media/window"
 	"fmt"
 	"os"
 	"runtime"
@@ -57,37 +55,35 @@ func main() {
 	runtime.LockOSThread()
 
 	c := getDic()
+	world := ioc.GetServices[gamescenes.GameWorld](c)
 
 	gl.ClearColor(0.2, 0.3, 0.3, 1.0)
 
 	// load world before starting timer
-	events.Emit(ioc.Get[events.Events](c), scene.NewChangeSceneEvent(gamescenes.GameID))
+	events.Emit(world.Events(), scene.NewChangeSceneEvent(gamescenes.GameID))
 
 	{ // before start
-		logger := ioc.Get[logger.Logger](c)
-		eventsBuilder := ioc.Get[events.Builder](c)
-		events.GlobalErrHandler(eventsBuilder, func(err error) {
-			logger.Warn(err)
+		events.GlobalErrHandler(world.EventsBuilder(), func(err error) {
+			world.Logger().Warn(err)
 		})
 
 		temporaryInlineSystems := ecs.NewSystemRegister(func() error {
-			events.Listen(eventsBuilder, func(e sdl.KeyboardEvent) {
+			events.Listen(world.EventsBuilder(), func(e sdl.KeyboardEvent) {
 				if e.Keysym.Sym == sdl.K_q {
-					logger.Info("quiting program due to pressing 'Q'")
-					events.Emit(eventsBuilder.Events(), loop.NewStopEvent())
+					world.Logger().Info("quiting program due to pressing 'Q'")
+					events.Emit(world.Events(), loop.NewStopEvent())
 				}
 				if e.Keysym.Sym == sdl.K_ESCAPE {
-					logger.Info("quiting program due to pressing 'ESC'")
-					events.Emit(eventsBuilder.Events(), loop.NewStopEvent())
+					world.Logger().Info("quiting program due to pressing 'ESC'")
+					events.Emit(world.Events(), loop.NewStopEvent())
 				}
 				if e.State == sdl.PRESSED && e.Keysym.Sym == sdl.K_f {
-					logger.Info("toggling screen size due to pressing 'F'")
-					window := ioc.Get[window.Api](c)
-					flags := window.Window().GetFlags()
+					world.Logger().Info("toggling screen size due to pressing 'F'")
+					flags := world.Window().Window().GetFlags()
 					if flags&sdl.WINDOW_FULLSCREEN_DESKTOP == sdl.WINDOW_FULLSCREEN_DESKTOP {
-						_ = window.Window().SetFullscreen(0)
+						_ = world.Window().Window().SetFullscreen(0)
 					} else {
-						_ = window.Window().SetFullscreen(sdl.WINDOW_FULLSCREEN_DESKTOP)
+						_ = world.Window().Window().SetFullscreen(sdl.WINDOW_FULLSCREEN_DESKTOP)
 					}
 				}
 			})
@@ -131,7 +127,7 @@ func main() {
 			ioc.Get[fpslogger.System](c),
 		)
 		for _, err := range errs {
-			logger.Warn(err)
+			world.Logger().Warn(err)
 		}
 	}
 	game := ioc.GetServices[gamescenes.GameWorld](c)
