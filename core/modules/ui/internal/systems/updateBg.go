@@ -4,11 +4,11 @@ import (
 	"core/modules/ui"
 	gamescenes "core/scenes"
 	"engine/modules/assets"
+	"engine/modules/loop"
 	"engine/modules/render"
 	"engine/modules/transform"
 	"engine/modules/transition"
 	"engine/services/ecs"
-	"engine/services/frames"
 	"time"
 
 	"github.com/ogiusek/events"
@@ -99,7 +99,7 @@ func (s *System) BeforeGet() {
 	}
 }
 
-func (s *System) ListenFrame(e frames.FrameEvent) {
+func (s *System) ListenFrame(e loop.FrameEvent) {
 }
 
 func (s *System) ListenUpdateBg(event UpdateBgEvent) {

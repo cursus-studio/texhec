@@ -35,6 +35,7 @@ import (
 	"engine/modules/inputs"
 	"engine/modules/inputs/pkg"
 	"engine/modules/layout/pkg"
+	"engine/modules/loop/pkg"
 	"engine/modules/metadata/pkg"
 	"engine/modules/netsync/pkg"
 	"engine/modules/noise/pkg"
@@ -161,6 +162,7 @@ func getDic() ioc.Dic {
 		dragpkg.Pkg,
 		groupspkg.Pkg,
 		inputspkg.Pkg,
+		looppkg.Pkg,
 		prototypepkg.Pkg,
 		renderpkg.Pkg,
 		textpkg.Pkg(textpkg.NewConfig(
@@ -228,7 +230,6 @@ func getDic() ioc.Dic {
 			netsyncpkg.AddTransparentEvent[settings.EnterSettingsEvent](config)
 			netsyncpkg.AddTransparentEvent[tile.HoverEvent](config)
 			netsyncpkg.AddTransparentEvent[ui.HideUiEvent](config)
-			// syncpkg.AddEvent[frames.FrameEvent](config)
 
 			// netsyncpkg.AddEventAuthorization(config, func(c inputs.DragEvent) error {
 			// 	return errors.New("no")

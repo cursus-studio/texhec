@@ -11,6 +11,7 @@ import (
 	"engine/modules/hierarchy"
 	"engine/modules/inputs"
 	"engine/modules/layout"
+	"engine/modules/loop"
 	"engine/modules/metadata"
 	"engine/modules/netsync"
 	"engine/modules/noise"
@@ -29,7 +30,6 @@ import (
 	"engine/services/codec"
 	"engine/services/console"
 	"engine/services/ecs"
-	"engine/services/frames"
 	"engine/services/graphics/texturearray"
 	"engine/services/logger"
 	"engine/services/media/window"
@@ -53,6 +53,7 @@ type EngineWorld struct {
 	Hierarchy  ioc.Lazy[hierarchy.Service]  `inject:""`
 	Inputs     ioc.Lazy[inputs.Service]     `inject:""`
 	Layout     ioc.Lazy[layout.Service]     `inject:""`
+	Loop       ioc.Lazy[loop.Service]       `inject:""`
 	Metadata   ioc.Lazy[metadata.Service]   `inject:""`
 	NetSync    ioc.Lazy[netsync.Service]    `inject:""`
 	Noise      ioc.Lazy[noise.Service]      `inject:""`
@@ -71,7 +72,6 @@ type EngineWorld struct {
 	Clock   ioc.Lazy[clock.Clock]     `inject:""`
 	Codec   ioc.Lazy[codec.Codec]     `inject:""`
 	Console ioc.Lazy[console.Console] `inject:""`
-	Frames  ioc.Lazy[frames.Frames]   `inject:""`
 	// graphics {
 	TextureArrayFactory ioc.Lazy[texturearray.Factory] `inject:""`
 	// }

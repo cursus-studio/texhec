@@ -2,9 +2,9 @@ package systems
 
 import (
 	"engine"
+	"engine/modules/loop"
 	"engine/modules/render"
 	"engine/services/ecs"
-	"engine/services/frames"
 	"fmt"
 
 	"github.com/ogiusek/events"
@@ -23,7 +23,7 @@ func NewErrorLogger(c ioc.Dic) render.System {
 	})
 }
 
-func (logger *errorLogger) Listen(args frames.FrameEvent) {
+func (logger *errorLogger) Listen(args loop.FrameEvent) {
 	if err := logger.Render().Error(); err != nil {
 		logger.Logger().Warn(fmt.Errorf("opengl error: %s", err))
 	}

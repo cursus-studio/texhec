@@ -2,6 +2,7 @@ package server
 
 import (
 	"engine"
+	"engine/modules/loop"
 	"engine/modules/netsync/internal/clienttypes"
 	"engine/modules/netsync/internal/config"
 	"engine/modules/netsync/internal/servertypes"
@@ -9,7 +10,6 @@ import (
 	"engine/modules/uuid"
 	"engine/services/datastructures"
 	"engine/services/ecs"
-	"engine/services/frames"
 	"fmt"
 	"reflect"
 	"sync"
@@ -63,7 +63,7 @@ func NewService(c ioc.Dic, config config.Config) *Service {
 			t.ListenTransparentEvent(entity, a.(clienttypes.TransparentEventDTO))
 		},
 	}
-	events.Listen(t.EventsBuilder(), func(frames.FrameEvent) {
+	events.Listen(t.EventsBuilder(), func(loop.FrameEvent) {
 		t.loadConnections()
 		for len(t.toRemove) != 0 {
 			entity := t.toRemove[0]

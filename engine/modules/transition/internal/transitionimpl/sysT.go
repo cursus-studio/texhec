@@ -2,9 +2,9 @@ package transitionimpl
 
 import (
 	"engine"
+	"engine/modules/loop"
 	"engine/modules/transition"
 	"engine/services/ecs"
-	"engine/services/frames"
 
 	"github.com/ogiusek/events"
 	"github.com/ogiusek/ioc/v2"
@@ -42,7 +42,7 @@ func (s *sysT[Component]) ListenTransition(event transition.TransitionEvent[Comp
 	s.transitionArray.Set(event.Entity, event.Component)
 }
 
-func (s *sysT[Component]) ListenFrame(event frames.FrameEvent) {
+func (s *sysT[Component]) ListenFrame(event loop.FrameEvent) {
 	ei := s.dirtySet.Get()
 
 	for _, entity := range ei {

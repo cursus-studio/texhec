@@ -2,8 +2,8 @@ package internal
 
 import (
 	gamescenes "core/scenes"
+	"engine/modules/loop"
 	"engine/services/ecs"
-	"engine/services/frames"
 	"fmt"
 	"time"
 
@@ -28,7 +28,7 @@ func NewFpsLoggerSystem(c ioc.Dic) ecs.SystemRegister {
 
 var format = "02-01-2006 15:04:05"
 
-func (system *logsSystem) Listen(args frames.FrameEvent) {
+func (system *logsSystem) Listen(args loop.FrameEvent) {
 	now := time.Now()
 	latestAcceptableFrame := now.Add(-time.Second)
 	startIndex := 0

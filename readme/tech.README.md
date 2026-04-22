@@ -182,6 +182,7 @@ Engine modules:
 - [hierarchy](/engine/modules/hierarchy/readme/README.md)
 - [inputs (placeholder)](/engine/modules/inputs/readme/README.md)
 - [layout (placeholder)](/engine/modules/layout/readme/README.md)
+- [loop (placeholder)](/engine/modules/loop/readme/README.md)
 - [metadata (placeholder)](/engine/modules/metadata/readme/README.md)
 - [netsync (placeholder)](/engine/modules/netsync/readme/README.md)
 - [noise (placeholder)](/engine/modules/noise/readme/README.md)
@@ -205,9 +206,7 @@ Engine services:
 - [console (placeholder)](/engine/services/console/readme/README.md)
 - [datastructures (placeholder)](/engine/services/datastructures/readme/README.md)
 - [ecs](/engine/services/ecs/readme/README.md)
-- [frames (placeholder)](/engine/services/frames/readme/README.md)
 - [graphics (placeholder)](/engine/services/graphics/readme/README.md)
-- [httperrors (placeholder)](/engine/services/httperrors/readme/README.md)
 - [logger (placeholder)](/engine/services/logger/readme/README.md)
 - [media (placeholder)](/engine/services/media/readme/README.md)
 

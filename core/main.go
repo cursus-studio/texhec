@@ -14,6 +14,7 @@ import (
 	"engine/modules/connection"
 	"engine/modules/drag"
 	"engine/modules/inputs"
+	"engine/modules/loop"
 	"engine/modules/netsync"
 	"engine/modules/render"
 	"engine/modules/scene"
@@ -136,6 +137,6 @@ func main() {
 		}
 	}
 	game := ioc.GetServices[gamescenes.GameWorld](c)
-	err := game.Frames().Run()
-	game.Logger().Warn(err)
+	game.Loop().Configure(loop.NewConfigureEvent(60, 1))
+	game.Loop().Run()
 }

@@ -6,9 +6,9 @@ import (
 	gamescenes "core/scenes"
 	"engine/modules/grid"
 	"engine/modules/inputs"
+	"engine/modules/loop"
 	"engine/modules/transform"
 	"engine/services/ecs"
-	"engine/services/frames"
 	"fmt"
 
 	"github.com/go-gl/mathgl/mgl32"
@@ -124,7 +124,7 @@ var (
 
 func abs[Number constraints.Float | constraints.Integer](n Number) Number { return max(-n, n) }
 
-func (s *system) OnTick(e frames.TickEvent) {
+func (s *system) OnTick(e loop.TickEvent) {
 	entities := s.Tile().Step().GetEntities()
 	{
 		cp := make([]ecs.EntityID, len(entities))

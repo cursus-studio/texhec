@@ -10,9 +10,9 @@ import (
 	"engine/modules/grid"
 	"engine/modules/groups"
 	"engine/modules/inputs"
+	"engine/modules/loop"
 	"engine/modules/render"
 	"engine/services/ecs"
-	"engine/services/frames"
 
 	"github.com/ogiusek/events"
 	"github.com/ogiusek/ioc/v2"
@@ -120,7 +120,7 @@ func (s *service) FindPath(e pathfind.FindPathEvent) {
 	events.Emit(s.Events(), ui.HideUiEvent{})
 }
 
-func (s *service) OnTick(e frames.TickEvent) {
+func (s *service) OnTick(e loop.TickEvent) {
 	for _, entity := range s.Target().GetEntities() {
 		if _, ok := s.Tile().Step().Get(entity); ok {
 			continue

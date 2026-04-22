@@ -1,7 +1,7 @@
 package window
 
 import (
-	"engine/services/frames"
+	"engine/modules/loop"
 
 	"github.com/ogiusek/events"
 	"github.com/ogiusek/ioc/v2"
@@ -32,7 +32,7 @@ var Pkg = ioc.NewPkgT(func(b ioc.Builder, config config) {
 	})
 
 	ioc.Wrap(b, func(c ioc.Dic, b events.Builder) {
-		events.Listen(b, func(frames.CleanUpEvent) {
+		events.Listen(b, func(loop.StopEvent) {
 			api := ioc.Get[Api](c)
 			sdl.GLDeleteContext(api.Ctx())
 			_ = api.Window().Destroy()

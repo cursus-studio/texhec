@@ -3,8 +3,8 @@ package systems
 import (
 	"engine"
 	"engine/modules/inputs"
+	"engine/modules/loop"
 	"engine/services/ecs"
-	"engine/services/frames"
 
 	"github.com/ogiusek/events"
 	"github.com/ogiusek/ioc/v2"
@@ -28,8 +28,8 @@ func (s *sys) Listen(inputs.QuitEvent) {
 	s.Closed = true
 }
 
-func (s *sys) ListenFrame(frames.FrameEvent) {
+func (s *sys) ListenFrame(loop.FrameEvent) {
 	if s.Closed {
-		s.Frames().Stop()
+		s.Loop().Stop()
 	}
 }

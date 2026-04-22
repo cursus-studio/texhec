@@ -31,7 +31,6 @@ import (
 	"engine/services/console"
 	"engine/services/datastructures"
 	"engine/services/ecs"
-	"engine/services/frames"
 	"engine/services/graphics/texturearray"
 	"engine/services/logger"
 	"engine/services/media/window"
@@ -112,7 +111,6 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 		// graphics {
 		texturearray.Pkg,
 		// }
-		frames.Pkg(frames.NewConfig(1, 60)),
 		logger.Pkg(logger.NewConfig(
 			true,
 			func(c ioc.Dic) func(message string) { return func(message string) { print(message) } },

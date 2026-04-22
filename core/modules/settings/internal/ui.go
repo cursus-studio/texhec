@@ -6,11 +6,11 @@ import (
 	"engine/modules/audio"
 	"engine/modules/groups"
 	"engine/modules/inputs"
+	"engine/modules/loop"
 	"engine/modules/scene"
 	"engine/modules/text"
 	"engine/modules/transform"
 	"engine/services/ecs"
-	"engine/services/frames"
 
 	"github.com/go-gl/mathgl/mgl32"
 	"github.com/ogiusek/events"
@@ -45,7 +45,7 @@ func NewSystem(c ioc.Dic) settings.System {
 	})
 }
 
-func (s *system) ListenOnTick(frames.TickEvent) {
+func (s *system) ListenOnTick(loop.TickEvent) {
 	toggleArray := ecs.GetComponentsArray[temporaryToggleColorComponent](s.World())
 	for _, entity := range toggleArray.GetEntities() {
 		color, ok := s.Render().Color().Get(entity)
