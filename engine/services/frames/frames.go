@@ -8,6 +8,13 @@ import (
 	"github.com/ogiusek/events"
 )
 
+// emmited to service
+type StopEvent struct{}
+type StartEvent struct{}
+
+// emmited by service
+type CleanUpEvent struct{}
+
 var (
 	ErrAlreadyRunning error = errors.New("already running")
 )
@@ -63,6 +70,7 @@ func (frames *frames) StartLoop() {
 		}
 		events.Emit(frames.Events, frameEvent)
 	}
+	events.Emit(frames.Events, CleanUpEvent{})
 }
 
 func (frames *frames) Run() error {

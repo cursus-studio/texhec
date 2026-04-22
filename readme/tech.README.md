@@ -210,7 +210,6 @@ Engine services:
 - [httperrors (placeholder)](/engine/services/httperrors/readme/README.md)
 - [logger (placeholder)](/engine/services/logger/readme/README.md)
 - [media (placeholder)](/engine/services/media/readme/README.md)
-- [runtime (placeholder)](/engine/services/runtime/readme/README.md)
 
 ### Technical challenges
 Each and every module had unique challenges and they are described in these readmes.

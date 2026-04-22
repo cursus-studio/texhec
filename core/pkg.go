@@ -63,7 +63,6 @@ import (
 	"engine/services/graphics/texturearray"
 	"engine/services/logger"
 	"engine/services/media"
-	appruntime "engine/services/runtime"
 	"fmt"
 	"time"
 
@@ -128,29 +127,10 @@ func getDic() ioc.Dic {
 
 	// path
 
-	// pkgs with medium configuration
-	// - assets
-	// - logger
-	// - media
-	// - frames
-	// - ui
-	// - batcher
-	// - smoothpkg
-
-	// pkgs with heavy configuration:
-	// - text
-	// - netsync
-
-	// easiest:
-	// - frames
-	// - smoothpkg
-	// - batcher
-
 	return ioc.NewContainer(
 		clock.Pkg,
 		ecs.Pkg,
 		codec.Pkg,
-		appruntime.Pkg,
 
 		assetspkg.Pkg,
 		logger.Pkg(logger.NewConfig(

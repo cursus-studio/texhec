@@ -35,7 +35,6 @@ import (
 	"engine/services/graphics/texturearray"
 	"engine/services/logger"
 	"engine/services/media/window"
-	"engine/services/runtime"
 
 	"github.com/go-gl/mathgl/mgl32"
 	"github.com/ogiusek/ioc/v2"
@@ -118,7 +117,6 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 			true,
 			func(c ioc.Dic) func(message string) { return func(message string) { print(message) } },
 		)),
-		runtime.Pkg,
 
 		window.Pkg(window.NewConfig(nil, nil)),
 	}

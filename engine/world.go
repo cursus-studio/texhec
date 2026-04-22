@@ -33,7 +33,6 @@ import (
 	"engine/services/graphics/texturearray"
 	"engine/services/logger"
 	"engine/services/media/window"
-	"engine/services/runtime"
 
 	"github.com/ogiusek/events"
 	"github.com/ogiusek/ioc/v2"
@@ -76,7 +75,6 @@ type EngineWorld struct {
 	// graphics {
 	TextureArrayFactory ioc.Lazy[texturearray.Factory] `inject:""`
 	// }
-	Logger  ioc.Lazy[logger.Logger]   `inject:""`
-	Window  ioc.Lazy[window.Api]      `inject:""`
-	Runtime ioc.Lazy[runtime.Runtime] `inject:""`
+	Logger ioc.Lazy[logger.Logger] `inject:""`
+	Window ioc.Lazy[window.Api]    `inject:""`
 }

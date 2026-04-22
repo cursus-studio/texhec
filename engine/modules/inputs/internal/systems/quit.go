@@ -30,6 +30,6 @@ func (s *sys) Listen(inputs.QuitEvent) {
 
 func (s *sys) ListenFrame(frames.FrameEvent) {
 	if s.Closed {
-		s.Runtime().Stop()
+		s.Frames().Stop()
 	}
 }
