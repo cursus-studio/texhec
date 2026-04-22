@@ -3,8 +3,8 @@ package mobilecamerasys
 import (
 	"engine"
 	"engine/modules/camera"
+	"engine/modules/loop"
 	"engine/services/ecs"
-	"engine/services/frames"
 
 	"github.com/go-gl/mathgl/mgl32"
 	"github.com/ogiusek/events"
@@ -27,7 +27,7 @@ func NewWasdSystem(c ioc.Dic, cameraSpeed float32) camera.System {
 	})
 }
 
-func (s *wasdMoveSystem) Listen(event frames.FrameEvent) {
+func (s *wasdMoveSystem) Listen(event loop.FrameEvent) {
 	var moveVerticaly float32 = 0
 	var moveHorizontaly float32 = 0
 	{

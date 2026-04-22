@@ -7,7 +7,6 @@ import (
 	"engine/modules/text/internal/textrenderer"
 	"engine/modules/text/internal/textservice"
 	"engine/services/datastructures"
-	"engine/services/ecs"
 	gtexture "engine/services/graphics/texture"
 	"engine/services/graphics/vao/vbo"
 	"engine/services/logger"
@@ -39,7 +38,6 @@ type config struct {
 func NewConfig(
 	defaultFontFamily func(c ioc.Dic) text.FontFamilyComponent,
 	defaultFontSize text.FontSizeComponent,
-	// defaultOverflow text.Overflow,
 	defaultBreak text.BreakComponent,
 	defaultTextAlign text.TextAlignComponent,
 	defaultColor text.TextColorComponent,
@@ -52,11 +50,10 @@ func NewConfig(
 	return config{
 		defaultFontFamily: defaultFontFamily,
 		defaultFontSize:   defaultFontSize,
-		// defaultOverflow:   defaultOverflow,
-		defaultBreak:     defaultBreak,
-		defaultTextAlign: defaultTextAlign,
-		defaultColor:     defaultColor,
-		usedGlyphs:       usedGlyphs,
+		defaultBreak:      defaultBreak,
+		defaultTextAlign:  defaultTextAlign,
+		defaultColor:      defaultColor,
+		usedGlyphs:        usedGlyphs,
 		faceOptions: opentype.FaceOptions{
 			Size: size,
 			// DPI:  72,
@@ -76,12 +73,7 @@ var Pkg = ioc.NewPkgT(func(b ioc.Builder, config config) {
 	} {
 		pkg(b)
 	}
-	ioc.Register(b, func(c ioc.Dic) text.Service {
-		return textservice.NewService(
-			ioc.Get[ecs.World](c),
-			ioc.Get[logger.Logger](c),
-		)
-	})
+	ioc.Register(b, textservice.NewService)
 	ioc.Register(b, func(c ioc.Dic) textrenderer.FontService {
 		return textrenderer.NewFontService(
 			ioc.Get[assets.Service](c),

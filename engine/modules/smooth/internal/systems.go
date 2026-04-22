@@ -2,10 +2,10 @@ package internal
 
 import (
 	"engine"
+	"engine/modules/loop"
 	"engine/modules/record"
 	"engine/modules/transition"
 	"engine/services/ecs"
-	"engine/services/frames"
 
 	"github.com/ogiusek/events"
 	"github.com/ogiusek/ioc/v2"
@@ -40,8 +40,8 @@ type system[Component transition.LerpConstraint[Component]] struct {
 	Service            *Service[Component] `inject:""`
 }
 
-type FirstEvent frames.TickEvent
-type LastEvent frames.TickEvent
+type FirstEvent loop.TickEvent
+type LastEvent loop.TickEvent
 
 func NewSystems[Component transition.LerpConstraint[Component]](c ioc.Dic) {
 	s := ioc.GetServices[*system[Component]](c)

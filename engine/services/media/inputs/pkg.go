@@ -1,9 +1,9 @@
 package inputs
 
 import (
+	"engine/modules/loop"
 	"engine/services/clock"
 	"engine/services/logger"
-	"engine/services/runtime"
 
 	"github.com/ogiusek/events"
 	"github.com/ogiusek/ioc/v2"
@@ -21,7 +21,7 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 
 	ioc.Wrap(b, func(c ioc.Dic, b events.Builder) {
 		events.Listen(b, func(qe sdl.QuitEvent) {
-			ioc.Get[runtime.Runtime](c).Stop()
+			ioc.Get[loop.Service](c).Stop()
 		})
 	})
 })

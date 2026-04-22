@@ -3,8 +3,8 @@ package systems
 import (
 	"engine"
 	"engine/modules/inputs"
+	"engine/modules/loop"
 	"engine/services/ecs"
-	"engine/services/frames"
 	mediainputs "engine/services/media/inputs"
 
 	"github.com/ogiusek/events"
@@ -24,6 +24,6 @@ func NewInputsSystem(c ioc.Dic) inputs.System {
 	})
 }
 
-func (system *inputsSystem) Listen(args frames.FrameEvent) {
+func (system *inputsSystem) Listen(args loop.FrameEvent) {
 	system.Inputs.Poll()
 }

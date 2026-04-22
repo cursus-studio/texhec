@@ -3,13 +3,13 @@ package client
 import (
 	"engine"
 	"engine/modules/connection"
+	"engine/modules/loop"
 	"engine/modules/netsync/internal/clienttypes"
 	"engine/modules/netsync/internal/config"
 	"engine/modules/netsync/internal/servertypes"
 	"engine/modules/record"
 	"engine/services/datastructures"
 	"engine/services/ecs"
-	"engine/services/frames"
 	"errors"
 	"fmt"
 	"reflect"
@@ -78,7 +78,7 @@ func NewService(c ioc.Dic, config config.Config) *Service {
 			t.ListenTransparentEvent(a.(servertypes.TransparentEventDTO))
 		},
 	}
-	events.Listen(t.EventsBuilder(), func(frames.FrameEvent) {
+	events.Listen(t.EventsBuilder(), func(loop.FrameEvent) {
 		t.loadConnections()
 		conn := t.getConnection()
 		if conn == nil {

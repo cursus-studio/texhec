@@ -2,9 +2,9 @@ package system
 
 import (
 	"engine"
+	"engine/modules/loop"
 	"engine/modules/transition"
 	"engine/services/ecs"
-	"engine/services/frames"
 	"slices"
 
 	"github.com/ogiusek/events"
@@ -35,7 +35,7 @@ func (s *system) ListenDelayed(e transition.DelayedEvent) {
 	s.delayed = slices.Insert(s.delayed, insIdx, &e)
 }
 
-func (s *system) ListenFrame(e frames.FrameEvent) {
+func (s *system) ListenFrame(e loop.FrameEvent) {
 	toOld := 0
 	for _, event := range s.delayed {
 		event.Duration -= e.Delta

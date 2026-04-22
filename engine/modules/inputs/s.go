@@ -6,11 +6,6 @@ import (
 )
 
 type System ecs.SystemRegister
-type ShutdownSystem ecs.SystemRegister
-
-type QuitEvent struct{}
-
-func NewQuitEvent() QuitEvent { return QuitEvent{} }
 
 // this event is called when nothing is dragged
 type DragEvent struct {

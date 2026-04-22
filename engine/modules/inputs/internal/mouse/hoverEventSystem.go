@@ -3,8 +3,8 @@ package mouse
 import (
 	"engine"
 	"engine/modules/inputs"
+	"engine/modules/loop"
 	"engine/services/ecs"
-	"engine/services/frames"
 
 	"github.com/ogiusek/events"
 	"github.com/ogiusek/ioc/v2"
@@ -22,7 +22,7 @@ func NewHoverEventsSystem(c ioc.Dic) inputs.System {
 	})
 }
 
-func (s *hoverEventSystem) Listen(event frames.FrameEvent) {
+func (s *hoverEventSystem) Listen(event loop.FrameEvent) {
 	for _, entity := range s.Inputs().Hovered().GetEntities() {
 		eventsComponent, ok := s.Inputs().Hover().Get(entity)
 		if !ok {

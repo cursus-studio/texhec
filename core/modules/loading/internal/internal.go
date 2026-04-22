@@ -5,10 +5,10 @@ import (
 	"core/modules/ui"
 	gamescenes "core/scenes"
 	"engine/modules/camera"
+	"engine/modules/loop"
 	"engine/modules/text"
 	"engine/modules/transform"
 	"engine/services/ecs"
-	"engine/services/frames"
 	"fmt"
 
 	"github.com/ogiusek/events"
@@ -74,7 +74,7 @@ func (s *system) Render(message string) {
 	s.Text().Align().Set(textEntity, text.TextAlignComponent{Vertical: .5, Horizontal: .5})
 }
 
-func (s *system) Listen(frames.FrameEvent) {
+func (s *system) Listen(loop.FrameEvent) {
 	progress := s.Batcher().Progress()
 	if progress == -1 {
 		s.Hide()

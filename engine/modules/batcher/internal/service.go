@@ -3,8 +3,8 @@ package internal
 import (
 	"engine"
 	"engine/modules/batcher"
+	"engine/modules/loop"
 	"engine/services/ecs"
-	"engine/services/frames"
 
 	"github.com/ogiusek/events"
 	"github.com/ogiusek/ioc/v2"
@@ -42,7 +42,7 @@ func (s *Service) System() batcher.System {
 	})
 }
 
-func (s *Service) Listen(frames.FrameEvent) {
+func (s *Service) Listen(loop.FrameEvent) {
 	if len(s.tasks) == 0 {
 		return
 	}
@@ -51,7 +51,7 @@ func (s *Service) Listen(frames.FrameEvent) {
 		s.WarmUp().WarmUp()
 	}
 
-	for s.Frames().FrameBudgetLeft() > 0 {
+	for s.Loop().Stats().FrameBudgetLeft() > 0 {
 		task.Step()
 		if task.Progress() != 1 {
 			continue

@@ -11,6 +11,7 @@ import (
 	hierarchypkg "engine/modules/hierarchy/pkg"
 	inputspkg "engine/modules/inputs/pkg"
 	layoutpkg "engine/modules/layout/pkg"
+	looppkg "engine/modules/loop/pkg"
 	metadatapkg "engine/modules/metadata/pkg"
 	netsyncpkg "engine/modules/netsync/pkg"
 	noisepkg "engine/modules/noise/pkg"
@@ -31,11 +32,9 @@ import (
 	"engine/services/console"
 	"engine/services/datastructures"
 	"engine/services/ecs"
-	"engine/services/frames"
 	"engine/services/graphics/texturearray"
 	"engine/services/logger"
 	"engine/services/media/window"
-	"engine/services/runtime"
 
 	"github.com/go-gl/mathgl/mgl32"
 	"github.com/ogiusek/ioc/v2"
@@ -53,6 +52,7 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 		hierarchypkg.Pkg,
 		inputspkg.Pkg,
 		layoutpkg.Pkg,
+		looppkg.Pkg,
 		metadatapkg.Pkg,
 		netsyncpkg.Pkg(netsyncpkg.NewConfig(0)),
 		noisepkg.Pkg,
@@ -113,12 +113,10 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 		// graphics {
 		texturearray.Pkg,
 		// }
-		frames.Pkg(frames.NewConfig(1, 60)),
 		logger.Pkg(logger.NewConfig(
 			true,
 			func(c ioc.Dic) func(message string) { return func(message string) { print(message) } },
 		)),
-		runtime.Pkg,
 
 		window.Pkg(window.NewConfig(nil, nil)),
 	}

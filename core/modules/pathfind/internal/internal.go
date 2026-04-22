@@ -10,11 +10,10 @@ import (
 	"engine/modules/grid"
 	"engine/modules/groups"
 	"engine/modules/inputs"
+	"engine/modules/loop"
 	"engine/modules/render"
 	"engine/services/ecs"
-	"engine/services/frames"
 
-	"github.com/go-gl/mathgl/mgl32"
 	"github.com/ogiusek/events"
 	"github.com/ogiusek/ioc/v2"
 )
@@ -57,36 +56,34 @@ func (s *service) PreviewPath(e pathfind.PreviewPathEvent) {
 	obstruction, _ := s.Tile().Obstruction().Get(e.Entity)
 	fromCoords, _ := from.Aligned()
 	toCoords, _ := to.Aligned()
-	path, ok := s.findPath(fromCoords, toCoords, size, obstruction)
+	_, ok = s.findPath(fromCoords, toCoords, size, obstruction)
+	path := []tile.PosComponent{
+		from,
+		tile.NewPos(e.Coords.Coords()),
+	}
 	if !ok {
-		for _, pos := range []tile.PosComponent{
-			tile.NewPos(e.Coords.Coords()),
-			from,
-		} {
-			entity := s.Prototype().Clone(s.Definitions().Blank)
+		for _, pos := range path {
+			entity := s.World().NewEntity()
 			s.Hierarchy().SetParent(entity, s.Scene().Scene())
 
-			s.Tile().Layer().Set(entity, tile.NewLayer(definitions.PlaceholderTileLayer))
 			s.Render().Mesh().Set(entity, render.NewMesh(s.Definitions().SquareMesh))
-			s.Render().Texture().Set(entity, render.NewTexture(s.Definitions().Blank))
+			s.Render().Texture().Set(entity, render.NewTexture(s.Definitions().Hud().Cannot))
 			s.Groups().Component().Set(entity, groups.EmptyGroups().Ptr().Enable(definitions.GameGroup).Val())
 
 			s.Collider().Component().Set(entity, collider.NewCollider(s.Definitions().SquareCollider))
 
-			s.Tile().Layer().Set(entity, tile.NewLayer(definitions.PlaceholderTileLayer))
+			s.Tile().Layer().Set(entity, tile.NewLayer(definitions.PathLayer))
 			s.Tile().Pos().Set(entity, pos)
 			s.Tile().Placeholder().Set(entity, tile.NewPlaceholder())
-			s.Render().Color().Set(entity, render.NewColor(mgl32.Vec4{1, 0, 0, 1}))
 		}
 		return
 	}
 	for _, pos := range path {
-		entity := s.Prototype().Clone(s.Definitions().Blank)
+		entity := s.World().NewEntity()
 		s.Hierarchy().SetParent(entity, s.Scene().Scene())
 
-		s.Tile().Layer().Set(entity, tile.NewLayer(definitions.PlaceholderTileLayer))
 		s.Render().Mesh().Set(entity, render.NewMesh(s.Definitions().SquareMesh))
-		s.Render().Texture().Set(entity, render.NewTexture(s.Definitions().Blank))
+		s.Render().Texture().Set(entity, render.NewTexture(s.Definitions().Hud().Can))
 		s.Groups().Component().Set(entity, groups.EmptyGroups().Ptr().Enable(definitions.GameGroup).Val())
 
 		s.Collider().Component().Set(entity, collider.NewCollider(s.Definitions().SquareCollider))
@@ -94,9 +91,9 @@ func (s *service) PreviewPath(e pathfind.PreviewPathEvent) {
 			s.Inputs().LeftClick().Set(entity, inputs.NewLeftClick(pathfind.NewFindPathEvent(e.Entity).ApplyCoords(e.Coords)))
 		}
 
+		s.Tile().Layer().Set(entity, tile.NewLayer(definitions.PathLayer))
 		s.Tile().Pos().Set(entity, pos)
 		s.Tile().Placeholder().Set(entity, tile.NewPlaceholder())
-		s.Render().Color().Set(entity, render.NewColor(mgl32.Vec4{0, 1, 0, 1}))
 	}
 }
 func (s *service) FindPath(e pathfind.FindPathEvent) {
@@ -123,7 +120,7 @@ func (s *service) FindPath(e pathfind.FindPathEvent) {
 	events.Emit(s.Events(), ui.HideUiEvent{})
 }
 
-func (s *service) OnTick(e frames.TickEvent) {
+func (s *service) OnTick(e loop.TickEvent) {
 	for _, entity := range s.Target().GetEntities() {
 		if _, ok := s.Tile().Step().Get(entity); ok {
 			continue

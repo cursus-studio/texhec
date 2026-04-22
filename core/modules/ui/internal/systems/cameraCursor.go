@@ -3,10 +3,10 @@ package systems
 import (
 	gamescenes "core/scenes"
 	"engine/modules/groups"
+	"engine/modules/loop"
 	"engine/modules/render"
 	"engine/modules/transform"
 	"engine/services/ecs"
-	"engine/services/frames"
 	"fmt"
 
 	"github.com/ogiusek/events"
@@ -33,7 +33,7 @@ func NewCursorSystem(c ioc.Dic) ecs.SystemRegister {
 	})
 }
 
-func (s *cursorSystem) Listen(frames.FrameEvent) {
+func (s *cursorSystem) Listen(loop.FrameEvent) {
 	mousePos := s.Window().GetMousePos()
 
 	cameras := s.Ui().CursorCamera().GetEntities()

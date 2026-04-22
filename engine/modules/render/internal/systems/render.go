@@ -2,9 +2,9 @@ package systems
 
 import (
 	"engine"
+	"engine/modules/loop"
 	"engine/modules/render"
 	"engine/services/ecs"
-	"engine/services/frames"
 
 	"github.com/go-gl/gl/v4.5-core/gl"
 	"github.com/ogiusek/events"
@@ -23,7 +23,7 @@ func NewRenderSystem(c ioc.Dic) render.System {
 	})
 }
 
-func (s *renderSystem) Listen(args frames.FrameEvent) error {
+func (s *renderSystem) Listen(args loop.FrameEvent) error {
 	gl.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
 
 	cameras := s.Camera().OrderedCameras()

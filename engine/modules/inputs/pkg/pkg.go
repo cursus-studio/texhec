@@ -5,10 +5,10 @@ import (
 	"engine/modules/inputs/internal/mouse"
 	"engine/modules/inputs/internal/service"
 	"engine/modules/inputs/internal/systems"
+	"engine/modules/loop"
 	prototypepkg "engine/modules/prototype/pkg"
 	"engine/services/codec"
 	"engine/services/ecs"
-	"engine/services/frames"
 
 	"github.com/ogiusek/events"
 	"github.com/ogiusek/ioc/v2"
@@ -51,7 +51,6 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 			Register(inputs.DragComponent{}).
 
 			// events
-			Register(inputs.QuitEvent{}).
 			Register(inputs.DragEvent{}).
 			Register(inputs.SynchronizePositionEvent{})
 	})
@@ -68,7 +67,7 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 				ecs.NewSystemRegister(func() error {
 					eventsBuilder := ioc.Get[events.Builder](c)
 					events.Listen(eventsBuilder, func(sdl.QuitEvent) {
-						events.Emit(eventsBuilder.Events(), inputs.NewQuitEvent())
+						events.Emit(eventsBuilder.Events(), loop.NewStopEvent())
 					})
 					return nil
 				}),
@@ -79,7 +78,7 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 				mouse.NewClickSystem(c),
 				ecs.NewSystemRegister(func() error {
 					eventsBuilder := ioc.Get[events.Builder](c)
-					events.Listen(eventsBuilder, func(frames.FrameEvent) {
+					events.Listen(eventsBuilder, func(loop.FrameEvent) {
 						events.Emit(eventsBuilder.Events(), mouse.NewShootRayEvent())
 					})
 					return nil
@@ -87,8 +86,5 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 			)
 			return nil
 		})
-	})
-	ioc.Register(b, func(c ioc.Dic) inputs.ShutdownSystem {
-		return systems.NewQuitSystem(c)
 	})
 })
