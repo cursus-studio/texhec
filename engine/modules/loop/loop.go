@@ -36,7 +36,7 @@ type Stats interface {
 type Service interface {
 	// Starts the game loop if it isn't started.
 	// Waits until game loop stops.
-	Run()
+	Run(initialConfiguration ConfigureEvent)
 	Stop()                    // emits stop event
 	Configure(ConfigureEvent) // emits confugure event
 

@@ -3,7 +3,6 @@ package internal
 import (
 	"engine"
 	"engine/modules/loop"
-	"sync"
 	"time"
 
 	"github.com/ogiusek/events"
@@ -20,13 +19,11 @@ type service struct {
 	LastFrameTime time.Time
 	TickProgress  time.Duration
 
-	Ticker     *time.Ticker
-	Configured chan struct{}
+	Ticker *time.Ticker
 }
 
 func NewService(c ioc.Dic) loop.Service {
 	s := ioc.GetServices[*service](c)
-
 	s.Running = false
 
 	// TickDuration is initialized lazily
@@ -36,12 +33,10 @@ func NewService(c ioc.Dic) loop.Service {
 	s.TickProgress = 0
 
 	s.Ticker = nil
-	s.Configured = make(chan struct{})
 
 	events.Listen(s.EventsBuilder(), func(loop.StopEvent) {
 		s.Running = false
 	})
-	once := sync.Once{}
 	events.Listen(s.EventsBuilder(), func(e loop.ConfigureEvent) {
 		s.TickDuration = time.Second / time.Duration(e.TPS)
 		s.FrameDuration = time.Second / time.Duration(e.FPS)
@@ -50,23 +45,18 @@ func NewService(c ioc.Dic) loop.Service {
 		if prev != nil {
 			prev.Stop()
 		}
-
-		once.Do(func() {
-			close(s.Configured)
-		})
 	})
 
 	return s
 }
 
-func (s *service) Run() {
+func (s *service) Run(e loop.ConfigureEvent) {
+	s.Configure(e)
 	if s.Running {
 		return
 	}
 
 	s.Running = true
-	<-s.Configured
-
 	s.LastFrameTime = s.Clock().Now()
 
 	for s.Running {

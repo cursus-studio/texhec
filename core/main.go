@@ -137,6 +137,5 @@ func main() {
 		}
 	}
 	game := ioc.GetServices[gamescenes.GameWorld](c)
-	game.Loop().Configure(loop.NewConfigureEvent(60, 1))
-	game.Loop().Run()
+	game.Loop().Run(loop.NewConfigureEvent(60, 1))
 }
