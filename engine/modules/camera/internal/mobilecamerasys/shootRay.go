@@ -3,7 +3,7 @@ package mobilecamerasys
 import (
 	"engine/modules/collider"
 	"engine/modules/groups"
-	"engine/services/media/window"
+	"engine/modules/window"
 
 	"github.com/go-gl/mathgl/mgl32"
 )

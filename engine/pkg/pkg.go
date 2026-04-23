@@ -27,6 +27,7 @@ import (
 	transitionpkg "engine/modules/transition/pkg"
 	uuidpkg "engine/modules/uuid/pkg"
 	warmuppkg "engine/modules/warmup/pkg"
+	windowpkg "engine/modules/window/pkg"
 	"engine/services/clock"
 	"engine/services/codec"
 	"engine/services/console"
@@ -34,7 +35,6 @@ import (
 	"engine/services/graphics/texture"
 	"engine/services/graphics/texturearray"
 	"engine/services/logger"
-	"engine/services/media"
 
 	"github.com/ogiusek/ioc/v2"
 )
@@ -67,6 +67,7 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 		transitionpkg.Pkg,
 		uuidpkg.Pkg,
 		warmuppkg.Pkg,
+		windowpkg.Pkg,
 
 		clock.Pkg,
 		codec.Pkg,
@@ -75,7 +76,6 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 		gtexture.Pkg,
 		texturearray.Pkg,
 		logger.Pkg,
-		media.Pkg,
 	}
 	for _, pkg := range pkgs {
 		pkg(b)

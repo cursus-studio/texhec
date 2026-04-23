@@ -17,11 +17,11 @@ import (
 	"engine/modules/text"
 	textpkg "engine/modules/text/pkg"
 	"engine/modules/transform"
+	"engine/modules/window"
 	"engine/services/console"
 	gtexture "engine/services/graphics/texture"
 	"engine/services/graphics/texturearray"
 	"engine/services/logger"
-	"engine/services/media/window"
 
 	"github.com/go-gl/gl/v4.5-core/gl"
 	"github.com/ogiusek/ioc/v2"
@@ -34,8 +34,9 @@ func getDic() ioc.Dic {
 		smoothpkg.PkgT[render.ColorComponent](),
 
 		func(b ioc.Builder) {
-			ioc.Wrap(b, func(c ioc.Dic, w window.Api) {
+			ioc.Wrap(b, func(c ioc.Dic, w window.Service) {
 				w.Window().SetTitle("TEXHEC")
+				gl.ClearColor(0.2, 0.3, 0.3, 1.0)
 			})
 			ioc.Wrap(b, func(c ioc.Dic, f gtexture.Factory) {
 				f.Wrap(func(t gtexture.Texture) {

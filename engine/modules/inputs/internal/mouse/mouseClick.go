@@ -3,8 +3,8 @@ package mouse
 import (
 	"engine"
 	"engine/modules/inputs"
+	"engine/modules/window"
 	"engine/services/ecs"
-	"engine/services/media/window"
 	"errors"
 	"slices"
 

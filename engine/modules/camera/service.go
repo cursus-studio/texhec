@@ -2,8 +2,8 @@ package camera
 
 import (
 	"engine/modules/collider"
+	"engine/modules/window"
 	"engine/services/ecs"
-	"engine/services/media/window"
 	"errors"
 
 	"github.com/go-gl/mathgl/mgl32"

@@ -1,6 +1,7 @@
-package window
+package internal
 
 import (
+	"engine/modules/window"
 	"engine/services/logger"
 	"sync"
 
@@ -11,35 +12,23 @@ import (
 	"github.com/veandco/go-sdl2/sdl"
 )
 
-type MousePos struct{ X, Y int32 }
-
-func NewMousePos(x, y int32) MousePos  { return MousePos{x, y} }
-func (p *MousePos) Elem() (x, y int32) { return p.X, p.Y }
-
-type Api interface {
-	NormalizeMousePos(MousePos) mgl32.Vec2
-	GetMousePos() MousePos
-	Window() *sdl.Window
-	Ctx() sdl.GLContext
-}
-
-type api struct {
+type service struct {
 	Logger  logger.Logger `inject:""`
 	window  *sdl.Window
 	context sdl.GLContext
 	once    sync.Once
 }
 
-func newApi(c ioc.Dic) Api {
-	s := ioc.GetServices[*api](c)
+func NewService(c ioc.Dic) window.Service {
+	s := ioc.GetServices[*service](c)
 	return s
 }
 
-func (api *api) init() {
-	api.once.Do(func() {
+func (s *service) init() {
+	s.once.Do(func() {
 		var err error
 		if err := sdl.Init(sdl.INIT_EVERYTHING); err != nil {
-			api.Logger.Fatal(err)
+			s.Logger.Fatal(err)
 			return
 		}
 
@@ -51,33 +40,33 @@ func (api *api) init() {
 
 		// audio
 		if err := mix.OpenAudio(48000, sdl.AUDIO_F32SYS, 2, 1024); err != nil {
-			api.Logger.Fatal(err)
+			s.Logger.Fatal(err)
 			return
 		}
 
 		// window and opengl
-		api.window, err = sdl.CreateWindow(
+		s.window, err = sdl.CreateWindow(
 			"ENGINE",
 			sdl.WINDOWPOS_UNDEFINED, sdl.WINDOWPOS_UNDEFINED,
 			800, 600,
 			sdl.WINDOW_SHOWN|sdl.WINDOW_OPENGL,
 		)
 		if err != nil {
-			api.Logger.Fatal(err)
+			s.Logger.Fatal(err)
 			return
 		}
 
-		api.context, err = api.window.GLCreateContext()
+		s.context, err = s.window.GLCreateContext()
 		if err != nil {
-			api.Logger.Fatal(err)
+			s.Logger.Fatal(err)
 			return
 		}
 		if err := gl.Init(); err != nil {
-			api.Logger.Fatal(err)
+			s.Logger.Fatal(err)
 			return
 		}
-		if err := api.window.GLMakeCurrent(api.context); err != nil {
-			api.Logger.Fatal(err)
+		if err := s.window.GLMakeCurrent(s.context); err != nil {
+			s.Logger.Fatal(err)
 			return
 		}
 		_ = sdl.GLSetSwapInterval(0)
@@ -95,24 +84,25 @@ func (api *api) init() {
 	})
 }
 
-func (api *api) NormalizeMousePos(mousePos MousePos) mgl32.Vec2 {
-	api.init()
+func (s *service) NormalizeMousePos(mousePos window.MousePos) mgl32.Vec2 {
+	s.init()
 	x, y := mousePos.Elem()
-	w, h := api.Window().GetSize()
+	w, h := s.Window().GetSize()
 	return mgl32.Vec2{
 		(2*float32(x)/float32(w) - 1),
 		-(2*float32(y)/float32(h) - 1),
 	}
 }
-func (api *api) GetMousePos() MousePos {
+func (s *service) GetMousePos() window.MousePos {
+	s.init()
 	x, y, _ := sdl.GetMouseState()
-	return NewMousePos(x, y)
+	return window.NewMousePos(x, y)
 }
-func (api *api) Window() *sdl.Window {
-	api.init()
-	return api.window
+func (s *service) Window() *sdl.Window {
+	s.init()
+	return s.window
 }
-func (api *api) Ctx() sdl.GLContext {
-	api.init()
-	return api.context
+func (s *service) Ctx() sdl.GLContext {
+	s.init()
+	return s.context
 }
