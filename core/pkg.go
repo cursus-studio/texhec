@@ -1,24 +1,12 @@
 package main
 
 import (
-	definitionspkg "core/modules/definitions/pkg"
-	deploypkg "core/modules/deploy/pkg"
-	fpsloggerpkg "core/modules/fpslogger/pkg"
-	generationpkg "core/modules/generation/pkg"
-	loadingpkg "core/modules/loading/pkg"
-	pathfindpkg "core/modules/pathfind/pkg"
-	playerpkg "core/modules/player/pkg"
 	"core/modules/settings"
-	settingspkg "core/modules/settings/pkg"
 	"core/modules/tile"
-	tilepkg "core/modules/tile/pkg"
 	"core/modules/ui"
 	"core/modules/ui/pkg"
+	corepkg "core/pkg"
 	gamescenes "core/scenes"
-	creditsscene "core/scenes/credits"
-	gamescene "core/scenes/game"
-	menuscene "core/scenes/menu"
-	settingsscene "core/scenes/settings"
 	"engine/modules/camera"
 	"engine/modules/drag"
 	"engine/modules/grid"
@@ -30,7 +18,6 @@ import (
 	"engine/modules/text"
 	textpkg "engine/modules/text/pkg"
 	"engine/modules/transform"
-	"engine/pkg"
 	"engine/services/console"
 	gtexture "engine/services/graphics/texture"
 	"engine/services/graphics/texturearray"
@@ -44,8 +31,8 @@ import (
 
 func getDic() ioc.Dic {
 	pkgs := []ioc.Pkg{
+		corepkg.Pkg,
 		// engine
-		enginepkg.Pkg,
 		netsyncpkg.Pkg(func() netsyncpkg.Config {
 			config := netsyncpkg.NewConfig(
 				150, // max predictions
@@ -74,15 +61,6 @@ func getDic() ioc.Dic {
 		}()),
 
 		// game
-		definitionspkg.Pkg,
-		deploypkg.Pkg,
-		fpsloggerpkg.Pkg,
-		generationpkg.Pkg,
-		loadingpkg.Pkg,
-		pathfindpkg.Pkg,
-		playerpkg.Pkg,
-		settingspkg.Pkg,
-		tilepkg.Pkg,
 		smoothpkg.PkgT[render.ColorComponent](),
 		smoothpkg.PkgT[tile.PosComponent](),
 		smoothpkg.PkgT[tile.RotComponent](),
@@ -91,13 +69,6 @@ func getDic() ioc.Dic {
 			time.Second/12,       // bgTimePerFrame
 		)),
 
-		//
-
-		gamescenes.Pkg,
-		creditsscene.Pkg,
-		gamescene.Pkg,
-		menuscene.Pkg,
-		settingsscene.Pkg,
 		func(b ioc.Builder) {
 			ioc.Wrap(b, func(c ioc.Dic, w window.Api) {
 				w.Window().SetTitle("TEXHEC")

@@ -57,7 +57,7 @@ func (api *api) init() {
 
 		// window and opengl
 		api.window, err = sdl.CreateWindow(
-			"",
+			"ENGINE",
 			sdl.WINDOWPOS_UNDEFINED, sdl.WINDOWPOS_UNDEFINED,
 			800, 600,
 			sdl.WINDOW_SHOWN|sdl.WINDOW_OPENGL,

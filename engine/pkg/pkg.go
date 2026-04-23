@@ -1,7 +1,6 @@
 package enginepkg
 
 import (
-	"engine"
 	assetspkg "engine/modules/assets/pkg"
 	audiopkg "engine/modules/audio/pkg"
 	batcherpkg "engine/modules/batcher/pkg"
@@ -40,10 +39,6 @@ import (
 )
 
 var Pkg = ioc.NewPkg(func(b ioc.Builder) {
-	ioc.Register(b, func(c ioc.Dic) int {
-		ioc.GetServices[engine.EngineWorld](c)
-		return 0
-	})
 	pkgs := []ioc.Pkg{
 		assetspkg.Pkg,
 		audiopkg.Pkg,
