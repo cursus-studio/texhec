@@ -1,9 +1,9 @@
 package test
 
 import (
-	"engine/mock"
 	"engine/modules/groups"
 	"engine/modules/hierarchy"
+	enginepkg "engine/pkg"
 	"engine/services/ecs"
 	"testing"
 
@@ -19,7 +19,7 @@ type Setup struct {
 
 func NewSetup(t *testing.T) Setup {
 	c := ioc.NewContainer(
-		mock.Pkg,
+		enginepkg.Pkg,
 	)
 
 	return Setup{

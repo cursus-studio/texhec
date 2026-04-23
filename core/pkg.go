@@ -32,33 +32,6 @@ import (
 func getDic() ioc.Dic {
 	pkgs := []ioc.Pkg{
 		corepkg.Pkg,
-		// engine
-		netsyncpkg.Pkg(func() netsyncpkg.Config {
-			config := netsyncpkg.NewConfig(
-				150, // max predictions
-			)
-			record.AddToConfig[transform.PosComponent](config.RecordConfig())
-			record.AddToConfig[camera.OrthoComponent](config.RecordConfig())
-			record.AddToConfig[grid.SquareGridComponent[tile.ID]](config.RecordConfig())
-			// netsyncpkg.AddComponent[transform.PosComponent](config)
-			// netsyncpkg.AddComponent[camera.OrthoComponent](config)
-			// netsyncpkg.AddComponent[definition.DefinitionLinkComponent](config)
-			// netsyncpkg.AddComponent[tile.PosComponent](config)
-
-			// syncpkg.AddEvent[scenessys.ChangeSceneEvent](config)
-			netsyncpkg.AddEvent[drag.DraggableEvent](config)
-			netsyncpkg.AddEvent[inputs.DragEvent](config)
-
-			netsyncpkg.AddTransparentEvent[settings.EnterSettingsEvent](config)
-			netsyncpkg.AddTransparentEvent[tile.HoverEvent](config)
-			netsyncpkg.AddTransparentEvent[ui.HideUiEvent](config)
-
-			// netsyncpkg.AddEventAuthorization(config, func(c inputs.DragEvent) error {
-			// 	return errors.New("no")
-			// })
-
-			return config
-		}()),
 
 		// game
 		smoothpkg.PkgT[render.ColorComponent](),
@@ -122,6 +95,28 @@ func getDic() ioc.Dic {
 			ioc.Wrap(b, func(c ioc.Dic, config logger.Config) {
 				config.PanicOnWarn(true)
 				config.Flush(ioc.Get[console.Console](c).PrintPermanent)
+			})
+			ioc.Wrap(b, func(c ioc.Dic, config netsyncpkg.Config) {
+				config.SetMaxPredictions(150)
+				record.AddToConfig[transform.PosComponent](config.RecordConfig())
+				record.AddToConfig[camera.OrthoComponent](config.RecordConfig())
+				record.AddToConfig[grid.SquareGridComponent[tile.ID]](config.RecordConfig())
+				// netsyncpkg.AddComponent[transform.PosComponent](config)
+				// netsyncpkg.AddComponent[camera.OrthoComponent](config)
+				// netsyncpkg.AddComponent[definition.DefinitionLinkComponent](config)
+				// netsyncpkg.AddComponent[tile.PosComponent](config)
+
+				// syncpkg.AddEvent[scenessys.ChangeSceneEvent](config)
+				netsyncpkg.AddEvent[drag.DraggableEvent](config)
+				netsyncpkg.AddEvent[inputs.DragEvent](config)
+
+				netsyncpkg.AddTransparentEvent[settings.EnterSettingsEvent](config)
+				netsyncpkg.AddTransparentEvent[tile.HoverEvent](config)
+				netsyncpkg.AddTransparentEvent[ui.HideUiEvent](config)
+
+				// netsyncpkg.AddEventAuthorization(config, func(c inputs.DragEvent) error {
+				// 	return errors.New("no")
+				// })
 			})
 			ioc.Wrap(b, func(c ioc.Dic, s text.Service) {
 				world := ioc.GetServices[*gamescenes.GameWorld](c)

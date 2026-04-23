@@ -14,6 +14,7 @@ import (
 	layoutpkg "engine/modules/layout/pkg"
 	looppkg "engine/modules/loop/pkg"
 	metadatapkg "engine/modules/metadata/pkg"
+	netsyncpkg "engine/modules/netsync/pkg"
 	noisepkg "engine/modules/noise/pkg"
 	prototypepkg "engine/modules/prototype/pkg"
 	recordpkg "engine/modules/record/pkg"
@@ -53,7 +54,7 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 		layoutpkg.Pkg,
 		looppkg.Pkg,
 		metadatapkg.Pkg,
-		// netsyncpkg.Pkg(netsyncpkg.NewConfig(0)),
+		netsyncpkg.Pkg,
 		noisepkg.Pkg,
 		prototypepkg.Pkg,
 		recordpkg.Pkg,

@@ -1,9 +1,9 @@
 package test
 
 import (
-	"engine/mock"
 	"engine/modules/record"
 	"engine/modules/uuid"
+	enginepkg "engine/pkg"
 	"engine/services/codec"
 	"engine/services/ecs"
 
@@ -26,7 +26,7 @@ type Setup struct {
 
 func NewSetup() Setup {
 	c := ioc.NewContainer(
-		mock.Pkg,
+		enginepkg.Pkg,
 		func(b ioc.Builder) {
 			ioc.Wrap(b, func(c ioc.Dic, b codec.Builder) {
 				b.

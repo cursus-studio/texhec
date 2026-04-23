@@ -12,19 +12,22 @@ type Config struct {
 	config *config.Config
 }
 
-func NewConfig(maxPredictions int) Config {
+func newConfig() Config {
 	return Config{
 		config: &config.Config{
 			RecordConfig:        record.NewConfig(),
 			AuthorizeEvent:      make(map[reflect.Type]func(any) error),
 			AllowedClientEvents: make(map[reflect.Type]struct{}),
-			MaxPredictions:      maxPredictions,
+			MaxPredictions:      0,
 		},
 	}
 }
 
 func (c *Config) RecordConfig() record.Config {
 	return c.config.RecordConfig
+}
+func (c *Config) SetMaxPredictions(maxPredictions int) {
+	c.config.MaxPredictions = maxPredictions
 }
 
 func AddEvent[EventType any](config Config) {

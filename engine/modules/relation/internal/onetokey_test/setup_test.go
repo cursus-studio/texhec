@@ -1,9 +1,9 @@
 package test
 
 import (
-	"engine/mock"
 	"engine/modules/relation"
 	"engine/modules/relation/pkg"
+	enginepkg "engine/pkg"
 	"engine/services/ecs"
 
 	"github.com/ogiusek/ioc/v2"
@@ -21,7 +21,7 @@ type Setup struct {
 
 func NewSetup() Setup {
 	c := ioc.NewContainer(
-		mock.Pkg,
+		enginepkg.Pkg,
 		relationpkg.SpatialRelationPkg(
 			func(w ecs.World) ecs.DirtySet {
 				dirtySet := ecs.NewDirtySet()

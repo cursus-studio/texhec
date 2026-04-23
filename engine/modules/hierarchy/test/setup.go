@@ -1,8 +1,8 @@
 package test
 
 import (
-	"engine/mock"
 	"engine/modules/hierarchy"
+	enginepkg "engine/pkg"
 	"engine/services/ecs"
 
 	"github.com/ogiusek/ioc/v2"
@@ -15,7 +15,7 @@ type Setup struct {
 
 func NewSetup() Setup {
 	c := ioc.NewContainer(
-		mock.Pkg,
+		enginepkg.Pkg,
 	)
 	return Setup{
 		ioc.Get[ecs.World](c),
