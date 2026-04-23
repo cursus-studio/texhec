@@ -12,6 +12,8 @@ github.com/ogiusek/ioc/v2 v2.1.10 h1:CRISgYBH+TKEQ5EiPdtai1ERswCOmsS/SVFBqWRfheQ
 github.com/ogiusek/ioc/v2 v2.1.10/go.mod h1:Glp51oLiFVLUEnQ3OILNBBxDs5woFKEtLtRTbLyc0Is=
 github.com/ogiusek/ioc/v2 v2.1.11 h1:8PyfotMBBFnoEtR0huUUHlMe7Acm+uOHpBm2AirUiUc=
 github.com/ogiusek/ioc/v2 v2.1.11/go.mod h1:Glp51oLiFVLUEnQ3OILNBBxDs5woFKEtLtRTbLyc0Is=
+github.com/ogiusek/ioc/v2 v2.1.12 h1:fkgXFEBDJMtz5havDNlkf3O3sWQwN1EXLlLTbYuKbNk=
+github.com/ogiusek/ioc/v2 v2.1.12/go.mod h1:Glp51oLiFVLUEnQ3OILNBBxDs5woFKEtLtRTbLyc0Is=
 github.com/veandco/go-sdl2 v0.4.40 h1:fZv6wC3zz1Xt167P09gazawnpa0KY5LM7JAvKpX9d/U=
 github.com/veandco/go-sdl2 v0.4.40/go.mod h1:OROqMhHD43nT4/i9crJukyVecjPNYYuCofep6SNiAjY=
 golang.org/x/exp v0.0.0-20250911091902-df9299821621 h1:2id6c1/gto0kaHYyrixvknJ8tUK/Qs5IsmBtrc+FtgU=

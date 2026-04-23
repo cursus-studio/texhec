@@ -1,0 +1,89 @@
+package enginepkg
+
+import (
+	"engine"
+	assetspkg "engine/modules/assets/pkg"
+	audiopkg "engine/modules/audio/pkg"
+	batcherpkg "engine/modules/batcher/pkg"
+	camerapkg "engine/modules/camera/pkg"
+	colliderpkg "engine/modules/collider/pkg"
+	connectionpkg "engine/modules/connection/pkg"
+	dragpkg "engine/modules/drag/pkg"
+	groupspkg "engine/modules/groups/pkg"
+	hierarchypkg "engine/modules/hierarchy/pkg"
+	inputspkg "engine/modules/inputs/pkg"
+	layoutpkg "engine/modules/layout/pkg"
+	looppkg "engine/modules/loop/pkg"
+	metadatapkg "engine/modules/metadata/pkg"
+	noisepkg "engine/modules/noise/pkg"
+	prototypepkg "engine/modules/prototype/pkg"
+	recordpkg "engine/modules/record/pkg"
+	registrypkg "engine/modules/registry/pkg"
+	renderpkg "engine/modules/render/pkg"
+	scenepkg "engine/modules/scene/pkg"
+	smoothpkg "engine/modules/smooth/pkg"
+	textpkg "engine/modules/text/pkg"
+	transformpkg "engine/modules/transform/pkg"
+	transitionpkg "engine/modules/transition/pkg"
+	uuidpkg "engine/modules/uuid/pkg"
+	warmuppkg "engine/modules/warmup/pkg"
+	"engine/services/clock"
+	"engine/services/codec"
+	"engine/services/console"
+	"engine/services/ecs"
+	"engine/services/graphics/texture"
+	"engine/services/graphics/texturearray"
+	"engine/services/media"
+
+	"github.com/ogiusek/ioc/v2"
+)
+
+var Pkg = ioc.NewPkg(func(b ioc.Builder) {
+	ioc.Register(b, func(c ioc.Dic) int {
+		ioc.GetServices[engine.EngineWorld](c)
+		return 0
+	})
+	pkgs := []ioc.Pkg{
+		assetspkg.Pkg,
+		audiopkg.Pkg,
+		batcherpkg.Pkg,
+		camerapkg.Pkg,
+		colliderpkg.Pkg,
+		connectionpkg.Pkg,
+		dragpkg.Pkg,
+		groupspkg.Pkg,
+		hierarchypkg.Pkg,
+		inputspkg.Pkg,
+		layoutpkg.Pkg,
+		looppkg.Pkg,
+		metadatapkg.Pkg,
+		// netsyncpkg.Pkg(netsyncpkg.NewConfig(0)),
+		noisepkg.Pkg,
+		prototypepkg.Pkg,
+		recordpkg.Pkg,
+		registrypkg.Pkg,
+		renderpkg.Pkg,
+		scenepkg.Pkg,
+		smoothpkg.Pkg,
+		textpkg.Pkg,
+		transformpkg.Pkg,
+		transitionpkg.Pkg,
+		uuidpkg.Pkg,
+		warmuppkg.Pkg,
+
+		clock.Pkg,
+		codec.Pkg,
+		console.Pkg,
+		ecs.Pkg,
+		gtexture.Pkg,
+		texturearray.Pkg,
+		// logger.Pkg(logger.NewConfig(
+		// 	true,
+		// 	func(c ioc.Dic) func(message string) { return func(message string) { print(message) } },
+		// )),
+		media.Pkg,
+	}
+	for _, pkg := range pkgs {
+		pkg(b)
+	}
+})

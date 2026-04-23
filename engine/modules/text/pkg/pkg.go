@@ -63,7 +63,7 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 	ioc.Register(b, func(c ioc.Dic) Config { return ioc.Get[*config](c) })
 	ioc.Register(b, textservice.NewService)
 	ioc.Register(b, func(c ioc.Dic) textrenderer.FontService {
-		config := ioc.Get[*config](c)
+		config := ioc.Get[Config](c).(*config)
 		return textrenderer.NewFontService(
 			ioc.Get[assets.Service](c),
 			config.UsedGlyphs(),
@@ -105,7 +105,7 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 	})
 
 	ioc.Wrap(b, func(c ioc.Dic, b assets.Service) {
-		config := ioc.Get[*config](c)
+		config := ioc.Get[Config](c).(*config)
 		getLetterImage := func(drawer font.Drawer, letter rune) *image.RGBA {
 			var text = string(letter)
 			textBounds, _ := drawer.BoundString(text)
