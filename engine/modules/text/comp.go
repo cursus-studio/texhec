@@ -44,3 +44,18 @@ func NewFontFamily(fontFamily ecs.EntityID) FontFamilyComponent {
 }
 func NewFontSize(fontSize uint) FontSizeComponent { return FontSizeComponent{fontSize} }
 func NewBreak(b uint8) BreakComponent             { return BreakComponent{b} }
+
+//
+
+type SystemRenderer ecs.SystemRegister
+
+type Service interface {
+	Break() ecs.ComponentsArray[BreakComponent]
+	Content() ecs.ComponentsArray[TextComponent]
+	Align() ecs.ComponentsArray[AlignComponent]
+	Color() ecs.ComponentsArray[ColorComponent]
+	FontFamily() ecs.ComponentsArray[FontFamilyComponent]
+	FontSize() ecs.ComponentsArray[FontSizeComponent]
+
+	AddDirtySet(ecs.DirtySet)
+}

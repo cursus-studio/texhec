@@ -22,30 +22,34 @@ import (
 	"golang.org/x/image/math/fixed"
 )
 
+type Config interface {
+	UsedGlyphs() datastructures.SparseSet[rune]
+	SetSize(size, normalizedYBaseline float64)
+}
+
 type config struct {
 	usedGlyphs  datastructures.SparseSet[rune]
 	faceOptions opentype.FaceOptions
 	yBaseline   int
 }
 
-func NewConfig(
-	usedGlyphs datastructures.SparseSet[rune],
-	// faceOptions opentype.FaceOptions,
-	size float64,
-	normalizedYBaseline float64,
-) config {
-	return config{
-		usedGlyphs: usedGlyphs,
-		faceOptions: opentype.FaceOptions{
-			Size: size,
-			// DPI:  72,
-			DPI: 78, // arbitrary number because it works for some reason (its a little bit rounded down)
-		},
-		yBaseline: int(size * normalizedYBaseline),
-	}
+func NewConfig() *config {
+	var c = &config{usedGlyphs: datastructures.NewSparseSet[rune]()}
+	c.SetSize(64, .8 /* arbitrary number works for some reason */)
+	return c
 }
 
-var Pkg = ioc.NewPkgT(func(b ioc.Builder, config config) {
+func (c *config) UsedGlyphs() datastructures.SparseSet[rune] {
+	return c.usedGlyphs
+}
+func (c *config) SetSize(size, normalizedYBaseline float64) {
+	c.faceOptions = opentype.FaceOptions{Size: size, DPI: 78}
+	c.yBaseline = int(size * normalizedYBaseline)
+}
+
+//
+
+var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 	for _, pkg := range []ioc.Pkg{
 		prototypepkg.PkgT[text.BreakComponent](),
 		prototypepkg.PkgT[text.TextComponent](),
@@ -55,11 +59,14 @@ var Pkg = ioc.NewPkgT(func(b ioc.Builder, config config) {
 	} {
 		pkg(b)
 	}
+	ioc.Register(b, func(c ioc.Dic) *config { return NewConfig() })
+	ioc.Register(b, func(c ioc.Dic) Config { return ioc.Get[*config](c) })
 	ioc.Register(b, textservice.NewService)
 	ioc.Register(b, func(c ioc.Dic) textrenderer.FontService {
+		config := ioc.Get[*config](c)
 		return textrenderer.NewFontService(
 			ioc.Get[assets.Service](c),
-			config.usedGlyphs,
+			config.UsedGlyphs(),
 			config.faceOptions,
 			ioc.Get[logger.Logger](c),
 			int(config.faceOptions.Size),
@@ -98,6 +105,7 @@ var Pkg = ioc.NewPkgT(func(b ioc.Builder, config config) {
 	})
 
 	ioc.Wrap(b, func(c ioc.Dic, b assets.Service) {
+		config := ioc.Get[*config](c)
 		getLetterImage := func(drawer font.Drawer, letter rune) *image.RGBA {
 			var text = string(letter)
 			textBounds, _ := drawer.BoundString(text)
@@ -136,7 +144,7 @@ var Pkg = ioc.NewPkgT(func(b ioc.Builder, config config) {
 				GlyphsWidth: datastructures.NewSparseArray[uint32, float32](),
 				Images:      datastructures.NewSparseArray[uint32, image.Image](),
 			}
-			for _, glyph := range config.usedGlyphs.GetIndices() {
+			for _, glyph := range config.UsedGlyphs().GetIndices() {
 				glyphID := uint32(glyph)
 				_, advance, _ := fontFace.GlyphBounds(glyph)
 				width := float32(advance.Ceil()) / float32(config.faceOptions.Size)

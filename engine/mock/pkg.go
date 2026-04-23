@@ -29,7 +29,6 @@ import (
 	"engine/services/clock"
 	"engine/services/codec"
 	"engine/services/console"
-	"engine/services/datastructures"
 	"engine/services/ecs"
 	"engine/services/graphics/texturearray"
 	"engine/services/logger"
@@ -60,38 +59,7 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 		renderpkg.Pkg,
 		scenepkg.Pkg,
 		smoothpkg.Pkg,
-		textpkg.Pkg(textpkg.NewConfig(
-			func() datastructures.SparseSet[rune] {
-				set := datastructures.NewSparseSet[rune]()
-				for i := int32('a'); i <= int32('z'); i++ {
-					set.Add(rune(i))
-				}
-				for i := int32('A'); i <= int32('Z'); i++ {
-					set.Add(rune(i))
-				}
-				for i := int32('0'); i <= int32('9'); i++ {
-					set.Add(rune(i))
-				}
-				for i := int32('!'); i <= int32('/'); i++ {
-					set.Add(rune(i))
-				}
-				for i := int32(':'); i <= int32('@'); i++ {
-					set.Add(rune(i))
-				}
-				for i := int32('['); i <= int32('`'); i++ {
-					set.Add(rune(i))
-				}
-				for i := int32('{'); i <= int32('~'); i++ {
-					set.Add(rune(i))
-				}
-				set.Add(' ')
-
-				return set
-			}(),
-			64,
-			0.8, // arbitrary number works for some reason
-
-		)),
+		textpkg.Pkg,
 		transformpkg.Pkg,
 		transitionpkg.Pkg,
 		uuidpkg.Pkg,
