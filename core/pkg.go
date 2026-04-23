@@ -63,7 +63,7 @@ import (
 	"engine/services/graphics/texturearray"
 	"engine/services/logger"
 	"engine/services/media"
-	"fmt"
+	"engine/services/media/window"
 	"time"
 
 	"github.com/go-gl/gl/v4.5-core/gl"
@@ -71,61 +71,9 @@ import (
 
 	// "github.com/go-gl/glfw/v3.3/glfw"
 	"github.com/ogiusek/ioc/v2"
-	"github.com/veandco/go-sdl2/mix"
-	"github.com/veandco/go-sdl2/sdl"
 )
 
 func getDic() ioc.Dic {
-	if err := sdl.Init(sdl.INIT_EVERYTHING); err != nil {
-		panic(fmt.Errorf("failed to initialize SDL: %s", err))
-	}
-
-	_ = sdl.GLSetAttribute(sdl.GL_CONTEXT_MAJOR_VERSION, 4 /* 3 */)
-	_ = sdl.GLSetAttribute(sdl.GL_CONTEXT_MINOR_VERSION, 1 /* 3 */)
-	_ = sdl.GLSetAttribute(sdl.GL_CONTEXT_PROFILE_MASK, sdl.GL_CONTEXT_PROFILE_CORE)
-	_ = sdl.GLSetAttribute(sdl.GL_DOUBLEBUFFER, 1) // Essential for GLSwap
-	_ = sdl.GLSetAttribute(sdl.GL_DEPTH_SIZE, 24)  // Good practice for depth testing
-
-	// audio
-	if err := mix.OpenAudio(48000, sdl.AUDIO_F32SYS, 2, 1024); err != nil {
-		panic(err)
-	}
-
-	// window and opengl
-	window, err := sdl.CreateWindow(
-		"texhec",
-		sdl.WINDOWPOS_UNDEFINED, sdl.WINDOWPOS_UNDEFINED,
-		800, 600,
-		sdl.WINDOW_SHOWN|sdl.WINDOW_OPENGL,
-	)
-	if err != nil {
-		panic(fmt.Errorf("failed to create window: %s", err))
-	}
-
-	ctx, err := window.GLCreateContext()
-	if err != nil {
-		panic(fmt.Errorf("failed to create gl context: %s", err))
-	}
-	if err := gl.Init(); err != nil {
-		panic(fmt.Errorf("could not initialize OpenGL: %v", err))
-	}
-	if err := window.GLMakeCurrent(ctx); err != nil {
-		panic(fmt.Errorf("could not make OpenGL context current: %v", err))
-	}
-	_ = sdl.GLSetSwapInterval(0)
-
-	// render settings
-	gl.Enable(gl.CULL_FACE)
-	gl.CullFace(gl.FRONT)
-	gl.FrontFace(gl.CCW)
-
-	gl.Enable(gl.DEPTH_TEST)
-	gl.DepthFunc(gl.LEQUAL) // less or equal
-
-	gl.Enable(gl.BLEND)
-	gl.BlendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA)
-
-	// path
 
 	return ioc.NewContainer(
 		clock.Pkg,
@@ -138,7 +86,7 @@ func getDic() ioc.Dic {
 			func(c ioc.Dic) func(message string) { return ioc.Get[console.Console](c).PrintPermanent },
 		)),
 		console.Pkg,
-		media.Pkg(media.NewConfig(window, ctx)),
+		media.Pkg,
 		scenepkg.Pkg,
 
 		gtexture.Pkg,
@@ -261,6 +209,9 @@ func getDic() ioc.Dic {
 		menuscene.Pkg,
 		settingsscene.Pkg,
 		func(b ioc.Builder) {
+			ioc.Wrap(b, func(c ioc.Dic, w window.Api) {
+				w.Window().SetTitle("TEXHEC")
+			})
 			ioc.Wrap(b, func(c ioc.Dic, f gtexture.Factory) {
 				f.Wrap(func(t gtexture.Texture) {
 					t.Bind()

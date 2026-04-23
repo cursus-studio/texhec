@@ -8,27 +8,9 @@ import (
 	"github.com/veandco/go-sdl2/sdl"
 )
 
-type config struct {
-	window  *sdl.Window
-	context sdl.GLContext
-}
-
-func NewConfig(
-	window *sdl.Window,
-	context sdl.GLContext,
-) config {
-	return config{
-		window:  window,
-		context: context,
-	}
-}
-
-var Pkg = ioc.NewPkgT(func(b ioc.Builder, config config) {
+var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 	ioc.Register(b, func(c ioc.Dic) Api {
-		return newApi(
-			config.window,
-			config.context,
-		)
+		return newApi(c)
 	})
 
 	ioc.Wrap(b, func(c ioc.Dic, b events.Builder) {

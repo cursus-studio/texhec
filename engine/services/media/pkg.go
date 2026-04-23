@@ -6,29 +6,13 @@ import (
 	"engine/services/media/window"
 
 	"github.com/ogiusek/ioc/v2"
-	"github.com/veandco/go-sdl2/sdl"
 )
 
-type config struct {
-	w   *sdl.Window
-	ctx sdl.GLContext
-}
-
-func NewConfig(
-	w *sdl.Window,
-	ctx sdl.GLContext,
-) config {
-	return config{
-		w,
-		ctx,
-	}
-}
-
-var Pkg = ioc.NewPkgT(func(b ioc.Builder, config config) {
+var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 	for _, pkg := range []ioc.Pkg{
 		audio.Pkg,
 		inputs.Pkg,
-		window.Pkg(window.NewConfig(config.w, config.ctx)),
+		window.Pkg,
 	} {
 		pkg(b)
 	}
