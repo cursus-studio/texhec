@@ -31,29 +31,10 @@ type layoutService struct {
 	engine.EngineWorld `inject:""`
 	FontService        FontService `inject:""`
 	FontsKeys          FontKeys    `inject:""`
-
-	defaultFontFamily text.FontFamilyComponent
-	defaultFontSize   text.FontSizeComponent
-	// defaultOverflow   text.Overflow
-	defaultBreak     text.BreakComponent
-	defaultTextAlign text.TextAlignComponent
 }
 
-func NewLayoutService(c ioc.Dic,
-	defaultFontFamily text.FontFamilyComponent,
-	defaultFontSize text.FontSizeComponent,
-	// defaultOverflow text.Overflow,
-	defaultBreak text.BreakComponent,
-	defaultTextAlign text.TextAlignComponent,
-) LayoutService {
+func NewLayoutService(c ioc.Dic) LayoutService {
 	s := ioc.GetServices[*layoutService](c)
-
-	s.defaultFontFamily = defaultFontFamily
-	s.defaultFontSize = defaultFontSize
-	// s.defaultOverflow = defaultOverflow
-	s.defaultBreak = defaultBreak
-	s.defaultTextAlign = defaultTextAlign
-
 	return s
 }
 
@@ -80,26 +61,10 @@ func (s *layoutService) EntityLayout(entity ecs.EntityID) (Layout, error) {
 	if !ok {
 		return Layout{}, nil
 	}
-	fontFamily, ok := s.Text().FontFamily().Get(entity)
-	if !ok {
-		fontFamily = s.defaultFontFamily
-	}
-	fontSize, ok := s.Text().FontSize().Get(entity)
-	if !ok {
-		fontSize = s.defaultFontSize
-	}
-	// overflow, err := s.overflowArray.GetComponent(entity)
-	// if err != nil {
-	// 	overflow = s.defaultOverflow
-	// }
-	breakComponent, ok := s.Text().Break().Get(entity)
-	if !ok {
-		breakComponent = s.defaultBreak
-	}
-	textAlign, ok := s.Text().Align().Get(entity)
-	if !ok {
-		textAlign = s.defaultTextAlign
-	}
+	fontFamily, _ := s.Text().FontFamily().Get(entity)
+	fontSize, _ := s.Text().FontSize().Get(entity)
+	breakComponent, _ := s.Text().Break().Get(entity)
+	textAlign, _ := s.Text().Align().Get(entity)
 
 	font, err := s.FontService.AssetFont(fontFamily.FontFamily)
 	if err != nil {

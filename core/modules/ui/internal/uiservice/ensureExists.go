@@ -50,9 +50,9 @@ mainLoop:
 		t.Transform().Size().Set(quit, transform.NewSize(25, 25, 1))
 		t.Transform().PivotPoint().Set(quit, transform.NewPivotPoint(1, 1, .5))
 
-		t.Text().Content().Set(quit, text.TextComponent{Text: "X"})
-		t.Text().FontSize().Set(quit, text.FontSizeComponent{FontSize: 25})
-		t.Text().Align().Set(quit, text.TextAlignComponent{Vertical: .5, Horizontal: .5})
+		t.Text().Content().Set(quit, text.NewText("X"))
+		t.Text().FontSize().Set(quit, text.NewFontSize(25))
+		t.Text().Align().Set(quit, text.NewAlign(.5, .5))
 
 		t.Render().Color().Set(quit, render.NewColor(mgl32.Vec4{1, 0, 0, 1}))
 		t.Render().Mesh().Set(quit, render.NewMesh(t.Definitions().SquareMesh))

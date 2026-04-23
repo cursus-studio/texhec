@@ -31,19 +31,13 @@ type textRendererRegister struct {
 	LayoutService      LayoutService         `inject:""`
 	FontsKeys          FontKeys              `inject:""`
 
-	defaultTextAsset    ecs.EntityID
-	defaultColor        text.TextColorComponent
 	removeOncePerNCalls uint16
 }
 
 func NewTextRenderer(c ioc.Dic,
-	defaultTextAsset ecs.EntityID,
-	defaultColor text.TextColorComponent,
 	removeOncePerNCalls uint16,
 ) text.SystemRenderer {
 	s := ioc.GetServices[*textRendererRegister](c)
-	s.defaultTextAsset = defaultTextAsset
-	s.defaultColor = defaultColor
 	s.removeOncePerNCalls = removeOncePerNCalls
 	return s
 }
@@ -89,8 +83,6 @@ func (f *textRendererRegister) Register() error {
 		program:   p,
 		locations: locations,
 
-		defaultColor: f.defaultColor,
-
 		fontsBatches: datastructures.NewSparseArray[FontKey, fontBatch](),
 
 		dirtyEntities:  ecs.NewDirtySet(),
@@ -105,7 +97,7 @@ func (f *textRendererRegister) Register() error {
 		ecs.GetComponentsArray[text.FontFamilyComponent](f.World()),
 		// ecs.GetComponentsArray[text.Overflow](w),
 		ecs.GetComponentsArray[text.FontSizeComponent](f.World()),
-		ecs.GetComponentsArray[text.TextAlignComponent](f.World()),
+		ecs.GetComponentsArray[text.AlignComponent](f.World()),
 	}
 
 	for _, array := range arrays {

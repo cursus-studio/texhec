@@ -1,7 +1,6 @@
 package main
 
 import (
-	"core/modules/definitions"
 	"core/modules/definitions/pkg"
 	deploypkg "core/modules/deploy/pkg"
 	"core/modules/fpslogger/pkg"
@@ -67,7 +66,6 @@ import (
 	"time"
 
 	"github.com/go-gl/gl/v4.5-core/gl"
-	"github.com/go-gl/mathgl/mgl32"
 	"github.com/ogiusek/ioc/v2"
 )
 
@@ -110,14 +108,6 @@ func getDic() ioc.Dic {
 		prototypepkg.Pkg,
 		renderpkg.Pkg,
 		textpkg.Pkg(textpkg.NewConfig(
-			func(c ioc.Dic) text.FontFamilyComponent {
-				asset := ioc.Get[definitions.Definitions](c).FontAsset
-				return text.FontFamilyComponent{FontFamily: asset}
-			},
-			text.FontSizeComponent{FontSize: 16},
-			text.BreakComponent{Break: text.BreakWord},
-			text.TextAlignComponent{Vertical: 0, Horizontal: 0},
-			text.TextColorComponent{Color: mgl32.Vec4{1, 1, 1, 1}},
 			func() datastructures.SparseSet[rune] {
 				set := datastructures.NewSparseSet[rune]()
 				for i := int32('a'); i <= int32('z'); i++ {
@@ -232,6 +222,11 @@ func getDic() ioc.Dic {
 					gl.TexParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_MAG_FILTER, gl.NEAREST)
 					gl.TexParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_MIN_FILTER, gl.NEAREST)
 				})
+			})
+
+			ioc.Wrap(b, func(c ioc.Dic, s text.Service) {
+				world := ioc.GetServices[*gamescenes.GameWorld](c)
+				s.FontFamily().SetEmpty(text.NewFontFamily(world.Definitions().FontAsset))
 			})
 		},
 	)

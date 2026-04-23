@@ -23,37 +23,19 @@ import (
 )
 
 type config struct {
-	defaultFontFamily func(c ioc.Dic) text.FontFamilyComponent
-	defaultFontSize   text.FontSizeComponent
-	// defaultOverflow   text.Overflow
-	defaultBreak     text.BreakComponent
-	defaultTextAlign text.TextAlignComponent
-	defaultColor     text.TextColorComponent
-
 	usedGlyphs  datastructures.SparseSet[rune]
 	faceOptions opentype.FaceOptions
 	yBaseline   int
 }
 
 func NewConfig(
-	defaultFontFamily func(c ioc.Dic) text.FontFamilyComponent,
-	defaultFontSize text.FontSizeComponent,
-	defaultBreak text.BreakComponent,
-	defaultTextAlign text.TextAlignComponent,
-	defaultColor text.TextColorComponent,
-
 	usedGlyphs datastructures.SparseSet[rune],
 	// faceOptions opentype.FaceOptions,
 	size float64,
 	normalizedYBaseline float64,
 ) config {
 	return config{
-		defaultFontFamily: defaultFontFamily,
-		defaultFontSize:   defaultFontSize,
-		defaultBreak:      defaultBreak,
-		defaultTextAlign:  defaultTextAlign,
-		defaultColor:      defaultColor,
-		usedGlyphs:        usedGlyphs,
+		usedGlyphs: usedGlyphs,
 		faceOptions: opentype.FaceOptions{
 			Size: size,
 			// DPI:  72,
@@ -69,7 +51,7 @@ var Pkg = ioc.NewPkgT(func(b ioc.Builder, config config) {
 		prototypepkg.PkgT[text.TextComponent](),
 		prototypepkg.PkgT[text.FontFamilyComponent](),
 		prototypepkg.PkgT[text.FontSizeComponent](),
-		prototypepkg.PkgT[text.TextAlignComponent](),
+		prototypepkg.PkgT[text.AlignComponent](),
 	} {
 		pkg(b)
 	}
@@ -86,14 +68,7 @@ var Pkg = ioc.NewPkgT(func(b ioc.Builder, config config) {
 	})
 
 	ioc.Register(b, func(c ioc.Dic) textrenderer.LayoutService {
-		return textrenderer.NewLayoutService(
-			c,
-			config.defaultFontFamily(c),
-			config.defaultFontSize,
-			// pkg.defaultOverflow,
-			config.defaultBreak,
-			config.defaultTextAlign,
-		)
+		return textrenderer.NewLayoutService(c)
 	})
 
 	ioc.Register(b, func(c ioc.Dic) textrenderer.FontKeys {
@@ -101,12 +76,7 @@ var Pkg = ioc.NewPkgT(func(b ioc.Builder, config config) {
 	})
 
 	ioc.Register(b, func(c ioc.Dic) text.SystemRenderer {
-		return textrenderer.NewTextRenderer(
-			c,
-			config.defaultFontFamily(c).FontFamily,
-			config.defaultColor,
-			1,
-		)
+		return textrenderer.NewTextRenderer(c, 1)
 	})
 
 	ioc.Register(b, func(c ioc.Dic) vbo.VBOFactory[textrenderer.Glyph] {

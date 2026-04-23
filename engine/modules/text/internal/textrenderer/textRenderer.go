@@ -1,9 +1,7 @@
 package textrenderer
 
 import (
-	"engine/modules/groups"
 	rendersys "engine/modules/render"
-	"engine/modules/text"
 	"engine/services/datastructures"
 	"engine/services/ecs"
 	"engine/services/graphics/program"
@@ -23,8 +21,6 @@ type textRenderer struct {
 
 	program   program.Program
 	locations locations
-
-	defaultColor text.TextColorComponent
 
 	fontsBatches datastructures.SparseArray[FontKey, fontBatch]
 
@@ -55,7 +51,10 @@ func (s *textRenderer) ListenRender(render rendersys.RenderEvent) {
 		// ensure fonts exist
 		// get used fonts
 		fonts := datastructures.NewSparseArray[FontKey, ecs.EntityID]()
-		fonts.Set(s.FontsKeys.GetKey(s.defaultTextAsset), s.defaultTextAsset)
+		{
+			family := s.Text().FontFamily().GetEmpty()
+			fonts.Set(s.FontsKeys.GetKey(family.FontFamily), family.FontFamily)
+		}
 		for _, font := range s.Text().FontFamily().GetEntities() {
 			family, ok := s.Text().FontFamily().Get(font)
 			if !ok {
@@ -110,15 +109,8 @@ func (s *textRenderer) ListenRender(render rendersys.RenderEvent) {
 	cameraMatrix := s.Camera().Mat4(render.Camera)
 
 	for _, entity := range s.layoutsBatches.GetIndices() {
-		entityColor, ok := s.Text().Color().Get(entity)
-		if !ok {
-			entityColor = s.defaultColor
-		}
-
-		entityGroups, ok := s.Groups().Component().Get(entity)
-		if !ok {
-			entityGroups = groups.DefaultGroups()
-		}
+		entityColor, _ := s.Text().Color().Get(entity)
+		entityGroups, _ := s.Groups().Component().Get(entity)
 		if !cameraGroups.SharesAnyGroup(entityGroups) {
 			continue
 		}

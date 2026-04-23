@@ -47,7 +47,7 @@ func (s *system) Hide() {
 func (s *system) Render(message string) {
 	if len(s.TextArr.GetEntities()) == 1 {
 		textEntity := s.TextArr.GetEntities()[0]
-		s.Text().Content().Set(textEntity, text.TextComponent{Text: message})
+		s.Text().Content().Set(textEntity, text.NewText(message))
 		return
 	}
 
@@ -68,10 +68,10 @@ func (s *system) Render(message string) {
 	s.Transform().Pos().Set(textEntity, transform.NewPos(0, 0, 2))
 	s.Transform().Parent().Set(textEntity, transform.NewParent(transform.RelativePos))
 
-	s.Text().Content().Set(textEntity, text.TextComponent{Text: message})
-	s.Text().FontSize().Set(textEntity, text.FontSizeComponent{FontSize: 32})
-	s.Text().Break().Set(textEntity, text.BreakComponent{Break: text.BreakNone})
-	s.Text().Align().Set(textEntity, text.TextAlignComponent{Vertical: .5, Horizontal: .5})
+	s.Text().Content().Set(textEntity, text.NewText(message))
+	s.Text().FontSize().Set(textEntity, text.NewFontSize(32))
+	s.Text().Break().Set(textEntity, text.NewBreak(text.BreakNone))
+	s.Text().Align().Set(textEntity, text.NewAlign(.5, .5))
 }
 
 func (s *system) Listen(loop.FrameEvent) {

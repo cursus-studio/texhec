@@ -102,8 +102,8 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 			world.Collider().Component().Set(def.Btn, collider.NewCollider(world.Definitions().SquareCollider))
 			world.Inputs().KeepSelected().Set(def.Btn, inputs.KeepSelectedComponent{})
 
-			world.Text().Align().Set(def.Btn, text.TextAlignComponent{Vertical: .5, Horizontal: .5})
-			world.Text().FontSize().Set(def.Btn, text.FontSizeComponent{FontSize: 24})
+			world.Text().Align().Set(def.Btn, text.NewAlign(.5, .5))
+			world.Text().FontSize().Set(def.Btn, text.NewFontSize(24))
 		}
 		{
 			btnAsset, err := assets.GetAsset[render.TextureAsset](world.Assets(), def.Btn)
@@ -125,8 +125,8 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 			world.Collider().Component().Set(def.Text, collider.NewCollider(world.Definitions().SquareCollider))
 			world.Inputs().KeepSelected().Set(def.Text, inputs.KeepSelectedComponent{})
 
-			world.Text().Align().Set(def.Text, text.TextAlignComponent{Vertical: .5, Horizontal: .5})
-			world.Text().FontSize().Set(def.Text, text.FontSizeComponent{FontSize: 24})
+			world.Text().Align().Set(def.Text, text.NewAlign(.5, .5))
+			world.Text().FontSize().Set(def.Text, text.NewFontSize(24))
 		}
 		return def
 	})

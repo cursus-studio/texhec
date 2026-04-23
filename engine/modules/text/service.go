@@ -7,8 +7,8 @@ import (
 type Service interface {
 	Break() ecs.ComponentsArray[BreakComponent]
 	Content() ecs.ComponentsArray[TextComponent]
-	Align() ecs.ComponentsArray[TextAlignComponent]
-	Color() ecs.ComponentsArray[TextColorComponent]
+	Align() ecs.ComponentsArray[AlignComponent]
+	Color() ecs.ComponentsArray[ColorComponent]
 	FontFamily() ecs.ComponentsArray[FontFamilyComponent]
 	FontSize() ecs.ComponentsArray[FontSizeComponent]
 

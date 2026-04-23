@@ -21,7 +21,6 @@ import (
 	renderpkg "engine/modules/render/pkg"
 	scenepkg "engine/modules/scene/pkg"
 	smoothpkg "engine/modules/smooth/pkg"
-	"engine/modules/text"
 	textpkg "engine/modules/text/pkg"
 	transformpkg "engine/modules/transform/pkg"
 	transitionpkg "engine/modules/transition/pkg"
@@ -36,7 +35,6 @@ import (
 	"engine/services/logger"
 	"engine/services/media"
 
-	"github.com/go-gl/mathgl/mgl32"
 	"github.com/ogiusek/ioc/v2"
 )
 
@@ -63,13 +61,6 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 		scenepkg.Pkg,
 		smoothpkg.Pkg,
 		textpkg.Pkg(textpkg.NewConfig(
-			func(c ioc.Dic) text.FontFamilyComponent {
-				return text.FontFamilyComponent{}
-			},
-			text.FontSizeComponent{FontSize: 16},
-			text.BreakComponent{Break: text.BreakWord},
-			text.TextAlignComponent{Vertical: 0, Horizontal: 0},
-			text.TextColorComponent{Color: mgl32.Vec4{1, 1, 1, 1}},
 			func() datastructures.SparseSet[rune] {
 				set := datastructures.NewSparseSet[rune]()
 				for i := int32('a'); i <= int32('z'); i++ {
