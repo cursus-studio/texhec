@@ -10,6 +10,7 @@ import (
 	playerpkg "core/modules/player/pkg"
 	settingspkg "core/modules/settings/pkg"
 	tilepkg "core/modules/tile/pkg"
+	uipkg "core/modules/ui/pkg"
 	gamescenes "core/scenes"
 	creditsscene "core/scenes/credits"
 	gamescene "core/scenes/game"
@@ -33,6 +34,7 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 		playerpkg.Pkg,
 		settingspkg.Pkg,
 		tilepkg.Pkg,
+		uipkg.Pkg,
 
 		gamescenes.Pkg,
 		creditsscene.Pkg,

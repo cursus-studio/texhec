@@ -4,7 +4,6 @@ import (
 	"core/modules/settings"
 	"core/modules/tile"
 	"core/modules/ui"
-	"core/modules/ui/pkg"
 	corepkg "core/pkg"
 	gamescenes "core/scenes"
 	"engine/modules/camera"
@@ -23,7 +22,6 @@ import (
 	"engine/services/graphics/texturearray"
 	"engine/services/logger"
 	"engine/services/media/window"
-	"time"
 
 	"github.com/go-gl/gl/v4.5-core/gl"
 	"github.com/ogiusek/ioc/v2"
@@ -32,15 +30,8 @@ import (
 func getDic() ioc.Dic {
 	pkgs := []ioc.Pkg{
 		corepkg.Pkg,
-
 		// game
 		smoothpkg.PkgT[render.ColorComponent](),
-		smoothpkg.PkgT[tile.PosComponent](),
-		smoothpkg.PkgT[tile.RotComponent](),
-		uipkg.Pkg(uipkg.NewConfig(
-			time.Millisecond*300, // animation duration
-			time.Second/12,       // bgTimePerFrame
-		)),
 
 		func(b ioc.Builder) {
 			ioc.Wrap(b, func(c ioc.Dic, w window.Api) {

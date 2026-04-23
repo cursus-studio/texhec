@@ -14,29 +14,35 @@ import (
 	"github.com/veandco/go-sdl2/sdl"
 )
 
+type Config interface {
+	SetAnimationDuration(time.Duration)
+	SetBgFrameDuration(time.Duration)
+}
+
 type config struct {
 	animationDuration time.Duration
 	bgTimePerFrame    time.Duration
 }
 
-func NewConfig(
-	animationDuration time.Duration,
-	bgTimePerFrame time.Duration,
-) config {
-	return config{
-		animationDuration,
-		bgTimePerFrame,
+func newConfig() Config {
+	return &config{
+		animationDuration: time.Millisecond * 300, // animation duration
+		bgTimePerFrame:    time.Second / 12,       // bgTimePerFrame
 	}
 }
+func (c *config) SetAnimationDuration(d time.Duration) { c.animationDuration = d }
+func (c *config) SetBgFrameDuration(d time.Duration)   { c.bgTimePerFrame = d }
 
-var Pkg = ioc.NewPkgT(func(b ioc.Builder, config config) {
-	for _, pkg := range []ioc.Pkg{
+var Pkg = ioc.NewPkg(func(b ioc.Builder) {
+	pkgs := []ioc.Pkg{
 		prototypepkg.PkgT[ui.AnimatedBackgroundComponent](),
 		prototypepkg.PkgT[ui.CursorCameraComponent](),
 		prototypepkg.PkgT[ui.UiCameraComponent](),
-	} {
+	}
+	for _, pkg := range pkgs {
 		pkg(b)
 	}
+	ioc.Register(b, func(c ioc.Dic) Config { return newConfig() })
 	ioc.Wrap(b, func(c ioc.Dic, b codec.Builder) {
 		b.
 			// components
@@ -48,10 +54,12 @@ var Pkg = ioc.NewPkgT(func(b ioc.Builder, config config) {
 	})
 
 	ioc.Register(b, func(c ioc.Dic) ui.Service {
-		return uiservice.NewService(c, config.animationDuration, config.bgTimePerFrame)
+		config := ioc.Get[Config](c).(*config)
+		return uiservice.NewService(c, config.animationDuration)
 	})
 	ioc.Register(b, func(c ioc.Dic) ui.System {
 		eventsBuilder := ioc.Get[events.Builder](c)
+		config := ioc.Get[Config](c).(*config)
 		return ecs.NewSystemRegister(func() error {
 			errs := ecs.RegisterSystems(
 				systems.NewSystem(c, config.bgTimePerFrame),
