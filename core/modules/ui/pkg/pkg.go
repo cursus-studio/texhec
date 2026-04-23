@@ -15,8 +15,8 @@ import (
 )
 
 type Config interface {
-	SetAnimationDuration(time.Duration)
-	SetBgFrameDuration(time.Duration)
+	AnimationDuration(time.Duration)
+	BgFrameDuration(time.Duration)
 }
 
 type config struct {
@@ -30,8 +30,8 @@ func newConfig() Config {
 		bgTimePerFrame:    time.Second / 12,       // bgTimePerFrame
 	}
 }
-func (c *config) SetAnimationDuration(d time.Duration) { c.animationDuration = d }
-func (c *config) SetBgFrameDuration(d time.Duration)   { c.bgTimePerFrame = d }
+func (c *config) AnimationDuration(d time.Duration) { c.animationDuration = d }
+func (c *config) BgFrameDuration(d time.Duration)   { c.bgTimePerFrame = d }
 
 var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 	pkgs := []ioc.Pkg{
