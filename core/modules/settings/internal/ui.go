@@ -74,9 +74,9 @@ func (s *system) ListenRender(parent ecs.EntityID) error {
 	s.Transform().Parent().Set(labelEntity, transform.NewParent(transform.RelativePos|transform.RelativeSizeX))
 	s.Transform().Size().Set(labelEntity, transform.NewSize(1, 50, 1))
 
-	s.Text().Content().Set(labelEntity, text.TextComponent{Text: "SETTINGS"})
-	s.Text().FontSize().Set(labelEntity, text.FontSizeComponent{FontSize: 25})
-	s.Text().Align().Set(labelEntity, text.TextAlignComponent{Vertical: .5, Horizontal: .5})
+	s.Text().Content().Set(labelEntity, text.NewText("SETTINGS"))
+	s.Text().FontSize().Set(labelEntity, text.NewFontSize(25))
+	s.Text().Align().Set(labelEntity, text.NewAlign(.5, .5))
 
 	//
 
@@ -97,7 +97,7 @@ func (s *system) ListenRender(parent ecs.EntityID) error {
 
 		ecs.GetComponentsArray[temporaryToggleColorComponent](s.World()).Set(btnEntity, temporaryToggleColorComponent{})
 
-		s.Text().Content().Set(btnEntity, text.TextComponent{Text: btn.text})
+		s.Text().Content().Set(btnEntity, text.NewText(btn.text))
 		s.Inputs().LeftClick().Set(btnEntity, inputs.NewLeftClick(btn.event))
 	}
 

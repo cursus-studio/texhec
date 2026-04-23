@@ -14,7 +14,8 @@ import (
 	"github.com/ogiusek/ioc/v2"
 )
 
-var Pkg = ioc.NewPkgT(func(b ioc.Builder, config Config) {
+var Pkg = ioc.NewPkg(func(b ioc.Builder) {
+	ioc.Register(b, func(c ioc.Dic) Config { return newConfig() })
 	ioc.Wrap(b, func(c ioc.Dic, b codec.Builder) {
 		b.
 			// client
@@ -33,10 +34,10 @@ var Pkg = ioc.NewPkgT(func(b ioc.Builder, config Config) {
 	})
 
 	ioc.Register(b, func(c ioc.Dic) *server.Service {
-		return server.NewService(c, *config.config)
+		return server.NewService(c, *ioc.Get[Config](c).config)
 	})
 	ioc.Register(b, func(c ioc.Dic) *client.Service {
-		return client.NewService(c, *config.config)
+		return client.NewService(c, *ioc.Get[Config](c).config)
 	})
 	ioc.Register(b, func(c ioc.Dic) netsync.StartSystem {
 		clientService := ioc.Get[*client.Service](c)

@@ -3,7 +3,7 @@ package test
 import (
 	"encoding/binary"
 	"engine"
-	"engine/mock"
+	enginepkg "engine/pkg"
 	"engine/services/codec"
 	"net"
 	"sync"
@@ -28,7 +28,7 @@ type Setup struct {
 
 func NewSetup() Setup {
 	c := ioc.NewContainer(
-		mock.Pkg,
+		enginepkg.Pkg,
 		func(b ioc.Builder) {
 			ioc.Wrap(b, func(c ioc.Dic, builder codec.Builder) {
 				builder.Register(

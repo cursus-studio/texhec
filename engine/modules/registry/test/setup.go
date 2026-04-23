@@ -2,8 +2,8 @@ package test
 
 import (
 	"engine"
-	"engine/mock"
 	"engine/modules/registry"
+	enginepkg "engine/pkg"
 	"engine/services/ecs"
 
 	"github.com/ogiusek/ioc/v2"
@@ -19,7 +19,7 @@ type TagValueComponent struct {
 
 func NewSetup() Setup {
 	c := ioc.NewContainer(
-		mock.Pkg,
+		enginepkg.Pkg,
 		func(b ioc.Builder) {
 			ioc.Wrap(b, func(c ioc.Dic, registry registry.Service) {
 				world := ioc.Get[ecs.World](c)

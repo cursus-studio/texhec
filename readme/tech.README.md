@@ -199,6 +199,7 @@ Engine modules:
 - [transition (placeholder)](/engine/modules/transition/readme/README.md)
 - [uuid (placeholder)](/engine/modules/uuid/readme/README.md)
 - [warmup (placeholder)](/engine/modules/warmup/readme/README.md)
+- [window (placeholder)](/engine/modules/window/readme/README.md)
 
 Engine services:
 - [clock (placeholder)](/engine/services/clock/readme/README.md)
@@ -208,7 +209,6 @@ Engine services:
 - [ecs](/engine/services/ecs/readme/README.md)
 - [graphics (placeholder)](/engine/services/graphics/readme/README.md)
 - [logger (placeholder)](/engine/services/logger/readme/README.md)
-- [media (placeholder)](/engine/services/media/readme/README.md)
 
 ### Technical challenges
 Each and every module had unique challenges and they are described in these readmes.

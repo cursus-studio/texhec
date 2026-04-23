@@ -18,6 +18,7 @@ import (
 	"engine/modules/registry"
 	relationpkg "engine/modules/relation/pkg"
 	"engine/modules/render"
+	smoothpkg "engine/modules/smooth/pkg"
 	transitionpkg "engine/modules/transition/pkg"
 	"engine/services/codec"
 	"engine/services/ecs"
@@ -35,7 +36,7 @@ import (
 )
 
 var Pkg = ioc.NewPkg(func(b ioc.Builder) {
-	for _, pkg := range []ioc.Pkg{
+	pkgs := []ioc.Pkg{
 		gridpkg.Pkg(gridpkg.NewConfig[tile.ID](tile.NewHoverEvent)),
 		gridpkg.Pkg(gridpkg.NewConfig[tile.Obstruction](nil)),
 		relationpkg.SpatialRelationPkg(
@@ -65,7 +66,11 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 
 		transitionpkg.PkgT[tile.PosComponent](),
 		transitionpkg.PkgT[tile.RotComponent](),
-	} {
+
+		smoothpkg.PkgT[tile.PosComponent](),
+		smoothpkg.PkgT[tile.RotComponent](),
+	}
+	for _, pkg := range pkgs {
 		pkg(b)
 	}
 

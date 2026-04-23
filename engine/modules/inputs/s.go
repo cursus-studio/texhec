@@ -1,8 +1,8 @@
 package inputs
 
 import (
+	"engine/modules/window"
 	"engine/services/ecs"
-	"engine/services/media/window"
 )
 
 type System ecs.SystemRegister

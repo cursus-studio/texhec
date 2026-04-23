@@ -1,7 +1,7 @@
 package test
 
 import (
-	"engine/mock"
+	enginepkg "engine/pkg"
 	"engine/services/codec"
 
 	"github.com/ogiusek/ioc/v2"
@@ -17,7 +17,7 @@ type setup struct {
 
 func NewSetup() setup {
 	c := ioc.NewContainer(
-		mock.Pkg,
+		enginepkg.Pkg,
 		ioc.NewPkg(func(b ioc.Builder) {
 			ioc.Wrap(b, func(c ioc.Dic, b codec.Builder) {
 				b.Register(Type{})

@@ -26,13 +26,13 @@ import (
 	"engine/modules/transition"
 	"engine/modules/uuid"
 	"engine/modules/warmup"
+	"engine/modules/window"
 	"engine/services/clock"
 	"engine/services/codec"
 	"engine/services/console"
 	"engine/services/ecs"
 	"engine/services/graphics/texturearray"
 	"engine/services/logger"
-	"engine/services/media/window"
 
 	"github.com/ogiusek/events"
 	"github.com/ogiusek/ioc/v2"
@@ -68,6 +68,7 @@ type EngineWorld struct {
 	Transition ioc.Lazy[transition.Service] `inject:""`
 	UUID       ioc.Lazy[uuid.Service]       `inject:""`
 	WarmUp     ioc.Lazy[warmup.Service]     `inject:""`
+	Window     ioc.Lazy[window.Service]     `inject:""`
 
 	Clock   ioc.Lazy[clock.Clock]     `inject:""`
 	Codec   ioc.Lazy[codec.Codec]     `inject:""`
@@ -76,5 +77,4 @@ type EngineWorld struct {
 	TextureArrayFactory ioc.Lazy[texturearray.Factory] `inject:""`
 	// }
 	Logger ioc.Lazy[logger.Logger] `inject:""`
-	Window ioc.Lazy[window.Api]    `inject:""`
 }

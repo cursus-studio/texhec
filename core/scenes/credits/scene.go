@@ -37,9 +37,9 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 			world.Transform().Parent().Set(signature, transform.NewParent(transform.RelativePos))
 			world.Transform().ParentPivotPoint().Set(signature, transform.NewParentPivotPoint(0, 0, .5))
 
-			world.Text().Content().Set(signature, text.TextComponent{Text: "credits"})
-			world.Text().FontSize().Set(signature, text.FontSizeComponent{FontSize: 32})
-			world.Text().Break().Set(signature, text.BreakComponent{Break: text.BreakNone})
+			world.Text().Content().Set(signature, text.NewText("credits"))
+			world.Text().FontSize().Set(signature, text.NewFontSize(32))
+			world.Text().Break().Set(signature, text.NewBreak(text.BreakNone))
 
 			background := world.World().NewEntity()
 			world.Hierarchy().SetParent(background, cameraEntity)
@@ -63,10 +63,10 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 			world.Collider().Component().Set(draggable, collider.NewCollider(world.Definitions().SquareCollider))
 			world.Inputs().Drag().Set(draggable, inputs.NewDragComponent(drag.NewDraggable(draggable)))
 
-			world.Text().Content().Set(draggable, text.TextComponent{Text: strings.ToUpper("drag me")})
-			world.Text().Align().Set(draggable, text.TextAlignComponent{Vertical: .5, Horizontal: .5})
-			world.Text().FontSize().Set(draggable, text.FontSizeComponent{FontSize: 15})
-			world.Text().Color().Set(draggable, text.TextColorComponent{Color: mgl32.Vec4{1, 0, 0, 1}})
+			world.Text().Content().Set(draggable, text.NewText(strings.ToUpper("drag me")))
+			world.Text().Align().Set(draggable, text.NewAlign(.5, .5))
+			world.Text().FontSize().Set(draggable, text.NewFontSize(15))
+			world.Text().Color().Set(draggable, text.NewColor(mgl32.Vec4{1, 0, 0, 1}))
 
 			btn := world.Prototype().Clone(world.Definitions().Hud().Btn)
 			world.Hierarchy().SetParent(btn, buttonArea)
@@ -74,7 +74,7 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 			world.Transform().ParentPivotPoint().Set(btn, transform.NewParentPivotPoint(.5, 0, .5))
 
 			world.Inputs().LeftClick().Set(btn, inputs.NewLeftClick(scene.NewChangeSceneEvent(gamescenes.MenuID)))
-			world.Text().Content().Set(btn, text.TextComponent{Text: strings.ToUpper("return to menu")})
+			world.Text().Content().Set(btn, text.NewText(strings.ToUpper("return to menu")))
 		}
 	})
 })

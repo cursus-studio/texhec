@@ -91,7 +91,7 @@ skipDeploy:
 				btnEntity = s.Prototype().Clone(s.Definitions().Hud().Text)
 			}
 			s.Hierarchy().SetParent(btnEntity, p)
-			s.Text().Content().Set(btnEntity, text.TextComponent{Text: btn.text})
+			s.Text().Content().Set(btnEntity, text.NewText(btn.text))
 		}
 	}
 }

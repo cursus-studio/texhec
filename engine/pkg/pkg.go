@@ -1,4 +1,4 @@
-package mock
+package enginepkg
 
 import (
 	assetspkg "engine/modules/assets/pkg"
@@ -7,6 +7,7 @@ import (
 	camerapkg "engine/modules/camera/pkg"
 	colliderpkg "engine/modules/collider/pkg"
 	connectionpkg "engine/modules/connection/pkg"
+	dragpkg "engine/modules/drag/pkg"
 	groupspkg "engine/modules/groups/pkg"
 	hierarchypkg "engine/modules/hierarchy/pkg"
 	inputspkg "engine/modules/inputs/pkg"
@@ -21,22 +22,20 @@ import (
 	renderpkg "engine/modules/render/pkg"
 	scenepkg "engine/modules/scene/pkg"
 	smoothpkg "engine/modules/smooth/pkg"
-	"engine/modules/text"
 	textpkg "engine/modules/text/pkg"
 	transformpkg "engine/modules/transform/pkg"
 	transitionpkg "engine/modules/transition/pkg"
 	uuidpkg "engine/modules/uuid/pkg"
 	warmuppkg "engine/modules/warmup/pkg"
+	windowpkg "engine/modules/window/pkg"
 	"engine/services/clock"
 	"engine/services/codec"
 	"engine/services/console"
-	"engine/services/datastructures"
 	"engine/services/ecs"
+	"engine/services/graphics/texture"
 	"engine/services/graphics/texturearray"
 	"engine/services/logger"
-	"engine/services/media/window"
 
-	"github.com/go-gl/mathgl/mgl32"
 	"github.com/ogiusek/ioc/v2"
 )
 
@@ -48,13 +47,14 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 		camerapkg.Pkg,
 		colliderpkg.Pkg,
 		connectionpkg.Pkg,
+		dragpkg.Pkg,
 		groupspkg.Pkg,
 		hierarchypkg.Pkg,
 		inputspkg.Pkg,
 		layoutpkg.Pkg,
 		looppkg.Pkg,
 		metadatapkg.Pkg,
-		netsyncpkg.Pkg(netsyncpkg.NewConfig(0)),
+		netsyncpkg.Pkg,
 		noisepkg.Pkg,
 		prototypepkg.Pkg,
 		recordpkg.Pkg,
@@ -62,63 +62,20 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 		renderpkg.Pkg,
 		scenepkg.Pkg,
 		smoothpkg.Pkg,
-		textpkg.Pkg(textpkg.NewConfig(
-			func(c ioc.Dic) text.FontFamilyComponent {
-				return text.FontFamilyComponent{}
-			},
-			text.FontSizeComponent{FontSize: 16},
-			text.BreakComponent{Break: text.BreakWord},
-			text.TextAlignComponent{Vertical: 0, Horizontal: 0},
-			text.TextColorComponent{Color: mgl32.Vec4{1, 1, 1, 1}},
-			func() datastructures.SparseSet[rune] {
-				set := datastructures.NewSparseSet[rune]()
-				for i := int32('a'); i <= int32('z'); i++ {
-					set.Add(rune(i))
-				}
-				for i := int32('A'); i <= int32('Z'); i++ {
-					set.Add(rune(i))
-				}
-				for i := int32('0'); i <= int32('9'); i++ {
-					set.Add(rune(i))
-				}
-				for i := int32('!'); i <= int32('/'); i++ {
-					set.Add(rune(i))
-				}
-				for i := int32(':'); i <= int32('@'); i++ {
-					set.Add(rune(i))
-				}
-				for i := int32('['); i <= int32('`'); i++ {
-					set.Add(rune(i))
-				}
-				for i := int32('{'); i <= int32('~'); i++ {
-					set.Add(rune(i))
-				}
-				set.Add(' ')
-
-				return set
-			}(),
-			64,
-			0.8, // arbitrary number works for some reason
-
-		)),
+		textpkg.Pkg,
 		transformpkg.Pkg,
 		transitionpkg.Pkg,
 		uuidpkg.Pkg,
 		warmuppkg.Pkg,
+		windowpkg.Pkg,
 
 		clock.Pkg,
 		codec.Pkg,
 		console.Pkg,
 		ecs.Pkg,
-		// graphics {
+		gtexture.Pkg,
 		texturearray.Pkg,
-		// }
-		logger.Pkg(logger.NewConfig(
-			true,
-			func(c ioc.Dic) func(message string) { return func(message string) { print(message) } },
-		)),
-
-		window.Pkg(window.NewConfig(nil, nil)),
+		logger.Pkg,
 	}
 	for _, pkg := range pkgs {
 		pkg(b)

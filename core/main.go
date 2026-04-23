@@ -27,7 +27,6 @@ import (
 	"runtime"
 	"runtime/pprof"
 
-	"github.com/go-gl/gl/v4.5-core/gl"
 	"github.com/ogiusek/events"
 	"github.com/ogiusek/ioc/v2"
 	"github.com/veandco/go-sdl2/sdl"
@@ -52,12 +51,8 @@ func main() {
 		defer pprof.StopCPUProfile()
 	}
 
-	runtime.LockOSThread()
-
 	c := getDic()
 	world := ioc.GetServices[gamescenes.GameWorld](c)
-
-	gl.ClearColor(0.2, 0.3, 0.3, 1.0)
 
 	// load world before starting timer
 	events.Emit(world.Events(), scene.NewChangeSceneEvent(gamescenes.GameID))
@@ -131,5 +126,6 @@ func main() {
 		}
 	}
 	game := ioc.GetServices[gamescenes.GameWorld](c)
+	runtime.LockOSThread()
 	game.Loop().Run(loop.NewConfigureEvent(60, 1))
 }

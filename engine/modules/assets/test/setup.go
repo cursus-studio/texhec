@@ -2,7 +2,7 @@ package test
 
 import (
 	"engine"
-	"engine/mock"
+	enginepkg "engine/pkg"
 
 	"github.com/ogiusek/ioc/v2"
 )
@@ -13,7 +13,7 @@ type setup struct {
 
 func NewSetup() setup {
 	c := ioc.NewContainer(
-		mock.Pkg,
+		enginepkg.Pkg,
 	)
 	return ioc.GetServices[setup](c)
 }

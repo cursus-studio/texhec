@@ -9,9 +9,9 @@ import (
 	"engine/modules/collider"
 	prototypepkg "engine/modules/prototype/pkg"
 	"engine/modules/transform"
+	"engine/modules/window"
 	"engine/services/codec"
 	"engine/services/ecs"
-	"engine/services/media/window"
 	"errors"
 	"reflect"
 

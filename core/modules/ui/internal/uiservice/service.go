@@ -22,8 +22,6 @@ type service struct {
 
 	animationDuration time.Duration
 
-	bgTimePerFrame time.Duration
-
 	uiCameraArray           ecs.ComponentsArray[ui.UiCameraComponent]
 	cursorCameraArray       ecs.ComponentsArray[ui.CursorCameraComponent]
 	animatedBackgroundArray ecs.ComponentsArray[ui.AnimatedBackgroundComponent]
@@ -34,11 +32,9 @@ type service struct {
 func NewService(
 	c ioc.Dic,
 	animationDuration time.Duration,
-	bgTimePerFrame time.Duration,
 ) *service {
 	t := ioc.GetServices[*service](c)
 	t.animationDuration = animationDuration
-	t.bgTimePerFrame = bgTimePerFrame
 
 	t.uiCameraArray = ecs.GetComponentsArray[ui.UiCameraComponent](t.World())
 	t.cursorCameraArray = ecs.GetComponentsArray[ui.CursorCameraComponent](t.World())

@@ -2,8 +2,8 @@ package test
 
 import (
 	"engine"
-	"engine/mock"
 	prototypepkg "engine/modules/prototype/pkg"
+	enginepkg "engine/pkg"
 	"engine/services/ecs"
 
 	"github.com/ogiusek/ioc/v2"
@@ -29,7 +29,7 @@ type Setup struct {
 
 func NewSetup() Setup {
 	c := ioc.NewContainer(
-		mock.Pkg,
+		enginepkg.Pkg,
 		prototypepkg.PkgT[Cloned1Component](),
 		prototypepkg.PkgT[Cloned2Component](),
 	)

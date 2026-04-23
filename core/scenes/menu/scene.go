@@ -35,9 +35,9 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 			world.Transform().Parent().Set(signature, transform.NewParent(transform.RelativePos))
 			world.Transform().ParentPivotPoint().Set(signature, transform.NewParentPivotPoint(0, 0, .5))
 
-			world.Text().Content().Set(signature, text.TextComponent{Text: "menu"})
-			world.Text().FontSize().Set(signature, text.FontSizeComponent{FontSize: 32})
-			world.Text().Break().Set(signature, text.BreakComponent{Break: text.BreakNone})
+			world.Text().Content().Set(signature, text.NewText("menu"))
+			world.Text().FontSize().Set(signature, text.NewFontSize(32))
+			world.Text().Break().Set(signature, text.NewBreak(text.BreakNone))
 
 			background := world.World().NewEntity()
 			world.Hierarchy().SetParent(background, cameraEntity)
@@ -72,7 +72,7 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 
 				world.Hierarchy().SetParent(btn, buttonArea)
 				world.Inputs().LeftClick().Set(btn, inputs.NewLeftClick(button.OnClick))
-				world.Text().Content().Set(btn, text.TextComponent{Text: strings.ToUpper(button.Text)})
+				world.Text().Content().Set(btn, text.NewText(strings.ToUpper(button.Text)))
 			}
 		}
 	})
