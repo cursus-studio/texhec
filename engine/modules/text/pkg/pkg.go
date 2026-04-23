@@ -33,7 +33,7 @@ type config struct {
 	yBaseline   int
 }
 
-func NewConfig() *config {
+func NewConfig() Config {
 	var c = &config{usedGlyphs: datastructures.NewSparseSet[rune]()}
 	c.SetSize(64, .8 /* arbitrary number works for some reason */)
 	return c
@@ -59,8 +59,7 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 	} {
 		pkg(b)
 	}
-	ioc.Register(b, func(c ioc.Dic) *config { return NewConfig() })
-	ioc.Register(b, func(c ioc.Dic) Config { return ioc.Get[*config](c) })
+	ioc.Register(b, func(c ioc.Dic) Config { return NewConfig() })
 	ioc.Register(b, textservice.NewService)
 	ioc.Register(b, func(c ioc.Dic) textrenderer.FontService {
 		config := ioc.Get[Config](c).(*config)

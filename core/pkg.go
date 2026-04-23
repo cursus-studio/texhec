@@ -46,10 +46,6 @@ func getDic() ioc.Dic {
 	pkgs := []ioc.Pkg{
 		// engine
 		enginepkg.Pkg,
-		logger.Pkg(logger.NewConfig(
-			true,
-			func(c ioc.Dic) func(message string) { return ioc.Get[console.Console](c).PrintPermanent },
-		)),
 		netsyncpkg.Pkg(func() netsyncpkg.Config {
 			config := netsyncpkg.NewConfig(
 				150, // max predictions
@@ -151,6 +147,10 @@ func getDic() ioc.Dic {
 					c.UsedGlyphs().Add(rune(i))
 				}
 				c.UsedGlyphs().Add(' ')
+			})
+			ioc.Wrap(b, func(c ioc.Dic, config logger.Config) {
+				config.PanicOnWarn(true)
+				config.Flush(ioc.Get[console.Console](c).PrintPermanent)
 			})
 			ioc.Wrap(b, func(c ioc.Dic, s text.Service) {
 				world := ioc.GetServices[*gamescenes.GameWorld](c)

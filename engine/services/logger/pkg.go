@@ -6,27 +6,34 @@ import (
 	"github.com/ogiusek/ioc/v2"
 )
 
-type config struct {
-	panicOnWarn bool
-	flush       func(c ioc.Dic) func(message string)
+type Config interface {
+	PanicOnWarn(bool)
+	Flush(func(message string))
 }
 
-func NewConfig(
-	panicOnWarn bool,
-	flush func(c ioc.Dic) func(message string),
-) config {
-	return config{
-		panicOnWarn: panicOnWarn,
-		flush:       flush,
+type config struct {
+	panicOnWarn bool
+	flush       func(message string)
+}
+
+func newConfig() Config {
+	return &config{
+		panicOnWarn: false,
+		flush:       func(message string) { print(message) },
 	}
 }
 
-var Pkg = ioc.NewPkgT(func(b ioc.Builder, config config) {
+func (c *config) PanicOnWarn(panicOnWarn bool)     { c.panicOnWarn = panicOnWarn }
+func (c *config) Flush(flush func(message string)) { c.flush = flush }
+
+var Pkg = ioc.NewPkg(func(b ioc.Builder) {
+	ioc.Register(b, func(c ioc.Dic) Config { return newConfig() })
 	ioc.Register(b, func(c ioc.Dic) Logger {
+		config := ioc.Get[Config](c).(*config)
 		return &logger{
 			PanicOnError: config.panicOnWarn,
 			Clock:        ioc.Get[clock.Clock](c),
-			Flush:        config.flush(c),
+			Flush:        config.flush,
 			Panic:        func(s string) { panic(s) },
 		}
 	})

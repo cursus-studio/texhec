@@ -33,6 +33,7 @@ import (
 	"engine/services/ecs"
 	"engine/services/graphics/texture"
 	"engine/services/graphics/texturearray"
+	"engine/services/logger"
 	"engine/services/media"
 
 	"github.com/ogiusek/ioc/v2"
@@ -77,10 +78,7 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 		ecs.Pkg,
 		gtexture.Pkg,
 		texturearray.Pkg,
-		// logger.Pkg(logger.NewConfig(
-		// 	true,
-		// 	func(c ioc.Dic) func(message string) { return func(message string) { print(message) } },
-		// )),
+		logger.Pkg,
 		media.Pkg,
 	}
 	for _, pkg := range pkgs {
