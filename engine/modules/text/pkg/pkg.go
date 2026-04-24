@@ -2,10 +2,10 @@ package textpkg
 
 import (
 	"engine/modules/assets"
-	prototypepkg "engine/modules/prototype/pkg"
 	"engine/modules/text"
 	"engine/modules/text/internal/textrenderer"
 	"engine/modules/text/internal/textservice"
+	typeregistrypkg "engine/modules/typeregistry/pkg"
 	"engine/services/datastructures"
 	gtexture "engine/services/graphics/texture"
 	"engine/services/graphics/vao/vbo"
@@ -51,11 +51,11 @@ func (c *config) SetSize(size, normalizedYBaseline float64) {
 
 var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 	pkgs := []ioc.Pkg{
-		prototypepkg.PkgT[text.BreakComponent],
-		prototypepkg.PkgT[text.TextComponent],
-		prototypepkg.PkgT[text.FontFamilyComponent],
-		prototypepkg.PkgT[text.FontSizeComponent],
-		prototypepkg.PkgT[text.AlignComponent],
+		typeregistrypkg.PkgT[text.BreakComponent],
+		typeregistrypkg.PkgT[text.TextComponent],
+		typeregistrypkg.PkgT[text.FontFamilyComponent],
+		typeregistrypkg.PkgT[text.FontSizeComponent],
+		typeregistrypkg.PkgT[text.AlignComponent],
 	}
 	for _, pkg := range pkgs {
 		pkg(b)

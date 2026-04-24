@@ -1,13 +1,13 @@
 package netsyncpkg
 
 import (
-	codecpkg "engine/modules/codec/pkg"
 	"engine/modules/netsync"
 	"engine/modules/netsync/internal/client"
 	"engine/modules/netsync/internal/clienttypes"
 	"engine/modules/netsync/internal/server"
 	"engine/modules/netsync/internal/servertypes"
 	"engine/modules/netsync/internal/service"
+	typeregistrypkg "engine/modules/typeregistry/pkg"
 	"engine/services/ecs"
 
 	"github.com/ogiusek/events"
@@ -16,14 +16,14 @@ import (
 
 var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 	pkgs := []ioc.Pkg{
-		codecpkg.PkgT[clienttypes.PredictedEvent],
-		codecpkg.PkgT[clienttypes.FetchStateDTO],
-		codecpkg.PkgT[clienttypes.EmitEventDTO],
-		codecpkg.PkgT[clienttypes.TransparentEventDTO],
+		typeregistrypkg.PkgT[clienttypes.PredictedEvent],
+		typeregistrypkg.PkgT[clienttypes.FetchStateDTO],
+		typeregistrypkg.PkgT[clienttypes.EmitEventDTO],
+		typeregistrypkg.PkgT[clienttypes.TransparentEventDTO],
 
-		codecpkg.PkgT[servertypes.SendStateDTO],
-		codecpkg.PkgT[servertypes.SendChangeDTO],
-		codecpkg.PkgT[servertypes.TransparentEventDTO],
+		typeregistrypkg.PkgT[servertypes.SendStateDTO],
+		typeregistrypkg.PkgT[servertypes.SendChangeDTO],
+		typeregistrypkg.PkgT[servertypes.TransparentEventDTO],
 	}
 	for _, pkg := range pkgs {
 		pkg(b)

@@ -3,7 +3,7 @@ package test
 import (
 	"encoding/binary"
 	"engine"
-	codecpkg "engine/modules/codec/pkg"
+	typeregistrypkg "engine/modules/typeregistry/pkg"
 	enginepkg "engine/pkg"
 	"net"
 	"sync"
@@ -29,7 +29,7 @@ type Setup struct {
 func NewSetup() Setup {
 	c := ioc.NewContainer(
 		enginepkg.Pkg,
-		codecpkg.PkgT[Message],
+		typeregistrypkg.PkgT[Message],
 	)
 	s := ioc.GetServices[Setup](c)
 	s.Message.Content = "example message"

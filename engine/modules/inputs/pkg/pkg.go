@@ -1,13 +1,12 @@
 package inputspkg
 
 import (
-	codecpkg "engine/modules/codec/pkg"
 	"engine/modules/inputs"
 	"engine/modules/inputs/internal/mouse"
 	"engine/modules/inputs/internal/service"
 	"engine/modules/inputs/internal/systems"
 	"engine/modules/loop"
-	prototypepkg "engine/modules/prototype/pkg"
+	typeregistrypkg "engine/modules/typeregistry/pkg"
 	"engine/services/ecs"
 
 	"github.com/ogiusek/events"
@@ -17,37 +16,23 @@ import (
 
 var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 	pkgs := []ioc.Pkg{
-		codecpkg.PkgT[inputs.HoveredComponent],
-		codecpkg.PkgT[inputs.DraggedComponent],
-		codecpkg.PkgT[inputs.StackComponent],
-		codecpkg.PkgT[inputs.StackedComponent],
-		codecpkg.PkgT[inputs.KeepSelectedComponent],
-		codecpkg.PkgT[inputs.LeftClickComponent],
-		codecpkg.PkgT[inputs.DoubleLeftClickComponent],
-		codecpkg.PkgT[inputs.RightClickComponent],
-		codecpkg.PkgT[inputs.DoubleRightClickComponent],
-		codecpkg.PkgT[inputs.MouseEnterComponent],
-		codecpkg.PkgT[inputs.MouseLeaveComponent],
-		codecpkg.PkgT[inputs.HoverComponent],
-		codecpkg.PkgT[inputs.DragComponent],
+		typeregistrypkg.PkgT[inputs.HoveredComponent],
+		typeregistrypkg.PkgT[inputs.DraggedComponent],
+		typeregistrypkg.PkgT[inputs.StackComponent],
+		typeregistrypkg.PkgT[inputs.StackedComponent],
+		typeregistrypkg.PkgT[inputs.KeepSelectedComponent],
+		typeregistrypkg.PkgT[inputs.LeftClickComponent],
+		typeregistrypkg.PkgT[inputs.DoubleLeftClickComponent],
+		typeregistrypkg.PkgT[inputs.RightClickComponent],
+		typeregistrypkg.PkgT[inputs.DoubleRightClickComponent],
+		typeregistrypkg.PkgT[inputs.MouseEnterComponent],
+		typeregistrypkg.PkgT[inputs.MouseLeaveComponent],
+		typeregistrypkg.PkgT[inputs.HoverComponent],
+		typeregistrypkg.PkgT[inputs.DragComponent],
 
 		// events
-		codecpkg.PkgT[inputs.DragEvent],
-		codecpkg.PkgT[inputs.SynchronizePositionEvent],
-
-		prototypepkg.PkgT[inputs.HoveredComponent],
-		prototypepkg.PkgT[inputs.DraggedComponent],
-		prototypepkg.PkgT[inputs.StackComponent],
-		prototypepkg.PkgT[inputs.StackedComponent],
-		prototypepkg.PkgT[inputs.KeepSelectedComponent],
-		prototypepkg.PkgT[inputs.LeftClickComponent],
-		prototypepkg.PkgT[inputs.DoubleLeftClickComponent],
-		prototypepkg.PkgT[inputs.RightClickComponent],
-		prototypepkg.PkgT[inputs.DoubleRightClickComponent],
-		prototypepkg.PkgT[inputs.MouseEnterComponent],
-		prototypepkg.PkgT[inputs.MouseLeaveComponent],
-		prototypepkg.PkgT[inputs.HoverComponent],
-		prototypepkg.PkgT[inputs.DragComponent],
+		typeregistrypkg.PkgT[inputs.DragEvent],
+		typeregistrypkg.PkgT[inputs.SynchronizePositionEvent],
 	}
 	for _, pkg := range pkgs {
 		pkg(b)

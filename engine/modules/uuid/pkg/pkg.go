@@ -1,9 +1,8 @@
 package uuidpkg
 
 import (
-	codecpkg "engine/modules/codec/pkg"
-	prototypepkg "engine/modules/prototype/pkg"
 	relationpkg "engine/modules/relation/pkg"
+	typeregistrypkg "engine/modules/typeregistry/pkg"
 	uuid "engine/modules/uuid"
 	"engine/modules/uuid/internal"
 	"engine/services/ecs"
@@ -13,10 +12,8 @@ import (
 
 var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 	pkgs := []ioc.Pkg{
-		codecpkg.PkgT[uuid.UUID],
-		codecpkg.PkgT[uuid.Component],
-
-		prototypepkg.PkgT[uuid.Component],
+		typeregistrypkg.PkgT[uuid.UUID],
+		typeregistrypkg.PkgT[uuid.Component],
 		relationpkg.MapRelationPkg(
 			func(w ecs.World) ecs.DirtySet {
 				set := ecs.NewDirtySet()

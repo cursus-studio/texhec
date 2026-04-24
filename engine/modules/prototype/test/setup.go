@@ -2,7 +2,7 @@ package test
 
 import (
 	"engine"
-	prototypepkg "engine/modules/prototype/pkg"
+	typeregistrypkg "engine/modules/typeregistry/pkg"
 	enginepkg "engine/pkg"
 	"engine/services/ecs"
 
@@ -30,8 +30,8 @@ type Setup struct {
 func NewSetup() Setup {
 	c := ioc.NewContainer(
 		enginepkg.Pkg,
-		prototypepkg.PkgT[Cloned1Component],
-		prototypepkg.PkgT[Cloned2Component],
+		typeregistrypkg.PkgT[Cloned1Component],
+		typeregistrypkg.PkgT[Cloned2Component],
 	)
 
 	s := ioc.GetServices[Setup](c)

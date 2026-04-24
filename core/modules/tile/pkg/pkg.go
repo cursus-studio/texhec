@@ -11,16 +11,13 @@ import (
 	"core/modules/tile/internal/tilesystem"
 	gamescenes "core/scenes"
 	"engine/modules/assets"
-	codecpkg "engine/modules/codec/pkg"
 	"engine/modules/collider"
 	"engine/modules/entityregistry"
 	gridpkg "engine/modules/grid/pkg"
 	"engine/modules/groups"
-	prototypepkg "engine/modules/prototype/pkg"
 	relationpkg "engine/modules/relation/pkg"
 	"engine/modules/render"
-	smoothpkg "engine/modules/smooth/pkg"
-	transitionpkg "engine/modules/transition/pkg"
+	typeregistrypkg "engine/modules/typeregistry/pkg"
 	"engine/services/ecs"
 	gtexture "engine/services/graphics/texture"
 	"engine/services/graphics/vao/vbo"
@@ -54,23 +51,15 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 			},
 			func(index tile.ID) uint32 { return uint32(index) },
 		),
-		codecpkg.PkgT[tile.HoverEvent],
+		typeregistrypkg.PkgT[tile.HoverEvent],
 
-		prototypepkg.PkgT[tile.TypeComponent],
-		prototypepkg.PkgT[tile.PosComponent],
-		prototypepkg.PkgT[tile.SizeComponent],
-		prototypepkg.PkgT[tile.RotComponent],
-		prototypepkg.PkgT[tile.LayerComponent],
-
-		prototypepkg.PkgT[tile.ObstructionComponent],
-
-		prototypepkg.PkgT[tile.SpeedComponent],
-
-		transitionpkg.PkgT[tile.PosComponent],
-		transitionpkg.PkgT[tile.RotComponent],
-
-		smoothpkg.PkgT[tile.PosComponent],
-		smoothpkg.PkgT[tile.RotComponent],
+		typeregistrypkg.PkgT[tile.TypeComponent],
+		typeregistrypkg.PkgT[tile.PosComponent],
+		typeregistrypkg.PkgT[tile.SizeComponent],
+		typeregistrypkg.PkgT[tile.RotComponent],
+		typeregistrypkg.PkgT[tile.LayerComponent],
+		typeregistrypkg.PkgT[tile.ObstructionComponent],
+		typeregistrypkg.PkgT[tile.SpeedComponent],
 	}
 	for _, pkg := range pkgs {
 		pkg(b)

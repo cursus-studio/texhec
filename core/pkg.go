@@ -12,8 +12,6 @@ import (
 	"engine/modules/inputs"
 	netsyncpkg "engine/modules/netsync/pkg"
 	"engine/modules/record"
-	"engine/modules/render"
-	smoothpkg "engine/modules/smooth/pkg"
 	"engine/modules/text"
 	textpkg "engine/modules/text/pkg"
 	"engine/modules/transform"
@@ -30,9 +28,6 @@ import (
 func getDic() ioc.Dic {
 	pkgs := []ioc.Pkg{
 		corepkg.Pkg,
-		// game
-		smoothpkg.PkgT[render.ColorComponent],
-
 		func(b ioc.Builder) {
 			ioc.Wrap(b, func(c ioc.Dic, w window.Service) {
 				w.Window().SetTitle("TEXHEC")

@@ -38,7 +38,10 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 	})
 })
 
-func PkgT[Component transition.LerpConstraint[Component]](b ioc.Builder) {
+// func PkgT[Component transition.LerpConstraint[Component]](b ioc.Builder) {
+func PkgT[Component any](b ioc.Builder) {
+	var zero Component
+	_ = any(zero).(transition.LerpConstraint[Component])
 	ioc.Register(b, func(c ioc.Dic) *internal.Service[Component] {
 		return internal.NewService[Component](c)
 	})

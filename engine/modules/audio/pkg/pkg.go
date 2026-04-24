@@ -4,7 +4,7 @@ import (
 	"engine/modules/assets"
 	"engine/modules/audio"
 	"engine/modules/audio/internal"
-	codecpkg "engine/modules/codec/pkg"
+	typeregistrypkg "engine/modules/typeregistry/pkg"
 	"os"
 
 	"github.com/ogiusek/ioc/v2"
@@ -13,12 +13,12 @@ import (
 
 var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 	pkgs := []ioc.Pkg{
-		codecpkg.PkgT[audio.StopEvent],
-		codecpkg.PkgT[audio.PlayEvent],
-		codecpkg.PkgT[audio.QueueEvent],
-		codecpkg.PkgT[audio.QueueEndlessEvent],
-		codecpkg.PkgT[audio.SetMasterVolumeEvent],
-		codecpkg.PkgT[audio.SetChannelVolumeEvent],
+		typeregistrypkg.PkgT[audio.StopEvent],
+		typeregistrypkg.PkgT[audio.PlayEvent],
+		typeregistrypkg.PkgT[audio.QueueEvent],
+		typeregistrypkg.PkgT[audio.QueueEndlessEvent],
+		typeregistrypkg.PkgT[audio.SetMasterVolumeEvent],
+		typeregistrypkg.PkgT[audio.SetChannelVolumeEvent],
 	}
 	for _, pkg := range pkgs {
 		pkg(b)

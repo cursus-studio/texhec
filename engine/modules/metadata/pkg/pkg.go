@@ -4,7 +4,7 @@ import (
 	"engine/modules/entityregistry"
 	"engine/modules/metadata"
 	"engine/modules/metadata/internal"
-	prototypepkg "engine/modules/prototype/pkg"
+	typeregistrypkg "engine/modules/typeregistry/pkg"
 	"engine/services/ecs"
 
 	"github.com/ogiusek/ioc/v2"
@@ -12,7 +12,7 @@ import (
 
 var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 	pkgs := []ioc.Pkg{
-		prototypepkg.PkgT[metadata.LinkComponent],
+		typeregistrypkg.PkgT[metadata.LinkComponent],
 	}
 	for _, pkg := range pkgs {
 		pkg(b)

@@ -84,6 +84,8 @@ type EntityKeyedRecorder interface {
 }
 
 type RecordingID uint16
+
+// recording cannot be encoded
 type Recording struct {
 	// [componentArrayLayoutID]any component
 	// nil for removed entity

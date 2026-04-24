@@ -2,8 +2,8 @@ package test
 
 import (
 	"engine/modules/codec"
-	codecpkg "engine/modules/codec/pkg"
 	"engine/modules/record"
+	typeregistrypkg "engine/modules/typeregistry/pkg"
 	"engine/modules/uuid"
 	enginepkg "engine/pkg"
 	"engine/services/ecs"
@@ -28,7 +28,7 @@ type Setup struct {
 func NewSetup() Setup {
 	c := ioc.NewContainer(
 		enginepkg.Pkg,
-		codecpkg.PkgT[Component],
+		typeregistrypkg.PkgT[Component],
 	)
 
 	s := Setup{

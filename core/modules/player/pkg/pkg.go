@@ -3,14 +3,14 @@ package playerpkg
 import (
 	"core/modules/player"
 	"core/modules/player/internal"
-	prototypepkg "engine/modules/prototype/pkg"
+	typeregistrypkg "engine/modules/typeregistry/pkg"
 
 	"github.com/ogiusek/ioc/v2"
 )
 
 var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 	pkgs := []ioc.Pkg{
-		prototypepkg.PkgT[player.OwnerComponent],
+		typeregistrypkg.PkgT[player.OwnerComponent],
 	}
 	for _, pkg := range pkgs {
 		pkg(b)

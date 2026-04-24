@@ -4,8 +4,7 @@ import (
 	"core/modules/ui"
 	"core/modules/ui/internal/systems"
 	"core/modules/ui/internal/uiservice"
-	codecpkg "engine/modules/codec/pkg"
-	"engine/modules/prototype/pkg"
+	typeregistrypkg "engine/modules/typeregistry/pkg"
 	"engine/services/ecs"
 	"time"
 
@@ -35,15 +34,11 @@ func (c *config) BgFrameDuration(d time.Duration)   { c.bgTimePerFrame = d }
 
 var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 	pkgs := []ioc.Pkg{
-		codecpkg.PkgT[ui.AnimatedBackgroundComponent],
-		codecpkg.PkgT[ui.CursorCameraComponent],
-		codecpkg.PkgT[ui.UiCameraComponent],
+		typeregistrypkg.PkgT[ui.AnimatedBackgroundComponent],
+		typeregistrypkg.PkgT[ui.CursorCameraComponent],
+		typeregistrypkg.PkgT[ui.UiCameraComponent],
 
-		codecpkg.PkgT[ui.HideUiEvent],
-
-		prototypepkg.PkgT[ui.AnimatedBackgroundComponent],
-		prototypepkg.PkgT[ui.CursorCameraComponent],
-		prototypepkg.PkgT[ui.UiCameraComponent],
+		typeregistrypkg.PkgT[ui.HideUiEvent],
 	}
 	for _, pkg := range pkgs {
 		pkg(b)

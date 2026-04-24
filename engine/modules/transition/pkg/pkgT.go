@@ -9,7 +9,10 @@ import (
 	"github.com/ogiusek/ioc/v2"
 )
 
-func PkgT[Component transition.LerpConstraint[Component]](b ioc.Builder) {
+// func PkgT[Component transition.LerpConstraint[Component]](b ioc.Builder) {
+func PkgT[Component any](b ioc.Builder) {
+	var zero Component
+	_ = any(zero).(transition.LerpConstraint[Component])
 	pkgs := []ioc.Pkg{
 		codecpkg.PkgT[transition.TransitionComponent[Component]],
 		codecpkg.PkgT[transition.TransitionEvent[Component]],

@@ -3,12 +3,11 @@ package renderpkg
 import (
 	"bytes"
 	"engine/modules/assets"
-	prototypepkg "engine/modules/prototype/pkg"
 	"engine/modules/render"
 	"engine/modules/render/internal/instancing"
 	"engine/modules/render/internal/service"
 	"engine/modules/render/internal/systems"
-	transitionpkg "engine/modules/transition/pkg"
+	typeregistrypkg "engine/modules/typeregistry/pkg"
 	"engine/services/ecs"
 	gtexture "engine/services/graphics/texture"
 	"engine/services/graphics/vao/vbo"
@@ -26,13 +25,10 @@ import (
 
 var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 	pkgs := []ioc.Pkg{
-		transitionpkg.PkgT[render.ColorComponent],
-		transitionpkg.PkgT[render.TextureFrameComponent],
-
-		prototypepkg.PkgT[render.MeshComponent],
-		prototypepkg.PkgT[render.TextureComponent],
-		prototypepkg.PkgT[render.TextureFrameComponent],
-		prototypepkg.PkgT[render.ColorComponent],
+		typeregistrypkg.PkgT[render.MeshComponent],
+		typeregistrypkg.PkgT[render.TextureComponent],
+		typeregistrypkg.PkgT[render.TextureFrameComponent],
+		typeregistrypkg.PkgT[render.ColorComponent],
 	}
 	for _, pkg := range pkgs {
 		pkg(b)

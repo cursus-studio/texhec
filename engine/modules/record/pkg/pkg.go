@@ -1,9 +1,9 @@
 package recordpkg
 
 import (
-	codecpkg "engine/modules/codec/pkg"
 	"engine/modules/record"
 	"engine/modules/record/internal/recordimpl"
+	typeregistrypkg "engine/modules/typeregistry/pkg"
 	"engine/modules/uuid"
 
 	"github.com/ogiusek/ioc/v2"
@@ -15,12 +15,10 @@ import (
 // so do not add it automatically to everyhing because it can result in performance loss
 var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 	pkgs := []ioc.Pkg{
-		codecpkg.PkgT[record.Recording],
-		// TODO without this package recording.Recording cannot be sent using netsync
-		// codecpkg.PkgT[datastructures.SparseArray[ecs.EntityID, []any]],
+		typeregistrypkg.PkgT[record.Recording],
 
-		codecpkg.PkgT[record.UUIDRecording],
-		codecpkg.PkgT[map[uuid.UUID][]any],
+		typeregistrypkg.PkgT[record.UUIDRecording],
+		typeregistrypkg.PkgT[map[uuid.UUID][]any],
 	}
 	for _, pkg := range pkgs {
 		pkg(b)

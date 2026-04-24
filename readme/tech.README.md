@@ -198,6 +198,7 @@ Engine modules:
 - [text (placeholder)](/engine/modules/text/readme/README.md)
 - [transform](/engine/modules/transform/readme/README.md)
 - [transition (placeholder)](/engine/modules/transition/readme/README.md)
+- [typeregistry (placeholder)](/engine/modules/typeregistry/readme/README.md)
 - [uuid (placeholder)](/engine/modules/uuid/readme/README.md)
 - [warmup (placeholder)](/engine/modules/warmup/readme/README.md)
 - [window (placeholder)](/engine/modules/window/readme/README.md)

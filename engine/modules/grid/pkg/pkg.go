@@ -1,12 +1,11 @@
 package gridpkg
 
 import (
-	codecpkg "engine/modules/codec/pkg"
 	"engine/modules/collider"
 	"engine/modules/grid"
 	"engine/modules/grid/internal/gridcollider"
 	"engine/modules/grid/internal/service"
-	prototypepkg "engine/modules/prototype/pkg"
+	typeregistrypkg "engine/modules/typeregistry/pkg"
 	"engine/services/ecs"
 
 	"github.com/ogiusek/ioc/v2"
@@ -25,9 +24,7 @@ func NewConfig[Tile grid.TileConstraint](
 func PkgT[Tile grid.TileConstraint](config config[Tile]) ioc.Pkg {
 	return ioc.NewPkg(func(b ioc.Builder) {
 		pkgs := []ioc.Pkg{
-			codecpkg.PkgT[grid.SquareGridComponent[Tile]],
-
-			prototypepkg.PkgT[grid.SquareGridComponent[Tile]],
+			typeregistrypkg.PkgT[grid.SquareGridComponent[Tile]],
 		}
 		for _, pkg := range pkgs {
 			pkg(b)

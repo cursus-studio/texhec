@@ -6,10 +6,9 @@ import (
 	"engine/modules/camera/internal/mobilecamerasys"
 	"engine/modules/camera/internal/projectionsys"
 	"engine/modules/camera/internal/service"
-	codecpkg "engine/modules/codec/pkg"
 	"engine/modules/collider"
-	prototypepkg "engine/modules/prototype/pkg"
 	"engine/modules/transform"
+	typeregistrypkg "engine/modules/typeregistry/pkg"
 	"engine/modules/window"
 	"engine/services/ecs"
 	"errors"
@@ -23,29 +22,18 @@ import (
 
 var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 	pkgs := []ioc.Pkg{
-		codecpkg.PkgT[camera.Component],
-		codecpkg.PkgT[camera.MobileCameraComponent],
-		codecpkg.PkgT[camera.CameraLimitsComponent],
-		codecpkg.PkgT[camera.ViewportComponent],
-		codecpkg.PkgT[camera.NormalizedViewportComponent],
+		typeregistrypkg.PkgT[camera.Component],
+		typeregistrypkg.PkgT[camera.MobileCameraComponent],
+		typeregistrypkg.PkgT[camera.CameraLimitsComponent],
+		typeregistrypkg.PkgT[camera.ViewportComponent],
+		typeregistrypkg.PkgT[camera.NormalizedViewportComponent],
 
-		codecpkg.PkgT[camera.OrthoComponent],
-		codecpkg.PkgT[camera.OrthoResolutionComponent],
-		codecpkg.PkgT[camera.PerspectiveComponent],
-		codecpkg.PkgT[camera.DynamicPerspectiveComponent],
+		typeregistrypkg.PkgT[camera.OrthoComponent],
+		typeregistrypkg.PkgT[camera.OrthoResolutionComponent],
+		typeregistrypkg.PkgT[camera.PerspectiveComponent],
+		typeregistrypkg.PkgT[camera.DynamicPerspectiveComponent],
 
-		codecpkg.PkgT[camera.ChangedResolutionEvent],
-
-		prototypepkg.PkgT[camera.Component],
-		prototypepkg.PkgT[camera.MobileCameraComponent],
-		prototypepkg.PkgT[camera.CameraLimitsComponent],
-		prototypepkg.PkgT[camera.ViewportComponent],
-		prototypepkg.PkgT[camera.NormalizedViewportComponent],
-
-		prototypepkg.PkgT[camera.OrthoComponent],
-		prototypepkg.PkgT[camera.OrthoResolutionComponent],
-		prototypepkg.PkgT[camera.PerspectiveComponent],
-		prototypepkg.PkgT[camera.DynamicPerspectiveComponent],
+		typeregistrypkg.PkgT[camera.ChangedResolutionEvent],
 	}
 	for _, pkg := range pkgs {
 		pkg(b)

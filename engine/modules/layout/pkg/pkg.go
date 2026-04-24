@@ -3,16 +3,16 @@ package layoutpkg
 import (
 	"engine/modules/layout"
 	"engine/modules/layout/internal/service"
-	prototypepkg "engine/modules/prototype/pkg"
+	typeregistrypkg "engine/modules/typeregistry/pkg"
 
 	"github.com/ogiusek/ioc/v2"
 )
 
 var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 	pkgs := []ioc.Pkg{
-		prototypepkg.PkgT[layout.AlignComponent],
-		prototypepkg.PkgT[layout.GapComponent],
-		prototypepkg.PkgT[layout.OrderComponent],
+		typeregistrypkg.PkgT[layout.AlignComponent],
+		typeregistrypkg.PkgT[layout.GapComponent],
+		typeregistrypkg.PkgT[layout.OrderComponent],
 	}
 	for _, pkg := range pkgs {
 		pkg(b)
