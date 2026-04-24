@@ -4,7 +4,7 @@ import (
 	"engine/modules/assets"
 	"engine/modules/audio"
 	"engine/modules/audio/internal"
-	"engine/services/codec"
+	codecpkg "engine/modules/codec/pkg"
 	"os"
 
 	"github.com/ogiusek/ioc/v2"
@@ -12,16 +12,17 @@ import (
 )
 
 var Pkg = ioc.NewPkg(func(b ioc.Builder) {
-	ioc.Wrap(b, func(c ioc.Dic, b codec.Builder) {
-		b.
-			// events
-			Register(audio.StopEvent{}).
-			Register(audio.PlayEvent{}).
-			Register(audio.QueueEvent{}).
-			Register(audio.QueueEndlessEvent{}).
-			Register(audio.SetMasterVolumeEvent{}).
-			Register(audio.SetChannelVolumeEvent{})
-	})
+	pkgs := []ioc.Pkg{
+		codecpkg.PkgT[audio.StopEvent],
+		codecpkg.PkgT[audio.PlayEvent],
+		codecpkg.PkgT[audio.QueueEvent],
+		codecpkg.PkgT[audio.QueueEndlessEvent],
+		codecpkg.PkgT[audio.SetMasterVolumeEvent],
+		codecpkg.PkgT[audio.SetChannelVolumeEvent],
+	}
+	for _, pkg := range pkgs {
+		pkg(b)
+	}
 	ioc.Register(b, func(c ioc.Dic) internal.Service {
 		return internal.NewService(c)
 	})

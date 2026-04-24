@@ -1,10 +1,11 @@
 package test
 
 import (
+	"engine/modules/codec"
+	codecpkg "engine/modules/codec/pkg"
 	"engine/modules/record"
 	"engine/modules/uuid"
 	enginepkg "engine/pkg"
-	"engine/services/codec"
 	"engine/services/ecs"
 
 	"github.com/ogiusek/ioc/v2"
@@ -16,7 +17,7 @@ type Component struct {
 
 type Setup struct {
 	Config record.Config
-	Codec  codec.Codec
+	Codec  codec.Service
 
 	World          ecs.World
 	UUID           uuid.Service
@@ -27,16 +28,11 @@ type Setup struct {
 func NewSetup() Setup {
 	c := ioc.NewContainer(
 		enginepkg.Pkg,
-		func(b ioc.Builder) {
-			ioc.Wrap(b, func(c ioc.Dic, b codec.Builder) {
-				b.
-					Register(Component{})
-			})
-		},
+		codecpkg.PkgT[Component],
 	)
 
 	s := Setup{
-		Codec:  ioc.Get[codec.Codec](c),
+		Codec:  ioc.Get[codec.Service](c),
 		Config: record.NewConfig(),
 
 		World:  ioc.Get[ecs.World](c),

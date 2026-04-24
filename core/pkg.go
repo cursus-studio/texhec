@@ -31,7 +31,7 @@ func getDic() ioc.Dic {
 	pkgs := []ioc.Pkg{
 		corepkg.Pkg,
 		// game
-		smoothpkg.PkgT[render.ColorComponent](),
+		smoothpkg.PkgT[render.ColorComponent],
 
 		func(b ioc.Builder) {
 			ioc.Wrap(b, func(c ioc.Dic, w window.Service) {

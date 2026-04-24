@@ -7,10 +7,8 @@ import (
 	"github.com/ogiusek/ioc/v2"
 )
 
-func PkgT[Component any]() ioc.Pkg {
-	return ioc.NewPkg(func(b ioc.Builder) {
-		ioc.Wrap(b, func(c ioc.Dic, b internal.Service) {
-			b.Add(ecs.GetComponentsArray[Component](ioc.Get[ecs.World](c)))
-		})
+func PkgT[Component any](b ioc.Builder) {
+	ioc.Wrap(b, func(c ioc.Dic, b internal.Service) {
+		b.Add(ecs.GetComponentsArray[Component](ioc.Get[ecs.World](c)))
 	})
 }

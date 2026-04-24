@@ -25,15 +25,16 @@ import (
 )
 
 var Pkg = ioc.NewPkg(func(b ioc.Builder) {
-	for _, pkg := range []ioc.Pkg{
-		transitionpkg.PkgT[render.ColorComponent](),
-		transitionpkg.PkgT[render.TextureFrameComponent](),
+	pkgs := []ioc.Pkg{
+		transitionpkg.PkgT[render.ColorComponent],
+		transitionpkg.PkgT[render.TextureFrameComponent],
 
-		prototypepkg.PkgT[render.MeshComponent](),
-		prototypepkg.PkgT[render.TextureComponent](),
-		prototypepkg.PkgT[render.TextureFrameComponent](),
-		prototypepkg.PkgT[render.ColorComponent](),
-	} {
+		prototypepkg.PkgT[render.MeshComponent],
+		prototypepkg.PkgT[render.TextureComponent],
+		prototypepkg.PkgT[render.TextureFrameComponent],
+		prototypepkg.PkgT[render.ColorComponent],
+	}
+	for _, pkg := range pkgs {
 		pkg(b)
 	}
 

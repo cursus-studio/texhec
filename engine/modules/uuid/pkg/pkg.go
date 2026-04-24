@@ -1,19 +1,22 @@
 package uuidpkg
 
 import (
+	codecpkg "engine/modules/codec/pkg"
 	prototypepkg "engine/modules/prototype/pkg"
 	relationpkg "engine/modules/relation/pkg"
 	uuid "engine/modules/uuid"
 	"engine/modules/uuid/internal"
-	"engine/services/codec"
 	"engine/services/ecs"
 
 	"github.com/ogiusek/ioc/v2"
 )
 
 var Pkg = ioc.NewPkg(func(b ioc.Builder) {
-	for _, pkg := range []ioc.Pkg{
-		prototypepkg.PkgT[uuid.Component](),
+	pkgs := []ioc.Pkg{
+		codecpkg.PkgT[uuid.UUID],
+		codecpkg.PkgT[uuid.Component],
+
+		prototypepkg.PkgT[uuid.Component],
 		relationpkg.MapRelationPkg(
 			func(w ecs.World) ecs.DirtySet {
 				set := ecs.NewDirtySet()
@@ -31,16 +34,11 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 				}
 			},
 		),
-	} {
+	}
+	for _, pkg := range pkgs {
 		pkg(b)
 	}
-	ioc.Wrap(b, func(_ ioc.Dic, b codec.Builder) {
-		b.
-			Register(uuid.UUID{}).
-			Register(uuid.Component{})
-	})
 	ioc.Register(b, func(c ioc.Dic) uuid.Factory { return internal.NewFactory() })
-
 	ioc.Register(b, func(c ioc.Dic) uuid.Service {
 		return internal.NewService(c)
 	})

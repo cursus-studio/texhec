@@ -4,8 +4,8 @@ import (
 	"core/modules/ui"
 	"core/modules/ui/internal/systems"
 	"core/modules/ui/internal/uiservice"
+	codecpkg "engine/modules/codec/pkg"
 	"engine/modules/prototype/pkg"
-	"engine/services/codec"
 	"engine/services/ecs"
 	"time"
 
@@ -35,23 +35,20 @@ func (c *config) BgFrameDuration(d time.Duration)   { c.bgTimePerFrame = d }
 
 var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 	pkgs := []ioc.Pkg{
-		prototypepkg.PkgT[ui.AnimatedBackgroundComponent](),
-		prototypepkg.PkgT[ui.CursorCameraComponent](),
-		prototypepkg.PkgT[ui.UiCameraComponent](),
+		codecpkg.PkgT[ui.AnimatedBackgroundComponent],
+		codecpkg.PkgT[ui.CursorCameraComponent],
+		codecpkg.PkgT[ui.UiCameraComponent],
+
+		codecpkg.PkgT[ui.HideUiEvent],
+
+		prototypepkg.PkgT[ui.AnimatedBackgroundComponent],
+		prototypepkg.PkgT[ui.CursorCameraComponent],
+		prototypepkg.PkgT[ui.UiCameraComponent],
 	}
 	for _, pkg := range pkgs {
 		pkg(b)
 	}
 	ioc.Register(b, func(c ioc.Dic) Config { return newConfig() })
-	ioc.Wrap(b, func(c ioc.Dic, b codec.Builder) {
-		b.
-			// components
-			Register(ui.AnimatedBackgroundComponent{}).
-			Register(ui.CursorCameraComponent{}).
-			Register(ui.UiCameraComponent{}).
-			// events
-			Register(ui.HideUiEvent{})
-	})
 
 	ioc.Register(b, func(c ioc.Dic) ui.Service {
 		config := ioc.Get[Config](c).(*config)

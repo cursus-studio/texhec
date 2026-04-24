@@ -174,6 +174,7 @@ Engine modules:
 - [audio (placeholder)](/engine/modules/audio/readme/README.md)
 - [batcher (placeholder)](/engine/modules/batcher/readme/README.md)
 - [camera (placeholder)](/engine/modules/camera/readme/README.md)
+- [codec (placeholder)](/engine/modules/codec/readme/README.md)
 - [collider (placeholder)](/engine/modules/collider/readme/README.md)
 - [connection (placeholder)](/engine/modules/connection/readme/README.md)
 - [drag (placeholder)](/engine/modules/drag/readme/README.md)
@@ -203,7 +204,6 @@ Engine modules:
 
 Engine services:
 - [clock (placeholder)](/engine/services/clock/readme/README.md)
-- [codec (placeholder)](/engine/services/codec/readme/README.md)
 - [console (placeholder)](/engine/services/console/readme/README.md)
 - [datastructures (placeholder)](/engine/services/datastructures/readme/README.md)
 - [ecs](/engine/services/ecs/readme/README.md)

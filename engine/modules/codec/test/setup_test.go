@@ -1,8 +1,9 @@
 package test
 
 import (
+	"engine/modules/codec"
+	codecpkg "engine/modules/codec/pkg"
 	enginepkg "engine/pkg"
-	"engine/services/codec"
 
 	"github.com/ogiusek/ioc/v2"
 )
@@ -12,17 +13,13 @@ type Type struct {
 }
 
 type setup struct {
-	codec codec.Codec
+	codec codec.Service
 }
 
 func NewSetup() setup {
 	c := ioc.NewContainer(
 		enginepkg.Pkg,
-		ioc.NewPkg(func(b ioc.Builder) {
-			ioc.Wrap(b, func(c ioc.Dic, b codec.Builder) {
-				b.Register(Type{})
-			})
-		}),
+		codecpkg.PkgT[Type],
 	)
-	return setup{ioc.Get[codec.Codec](c)}
+	return setup{ioc.Get[codec.Service](c)}
 }

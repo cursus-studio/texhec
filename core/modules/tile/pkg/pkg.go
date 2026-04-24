@@ -11,6 +11,7 @@ import (
 	"core/modules/tile/internal/tilesystem"
 	gamescenes "core/scenes"
 	"engine/modules/assets"
+	codecpkg "engine/modules/codec/pkg"
 	"engine/modules/collider"
 	gridpkg "engine/modules/grid/pkg"
 	"engine/modules/groups"
@@ -20,7 +21,6 @@ import (
 	"engine/modules/render"
 	smoothpkg "engine/modules/smooth/pkg"
 	transitionpkg "engine/modules/transition/pkg"
-	"engine/services/codec"
 	"engine/services/ecs"
 	gtexture "engine/services/graphics/texture"
 	"engine/services/graphics/vao/vbo"
@@ -54,21 +54,23 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 			},
 			func(index tile.ID) uint32 { return uint32(index) },
 		),
-		prototypepkg.PkgT[tile.TypeComponent](),
-		prototypepkg.PkgT[tile.PosComponent](),
-		prototypepkg.PkgT[tile.SizeComponent](),
-		prototypepkg.PkgT[tile.RotComponent](),
-		prototypepkg.PkgT[tile.LayerComponent](),
+		codecpkg.PkgT[tile.HoverEvent],
 
-		prototypepkg.PkgT[tile.ObstructionComponent](),
+		prototypepkg.PkgT[tile.TypeComponent],
+		prototypepkg.PkgT[tile.PosComponent],
+		prototypepkg.PkgT[tile.SizeComponent],
+		prototypepkg.PkgT[tile.RotComponent],
+		prototypepkg.PkgT[tile.LayerComponent],
 
-		prototypepkg.PkgT[tile.SpeedComponent](),
+		prototypepkg.PkgT[tile.ObstructionComponent],
 
-		transitionpkg.PkgT[tile.PosComponent](),
-		transitionpkg.PkgT[tile.RotComponent](),
+		prototypepkg.PkgT[tile.SpeedComponent],
 
-		smoothpkg.PkgT[tile.PosComponent](),
-		smoothpkg.PkgT[tile.RotComponent](),
+		transitionpkg.PkgT[tile.PosComponent],
+		transitionpkg.PkgT[tile.RotComponent],
+
+		smoothpkg.PkgT[tile.PosComponent],
+		smoothpkg.PkgT[tile.RotComponent],
 	}
 	for _, pkg := range pkgs {
 		pkg(b)
@@ -95,12 +97,6 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 			}
 		})
 	}
-
-	ioc.Wrap(b, func(c ioc.Dic, b codec.Builder) {
-		b.
-			// events
-			Register(tile.HoverEvent{})
-	})
 
 	ioc.Register(b, func(c ioc.Dic) tile.Service {
 		return tileservice.NewService(c)

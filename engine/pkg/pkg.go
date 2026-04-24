@@ -5,6 +5,7 @@ import (
 	audiopkg "engine/modules/audio/pkg"
 	batcherpkg "engine/modules/batcher/pkg"
 	camerapkg "engine/modules/camera/pkg"
+	codecpkg "engine/modules/codec/pkg"
 	colliderpkg "engine/modules/collider/pkg"
 	connectionpkg "engine/modules/connection/pkg"
 	dragpkg "engine/modules/drag/pkg"
@@ -29,7 +30,6 @@ import (
 	warmuppkg "engine/modules/warmup/pkg"
 	windowpkg "engine/modules/window/pkg"
 	"engine/services/clock"
-	"engine/services/codec"
 	"engine/services/console"
 	"engine/services/ecs"
 	"engine/services/graphics/texture"
@@ -45,6 +45,7 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 		audiopkg.Pkg,
 		batcherpkg.Pkg,
 		camerapkg.Pkg,
+		codecpkg.Pkg,
 		colliderpkg.Pkg,
 		connectionpkg.Pkg,
 		dragpkg.Pkg,
@@ -70,7 +71,6 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 		windowpkg.Pkg,
 
 		clock.Pkg,
-		codec.Pkg,
 		console.Pkg,
 		ecs.Pkg,
 		gtexture.Pkg,

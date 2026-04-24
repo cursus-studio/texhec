@@ -12,7 +12,7 @@ import (
 
 var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 	pkgs := []ioc.Pkg{
-		prototypepkg.PkgT[metadata.LinkComponent](),
+		prototypepkg.PkgT[metadata.LinkComponent],
 	}
 	for _, pkg := range pkgs {
 		pkg(b)

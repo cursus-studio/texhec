@@ -50,13 +50,14 @@ func (c *config) SetSize(size, normalizedYBaseline float64) {
 //
 
 var Pkg = ioc.NewPkg(func(b ioc.Builder) {
-	for _, pkg := range []ioc.Pkg{
-		prototypepkg.PkgT[text.BreakComponent](),
-		prototypepkg.PkgT[text.TextComponent](),
-		prototypepkg.PkgT[text.FontFamilyComponent](),
-		prototypepkg.PkgT[text.FontSizeComponent](),
-		prototypepkg.PkgT[text.AlignComponent](),
-	} {
+	pkgs := []ioc.Pkg{
+		prototypepkg.PkgT[text.BreakComponent],
+		prototypepkg.PkgT[text.TextComponent],
+		prototypepkg.PkgT[text.FontFamilyComponent],
+		prototypepkg.PkgT[text.FontSizeComponent],
+		prototypepkg.PkgT[text.AlignComponent],
+	}
+	for _, pkg := range pkgs {
 		pkg(b)
 	}
 	ioc.Register(b, func(c ioc.Dic) Config { return NewConfig() })

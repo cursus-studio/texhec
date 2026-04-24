@@ -5,6 +5,7 @@ import (
 	"engine/modules/audio"
 	"engine/modules/batcher"
 	"engine/modules/camera"
+	"engine/modules/codec"
 	"engine/modules/collider"
 	"engine/modules/connection"
 	"engine/modules/groups"
@@ -28,7 +29,6 @@ import (
 	"engine/modules/warmup"
 	"engine/modules/window"
 	"engine/services/clock"
-	"engine/services/codec"
 	"engine/services/console"
 	"engine/services/ecs"
 	"engine/services/graphics/texturearray"
@@ -47,6 +47,7 @@ type EngineWorld struct {
 	Audio      ioc.Lazy[audio.Service]      `inject:""`
 	Batcher    ioc.Lazy[batcher.Service]    `inject:""`
 	Camera     ioc.Lazy[camera.Service]     `inject:""`
+	Codec      ioc.Lazy[codec.Service]      `inject:""`
 	Collider   ioc.Lazy[collider.Service]   `inject:""`
 	Connection ioc.Lazy[connection.Service] `inject:""`
 	Groups     ioc.Lazy[groups.Service]     `inject:""`
@@ -71,7 +72,6 @@ type EngineWorld struct {
 	Window     ioc.Lazy[window.Service]     `inject:""`
 
 	Clock   ioc.Lazy[clock.Clock]     `inject:""`
-	Codec   ioc.Lazy[codec.Codec]     `inject:""`
 	Console ioc.Lazy[console.Console] `inject:""`
 	// graphics {
 	TextureArrayFactory ioc.Lazy[texturearray.Factory] `inject:""`

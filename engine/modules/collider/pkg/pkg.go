@@ -9,9 +9,10 @@ import (
 )
 
 var Pkg = ioc.NewPkg(func(b ioc.Builder) {
-	for _, pkg := range []ioc.Pkg{
-		prototypepkg.PkgT[collider.Component](),
-	} {
+	pkgs := []ioc.Pkg{
+		prototypepkg.PkgT[collider.Component],
+	}
+	for _, pkg := range pkgs {
 		pkg(b)
 	}
 	ioc.Register(b, func(c ioc.Dic) collider.Service {

@@ -9,11 +9,12 @@ import (
 )
 
 var Pkg = ioc.NewPkg(func(b ioc.Builder) {
-	for _, pkg := range []ioc.Pkg{
-		prototypepkg.PkgT[layout.AlignComponent](),
-		prototypepkg.PkgT[layout.GapComponent](),
-		prototypepkg.PkgT[layout.OrderComponent](),
-	} {
+	pkgs := []ioc.Pkg{
+		prototypepkg.PkgT[layout.AlignComponent],
+		prototypepkg.PkgT[layout.GapComponent],
+		prototypepkg.PkgT[layout.OrderComponent],
+	}
+	for _, pkg := range pkgs {
 		pkg(b)
 	}
 	ioc.Register(b, func(c ioc.Dic) layout.Service {

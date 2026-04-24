@@ -30,8 +30,8 @@ type Setup struct {
 func NewSetup() Setup {
 	c := ioc.NewContainer(
 		enginepkg.Pkg,
-		prototypepkg.PkgT[Cloned1Component](),
-		prototypepkg.PkgT[Cloned2Component](),
+		prototypepkg.PkgT[Cloned1Component],
+		prototypepkg.PkgT[Cloned2Component],
 	)
 
 	s := ioc.GetServices[Setup](c)

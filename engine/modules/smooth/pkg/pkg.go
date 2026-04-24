@@ -12,14 +12,12 @@ import (
 	"github.com/ogiusek/ioc/v2"
 )
 
-func PkgT[Component transition.LerpConstraint[Component]]() ioc.Pkg {
-	return ioc.NewPkg(func(b ioc.Builder) {
-		ioc.Register(b, func(c ioc.Dic) *internal.Service[Component] {
-			return internal.NewService[Component](c)
-		})
-		ioc.Wrap(b, func(c ioc.Dic, _ smooth.Service) {
-			internal.NewSystems[Component](c)
-		})
+func PkgT[Component transition.LerpConstraint[Component]](b ioc.Builder) {
+	ioc.Register(b, func(c ioc.Dic) *internal.Service[Component] {
+		return internal.NewService[Component](c)
+	})
+	ioc.Wrap(b, func(c ioc.Dic, _ smooth.Service) {
+		internal.NewSystems[Component](c)
 	})
 }
 
