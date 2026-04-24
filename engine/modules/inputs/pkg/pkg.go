@@ -59,28 +59,19 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 
 	ioc.Register(b, func(c ioc.Dic) inputs.System {
 		return ecs.NewSystemRegister(func() error {
+			eventsBuilder := ioc.Get[events.Builder](c)
+			events.Listen(eventsBuilder, func(loop.FrameEvent) {
+				events.Emit(eventsBuilder.Events(), mouse.NewShootRayEvent())
+			})
+			events.Listen(eventsBuilder, func(sdl.QuitEvent) {
+				events.Emit(eventsBuilder.Events(), loop.NewStopEvent())
+			})
 			ecs.RegisterSystems(
 				systems.NewInputsSystem(c),
-
-				ecs.NewSystemRegister(func() error {
-					eventsBuilder := ioc.Get[events.Builder](c)
-					events.Listen(eventsBuilder, func(sdl.QuitEvent) {
-						events.Emit(eventsBuilder.Events(), loop.NewStopEvent())
-					})
-					return nil
-				}),
-
 				mouse.NewCameraRaySystem(c),
 				mouse.NewHoverSystem(c),
 				mouse.NewHoverEventsSystem(c),
 				mouse.NewClickSystem(c),
-				ecs.NewSystemRegister(func() error {
-					eventsBuilder := ioc.Get[events.Builder](c)
-					events.Listen(eventsBuilder, func(loop.FrameEvent) {
-						events.Emit(eventsBuilder.Events(), mouse.NewShootRayEvent())
-					})
-					return nil
-				}),
 			)
 			return nil
 		})
