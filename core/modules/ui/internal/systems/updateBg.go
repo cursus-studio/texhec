@@ -4,7 +4,6 @@ import (
 	"core/modules/ui"
 	gamescenes "core/scenes"
 	"engine/modules/assets"
-	"engine/modules/loop"
 	"engine/modules/render"
 	"engine/modules/transform"
 	"engine/modules/transition"
@@ -97,9 +96,6 @@ func (s *System) BeforeGet() {
 		s.Render().Texture().Set(entity, texture)
 		s.transitionArr.Set(entity, transitionComp)
 	}
-}
-
-func (s *System) ListenFrame(e loop.FrameEvent) {
 }
 
 func (s *System) ListenUpdateBg(event UpdateBgEvent) {
