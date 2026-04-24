@@ -1,25 +1,23 @@
 package textrenderer
 
-import (
-	"engine/services/graphics/vao"
-	"engine/services/graphics/vao/vbo"
-)
+import "engine/modules/graphics"
 
 type layoutBatch struct {
-	vao           vao.VAO
-	vertices      vbo.VBOSetter[Glyph]
+	vao           graphics.VAO
+	vertices      graphics.VBOSetter[Glyph]
 	verticesCount int32
 
 	Layout Layout
 }
 
 func NewLayoutBatch(
-	v vbo.VBOFactory[Glyph],
+	s graphics.Service,
+	v graphics.VBOFactory[Glyph],
 	layout Layout,
 ) layoutBatch {
 	VBO := v()
 	VBO.SetVertices(layout.Glyphs)
-	VAO := vao.NewVAO(VBO, nil)
+	VAO := s.NewVAO(VBO, nil)
 	return layoutBatch{
 		vao:           VAO,
 		vertices:      VBO,

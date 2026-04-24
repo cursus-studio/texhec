@@ -31,13 +31,13 @@ type GameWorld struct {
 	engine.EngineWorld `inject:""`
 
 	// game
-	Definitions ioc.Lazy[definitions.Definitions] `inject:""`
-	Deploy      ioc.Lazy[deploy.Service]          `inject:""`
-	Generation  ioc.Lazy[generation.Service]      `inject:""`
-	Pathfind    ioc.Lazy[pathfind.Service]        `inject:""`
-	Player      ioc.Lazy[player.Service]          `inject:""`
-	Tile        ioc.Lazy[tile.Service]            `inject:""`
-	Ui          ioc.Lazy[ui.Service]              `inject:""`
+	Definitions ioc.Lazy[definitions.Service] `inject:""`
+	Deploy      ioc.Lazy[deploy.Service]      `inject:""`
+	Generation  ioc.Lazy[generation.Service]  `inject:""`
+	Pathfind    ioc.Lazy[pathfind.Service]    `inject:""`
+	Player      ioc.Lazy[player.Service]      `inject:""`
+	Tile        ioc.Lazy[tile.Service]        `inject:""`
+	Ui          ioc.Lazy[ui.Service]          `inject:""`
 }
 
 type MenuBuilder scene.Scene

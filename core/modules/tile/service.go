@@ -6,6 +6,7 @@ import (
 	"engine/modules/transition"
 	"engine/services/ecs"
 	"errors"
+	"image"
 	"math"
 
 	"github.com/go-gl/mathgl/mgl32"
@@ -225,6 +226,14 @@ type Service interface {
 
 	Speed() ecs.ComponentsArray[SpeedComponent]
 	Step() ecs.ComponentsArray[StepComponent]
+
+	// src images should be:
+	// - 1111
+	// - 1110
+	// - 1010
+	// - 1001
+	// - 0001
+	NewBiomAsset(srcImages [6][]image.Image) (BiomAsset, error)
 
 	//
 

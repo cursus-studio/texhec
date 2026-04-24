@@ -13,14 +13,13 @@ import (
 	"engine/modules/assets"
 	"engine/modules/collider"
 	"engine/modules/entityregistry"
+	"engine/modules/graphics"
 	gridpkg "engine/modules/grid/pkg"
 	"engine/modules/groups"
 	relationpkg "engine/modules/relation/pkg"
 	"engine/modules/render"
 	typeregistrypkg "engine/modules/typeregistry/pkg"
 	"engine/services/ecs"
-	gtexture "engine/services/graphics/texture"
-	"engine/services/graphics/vao/vbo"
 	"fmt"
 	"image"
 	"os"
@@ -73,9 +72,9 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 			return ecs.NewSystemRegister(func() error { return tilerenderer.NewSystem(c) })
 		})
 
-		ioc.Register(b, func(c ioc.Dic) vbo.VBOFactory[tile.ID] {
-			return func() vbo.VBOSetter[tile.ID] {
-				vbo := vbo.NewVBO[tile.ID](func() {
+		ioc.Register(b, func(c ioc.Dic) graphics.VBOFactory[tile.ID] {
+			return func() graphics.VBOSetter[tile.ID] {
+				vbo := graphics.NewVBO[tile.ID](func() {
 					var i uint32 = 0
 
 					gl.VertexAttribIPointerWithOffset(i, 1, gl.UNSIGNED_BYTE,
@@ -108,6 +107,7 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 	})
 
 	ioc.Wrap(b, func(c ioc.Dic, b assets.Service) {
+		world := ioc.GetServices[gamescenes.GameWorld](c)
 		b.Register("biom", func(path assets.PathComponent) (assets.Asset, error) {
 			images := [6][]image.Image{}
 			directory, _ := strings.CutSuffix(path.Path, ".biom")
@@ -133,12 +133,12 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 					if err != nil {
 						return nil, err
 					}
-					img = gtexture.NewImage(img).FlipV().Image()
+					img = world.Graphics().NewImage(img).FlipV().Image()
 					images[i] = append(images[i], img)
 				}
 			}
 
-			return tile.NewBiomAsset(images)
+			return world.Tile().NewBiomAsset(images)
 		})
 	})
 
@@ -157,11 +157,11 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 			}
 			world.Tile().Rot().Set(entity, tile.NewRot(0))
 			world.Tile().Layer().Set(entity, tile.NewLayer(layer))
-			world.Render().Mesh().Set(entity, render.NewMesh(world.Definitions().SquareMesh))
+			world.Render().Mesh().Set(entity, render.NewMesh(world.Definitions().Assets().SquareMesh))
 			world.Render().Texture().Set(entity, render.NewTexture(entity))
 			world.Groups().Component().Set(entity, groups.EmptyGroups().Ptr().Enable(definitions.GameGroup).Val())
 
-			world.Collider().Component().Set(entity, collider.NewCollider(world.Definitions().SquareCollider))
+			world.Collider().Component().Set(entity, collider.NewCollider(world.Definitions().Assets().SquareCollider))
 		})
 		b.Register("tile", func(entity ecs.EntityID, structTagValue string) {
 			counter++

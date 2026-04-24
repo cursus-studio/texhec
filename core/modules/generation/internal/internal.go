@@ -197,7 +197,7 @@ func (s *service) Generate(c generation.Config) batcher.Task {
 		s.Transform().Size().Set(c.Entity, size)
 		s.Transform().PivotPoint().Set(c.Entity, transform.NewPivotPoint(0, 0, .5))
 
-		s.Collider().Component().Set(c.Entity, collider.NewCollider(s.Definitions().SquareCollider))
+		s.Collider().Component().Set(c.Entity, collider.NewCollider(s.Definitions().Assets().SquareCollider))
 		s.Inputs().Stack().Set(c.Entity, inputs.StackComponent{})
 		s.Tile().TileGrid().Set(c.Entity, gridStateComponent)
 		s.Tile().ObstructionGrid().Set(c.Entity, obstructGridComponent)

@@ -1,27 +1,18 @@
 package vao
 
 import (
-	"engine/services/graphics/vao/ebo"
-	"engine/services/graphics/vao/vbo"
+	"engine/modules/graphics"
 
 	"github.com/go-gl/gl/v4.5-core/gl"
 )
 
-type VAO interface {
-	ID() uint32
-	VBO() vbo.VBO
-	EBO() ebo.EBO
-	Release()
-	Bind()
-}
-
 type vao struct {
 	id  uint32
-	vbo vbo.VBO
-	ebo ebo.EBO
+	vbo graphics.VBO
+	ebo graphics.EBO
 }
 
-func NewVAO(VBO vbo.VBO, EBO ebo.EBO) VAO {
+func NewVAO(VBO graphics.VBO, EBO graphics.EBO) graphics.VAO {
 	var id uint32
 	gl.GenVertexArrays(1, &id)
 
@@ -43,8 +34,8 @@ func NewVAO(VBO vbo.VBO, EBO ebo.EBO) VAO {
 
 func (vao *vao) ID() uint32 { return vao.id }
 
-func (vao *vao) VBO() vbo.VBO { return vao.vbo }
-func (vao *vao) EBO() ebo.EBO { return vao.ebo }
+func (vao *vao) VBO() graphics.VBO { return vao.vbo }
+func (vao *vao) EBO() graphics.EBO { return vao.ebo }
 
 func (vao *vao) ReleaseVAO() {
 	gl.DeleteVertexArrays(1, &vao.id)

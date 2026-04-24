@@ -85,9 +85,9 @@ func (s *system) ListenRender(parent ecs.EntityID) error {
 		event any
 	}
 	btns := []Button{
-		{"SHOT", audio.NewPlayEvent(gamescenes.EffectChannel, s.Definitions().ExampleAudio)},
-		{"SHOT2", audio.NewPlayEvent(gamescenes.EffectChannel, s.Definitions().ExampleAudio)},
-		{"SHOT3", audio.NewPlayEvent(gamescenes.EffectChannel, s.Definitions().ExampleAudio)},
+		{"SHOT", audio.NewPlayEvent(gamescenes.EffectChannel, s.Definitions().Assets().ExampleAudio)},
+		{"SHOT2", audio.NewPlayEvent(gamescenes.EffectChannel, s.Definitions().Assets().ExampleAudio)},
+		{"SHOT3", audio.NewPlayEvent(gamescenes.EffectChannel, s.Definitions().Assets().ExampleAudio)},
 		{"QUIT", scene.NewChangeSceneEvent(gamescenes.MenuID)},
 	}
 

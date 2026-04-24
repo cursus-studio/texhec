@@ -1,4 +1,4 @@
-package gtexture
+package texture
 
 import (
 	"fmt"

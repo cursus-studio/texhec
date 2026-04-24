@@ -51,12 +51,12 @@ func addScene(
 		world.Transform().ParentPivotPoint().Set(settingsEntity, transform.NewParentPivotPoint(0, 1, .5))
 		world.Groups().Component().Set(settingsEntity, groups.EmptyGroups().Ptr().Enable(definitions.UiGroup).Val())
 
-		world.Render().Mesh().Set(settingsEntity, render.NewMesh(world.Definitions().SquareMesh))
+		world.Render().Mesh().Set(settingsEntity, render.NewMesh(world.Definitions().Assets().SquareMesh))
 		world.Render().Texture().Set(settingsEntity, render.NewTexture(world.Definitions().Hud().Settings))
 
 		world.Inputs().LeftClick().Set(settingsEntity, inputs.NewLeftClick(settings.EnterSettingsEvent{}))
 		world.Inputs().KeepSelected().Set(settingsEntity, inputs.KeepSelectedComponent{})
-		world.Collider().Component().Set(settingsEntity, collider.NewCollider(world.Definitions().SquareCollider))
+		world.Collider().Component().Set(settingsEntity, collider.NewCollider(world.Definitions().Assets().SquareCollider))
 	}
 
 	{

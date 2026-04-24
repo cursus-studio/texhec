@@ -1,6 +1,7 @@
 package program
 
 import (
+	"engine/modules/graphics"
 	"errors"
 	"fmt"
 	"reflect"
@@ -9,17 +10,7 @@ import (
 	"github.com/go-gl/gl/v4.5-core/gl"
 )
 
-var (
-	ErrNotALocation    error = errors.New("expected 'int32' for location")
-	ErrInvalidLocation error = errors.New("invalid location")
-)
-
-type Parameter struct {
-	Name  uint32
-	Value int32
-}
-
-func compileProgram(program uint32, parameters []Parameter) error {
+func compileProgram(program uint32, parameters []graphics.Parameter) error {
 	for _, p := range parameters {
 		gl.ProgramParameteri(program, p.Name, p.Value)
 	}
@@ -53,7 +44,7 @@ func createLocations(t reflect.Type, program uint32) (any, error) {
 
 		if uniformName == "" {
 			err := errors.Join(
-				ErrNotALocation,
+				graphics.ErrNotALocation,
 				fmt.Errorf("all locations fields has to have `uniform` struct tag"),
 			)
 			return nil, err
@@ -61,7 +52,7 @@ func createLocations(t reflect.Type, program uint32) (any, error) {
 
 		if field.Type.Kind() != reflect.Int32 {
 			err := errors.Join(
-				ErrNotALocation,
+				graphics.ErrNotALocation,
 				fmt.Errorf(
 					"field \"%s.%s\" isn't int32",
 					typ.String(),
@@ -74,7 +65,7 @@ func createLocations(t reflect.Type, program uint32) (any, error) {
 		location := gl.GetUniformLocation(program, gl.Str(uniformName+"\x00"))
 		if location == -1 {
 			err := errors.Join(
-				ErrInvalidLocation,
+				graphics.ErrInvalidLocation,
 				fmt.Errorf("uniform \"%s\" doesn't exist in shader program", uniformName),
 			)
 			return nil, err

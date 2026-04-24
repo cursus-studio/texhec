@@ -1,16 +1,11 @@
-package gtexture
+package texture
 
 import (
+	"engine/modules/graphics"
 	"image"
 
 	"github.com/go-gl/gl/v4.5-core/gl"
 )
-
-type Texture interface {
-	ID() uint32
-	Bind()
-	Release()
-}
 
 type texture struct {
 	id uint32
@@ -28,16 +23,17 @@ func (t *texture) Release() {
 
 //
 
-type Factory interface {
-	New(img image.Image) (Texture, error)
-	Wrap(func(Texture))
-}
-
 type factory struct {
-	wrappers []func(Texture)
+	wrappers []func(graphics.Texture)
 }
 
-func (f *factory) New(img image.Image) (Texture, error) {
+func NewFactory() graphics.TextureFactory {
+	return &factory{
+		wrappers: nil,
+	}
+}
+
+func (f *factory) New(img image.Image) (graphics.Texture, error) {
 	id, err := newTexture(img)
 	if err != nil {
 		return nil, err
@@ -51,6 +47,6 @@ func (f *factory) New(img image.Image) (Texture, error) {
 	return texture, err
 }
 
-func (f *factory) Wrap(wrapper func(Texture)) {
+func (f *factory) Wrap(wrapper func(graphics.Texture)) {
 	f.wrappers = append(f.wrappers, wrapper)
 }

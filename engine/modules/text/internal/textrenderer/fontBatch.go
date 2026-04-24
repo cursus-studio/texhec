@@ -1,30 +1,29 @@
 package textrenderer
 
 import (
+	"engine/modules/graphics"
 	"engine/modules/text"
-	"engine/services/graphics/buffers"
-	"engine/services/graphics/texturearray"
 
 	"github.com/go-gl/gl/v4.5-core/gl"
 )
 
 type fontBatch struct {
-	glyphsWidth buffers.Buffer[float32]
-	textures    texturearray.TextureArray
+	glyphsWidth graphics.Buffer[float32]
+	textures    graphics.TextureArray
 
 	font text.Glyphs
 }
 
 func NewFontBatch(
-	textureArrayFactory texturearray.Factory,
+	s graphics.Service,
 	font text.Glyphs,
 ) (fontBatch, error) {
-	textureArray, err := textureArrayFactory.New(font.Images)
+	textureArray, err := s.TextureArray().New(font.Images)
 	if err != nil {
 		return fontBatch{}, err
 	}
 
-	glyphsWidth := buffers.NewBuffer[float32](gl.SHADER_STORAGE_BUFFER, gl.DYNAMIC_DRAW, 0)
+	glyphsWidth := graphics.NewBuffer[float32](gl.SHADER_STORAGE_BUFFER, gl.DYNAMIC_DRAW, 0)
 
 	for _, index := range font.GlyphsWidth.GetIndices() {
 		width, _ := font.GlyphsWidth.Get(index)

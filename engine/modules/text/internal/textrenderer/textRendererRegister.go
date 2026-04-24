@@ -3,12 +3,10 @@ package textrenderer
 import (
 	_ "embed"
 	"engine"
+	"engine/modules/graphics"
 	"engine/modules/text"
 	"engine/services/datastructures"
 	"engine/services/ecs"
-	"engine/services/graphics/program"
-	"engine/services/graphics/shader"
-	"engine/services/graphics/vao/vbo"
 
 	"github.com/go-gl/gl/v4.5-core/gl"
 	"github.com/ogiusek/events"
@@ -26,10 +24,10 @@ var fragSource string
 
 type textRendererRegister struct {
 	engine.EngineWorld `inject:""`
-	FontService        FontService           `inject:""`
-	VboFactory         vbo.VBOFactory[Glyph] `inject:""`
-	LayoutService      LayoutService         `inject:""`
-	FontsKeys          FontKeys              `inject:""`
+	FontService        FontService                `inject:""`
+	VboFactory         graphics.VBOFactory[Glyph] `inject:""`
+	LayoutService      LayoutService              `inject:""`
+	FontsKeys          FontKeys                   `inject:""`
 
 	removeOncePerNCalls uint16
 }
@@ -43,19 +41,19 @@ func NewTextRenderer(c ioc.Dic,
 }
 
 func (f *textRendererRegister) Register() error {
-	vert, err := shader.NewShader(vertSource, shader.VertexShader)
+	vert, err := f.Graphics().NewShader(vertSource, graphics.VertexShader)
 	if err != nil {
 		return err
 	}
 	defer vert.Release()
 
-	geom, err := shader.NewShader(geomSource, shader.GeomShader)
+	geom, err := f.Graphics().NewShader(geomSource, graphics.GeomShader)
 	if err != nil {
 		return err
 	}
 	defer geom.Release()
 
-	frag, err := shader.NewShader(fragSource, shader.FragmentShader)
+	frag, err := f.Graphics().NewShader(fragSource, graphics.FragmentShader)
 	if err != nil {
 		return err
 	}
@@ -66,12 +64,12 @@ func (f *textRendererRegister) Register() error {
 	gl.AttachShader(programID, geom.ID())
 	gl.AttachShader(programID, frag.ID())
 
-	p, err := program.NewProgram(programID, nil)
+	p, err := f.Graphics().NewProgram(programID, nil)
 	if err != nil {
 		return err
 	}
 
-	locations, err := program.GetProgramLocations[locations](p)
+	locations, err := graphics.GetProgramLocations[locations](p)
 	if err != nil {
 		p.Release()
 		return err

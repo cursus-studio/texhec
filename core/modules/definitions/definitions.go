@@ -4,9 +4,19 @@ import (
 	"core/modules/tile"
 	"engine/modules/groups"
 	"engine/services/ecs"
-
-	"github.com/ogiusek/ioc/v2"
 )
+
+// In DI container
+// Definitions have more dependencies
+type Service interface {
+	Load()
+
+	Assets() Assets
+	Hud() Hud
+	Tiles() Tiles
+	Objects() Objects
+	Transitions() Transitions
+}
 
 const (
 	UiGroup groups.Group = iota + 1
@@ -34,9 +44,9 @@ const (
 type Assets struct {
 	ExampleAudio ecs.EntityID `path:"audio.wav"`
 
-	Blank          ecs.EntityID `path:"blank texture"`
-	SquareMesh     ecs.EntityID `path:"square mesh"`
-	SquareCollider ecs.EntityID `path:"square collider"`
+	Blank          ecs.EntityID
+	SquareMesh     ecs.EntityID
+	SquareCollider ecs.EntityID
 	FontAsset      ecs.EntityID `path:"font1.ttf"`
 }
 
@@ -50,17 +60,6 @@ type Hud struct {
 
 	Can    ecs.EntityID `path:"hud/can.png-trim"`
 	Cannot ecs.EntityID `path:"hud/cannot.png-trim"`
-}
-
-// In DI container
-// Definitions have more dependencies
-type Definitions struct {
-	Assets
-	Hud     ioc.Lazy[Hud]     `inject:""`
-	Tiles   ioc.Lazy[Tiles]   `inject:""`
-	Objects ioc.Lazy[Objects] `inject:""`
-
-	Transitions ioc.Lazy[Transitions] `inject:""`
 }
 
 type Transitions struct {

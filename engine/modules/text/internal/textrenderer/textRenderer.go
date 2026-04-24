@@ -1,10 +1,10 @@
 package textrenderer
 
 import (
+	"engine/modules/graphics"
 	rendersys "engine/modules/render"
 	"engine/services/datastructures"
 	"engine/services/ecs"
-	"engine/services/graphics/program"
 
 	"github.com/go-gl/gl/v4.5-core/gl"
 	"github.com/go-gl/mathgl/mgl32"
@@ -19,7 +19,7 @@ type locations struct {
 type textRenderer struct {
 	*textRendererRegister
 
-	program   program.Program
+	program   graphics.Program
 	locations locations
 
 	fontsBatches datastructures.SparseArray[FontKey, fontBatch]
@@ -38,7 +38,7 @@ func (s *textRenderer) ensureFontExists(asset ecs.EntityID) error {
 	if err != nil {
 		return err
 	}
-	batch, err := NewFontBatch(s.TextureArrayFactory(), font)
+	batch, err := NewFontBatch(s.Graphics(), font)
 	if err != nil {
 		return err
 	}
@@ -98,7 +98,7 @@ func (s *textRenderer) ListenRender(render rendersys.RenderEvent) {
 				continue
 			}
 
-			batch := NewLayoutBatch(s.VboFactory, layout)
+			batch := NewLayoutBatch(s.Graphics(), s.VboFactory, layout)
 			s.layoutsBatches.Set(entity, batch)
 		}
 	}

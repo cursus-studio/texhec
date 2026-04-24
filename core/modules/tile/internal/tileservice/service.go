@@ -85,6 +85,8 @@ func (s *service) Deployed() ecs.ComponentsArray[tile.DeployedComponent]       {
 func (s *service) Speed() ecs.ComponentsArray[tile.SpeedComponent] { return s.speed }
 func (s *service) Step() ecs.ComponentsArray[tile.StepComponent]   { return s.step }
 
+// NewBiomAsset in other file
+
 func (s *service) GetPos(coords grid.Coords) transform.PosComponent {
 	size := s.GetTileSize().Size
 	return transform.NewPos(

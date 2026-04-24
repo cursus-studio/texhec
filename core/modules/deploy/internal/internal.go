@@ -106,12 +106,12 @@ func (s *service) Preview(e deploy.PreviewEvent) {
 cannotPlace:
 	// place indicator on occupied tiles
 	for _, collision := range collisions {
-		entity := s.Prototype().Clone(s.Definitions().Blank)
+		entity := s.Prototype().Clone(s.Definitions().Assets().Blank)
 		s.Hierarchy().SetParent(entity, s.Scene().Scene())
 
 		s.Tile().Layer().Set(entity, tile.NewLayer(definitions.TilePlaceholderLayer))
-		s.Render().Mesh().Set(entity, render.NewMesh(s.Definitions().SquareMesh))
-		s.Render().Texture().Set(entity, render.NewTexture(s.Definitions().Blank))
+		s.Render().Mesh().Set(entity, render.NewMesh(s.Definitions().Assets().SquareMesh))
+		s.Render().Texture().Set(entity, render.NewTexture(s.Definitions().Assets().Blank))
 		s.Groups().Component().Set(entity, groups.EmptyGroups().Ptr().Enable(definitions.GameGroup).Val())
 
 		s.Tile().Layer().Set(entity, tile.NewLayer(definitions.TilePlaceholderLayer))

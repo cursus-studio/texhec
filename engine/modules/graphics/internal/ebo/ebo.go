@@ -1,23 +1,17 @@
 package ebo
 
-import "github.com/go-gl/gl/v4.5-core/gl"
+import (
+	"engine/modules/graphics"
 
-type Index uint32
-
-type EBO interface {
-	ID() uint32
-	Len() int
-	Configure()
-	Release()
-	SetIndices(indices []Index)
-}
+	"github.com/go-gl/gl/v4.5-core/gl"
+)
 
 type ebo struct {
 	id  uint32
 	len int
 }
 
-func NewEBO() EBO {
+func NewEBO() graphics.EBO {
 	var id uint32
 	gl.GenBuffers(1, &id)
 	return &ebo{
@@ -37,7 +31,7 @@ func (ebo *ebo) Release() {
 	gl.DeleteBuffers(1, &ebo.id)
 }
 
-func (ebo *ebo) SetIndices(indices []Index) {
+func (ebo *ebo) SetIndices(indices []graphics.Index) {
 	indicesLen := len(indices)
 	gl.BindBuffer(gl.ELEMENT_ARRAY_BUFFER, ebo.id)
 	gl.BufferData(gl.ELEMENT_ARRAY_BUFFER, indicesLen*4, gl.Ptr(indices), gl.STATIC_DRAW)

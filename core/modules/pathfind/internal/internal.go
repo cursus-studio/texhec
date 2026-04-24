@@ -66,11 +66,11 @@ func (s *service) PreviewPath(e pathfind.PreviewPathEvent) {
 			entity := s.World().NewEntity()
 			s.Hierarchy().SetParent(entity, s.Scene().Scene())
 
-			s.Render().Mesh().Set(entity, render.NewMesh(s.Definitions().SquareMesh))
+			s.Render().Mesh().Set(entity, render.NewMesh(s.Definitions().Assets().SquareMesh))
 			s.Render().Texture().Set(entity, render.NewTexture(s.Definitions().Hud().Cannot))
 			s.Groups().Component().Set(entity, groups.EmptyGroups().Ptr().Enable(definitions.GameGroup).Val())
 
-			s.Collider().Component().Set(entity, collider.NewCollider(s.Definitions().SquareCollider))
+			s.Collider().Component().Set(entity, collider.NewCollider(s.Definitions().Assets().SquareCollider))
 
 			s.Tile().Layer().Set(entity, tile.NewLayer(definitions.PathLayer))
 			s.Tile().Pos().Set(entity, pos)
@@ -82,11 +82,11 @@ func (s *service) PreviewPath(e pathfind.PreviewPathEvent) {
 		entity := s.World().NewEntity()
 		s.Hierarchy().SetParent(entity, s.Scene().Scene())
 
-		s.Render().Mesh().Set(entity, render.NewMesh(s.Definitions().SquareMesh))
+		s.Render().Mesh().Set(entity, render.NewMesh(s.Definitions().Assets().SquareMesh))
 		s.Render().Texture().Set(entity, render.NewTexture(s.Definitions().Hud().Can))
 		s.Groups().Component().Set(entity, groups.EmptyGroups().Ptr().Enable(definitions.GameGroup).Val())
 
-		s.Collider().Component().Set(entity, collider.NewCollider(s.Definitions().SquareCollider))
+		s.Collider().Component().Set(entity, collider.NewCollider(s.Definitions().Assets().SquareCollider))
 		if pos.X == tile.Coord(e.Coords.X) && pos.Y == tile.Coord(e.Coords.Y) {
 			s.Inputs().LeftClick().Set(entity, inputs.NewLeftClick(pathfind.NewFindPathEvent(e.Entity).ApplyCoords(e.Coords)))
 		}

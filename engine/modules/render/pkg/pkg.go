@@ -2,15 +2,15 @@ package renderpkg
 
 import (
 	"bytes"
+	"engine"
 	"engine/modules/assets"
+	"engine/modules/graphics"
 	"engine/modules/render"
 	"engine/modules/render/internal/instancing"
 	"engine/modules/render/internal/service"
 	"engine/modules/render/internal/systems"
 	typeregistrypkg "engine/modules/typeregistry/pkg"
 	"engine/services/ecs"
-	gtexture "engine/services/graphics/texture"
-	"engine/services/graphics/vao/vbo"
 	"image"
 	"image/gif"
 	_ "image/jpeg"
@@ -34,9 +34,9 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 		pkg(b)
 	}
 
-	ioc.Register(b, func(c ioc.Dic) vbo.VBOFactory[render.Vertex] {
-		return func() vbo.VBOSetter[render.Vertex] {
-			vbo := vbo.NewVBO[render.Vertex](func() {
+	ioc.Register(b, func(c ioc.Dic) graphics.VBOFactory[render.Vertex] {
+		return func() graphics.VBOSetter[render.Vertex] {
+			vbo := graphics.NewVBO[render.Vertex](func() {
 				gl.VertexAttribPointerWithOffset(0, 3, gl.FLOAT, false,
 					int32(unsafe.Sizeof(render.Vertex{})), uintptr(unsafe.Offsetof(render.Vertex{}.Pos)))
 				gl.EnableVertexAttribArray(0)
@@ -79,6 +79,7 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 	})
 
 	ioc.Wrap(b, func(c ioc.Dic, b assets.Service) {
+		world := ioc.GetServices[engine.EngineWorld](c)
 		imageHandler := func(id assets.PathComponent) (assets.Asset, error) {
 			source, err := os.ReadFile(id.Path)
 			if err != nil {
@@ -90,7 +91,7 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 				return nil, err
 			}
 
-			img = gtexture.NewImage(img).FlipV().Image()
+			img = world.Graphics().NewImage(img).FlipV().Image()
 			return render.NewTextureAsset(img)
 		}
 		trimImageHandler := func(id assets.PathComponent) (assets.Asset, error) {
@@ -104,7 +105,7 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 				return nil, err
 			}
 
-			img = gtexture.NewImage(img).FlipV().TrimTransparentBackground().Image()
+			img = world.Graphics().NewImage(img).FlipV().TrimTransparentBackground().Image()
 			return render.NewTextureAsset(img)
 		}
 		b.Register("png", imageHandler)
@@ -128,7 +129,7 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 
 			images := make([]image.Image, 0, len(gif.Image))
 			for _, img := range gif.Image {
-				finalImg := gtexture.NewImage(img).FlipV().Image()
+				finalImg := world.Graphics().NewImage(img).FlipV().Image()
 				images = append(images, finalImg)
 			}
 
@@ -148,7 +149,7 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 
 			images := make([]image.Image, 0, len(gif.Image))
 			for _, img := range gif.Image {
-				finalImg := gtexture.NewImage(img).FlipV().TrimTransparentBackground().Image()
+				finalImg := world.Graphics().NewImage(img).FlipV().TrimTransparentBackground().Image()
 				images = append(images, finalImg)
 			}
 

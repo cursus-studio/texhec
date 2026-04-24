@@ -2,147 +2,19 @@ package definitionspkg
 
 import (
 	"core/modules/definitions"
-	"core/modules/deploy"
-	gamescenes "core/scenes"
-	"engine/modules/assets"
-	"engine/modules/collider"
+	"core/modules/definitions/internal"
 	"engine/modules/entityregistry"
-	"engine/modules/groups"
-	"engine/modules/inputs"
-	"engine/modules/render"
-	"engine/modules/text"
-	"engine/modules/transform"
 	"engine/modules/transition"
 	"engine/services/ecs"
-	"engine/services/graphics/vao/ebo"
-	"image"
-	"image/color"
 	_ "image/png"
 	"math"
 
-	"github.com/go-gl/mathgl/mgl32"
 	"github.com/ogiusek/ioc/v2"
 )
 
 var Pkg = ioc.NewPkg(func(b ioc.Builder) {
-	// register specific files
-	ioc.Wrap(b, func(c ioc.Dic, b assets.Service) {
-		b.Register("blank texture", func(_ assets.PathComponent) (assets.Asset, error) {
-			img := image.NewRGBA(image.Rect(0, 0, 1, 1))
-			white := color.RGBA{255, 255, 255, 255}
-			img.Set(0, 0, white)
-			asset, err := render.NewTextureAsset(img)
-			return asset, err
-		})
-		b.Register("square mesh", func(_ assets.PathComponent) (assets.Asset, error) {
-			vertices := []render.Vertex{
-				{Pos: [3]float32{1, 1, 1}, TexturePos: [2]float32{1, 1}},
-				{Pos: [3]float32{1, -1, 1}, TexturePos: [2]float32{1, 0}},
-				{Pos: [3]float32{-1, -1, 1}, TexturePos: [2]float32{0, 0}},
-				{Pos: [3]float32{-1, 1, 1}, TexturePos: [2]float32{0, 1}},
-			}
-
-			indices := []ebo.Index{
-				0, 1, 2,
-				0, 2, 3,
-			}
-			asset := render.NewMeshAsset(vertices, indices)
-			return asset, nil
-		})
-
-		b.Register("square collider", func(_ assets.PathComponent) (assets.Asset, error) {
-			asset := collider.NewColliderAsset(
-				[]collider.AABB{collider.NewAABB(mgl32.Vec3{-1, -1}, mgl32.Vec3{1, 1})},
-				[]collider.Range{collider.NewRange(collider.Leaf, 0, 2)},
-				[]collider.Polygon{
-					collider.NewPolygon(mgl32.Vec3{-1, -1, 0}, mgl32.Vec3{+1, -1, 0}, [3]float32{-1, +1, 0}),
-					collider.NewPolygon(mgl32.Vec3{+1, +1, 0}, mgl32.Vec3{+1, -1, 0}, [3]float32{-1, +1, 0}),
-				})
-			return asset, nil
-		})
-	})
-
-	ioc.Register(b, func(c ioc.Dic) definitions.Tiles {
-		world := ioc.GetServices[gamescenes.GameWorld](c)
-		def, err := entityregistry.GetRegistry[definitions.Tiles](world.EntityRegistry())
-		world.Logger().Warn(err)
-		return def
-	})
-	ioc.Register(b, func(c ioc.Dic) definitions.Objects {
-		world := ioc.GetServices[gamescenes.GameWorld](c)
-		def, err := entityregistry.GetRegistry[definitions.Objects](world.EntityRegistry())
-		world.Logger().Warn(err)
-
-		world.Deploy().Component().Set(def.Tank, deploy.NewDeploy(def.Tank, def.Farm))
-		world.Deploy().Component().Set(def.Farm, deploy.NewDeploy(def.Tank, def.Farm, def.HouseT1, def.HouseT2, def.HouseT3, def.HouseT4))
-		return def
-	})
-	ioc.Register(b, func(c ioc.Dic) definitions.Hud {
-		world := ioc.GetServices[gamescenes.GameWorld](c)
-		def, err := entityregistry.GetRegistry[definitions.Hud](world.EntityRegistry())
-		world.Logger().Warn(err)
-
-		{
-			btnAsset, err := assets.GetAsset[render.TextureAsset](world.Assets(), def.Btn)
-			if err != nil {
-				world.Logger().Warn(err)
-			}
-			btnAspectRatio := btnAsset.AspectRatio()
-			world.Groups().Inherit().Set(def.Btn, groups.InheritGroupsComponent{})
-			world.Groups().Component().Set(def.Btn, groups.EmptyGroups())
-
-			world.Transform().AspectRatio().Set(def.Btn, transform.NewAspectRatio(float32(btnAspectRatio.Dx()), float32(btnAspectRatio.Dy()), 0, transform.PrimaryAxisX))
-			world.Transform().Parent().Set(def.Btn, transform.NewParent(transform.RelativePos|transform.RelativeSizeX))
-			world.Transform().MaxSize().Set(def.Btn, transform.NewMaxSize(0, 50, 0))
-			world.Transform().Size().Set(def.Btn, transform.NewSize(1, 50, 1))
-
-			world.Render().Mesh().Set(def.Btn, render.NewMesh(world.Definitions().SquareMesh))
-			world.Render().Texture().Set(def.Btn, render.NewTexture(def.Btn))
-
-			world.Collider().Component().Set(def.Btn, collider.NewCollider(world.Definitions().SquareCollider))
-			world.Inputs().KeepSelected().Set(def.Btn, inputs.KeepSelectedComponent{})
-
-			world.Text().Align().Set(def.Btn, text.NewAlign(.5, .5))
-			world.Text().FontSize().Set(def.Btn, text.NewFontSize(24))
-		}
-		{
-			btnAsset, err := assets.GetAsset[render.TextureAsset](world.Assets(), def.Btn)
-			if err != nil {
-				world.Logger().Warn(err)
-			}
-			btnAspectRatio := btnAsset.AspectRatio()
-			world.Groups().Inherit().Set(def.Text, groups.InheritGroupsComponent{})
-			world.Groups().Component().Set(def.Text, groups.EmptyGroups())
-
-			world.Transform().Size().Set(def.Text, transform.NewSize(150, 50, 1))
-			world.Transform().AspectRatio().Set(def.Text, transform.NewAspectRatio(float32(btnAspectRatio.Dx()), float32(btnAspectRatio.Dy()), 0, transform.PrimaryAxisX))
-			world.Transform().Parent().Set(def.Text, transform.NewParent(transform.RelativePos))
-
-			world.Render().Mesh().Set(def.Text, render.NewMesh(world.Definitions().SquareMesh))
-			world.Render().Texture().Set(def.Text, render.NewTexture(def.Btn))
-			world.Render().Color().Set(def.Text, render.NewColor(mgl32.Vec4{0, 0, 0, 0}))
-
-			world.Collider().Component().Set(def.Text, collider.NewCollider(world.Definitions().SquareCollider))
-			world.Inputs().KeepSelected().Set(def.Text, inputs.KeepSelectedComponent{})
-
-			world.Text().Align().Set(def.Text, text.NewAlign(.5, .5))
-			world.Text().FontSize().Set(def.Text, text.NewFontSize(24))
-		}
-		return def
-	})
-	ioc.Register(b, func(c ioc.Dic) definitions.Transitions {
-		world := ioc.GetServices[gamescenes.GameWorld](c)
-		def, err := entityregistry.GetRegistry[definitions.Transitions](world.EntityRegistry())
-		world.Logger().Warn(err)
-		return def
-	})
-
-	ioc.Register(b, func(c ioc.Dic) definitions.Definitions {
-		world := ioc.GetServices[gamescenes.GameWorld](c)
-		def, err := entityregistry.GetRegistry[definitions.Definitions](world.EntityRegistry())
-		world.Logger().Warn(err)
-		world.Logger().Warn(c.InjectServices(&def))
-		return def
+	ioc.Register(b, func(c ioc.Dic) definitions.Service {
+		return internal.NewService(c)
 	})
 
 	//

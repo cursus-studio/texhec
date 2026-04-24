@@ -10,6 +10,7 @@ import (
 	connectionpkg "engine/modules/connection/pkg"
 	dragpkg "engine/modules/drag/pkg"
 	entityregistrypkg "engine/modules/entityregistry/pkg"
+	graphicspkg "engine/modules/graphics/pkg"
 	groupspkg "engine/modules/groups/pkg"
 	hierarchypkg "engine/modules/hierarchy/pkg"
 	inputspkg "engine/modules/inputs/pkg"
@@ -32,8 +33,6 @@ import (
 	"engine/services/clock"
 	"engine/services/console"
 	"engine/services/ecs"
-	"engine/services/graphics/texture"
-	"engine/services/graphics/texturearray"
 	"engine/services/logger"
 
 	"github.com/ogiusek/ioc/v2"
@@ -50,6 +49,7 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 		connectionpkg.Pkg,
 		dragpkg.Pkg,
 		entityregistrypkg.Pkg,
+		graphicspkg.Pkg,
 		groupspkg.Pkg,
 		hierarchypkg.Pkg,
 		inputspkg.Pkg,
@@ -73,8 +73,6 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 		clock.Pkg,
 		console.Pkg,
 		ecs.Pkg,
-		gtexture.Pkg,
-		texturearray.Pkg,
 		logger.Pkg,
 	}
 	for _, pkg := range pkgs {

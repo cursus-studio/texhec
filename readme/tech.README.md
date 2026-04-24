@@ -179,6 +179,7 @@ Engine modules:
 - [connection (placeholder)](/engine/modules/connection/readme/README.md)
 - [drag (placeholder)](/engine/modules/drag/readme/README.md)
 - [entityregistry (placeholder)](/engine/modules/entityregistry/readme/README.md)
+- [graphics (placeholder)](/engine/graphics/graphics/readme/README.md)
 - [grid (placeholder)](/engine/modules/grid/readme/README.md)
 - [groups (placeholder)](/engine/modules/groups/readme/README.md)
 - [hierarchy](/engine/modules/hierarchy/readme/README.md)
@@ -208,7 +209,6 @@ Engine services:
 - [console (placeholder)](/engine/services/console/readme/README.md)
 - [datastructures (placeholder)](/engine/services/datastructures/readme/README.md)
 - [ecs](/engine/services/ecs/readme/README.md)
-- [graphics (placeholder)](/engine/services/graphics/readme/README.md)
 - [logger (placeholder)](/engine/services/logger/readme/README.md)
 
 ### Technical challenges

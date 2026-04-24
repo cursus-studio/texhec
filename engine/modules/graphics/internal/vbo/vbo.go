@@ -6,27 +6,13 @@ import (
 	"github.com/go-gl/gl/v4.5-core/gl"
 )
 
-type VBO interface {
-	ID() uint32
-	Len() int
-	Configure()
-	Release()
-}
-
-type VBOSetter[Vertex any] interface {
-	VBO
-	SetVertices(vertices []Vertex)
-}
-
-type VBOFactory[Vertex any] func() VBOSetter[Vertex]
-
 type vbo[Vertex any] struct {
 	id        uint32
 	len       int
 	configure func()
 }
 
-func NewVBO[Vertex any](configure func()) VBOSetter[Vertex] {
+func NewVBO[Vertex any](configure func()) *vbo[Vertex] {
 	var id uint32
 	gl.GenBuffers(1, &id)
 	return &vbo[Vertex]{

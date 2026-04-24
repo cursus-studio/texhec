@@ -9,6 +9,7 @@ import (
 	"engine/modules/collider"
 	"engine/modules/connection"
 	"engine/modules/entityregistry"
+	"engine/modules/graphics"
 	"engine/modules/groups"
 	"engine/modules/hierarchy"
 	"engine/modules/inputs"
@@ -31,7 +32,6 @@ import (
 	"engine/services/clock"
 	"engine/services/console"
 	"engine/services/ecs"
-	"engine/services/graphics/texturearray"
 	"engine/services/logger"
 
 	"github.com/ogiusek/events"
@@ -51,6 +51,7 @@ type EngineWorld struct {
 	Collider       ioc.Lazy[collider.Service]       `inject:""`
 	Connection     ioc.Lazy[connection.Service]     `inject:""`
 	EntityRegistry ioc.Lazy[entityregistry.Service] `inject:""`
+	Graphics       ioc.Lazy[graphics.Service]       `inject:""`
 	Groups         ioc.Lazy[groups.Service]         `inject:""`
 	Hierarchy      ioc.Lazy[hierarchy.Service]      `inject:""`
 	Inputs         ioc.Lazy[inputs.Service]         `inject:""`
@@ -73,8 +74,5 @@ type EngineWorld struct {
 
 	Clock   ioc.Lazy[clock.Clock]     `inject:""`
 	Console ioc.Lazy[console.Console] `inject:""`
-	// graphics {
-	TextureArrayFactory ioc.Lazy[texturearray.Factory] `inject:""`
-	// }
-	Logger ioc.Lazy[logger.Logger] `inject:""`
+	Logger  ioc.Lazy[logger.Logger]   `inject:""`
 }

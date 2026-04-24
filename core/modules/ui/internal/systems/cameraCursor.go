@@ -66,7 +66,7 @@ func (s *cursorSystem) Listen(loop.FrameEvent) {
 	s.Hierarchy().SetParent(cursor, camera)
 	s.Transform().Parent().Set(cursor, transform.NewParent(transform.Absolute))
 	s.Transform().Pos().Set(cursor, pos)
-	s.Render().Mesh().Set(cursor, render.NewMesh(s.Definitions().SquareMesh))
+	s.Render().Mesh().Set(cursor, render.NewMesh(s.Definitions().Assets().SquareMesh))
 	s.Render().Texture().Set(cursor, render.NewTexture(s.Definitions().Hud().Cursor))
 	s.Groups().Inherit().Set(cursor, groups.InheritGroupsComponent{})
 	s.Transform().Size().Set(cursor, transform.NewSize(50, 50, 1))

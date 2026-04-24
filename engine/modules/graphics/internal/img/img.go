@@ -1,6 +1,7 @@
-package gtexture
+package img
 
 import (
+	"engine/modules/graphics"
 	"image"
 	"image/color"
 	"image/draw"
@@ -8,27 +9,11 @@ import (
 	xdraw "golang.org/x/image/draw"
 )
 
-type Image interface {
-	Image() image.Image
-
-	FlipH() Image
-	FlipV() Image
-	// horizontally and vertically
-	FlipHV() Image
-
-	// rotates 90 deg clockwise
-	RotateClockwise(times int) Image
-
-	TrimTransparentBackground() Image
-	Scale(w, h int) Image
-	Opaque() Image
-}
-
 type img struct {
 	img image.Image
 }
 
-func NewImage(image image.Image) Image {
+func NewImage(image image.Image) graphics.Image {
 	return &img{img: image}
 }
 
@@ -36,7 +21,7 @@ func (s *img) Image() image.Image {
 	return s.img
 }
 
-func (s *img) FlipH() Image {
+func (s *img) FlipH() graphics.Image {
 	bounds := s.img.Bounds()
 	newImg := image.NewRGBA(bounds)
 
@@ -51,7 +36,7 @@ func (s *img) FlipH() Image {
 	return s
 }
 
-func (s *img) FlipV() Image {
+func (s *img) FlipV() graphics.Image {
 	bounds := s.img.Bounds()
 	newImg := image.NewRGBA(bounds)
 
@@ -66,11 +51,11 @@ func (s *img) FlipV() Image {
 	return s
 }
 
-func (s *img) FlipHV() Image {
+func (s *img) FlipHV() graphics.Image {
 	return s.FlipH().FlipV()
 }
 
-func (s *img) RotateClockwise(times int) Image {
+func (s *img) RotateClockwise(times int) graphics.Image {
 	for range times % 4 {
 		bounds := s.img.Bounds()
 		newBounds := image.Rect(0, 0, bounds.Dy(), bounds.Dx())
@@ -86,7 +71,7 @@ func (s *img) RotateClockwise(times int) Image {
 	return s
 }
 
-func (s *img) TrimTransparentBackground() Image {
+func (s *img) TrimTransparentBackground() graphics.Image {
 	bounds := s.img.Bounds()
 	minX, minY := bounds.Max.X, bounds.Max.Y
 	maxX, maxY := bounds.Min.X, bounds.Min.Y
@@ -126,7 +111,7 @@ func (s *img) TrimTransparentBackground() Image {
 	return s
 }
 
-func (s *img) Scale(w, h int) Image {
+func (s *img) Scale(w, h int) graphics.Image {
 	dst := image.NewRGBA(image.Rect(0, 0, w, h))
 	xdraw.BiLinear.Scale(dst, dst.Bounds(), s.img, s.img.Bounds(), draw.Over, nil)
 	s.img = dst
@@ -134,7 +119,7 @@ func (s *img) Scale(w, h int) Image {
 	return s
 }
 
-func (s *img) Opaque() Image {
+func (s *img) Opaque() graphics.Image {
 	bounds := s.img.Bounds()
 	dst := image.NewRGBA(bounds)
 

@@ -57,10 +57,10 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 			world.Transform().Pos().Set(draggable, transform.NewPos(0, 0, 2))
 			world.Transform().Size().Set(draggable, transform.NewSize(50, 50, 1))
 			world.Render().Color().Set(draggable, render.NewColor(mgl32.Vec4{0, 1, 0, 1}))
-			world.Render().Mesh().Set(draggable, render.NewMesh(world.Definitions().SquareMesh))
+			world.Render().Mesh().Set(draggable, render.NewMesh(world.Definitions().Assets().SquareMesh))
 			world.Render().Texture().Set(draggable, render.NewTexture(world.Definitions().Hud().Cursor))
 
-			world.Collider().Component().Set(draggable, collider.NewCollider(world.Definitions().SquareCollider))
+			world.Collider().Component().Set(draggable, collider.NewCollider(world.Definitions().Assets().SquareCollider))
 			world.Inputs().Drag().Set(draggable, inputs.NewDragComponent(drag.NewDraggable(draggable)))
 
 			world.Text().Content().Set(draggable, text.NewText(strings.ToUpper("drag me")))

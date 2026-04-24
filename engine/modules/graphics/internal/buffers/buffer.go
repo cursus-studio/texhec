@@ -9,18 +9,6 @@ import (
 	"github.com/go-gl/gl/v4.5-core/gl"
 )
 
-type Buffer[Stored comparable] interface {
-	ID() uint32
-	Bind()
-	Get() []Stored
-	Add(elements ...Stored)
-	Set(index int, e Stored)
-	Remove(indices ...int)
-	Release()
-
-	Flush()
-}
-
 type buffer[Stored comparable] struct {
 	mutex  sync.Locker
 	target uint32
@@ -38,7 +26,7 @@ func NewBuffer[Stored comparable](
 	target uint32, // gl.SHADER_STORAGE_BUFFER / gl.DRAW_INDIRECT_BUFFER
 	usage uint32, // gl.STATIC_DRAW / gl.DYNAMIC_DRAW
 	index uint32,
-) Buffer[Stored] {
+) *buffer[Stored] {
 	mutex := &sync.Mutex{}
 	b := &buffer[Stored]{
 		mutex:  mutex,
