@@ -6,9 +6,9 @@ import (
 	gamescenes "core/scenes"
 	"engine/modules/assets"
 	"engine/modules/collider"
+	"engine/modules/entityregistry"
 	"engine/modules/groups"
 	"engine/modules/inputs"
-	"engine/modules/registry"
 	"engine/modules/render"
 	"engine/modules/text"
 	"engine/modules/transform"
@@ -64,13 +64,13 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 
 	ioc.Register(b, func(c ioc.Dic) definitions.Tiles {
 		world := ioc.GetServices[gamescenes.GameWorld](c)
-		def, err := registry.GetRegistry[definitions.Tiles](world.Registry())
+		def, err := entityregistry.GetRegistry[definitions.Tiles](world.EntityRegistry())
 		world.Logger().Warn(err)
 		return def
 	})
 	ioc.Register(b, func(c ioc.Dic) definitions.Objects {
 		world := ioc.GetServices[gamescenes.GameWorld](c)
-		def, err := registry.GetRegistry[definitions.Objects](world.Registry())
+		def, err := entityregistry.GetRegistry[definitions.Objects](world.EntityRegistry())
 		world.Logger().Warn(err)
 
 		world.Deploy().Component().Set(def.Tank, deploy.NewDeploy(def.Tank, def.Farm))
@@ -79,7 +79,7 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 	})
 	ioc.Register(b, func(c ioc.Dic) definitions.Hud {
 		world := ioc.GetServices[gamescenes.GameWorld](c)
-		def, err := registry.GetRegistry[definitions.Hud](world.Registry())
+		def, err := entityregistry.GetRegistry[definitions.Hud](world.EntityRegistry())
 		world.Logger().Warn(err)
 
 		{
@@ -132,14 +132,14 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 	})
 	ioc.Register(b, func(c ioc.Dic) definitions.Transitions {
 		world := ioc.GetServices[gamescenes.GameWorld](c)
-		def, err := registry.GetRegistry[definitions.Transitions](world.Registry())
+		def, err := entityregistry.GetRegistry[definitions.Transitions](world.EntityRegistry())
 		world.Logger().Warn(err)
 		return def
 	})
 
 	ioc.Register(b, func(c ioc.Dic) definitions.Definitions {
 		world := ioc.GetServices[gamescenes.GameWorld](c)
-		def, err := registry.GetRegistry[definitions.Definitions](world.Registry())
+		def, err := entityregistry.GetRegistry[definitions.Definitions](world.EntityRegistry())
 		world.Logger().Warn(err)
 		world.Logger().Warn(c.InjectServices(&def))
 		return def
@@ -190,7 +190,7 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 		},
 	}
 
-	ioc.Wrap(b, func(c ioc.Dic, b registry.Service) {
+	ioc.Wrap(b, func(c ioc.Dic, b entityregistry.Service) {
 		b.Register("transition", func(entity ecs.EntityID, structTagValue string) {
 			transitionService := ioc.Get[transition.Service](c)
 			easing, ok := transitions[structTagValue]

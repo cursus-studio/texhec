@@ -2,7 +2,7 @@ package test
 
 import (
 	"engine/modules/assets"
-	"engine/modules/registry"
+	"engine/modules/entityregistry"
 	"engine/services/ecs"
 	"testing"
 )
@@ -26,7 +26,7 @@ func TestAssets(t *testing.T) {
 		fetched = true
 		return &asset{}, nil
 	})
-	definitions, err := registry.GetRegistry[Definitions](setup.Registry())
+	definitions, err := entityregistry.GetRegistry[Definitions](setup.EntityRegistry())
 	if err != nil {
 		t.Error("registered path extension yet it wan't detected")
 		return

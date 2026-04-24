@@ -1,4 +1,4 @@
-package registry
+package entityregistry
 
 import (
 	"engine/services/ecs"

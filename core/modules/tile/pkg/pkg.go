@@ -13,10 +13,10 @@ import (
 	"engine/modules/assets"
 	codecpkg "engine/modules/codec/pkg"
 	"engine/modules/collider"
+	"engine/modules/entityregistry"
 	gridpkg "engine/modules/grid/pkg"
 	"engine/modules/groups"
 	prototypepkg "engine/modules/prototype/pkg"
-	"engine/modules/registry"
 	relationpkg "engine/modules/relation/pkg"
 	"engine/modules/render"
 	smoothpkg "engine/modules/smooth/pkg"
@@ -153,7 +153,7 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 		})
 	})
 
-	ioc.Wrap(b, func(c ioc.Dic, b registry.Service) {
+	ioc.Wrap(b, func(c ioc.Dic, b entityregistry.Service) {
 		world := ioc.GetServices[gamescenes.GameWorld](c)
 		var counter tile.ID
 		b.Register("object", func(entity ecs.EntityID, structTagValue string) {

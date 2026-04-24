@@ -1,7 +1,7 @@
 package test
 
 import (
-	"engine/modules/registry"
+	"engine/modules/entityregistry"
 	"engine/services/ecs"
 	"errors"
 	"testing"
@@ -13,7 +13,7 @@ func TestUnusedFieldError(t *testing.T) {
 	}
 	s := NewSetup()
 	instance := TestedStruct{}
-	if err := s.Registry().Populate(&instance); err != nil {
+	if err := s.EntityRegistry().Populate(&instance); err != nil {
 		t.Errorf("unexpected err \"%v\"", err)
 	}
 }
@@ -24,7 +24,7 @@ func TestUsedField(t *testing.T) {
 	}
 	s := NewSetup()
 	instance := TestedStruct{}
-	if err := s.Registry().Populate(&instance); err != nil {
+	if err := s.EntityRegistry().Populate(&instance); err != nil {
 		t.Errorf("unexpected err \"%v\"", err)
 	}
 }
@@ -35,7 +35,7 @@ func TestWrongInput(t *testing.T) {
 	}
 	s := NewSetup()
 	instance := TestedStruct{}
-	if err := s.Registry().Populate(instance); !errors.Is(err, registry.ErrExpectedPointerToAStruct) {
+	if err := s.EntityRegistry().Populate(instance); !errors.Is(err, entityregistry.ErrExpectedPointerToAStruct) {
 		t.Errorf("unexpected err \"%v\"", err)
 	}
 }

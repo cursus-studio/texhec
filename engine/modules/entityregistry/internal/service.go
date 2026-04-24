@@ -2,7 +2,7 @@ package internal
 
 import (
 	"engine"
-	"engine/modules/registry"
+	"engine/modules/entityregistry"
 	"engine/modules/uuid"
 	"engine/services/ecs"
 	"errors"
@@ -20,7 +20,7 @@ type service struct {
 	presentTags map[string]any
 }
 
-func NewService(c ioc.Dic) registry.Service {
+func NewService(c ioc.Dic) entityregistry.Service {
 	s := ioc.GetServices[*service](c)
 	s.presentTags = make(map[string]any)
 	return s
@@ -77,7 +77,7 @@ func (s *service) populateValue(v reflect.Value) error {
 func (s *service) Populate(structPointer any) error {
 	v := reflect.ValueOf(structPointer)
 	if v.Kind() != reflect.Pointer || v.Elem().Kind() != reflect.Struct {
-		return registry.ErrExpectedPointerToAStruct
+		return entityregistry.ErrExpectedPointerToAStruct
 	}
 
 	return s.populateValue(v.Elem())

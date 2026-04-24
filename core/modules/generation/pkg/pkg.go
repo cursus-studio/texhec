@@ -3,7 +3,7 @@ package generationpkg
 import (
 	"core/modules/generation"
 	"core/modules/generation/internal"
-	"engine/modules/registry"
+	"engine/modules/entityregistry"
 	"engine/services/ecs"
 	"engine/services/logger"
 	"strconv"
@@ -19,7 +19,7 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 		return internal.NewService(c)
 	})
 
-	ioc.Wrap(b, func(c ioc.Dic, r registry.Service) {
+	ioc.Wrap(b, func(c ioc.Dic, r entityregistry.Service) {
 		type World struct {
 			Config *internal.Config `inject:""`
 			Logger logger.Logger    `inject:""`

@@ -2,7 +2,7 @@ package test
 
 import (
 	"engine"
-	"engine/modules/registry"
+	"engine/modules/entityregistry"
 	enginepkg "engine/pkg"
 	"engine/services/ecs"
 
@@ -21,7 +21,7 @@ func NewSetup() Setup {
 	c := ioc.NewContainer(
 		enginepkg.Pkg,
 		func(b ioc.Builder) {
-			ioc.Wrap(b, func(c ioc.Dic, registry registry.Service) {
+			ioc.Wrap(b, func(c ioc.Dic, registry entityregistry.Service) {
 				world := ioc.Get[ecs.World](c)
 				registry.Register("tag", func(entity ecs.EntityID, structTagValue string) {
 					ecs.SaveComponent(world, entity, TagValueComponent{structTagValue})

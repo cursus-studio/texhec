@@ -9,6 +9,7 @@ import (
 	colliderpkg "engine/modules/collider/pkg"
 	connectionpkg "engine/modules/connection/pkg"
 	dragpkg "engine/modules/drag/pkg"
+	entityregistrypkg "engine/modules/entityregistry/pkg"
 	groupspkg "engine/modules/groups/pkg"
 	hierarchypkg "engine/modules/hierarchy/pkg"
 	inputspkg "engine/modules/inputs/pkg"
@@ -19,7 +20,6 @@ import (
 	noisepkg "engine/modules/noise/pkg"
 	prototypepkg "engine/modules/prototype/pkg"
 	recordpkg "engine/modules/record/pkg"
-	registrypkg "engine/modules/registry/pkg"
 	renderpkg "engine/modules/render/pkg"
 	scenepkg "engine/modules/scene/pkg"
 	smoothpkg "engine/modules/smooth/pkg"
@@ -49,6 +49,7 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 		colliderpkg.Pkg,
 		connectionpkg.Pkg,
 		dragpkg.Pkg,
+		entityregistrypkg.Pkg,
 		groupspkg.Pkg,
 		hierarchypkg.Pkg,
 		inputspkg.Pkg,
@@ -59,7 +60,6 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 		noisepkg.Pkg,
 		prototypepkg.Pkg,
 		recordpkg.Pkg,
-		registrypkg.Pkg,
 		renderpkg.Pkg,
 		scenepkg.Pkg,
 		smoothpkg.Pkg,
