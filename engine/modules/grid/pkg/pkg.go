@@ -22,7 +22,7 @@ func NewConfig[Tile grid.TileConstraint](
 	return config[Tile]{hoverEvent}
 }
 
-func Pkg[Tile grid.TileConstraint](config config[Tile]) ioc.Pkg {
+func PkgT[Tile grid.TileConstraint](config config[Tile]) ioc.Pkg {
 	return ioc.NewPkg(func(b ioc.Builder) {
 		pkgs := []ioc.Pkg{
 			codecpkg.PkgT[grid.SquareGridComponent[Tile]],

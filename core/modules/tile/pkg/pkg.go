@@ -37,8 +37,8 @@ import (
 
 var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 	pkgs := []ioc.Pkg{
-		gridpkg.Pkg(gridpkg.NewConfig[tile.ID](tile.NewHoverEvent)),
-		gridpkg.Pkg(gridpkg.NewConfig[tile.Obstruction](nil)),
+		gridpkg.PkgT(gridpkg.NewConfig[tile.ID](tile.NewHoverEvent)),
+		gridpkg.PkgT(gridpkg.NewConfig[tile.Obstruction](nil)),
 		relationpkg.SpatialRelationPkg(
 			func(w ecs.World) ecs.DirtySet {
 				dirtySet := ecs.NewDirtySet()
