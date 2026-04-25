@@ -1,8 +1,9 @@
 package menuscene
 
 import (
+	"core/game"
+	"core/modules/definitions"
 	"core/modules/ui"
-	gamescenes "core/scenes"
 	"engine/modules/camera"
 	"engine/modules/groups"
 	"engine/modules/inputs"
@@ -18,9 +19,9 @@ import (
 )
 
 var Pkg = ioc.NewPkg(func(b ioc.Builder) {
-	ioc.Register(b, func(c ioc.Dic) gamescenes.MenuBuilder {
+	ioc.Register(b, func(c ioc.Dic) game.MenuBuilder {
 		return func(sceneParent ecs.EntityID) {
-			world := ioc.GetServices[gamescenes.GameWorld](c)
+			world := ioc.GetServices[game.GameWorld](c)
 			cameraEntity := world.World().NewEntity()
 			world.Hierarchy().SetParent(cameraEntity, sceneParent)
 			world.Groups().Component().Set(cameraEntity, groups.DefaultGroups())
@@ -61,9 +62,9 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 				OnClick any
 			}
 			buttons := []Button{
-				{"play", scene.NewChangeSceneEvent(gamescenes.GameID)},
-				{"settings", scene.NewChangeSceneEvent(gamescenes.SettingsID)},
-				{"credits", scene.NewChangeSceneEvent(gamescenes.CreditsID)},
+				{"play", scene.NewChangeSceneEvent(definitions.GameID)},
+				{"settings", scene.NewChangeSceneEvent(definitions.SettingsID)},
+				{"credits", scene.NewChangeSceneEvent(definitions.CreditsID)},
 				{"exit", loop.NewStopEvent()},
 			}
 

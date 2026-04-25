@@ -1,7 +1,7 @@
 package systems
 
 import (
-	gamescenes "core/scenes"
+	"core/game"
 	"engine/modules/groups"
 	"engine/modules/loop"
 	"engine/modules/render"
@@ -17,7 +17,7 @@ import (
 type CursorComponent struct{}
 
 type cursorSystem struct {
-	gamescenes.GameWorld `inject:""`
+	game.GameWorld `inject:""`
 
 	CursorComponent ecs.ComponentsArray[CursorComponent]
 }

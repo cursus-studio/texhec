@@ -1,11 +1,11 @@
 package internal
 
 import (
+	"core/game"
 	"core/modules/definitions"
 	"core/modules/pathfind"
 	"core/modules/tile"
 	"core/modules/ui"
-	gamescenes "core/scenes"
 	"engine/modules/collider"
 	"engine/modules/grid"
 	"engine/modules/groups"
@@ -19,7 +19,7 @@ import (
 )
 
 type service struct {
-	gamescenes.GameWorld `inject:""`
+	game.GameWorld `inject:""`
 
 	target ecs.ComponentsArray[pathfind.TargetComponent]
 }

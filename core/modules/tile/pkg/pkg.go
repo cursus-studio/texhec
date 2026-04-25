@@ -2,6 +2,7 @@ package tilepkg
 
 import (
 	"bytes"
+	"core/game"
 	"core/modules/definitions"
 	"core/modules/tile"
 	clicksystem "core/modules/tile/internal/clickSystem"
@@ -9,7 +10,6 @@ import (
 	"core/modules/tile/internal/tilerenderer"
 	"core/modules/tile/internal/tileservice"
 	"core/modules/tile/internal/tilesystem"
-	gamescenes "core/scenes"
 	"engine/modules/assets"
 	"engine/modules/collider"
 	"engine/modules/entityregistry"
@@ -107,7 +107,7 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 	})
 
 	ioc.Wrap(b, func(c ioc.Dic, b assets.Service) {
-		world := ioc.GetServices[gamescenes.GameWorld](c)
+		world := ioc.GetServices[game.GameWorld](c)
 		b.Register("biom", func(path assets.PathComponent) (assets.Asset, error) {
 			images := [6][]image.Image{}
 			directory, _ := strings.CutSuffix(path.Path, ".biom")
@@ -143,7 +143,7 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 	})
 
 	ioc.Wrap(b, func(c ioc.Dic, b entityregistry.Service) {
-		world := ioc.GetServices[gamescenes.GameWorld](c)
+		world := ioc.GetServices[game.GameWorld](c)
 		var counter tile.ID
 		b.Register("object", func(entity ecs.EntityID, structTagValue string) {
 			var layer tile.Coord

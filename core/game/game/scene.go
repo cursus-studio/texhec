@@ -1,11 +1,11 @@
 package gamescene
 
 import (
+	"core/game"
 	"core/modules/definitions"
 	"core/modules/generation"
 	"core/modules/settings"
 	"core/modules/ui"
-	gamescenes "core/scenes"
 	"engine/modules/camera"
 	"engine/modules/collider"
 	"engine/modules/grid"
@@ -22,7 +22,7 @@ import (
 )
 
 func addScene(
-	world gamescenes.GameWorld,
+	world game.GameWorld,
 	sceneParent ecs.EntityID,
 	isServer bool,
 ) {
@@ -105,9 +105,9 @@ func addScene(
 }
 
 var Pkg = ioc.NewPkg(func(b ioc.Builder) {
-	ioc.Register(b, func(c ioc.Dic) gamescenes.GameBuilder {
+	ioc.Register(b, func(c ioc.Dic) game.GameBuilder {
 		return func(sceneParent ecs.EntityID) {
-			world := ioc.GetServices[gamescenes.GameWorld](c)
+			world := ioc.GetServices[game.GameWorld](c)
 			addScene(
 				world,
 				sceneParent,

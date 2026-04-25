@@ -1,9 +1,9 @@
 package internal
 
 import (
+	"core/game"
 	"core/modules/loading"
 	"core/modules/ui"
-	gamescenes "core/scenes"
 	"engine/modules/camera"
 	"engine/modules/loop"
 	"engine/modules/text"
@@ -19,7 +19,7 @@ type CamComp struct{}
 type TextComp struct{}
 
 type system struct {
-	gamescenes.GameWorld `inject:""`
+	game.GameWorld `inject:""`
 
 	CamArr  ecs.ComponentsArray[CamComp]
 	TextArr ecs.ComponentsArray[TextComp]

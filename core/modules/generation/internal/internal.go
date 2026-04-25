@@ -1,9 +1,9 @@
 package internal
 
 import (
+	"core/game"
 	"core/modules/generation"
 	"core/modules/tile"
-	gamescenes "core/scenes"
 	"engine/modules/batcher"
 	"engine/modules/collider"
 	"engine/modules/grid"
@@ -43,8 +43,8 @@ func (c *Config) AddChance(tileType ecs.EntityID, chanceInProcent int) {
 //
 
 type service struct {
-	gamescenes.GameWorld `inject:""`
-	C                    ioc.Dic
+	game.GameWorld `inject:""`
+	C              ioc.Dic
 }
 
 func NewService(c ioc.Dic) generation.Service {

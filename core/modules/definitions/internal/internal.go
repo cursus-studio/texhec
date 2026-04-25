@@ -1,9 +1,9 @@
 package internal
 
 import (
+	"core/game"
 	"core/modules/definitions"
 	"core/modules/deploy"
-	gamescenes "core/scenes"
 	"engine/modules/assets"
 	"engine/modules/collider"
 	"engine/modules/entityregistry"
@@ -24,7 +24,7 @@ import (
 )
 
 type service struct {
-	World       gamescenes.GameWorld `inject:""`
+	World       game.GameWorld `inject:""`
 	assets      *definitions.Assets
 	hud         *definitions.Hud
 	tiles       *definitions.Tiles

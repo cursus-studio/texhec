@@ -1,8 +1,8 @@
 package uiservice
 
 import (
+	"core/game"
 	"core/modules/ui"
-	gamescenes "core/scenes"
 	"engine/modules/transform"
 	"engine/modules/transition"
 	"engine/services/ecs"
@@ -18,7 +18,7 @@ type menuComponent struct {
 type childrenComponent struct{}
 
 type service struct {
-	gamescenes.GameWorld `inject:""`
+	game.GameWorld `inject:""`
 
 	animationDuration time.Duration
 

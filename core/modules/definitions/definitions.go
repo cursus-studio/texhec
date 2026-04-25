@@ -2,7 +2,9 @@ package definitions
 
 import (
 	"core/modules/tile"
+	"engine/modules/audio"
 	"engine/modules/groups"
+	"engine/modules/scene"
 	"engine/services/ecs"
 )
 
@@ -17,6 +19,18 @@ type Service interface {
 	Objects() Objects
 	Transitions() Transitions
 }
+
+var (
+	MenuID     = scene.NewSceneId("menu")
+	GameID     = scene.NewSceneId("game")
+	SettingsID = scene.NewSceneId("settings")
+	CreditsID  = scene.NewSceneId("credits")
+)
+
+const (
+	EffectChannel audio.Channel = iota
+	MusicChannel
+)
 
 const (
 	UiGroup groups.Group = iota + 1

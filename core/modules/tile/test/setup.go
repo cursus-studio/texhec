@@ -1,14 +1,14 @@
 package test
 
 import (
+	"core/game"
 	corepkg "core/pkg"
-	gamescenes "core/scenes"
 
 	"github.com/ogiusek/ioc/v2"
 )
 
 type Setup struct {
-	gamescenes.GameWorld `inject:""`
+	game.GameWorld `inject:""`
 }
 
 func NewSetup() Setup {

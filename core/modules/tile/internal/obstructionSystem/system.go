@@ -1,8 +1,8 @@
 package obstructionsystem
 
 import (
+	"core/game"
 	"core/modules/tile"
-	gamescenes "core/scenes"
 	"engine/modules/record"
 	"engine/services/ecs"
 	"errors"
@@ -11,7 +11,7 @@ import (
 )
 
 type system struct {
-	gamescenes.GameWorld `inject:""`
+	game.GameWorld `inject:""`
 
 	config        record.Config
 	recordingID   record.RecordingID

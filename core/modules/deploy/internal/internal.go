@@ -1,12 +1,12 @@
 package internal
 
 import (
+	"core/game"
 	"core/modules/definitions"
 	"core/modules/deploy"
 	"core/modules/player"
 	"core/modules/tile"
 	"core/modules/ui"
-	gamescenes "core/scenes"
 	"engine/modules/grid"
 	"engine/modules/groups"
 	"engine/modules/inputs"
@@ -19,7 +19,7 @@ import (
 )
 
 type service struct {
-	gamescenes.GameWorld `inject:""`
+	game.GameWorld `inject:""`
 
 	component ecs.ComponentsArray[deploy.Component]
 }

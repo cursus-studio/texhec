@@ -1,8 +1,8 @@
 package systems
 
 import (
+	"core/game"
 	"core/modules/ui"
-	gamescenes "core/scenes"
 	"engine/modules/assets"
 	"engine/modules/render"
 	"engine/modules/transform"
@@ -17,7 +17,7 @@ import (
 type UpdateBgEvent struct{}
 
 type System struct {
-	gamescenes.GameWorld `inject:""`
+	game.GameWorld `inject:""`
 
 	blueprint     ecs.EntityID
 	bgDirtySet    ecs.DirtySet

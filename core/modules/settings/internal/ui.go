@@ -1,8 +1,9 @@
 package internal
 
 import (
+	"core/game"
+	"core/modules/definitions"
 	"core/modules/settings"
-	gamescenes "core/scenes"
 	"engine/modules/audio"
 	"engine/modules/groups"
 	"engine/modules/inputs"
@@ -21,7 +22,7 @@ import (
 // 2. quit button
 
 type system struct {
-	gamescenes.GameWorld `inject:""`
+	game.GameWorld `inject:""`
 }
 
 type temporaryToggleColorComponent struct{}
@@ -85,10 +86,10 @@ func (s *system) ListenRender(parent ecs.EntityID) error {
 		event any
 	}
 	btns := []Button{
-		{"SHOT", audio.NewPlayEvent(gamescenes.EffectChannel, s.Definitions().Assets().ExampleAudio)},
-		{"SHOT2", audio.NewPlayEvent(gamescenes.EffectChannel, s.Definitions().Assets().ExampleAudio)},
-		{"SHOT3", audio.NewPlayEvent(gamescenes.EffectChannel, s.Definitions().Assets().ExampleAudio)},
-		{"QUIT", scene.NewChangeSceneEvent(gamescenes.MenuID)},
+		{"SHOT", audio.NewPlayEvent(definitions.EffectChannel, s.Definitions().Assets().ExampleAudio)},
+		{"SHOT2", audio.NewPlayEvent(definitions.EffectChannel, s.Definitions().Assets().ExampleAudio)},
+		{"SHOT3", audio.NewPlayEvent(definitions.EffectChannel, s.Definitions().Assets().ExampleAudio)},
+		{"QUIT", scene.NewChangeSceneEvent(definitions.MenuID)},
 	}
 
 	for _, btn := range btns {

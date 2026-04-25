@@ -1,9 +1,9 @@
 package settingsscene
 
 import (
+	"core/game"
 	"core/modules/settings"
 	"core/modules/ui"
-	gamescenes "core/scenes"
 	"engine/modules/camera"
 	"engine/modules/groups"
 	"engine/modules/layout"
@@ -16,9 +16,9 @@ import (
 )
 
 var Pkg = ioc.NewPkg(func(b ioc.Builder) {
-	ioc.Register(b, func(c ioc.Dic) gamescenes.SettingsBuilder {
+	ioc.Register(b, func(c ioc.Dic) game.SettingsBuilder {
 		return func(sceneParent ecs.EntityID) {
-			world := ioc.GetServices[gamescenes.GameWorld](c)
+			world := ioc.GetServices[game.GameWorld](c)
 			cameraEntity := world.World().NewEntity()
 			world.Hierarchy().SetParent(cameraEntity, sceneParent)
 			world.Groups().Component().Set(cameraEntity, groups.DefaultGroups())

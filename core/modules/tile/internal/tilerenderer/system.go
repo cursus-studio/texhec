@@ -1,8 +1,8 @@
 package tilerenderer
 
 import (
+	"core/game"
 	"core/modules/tile"
-	gamescenes "core/scenes"
 	_ "embed"
 	"engine/modules/assets"
 	"engine/modules/graphics"
@@ -50,7 +50,7 @@ type locations struct {
 }
 
 type system struct {
-	gamescenes.GameWorld `inject:""`
+	game.GameWorld `inject:""`
 
 	program   graphics.Program
 	locations locations

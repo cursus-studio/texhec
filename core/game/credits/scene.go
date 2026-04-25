@@ -1,8 +1,9 @@
 package creditsscene
 
 import (
+	"core/game"
+	"core/modules/definitions"
 	"core/modules/ui"
-	gamescenes "core/scenes"
 	"engine/modules/camera"
 	"engine/modules/collider"
 	"engine/modules/drag"
@@ -20,9 +21,9 @@ import (
 )
 
 var Pkg = ioc.NewPkg(func(b ioc.Builder) {
-	ioc.Register(b, func(c ioc.Dic) gamescenes.CreditsBuilder {
+	ioc.Register(b, func(c ioc.Dic) game.CreditsBuilder {
 		return func(sceneParent ecs.EntityID) {
-			world := ioc.GetServices[gamescenes.GameWorld](c)
+			world := ioc.GetServices[game.GameWorld](c)
 			cameraEntity := world.World().NewEntity()
 			world.Hierarchy().SetParent(cameraEntity, sceneParent)
 			world.Groups().Component().Set(cameraEntity, groups.DefaultGroups())
@@ -73,7 +74,7 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 			world.Transform().Size().Set(btn, transform.NewSize(500, 100, 1))
 			world.Transform().ParentPivotPoint().Set(btn, transform.NewParentPivotPoint(.5, 0, .5))
 
-			world.Inputs().LeftClick().Set(btn, inputs.NewLeftClick(scene.NewChangeSceneEvent(gamescenes.MenuID)))
+			world.Inputs().LeftClick().Set(btn, inputs.NewLeftClick(scene.NewChangeSceneEvent(definitions.MenuID)))
 			world.Text().Content().Set(btn, text.NewText(strings.ToUpper("return to menu")))
 		}
 	})

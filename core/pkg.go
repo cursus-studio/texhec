@@ -1,12 +1,12 @@
 package main
 
 import (
+	"core/game"
 	"core/modules/definitions"
 	"core/modules/settings"
 	"core/modules/tile"
 	"core/modules/ui"
 	corepkg "core/pkg"
-	gamescenes "core/scenes"
 	"engine/modules/camera"
 	"engine/modules/drag"
 	"engine/modules/graphics"
@@ -107,7 +107,7 @@ func getDic() ioc.Dic {
 				// })
 			})
 			ioc.Wrap(b, func(c ioc.Dic, s text.Service) {
-				world := ioc.GetServices[*gamescenes.GameWorld](c)
+				world := ioc.GetServices[game.GameWorld](c)
 				s.FontFamily().SetEmpty(text.NewFontFamily(world.Definitions().Assets().FontAsset))
 			})
 		},

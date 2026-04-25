@@ -1,12 +1,12 @@
 package main
 
 import (
+	"core/game"
 	"core/modules/fpslogger"
 	"core/modules/loading"
 	"core/modules/settings"
 	"core/modules/tile"
 	"core/modules/ui"
-	gamescenes "core/scenes"
 	_ "embed"
 	"engine/modules/audio"
 	"engine/modules/batcher"
@@ -52,10 +52,10 @@ func main() {
 	}
 
 	c := getDic()
-	world := ioc.GetServices[gamescenes.GameWorld](c)
+	world := ioc.GetServices[game.GameWorld](c)
 
 	// load world before starting timer
-	events.Emit(world.Events(), scene.NewChangeSceneEvent(gamescenes.GameID))
+	events.Emit(world.Events(), scene.NewChangeSceneEvent(game.GameID))
 
 	{ // before start
 		events.GlobalErrHandler(world.EventsBuilder(), func(err error) {
@@ -125,7 +125,7 @@ func main() {
 			world.Logger().Warn(err)
 		}
 	}
-	game := ioc.GetServices[gamescenes.GameWorld](c)
+	game := ioc.GetServices[game.GameWorld](c)
 	runtime.LockOSThread()
 	game.Loop().Run(loop.NewConfigureEvent(60, 1))
 }

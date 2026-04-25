@@ -1,9 +1,9 @@
 package tilesystem
 
 import (
+	"core/game"
 	"core/modules/tile"
 	"core/modules/ui"
-	gamescenes "core/scenes"
 	"engine/modules/grid"
 	"engine/modules/inputs"
 	"engine/modules/loop"
@@ -20,7 +20,7 @@ import (
 var invSpeedTable [256]tile.Coord
 
 type system struct {
-	gamescenes.GameWorld `inject:""`
+	game.GameWorld `inject:""`
 
 	dirtyDeployedSet  ecs.DirtySet
 	dirtyTransformSet ecs.DirtySet

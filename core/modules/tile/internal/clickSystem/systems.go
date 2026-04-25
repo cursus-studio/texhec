@@ -1,10 +1,10 @@
 package clicksystem
 
 import (
+	"core/game"
 	"core/modules/deploy"
 	"core/modules/pathfind"
 	"core/modules/tile"
-	gamescenes "core/scenes"
 	"engine/modules/inputs"
 	"engine/modules/text"
 	"engine/services/ecs"
@@ -16,7 +16,7 @@ import (
 )
 
 type system struct {
-	gamescenes.GameWorld `inject:""`
+	game.GameWorld `inject:""`
 }
 
 func NewSystem(c ioc.Dic) ecs.SystemRegister {
