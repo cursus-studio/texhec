@@ -2,6 +2,7 @@ package main
 
 import (
 	"core/game"
+	"core/modules/definitions"
 	"core/modules/fpslogger"
 	"core/modules/loading"
 	"core/modules/settings"
@@ -55,7 +56,7 @@ func main() {
 	world := ioc.GetServices[game.GameWorld](c)
 
 	// load world before starting timer
-	events.Emit(world.Events(), scene.NewChangeSceneEvent(game.GameID))
+	events.Emit(world.Events(), scene.NewChangeSceneEvent(definitions.GameID))
 
 	{ // before start
 		events.GlobalErrHandler(world.EventsBuilder(), func(err error) {
