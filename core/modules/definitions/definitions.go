@@ -63,9 +63,9 @@ type Hud struct {
 }
 
 type Transitions struct {
-	Linear         ecs.EntityID `transition:"linear"`
-	MyEasing       ecs.EntityID `transition:"my easing"`
-	EaseOutElastic ecs.EntityID `transition:"ease out elastic"`
+	Linear         ecs.EntityID
+	MyEasing       ecs.EntityID
+	EaseOutElastic ecs.EntityID
 }
 
 // domain objects

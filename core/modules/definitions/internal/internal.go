@@ -13,8 +13,11 @@ import (
 	"engine/modules/render"
 	"engine/modules/text"
 	"engine/modules/transform"
+	"engine/modules/transition"
+	"engine/services/ecs"
 	"image"
 	"image/color"
+	"math"
 
 	"github.com/go-gl/mathgl/mgl32"
 	"github.com/ogiusek/ioc/v2"
@@ -167,6 +170,47 @@ func (s *service) Transitions() definitions.Transitions {
 	}
 	def, err := entityregistry.GetRegistry[definitions.Transitions](s.World.EntityRegistry())
 	s.World.Logger().Warn(err)
+	transitionEntity := func(easing func(t transition.Progress) transition.Progress) ecs.EntityID {
+		entity := s.World.World().NewEntity()
+		s.World.Transition().EasingFunction().Set(entity, transition.NewEasingFunction(easing))
+		return entity
+	}
+	def.Linear = transitionEntity(func(t transition.Progress) transition.Progress {
+		return t
+	})
+	def.MyEasing = transitionEntity(func(t transition.Progress) transition.Progress {
+		const n1 = 7.5625
+		const d1 = 2.75
+
+		if t < 1/d1 { // First segment of the bounce (rising curve)
+			return n1 * t * t
+		} else if t < 2/d1 { // Second segment (peak of the first bounce)
+			t -= 1.5 / d1
+			return n1*t*t + 0.75
+		} else if t < 2.5/d1 { // Third segment (peak of the second, smaller bounce)
+			t -= 2.25 / d1
+			return n1*t*t + 0.9375
+		} else { // Final segment (settling)
+			t -= 2.625 / d1
+			return n1*t*t + 0.984375
+		}
+	})
+	def.EaseOutElastic = transitionEntity(func(t transition.Progress) transition.Progress {
+		const c1 float64 = 10
+		const c2 float64 = .75
+		const c3 float64 = (2 * math.Pi) / 3
+		if t == 0 {
+			return 0
+		}
+		if t == 1 {
+			return 1
+		}
+		x := float64(t)
+		x = math.Pow(2, -c1*x)*
+			math.Sin((x*c1-c2)*c3) +
+			1
+		return transition.Progress(x)
+	})
 	s.transitions = &def
 	return def
 }
