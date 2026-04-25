@@ -179,7 +179,7 @@ Engine modules:
 - [connection (placeholder)](/engine/modules/connection/readme/README.md)
 - [drag (placeholder)](/engine/modules/drag/readme/README.md)
 - [entityregistry (placeholder)](/engine/modules/entityregistry/readme/README.md)
-- [graphics (placeholder)](/engine/graphics/graphics/readme/README.md)
+- [graphics (placeholder)](/engine/modules/graphics/readme/README.md)
 - [grid (placeholder)](/engine/modules/grid/readme/README.md)
 - [groups (placeholder)](/engine/modules/groups/readme/README.md)
 - [hierarchy](/engine/modules/hierarchy/readme/README.md)
