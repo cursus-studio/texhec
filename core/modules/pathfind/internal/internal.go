@@ -1,11 +1,11 @@
 package internal
 
 import (
+	"core/game"
 	"core/modules/definitions"
 	"core/modules/pathfind"
 	"core/modules/tile"
 	"core/modules/ui"
-	gamescenes "core/scenes"
 	"engine/modules/collider"
 	"engine/modules/grid"
 	"engine/modules/groups"
@@ -19,7 +19,7 @@ import (
 )
 
 type service struct {
-	gamescenes.GameWorld `inject:""`
+	game.GameWorld `inject:""`
 
 	target ecs.ComponentsArray[pathfind.TargetComponent]
 }
@@ -48,7 +48,7 @@ func (s *service) PreviewPath(e pathfind.PreviewPathEvent) {
 
 	from, ok := s.Tile().Pos().Get(e.Entity)
 	if !ok {
-		s.Logger().Warn(tile.ErrInvalidPosition)
+		s.Logger().Log(tile.ErrInvalidPosition)
 		return
 	}
 	to := tile.NewPos(e.Coords.Coords())
@@ -66,11 +66,11 @@ func (s *service) PreviewPath(e pathfind.PreviewPathEvent) {
 			entity := s.World().NewEntity()
 			s.Hierarchy().SetParent(entity, s.Scene().Scene())
 
-			s.Render().Mesh().Set(entity, render.NewMesh(s.Definitions().SquareMesh))
+			s.Render().Mesh().Set(entity, render.NewMesh(s.Definitions().Assets().SquareMesh))
 			s.Render().Texture().Set(entity, render.NewTexture(s.Definitions().Hud().Cannot))
 			s.Groups().Component().Set(entity, groups.EmptyGroups().Ptr().Enable(definitions.GameGroup).Val())
 
-			s.Collider().Component().Set(entity, collider.NewCollider(s.Definitions().SquareCollider))
+			s.Collider().Component().Set(entity, collider.NewCollider(s.Definitions().Assets().SquareCollider))
 
 			s.Tile().Layer().Set(entity, tile.NewLayer(definitions.PathLayer))
 			s.Tile().Pos().Set(entity, pos)
@@ -82,11 +82,11 @@ func (s *service) PreviewPath(e pathfind.PreviewPathEvent) {
 		entity := s.World().NewEntity()
 		s.Hierarchy().SetParent(entity, s.Scene().Scene())
 
-		s.Render().Mesh().Set(entity, render.NewMesh(s.Definitions().SquareMesh))
+		s.Render().Mesh().Set(entity, render.NewMesh(s.Definitions().Assets().SquareMesh))
 		s.Render().Texture().Set(entity, render.NewTexture(s.Definitions().Hud().Can))
 		s.Groups().Component().Set(entity, groups.EmptyGroups().Ptr().Enable(definitions.GameGroup).Val())
 
-		s.Collider().Component().Set(entity, collider.NewCollider(s.Definitions().SquareCollider))
+		s.Collider().Component().Set(entity, collider.NewCollider(s.Definitions().Assets().SquareCollider))
 		if pos.X == tile.Coord(e.Coords.X) && pos.Y == tile.Coord(e.Coords.Y) {
 			s.Inputs().LeftClick().Set(entity, inputs.NewLeftClick(pathfind.NewFindPathEvent(e.Entity).ApplyCoords(e.Coords)))
 		}
@@ -103,7 +103,7 @@ func (s *service) FindPath(e pathfind.FindPathEvent) {
 
 	from, ok := s.Tile().Pos().Get(e.Entity)
 	if !ok {
-		s.Logger().Warn(tile.ErrInvalidPosition)
+		s.Logger().Log(tile.ErrInvalidPosition)
 		return
 	}
 	to := tile.NewPos(e.Coords.Coords())
@@ -112,7 +112,7 @@ func (s *service) FindPath(e pathfind.FindPathEvent) {
 	fromCoords, _ := from.Aligned()
 	toCoords, _ := to.Aligned()
 	if _, ok := s.findPath(fromCoords, toCoords, size, obstruction); !ok {
-		s.Logger().Warn(pathfind.ErrInvalidPath)
+		s.Logger().Log(pathfind.ErrInvalidPath)
 		return
 	}
 	s.Target().Set(e.Entity, pathfind.NewTarget(e.Coords))
@@ -128,7 +128,7 @@ func (s *service) OnTick(e loop.TickEvent) {
 
 		from, ok := s.Tile().Pos().Get(entity)
 		if !ok {
-			s.Logger().Warn(tile.ErrInvalidPosition)
+			s.Logger().Log(tile.ErrInvalidPosition)
 			return
 		}
 		target, _ := s.Target().Get(entity)
@@ -145,7 +145,7 @@ func (s *service) OnTick(e loop.TickEvent) {
 		toCoords, _ := to.Aligned()
 		path, ok := s.findPath(fromCoords, toCoords, size, obstruction)
 		if !ok {
-			s.Logger().Warn(pathfind.ErrInvalidPath)
+			s.Logger().Log(pathfind.ErrInvalidPath)
 			continue
 		}
 		step := tile.NewStep(grid.Coord(path[0].X), grid.Coord(path[0].Y))

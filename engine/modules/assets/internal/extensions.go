@@ -26,7 +26,7 @@ func (s *extensions) Register(
 ) {
 	extension = strings.Trim(extension, ".")
 	if _, ok := s.extensions[extension]; ok {
-		s.Logger().Warn(fmt.Errorf("extension \"%v\" is already taken", extension))
+		s.Logger().Log(fmt.Errorf("extension \"%v\" is already taken", extension))
 		return
 	}
 	s.extensions[extension] = dispatcher

@@ -7,7 +7,7 @@ import (
 	"engine/modules/netsync/internal/server"
 	"engine/modules/netsync/internal/servertypes"
 	"engine/modules/netsync/internal/service"
-	"engine/services/codec"
+	typeregistrypkg "engine/modules/typeregistry/pkg"
 	"engine/services/ecs"
 
 	"github.com/ogiusek/events"
@@ -15,19 +15,20 @@ import (
 )
 
 var Pkg = ioc.NewPkg(func(b ioc.Builder) {
+	pkgs := []ioc.Pkg{
+		typeregistrypkg.PkgT[clienttypes.PredictedEvent],
+		typeregistrypkg.PkgT[clienttypes.FetchStateDTO],
+		typeregistrypkg.PkgT[clienttypes.EmitEventDTO],
+		typeregistrypkg.PkgT[clienttypes.TransparentEventDTO],
+
+		typeregistrypkg.PkgT[servertypes.SendStateDTO],
+		typeregistrypkg.PkgT[servertypes.SendChangeDTO],
+		typeregistrypkg.PkgT[servertypes.TransparentEventDTO],
+	}
+	for _, pkg := range pkgs {
+		pkg(b)
+	}
 	ioc.Register(b, func(c ioc.Dic) Config { return newConfig() })
-	ioc.Wrap(b, func(c ioc.Dic, b codec.Builder) {
-		b.
-			// client
-			Register(clienttypes.PredictedEvent{}).
-			Register(clienttypes.FetchStateDTO{}).
-			Register(clienttypes.EmitEventDTO{}).
-			Register(clienttypes.TransparentEventDTO{}).
-			// server
-			Register(servertypes.SendStateDTO{}).
-			Register(servertypes.SendChangeDTO{}).
-			Register(servertypes.TransparentEventDTO{})
-	})
 
 	ioc.Register(b, func(c ioc.Dic) netsync.Service {
 		return service.NewService(c)

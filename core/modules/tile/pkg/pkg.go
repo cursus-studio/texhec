@@ -2,6 +2,7 @@ package tilepkg
 
 import (
 	"bytes"
+	"core/game"
 	"core/modules/definitions"
 	"core/modules/tile"
 	clicksystem "core/modules/tile/internal/clickSystem"
@@ -9,21 +10,16 @@ import (
 	"core/modules/tile/internal/tilerenderer"
 	"core/modules/tile/internal/tileservice"
 	"core/modules/tile/internal/tilesystem"
-	gamescenes "core/scenes"
 	"engine/modules/assets"
 	"engine/modules/collider"
+	"engine/modules/entityregistry"
+	"engine/modules/graphics"
 	gridpkg "engine/modules/grid/pkg"
 	"engine/modules/groups"
-	prototypepkg "engine/modules/prototype/pkg"
-	"engine/modules/registry"
 	relationpkg "engine/modules/relation/pkg"
 	"engine/modules/render"
-	smoothpkg "engine/modules/smooth/pkg"
-	transitionpkg "engine/modules/transition/pkg"
-	"engine/services/codec"
+	typeregistrypkg "engine/modules/typeregistry/pkg"
 	"engine/services/ecs"
-	gtexture "engine/services/graphics/texture"
-	"engine/services/graphics/vao/vbo"
 	"fmt"
 	"image"
 	"os"
@@ -37,8 +33,8 @@ import (
 
 var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 	pkgs := []ioc.Pkg{
-		gridpkg.Pkg(gridpkg.NewConfig[tile.ID](tile.NewHoverEvent)),
-		gridpkg.Pkg(gridpkg.NewConfig[tile.Obstruction](nil)),
+		gridpkg.PkgT(gridpkg.NewConfig[tile.ID](tile.NewHoverEvent)),
+		gridpkg.PkgT(gridpkg.NewConfig[tile.Obstruction](nil)),
 		relationpkg.SpatialRelationPkg(
 			func(w ecs.World) ecs.DirtySet {
 				dirtySet := ecs.NewDirtySet()
@@ -54,21 +50,15 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 			},
 			func(index tile.ID) uint32 { return uint32(index) },
 		),
-		prototypepkg.PkgT[tile.TypeComponent](),
-		prototypepkg.PkgT[tile.PosComponent](),
-		prototypepkg.PkgT[tile.SizeComponent](),
-		prototypepkg.PkgT[tile.RotComponent](),
-		prototypepkg.PkgT[tile.LayerComponent](),
+		typeregistrypkg.PkgT[tile.HoverEvent],
 
-		prototypepkg.PkgT[tile.ObstructionComponent](),
-
-		prototypepkg.PkgT[tile.SpeedComponent](),
-
-		transitionpkg.PkgT[tile.PosComponent](),
-		transitionpkg.PkgT[tile.RotComponent](),
-
-		smoothpkg.PkgT[tile.PosComponent](),
-		smoothpkg.PkgT[tile.RotComponent](),
+		typeregistrypkg.PkgT[tile.TypeComponent],
+		typeregistrypkg.PkgT[tile.PosComponent],
+		typeregistrypkg.PkgT[tile.SizeComponent],
+		typeregistrypkg.PkgT[tile.RotComponent],
+		typeregistrypkg.PkgT[tile.LayerComponent],
+		typeregistrypkg.PkgT[tile.ObstructionComponent],
+		typeregistrypkg.PkgT[tile.SpeedComponent],
 	}
 	for _, pkg := range pkgs {
 		pkg(b)
@@ -82,9 +72,9 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 			return ecs.NewSystemRegister(func() error { return tilerenderer.NewSystem(c) })
 		})
 
-		ioc.Register(b, func(c ioc.Dic) vbo.VBOFactory[tile.ID] {
-			return func() vbo.VBOSetter[tile.ID] {
-				vbo := vbo.NewVBO[tile.ID](func() {
+		ioc.Register(b, func(c ioc.Dic) graphics.VBOFactory[tile.ID] {
+			return func() graphics.VBOSetter[tile.ID] {
+				vbo := graphics.NewVBO[tile.ID](func() {
 					var i uint32 = 0
 
 					gl.VertexAttribIPointerWithOffset(i, 1, gl.UNSIGNED_BYTE,
@@ -95,12 +85,6 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 			}
 		})
 	}
-
-	ioc.Wrap(b, func(c ioc.Dic, b codec.Builder) {
-		b.
-			// events
-			Register(tile.HoverEvent{})
-	})
 
 	ioc.Register(b, func(c ioc.Dic) tile.Service {
 		return tileservice.NewService(c)
@@ -123,6 +107,7 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 	})
 
 	ioc.Wrap(b, func(c ioc.Dic, b assets.Service) {
+		world := ioc.GetServices[game.GameWorld](c)
 		b.Register("biom", func(path assets.PathComponent) (assets.Asset, error) {
 			images := [6][]image.Image{}
 			directory, _ := strings.CutSuffix(path.Path, ".biom")
@@ -148,17 +133,17 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 					if err != nil {
 						return nil, err
 					}
-					img = gtexture.NewImage(img).FlipV().Image()
+					img = world.Graphics().NewImage(img).FlipV().Image()
 					images[i] = append(images[i], img)
 				}
 			}
 
-			return tile.NewBiomAsset(images)
+			return world.Tile().NewBiomAsset(images)
 		})
 	})
 
-	ioc.Wrap(b, func(c ioc.Dic, b registry.Service) {
-		world := ioc.GetServices[gamescenes.GameWorld](c)
+	ioc.Wrap(b, func(c ioc.Dic, b entityregistry.Service) {
+		world := ioc.GetServices[game.GameWorld](c)
 		var counter tile.ID
 		b.Register("object", func(entity ecs.EntityID, structTagValue string) {
 			var layer tile.Coord
@@ -172,11 +157,11 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 			}
 			world.Tile().Rot().Set(entity, tile.NewRot(0))
 			world.Tile().Layer().Set(entity, tile.NewLayer(layer))
-			world.Render().Mesh().Set(entity, render.NewMesh(world.Definitions().SquareMesh))
+			world.Render().Mesh().Set(entity, render.NewMesh(world.Definitions().Assets().SquareMesh))
 			world.Render().Texture().Set(entity, render.NewTexture(entity))
 			world.Groups().Component().Set(entity, groups.EmptyGroups().Ptr().Enable(definitions.GameGroup).Val())
 
-			world.Collider().Component().Set(entity, collider.NewCollider(world.Definitions().SquareCollider))
+			world.Collider().Component().Set(entity, collider.NewCollider(world.Definitions().Assets().SquareCollider))
 		})
 		b.Register("tile", func(entity ecs.EntityID, structTagValue string) {
 			counter++
@@ -199,17 +184,17 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 			errInvalidFormat := fmt.Errorf("size should be in format \"1x1\" where first number is width and second is height")
 			xy := strings.Split(structTagValue, "x")
 			if len(xy) != 2 {
-				world.Logger().Warn(errInvalidFormat)
+				world.Logger().Log(errInvalidFormat)
 				return
 			}
 			x, err := strconv.Atoi(xy[0])
 			if err != nil {
-				world.Logger().Warn(errInvalidFormat)
+				world.Logger().Log(errInvalidFormat)
 				return
 			}
 			y, err := strconv.Atoi(xy[1])
 			if err != nil {
-				world.Logger().Warn(errInvalidFormat)
+				world.Logger().Log(errInvalidFormat)
 				return
 			}
 			world.Tile().Size().Set(entity, tile.NewSize(x, y))
@@ -217,12 +202,12 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 		b.Register("speed", func(entity ecs.EntityID, structTagValue string) {
 			v, err := strconv.Atoi(structTagValue)
 			if err != nil {
-				world.Logger().Warn(err)
+				world.Logger().Log(err)
 				return
 			}
 			speed := tile.NewSpeed(v)
 			if int(speed.InvSpeed) != v {
-				world.Logger().Warn(fmt.Errorf("speed has to be clamped between 0 and 255"))
+				world.Logger().Log(fmt.Errorf("speed has to be clamped between 0 and 255"))
 				return
 			}
 			world.Tile().Speed().Set(entity, speed)

@@ -2,10 +2,34 @@ package definitions
 
 import (
 	"core/modules/tile"
+	"engine/modules/audio"
 	"engine/modules/groups"
+	"engine/modules/scene"
 	"engine/services/ecs"
+)
 
-	"github.com/ogiusek/ioc/v2"
+// In DI container
+// Definitions have more dependencies
+type Service interface {
+	Load()
+
+	Assets() Assets
+	Hud() Hud
+	Tiles() Tiles
+	Objects() Objects
+	Transitions() Transitions
+}
+
+var (
+	MenuID     = scene.NewSceneId("menu")
+	GameID     = scene.NewSceneId("game")
+	SettingsID = scene.NewSceneId("settings")
+	CreditsID  = scene.NewSceneId("credits")
+)
+
+const (
+	EffectChannel audio.Channel = iota
+	MusicChannel
 )
 
 const (
@@ -34,9 +58,9 @@ const (
 type Assets struct {
 	ExampleAudio ecs.EntityID `path:"audio.wav"`
 
-	Blank          ecs.EntityID `path:"blank texture"`
-	SquareMesh     ecs.EntityID `path:"square mesh"`
-	SquareCollider ecs.EntityID `path:"square collider"`
+	Blank          ecs.EntityID
+	SquareMesh     ecs.EntityID
+	SquareCollider ecs.EntityID
 	FontAsset      ecs.EntityID `path:"font1.ttf"`
 }
 
@@ -52,21 +76,10 @@ type Hud struct {
 	Cannot ecs.EntityID `path:"hud/cannot.png-trim"`
 }
 
-// In DI container
-// Definitions have more dependencies
-type Definitions struct {
-	Assets
-	Hud     ioc.Lazy[Hud]     `inject:""`
-	Tiles   ioc.Lazy[Tiles]   `inject:""`
-	Objects ioc.Lazy[Objects] `inject:""`
-
-	Transitions ioc.Lazy[Transitions] `inject:""`
-}
-
 type Transitions struct {
-	Linear         ecs.EntityID `transition:"linear"`
-	MyEasing       ecs.EntityID `transition:"my easing"`
-	EaseOutElastic ecs.EntityID `transition:"ease out elastic"`
+	Linear         ecs.EntityID
+	MyEasing       ecs.EntityID
+	EaseOutElastic ecs.EntityID
 }
 
 // domain objects

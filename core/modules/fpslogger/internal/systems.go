@@ -1,7 +1,7 @@
 package internal
 
 import (
-	gamescenes "core/scenes"
+	"core/game"
 	"engine/modules/loop"
 	"engine/services/ecs"
 	"fmt"
@@ -12,7 +12,7 @@ import (
 )
 
 type logsSystem struct {
-	gamescenes.GameWorld `inject:""`
+	game.GameWorld `inject:""`
 
 	frames []time.Time
 }

@@ -1,27 +1,27 @@
 package main
 
 import (
+	"core/game"
+	"core/modules/definitions"
 	"core/modules/settings"
 	"core/modules/tile"
 	"core/modules/ui"
 	corepkg "core/pkg"
-	gamescenes "core/scenes"
 	"engine/modules/camera"
 	"engine/modules/drag"
+	"engine/modules/graphics"
 	"engine/modules/grid"
 	"engine/modules/inputs"
+	"engine/modules/logger"
+	loggerpkg "engine/modules/logger/pkg"
 	netsyncpkg "engine/modules/netsync/pkg"
 	"engine/modules/record"
-	"engine/modules/render"
-	smoothpkg "engine/modules/smooth/pkg"
 	"engine/modules/text"
 	textpkg "engine/modules/text/pkg"
 	"engine/modules/transform"
 	"engine/modules/window"
-	"engine/services/console"
-	gtexture "engine/services/graphics/texture"
-	"engine/services/graphics/texturearray"
-	"engine/services/logger"
+	"errors"
+	"fmt"
 
 	"github.com/go-gl/gl/v4.5-core/gl"
 	"github.com/ogiusek/ioc/v2"
@@ -30,27 +30,18 @@ import (
 func getDic() ioc.Dic {
 	pkgs := []ioc.Pkg{
 		corepkg.Pkg,
-		// game
-		smoothpkg.PkgT[render.ColorComponent](),
-
 		func(b ioc.Builder) {
+			ioc.Wrap(b, func(c ioc.Dic, def definitions.Service) {
+				// definitions have to be loaded explicitly
+				// they aren't loaded by default so tests won't look for files
+				def.Load()
+			})
 			ioc.Wrap(b, func(c ioc.Dic, w window.Service) {
 				w.Window().SetTitle("TEXHEC")
 				gl.ClearColor(0.2, 0.3, 0.3, 1.0)
 			})
-			ioc.Wrap(b, func(c ioc.Dic, f gtexture.Factory) {
-				f.Wrap(func(t gtexture.Texture) {
-					t.Bind()
-					defer gl.BindTexture(gl.TEXTURE_2D, 0)
-
-					gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE)
-					gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE)
-					gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST)
-					gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST)
-				})
-			})
-			ioc.Wrap(b, func(c ioc.Dic, f texturearray.Factory) {
-				f.Wrap(func(ta texturearray.TextureArray) {
+			ioc.Wrap(b, func(c ioc.Dic, f graphics.Service) {
+				f.TextureArray().Wrap(func(ta graphics.TextureArray) {
 					ta.Bind()
 					defer gl.BindTexture(gl.TEXTURE_2D_ARRAY, 0)
 
@@ -58,6 +49,15 @@ func getDic() ioc.Dic {
 					gl.TexParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE)
 					gl.TexParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_MAG_FILTER, gl.NEAREST)
 					gl.TexParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_MIN_FILTER, gl.NEAREST)
+				})
+				f.Texture().Wrap(func(t graphics.Texture) {
+					t.Bind()
+					defer gl.BindTexture(gl.TEXTURE_2D, 0)
+
+					gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE)
+					gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE)
+					gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST)
+					gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST)
 				})
 			})
 			ioc.Wrap(b, func(_ ioc.Dic, c textpkg.Config) {
@@ -84,9 +84,38 @@ func getDic() ioc.Dic {
 				}
 				c.UsedGlyphs().Add(' ')
 			})
-			ioc.Wrap(b, func(c ioc.Dic, config logger.Config) {
-				config.PanicOnWarn(true)
-				config.Flush(ioc.Get[console.Console](c).PrintPermanent)
+			ioc.Wrap(b, func(c ioc.Dic, config loggerpkg.Config) {
+				world := ioc.GetServices[game.GameWorld](c)
+				config.AddFormatHandler(func(meta, msg error) error {
+					typeMsg, color := "LOG", "37"
+					if errors.Is(meta, logger.ErrInfo) {
+						typeMsg, color = "Info", "34"
+					}
+					if logger.IsWarning(meta) {
+						typeMsg, color = "Warn", "33"
+					}
+					if errors.Is(meta, logger.ErrFatal) {
+						typeMsg, color = "Fatal", "31"
+					}
+					return fmt.Errorf(
+						"\033[%sm[ %s ]\033[0m %s %s",
+						color,
+						typeMsg,
+						world.Clock().Now().Format("15:04:05.000000"),
+						msg.Error(),
+					)
+				})
+				config.AddDeliverHandler(func(meta, msg error) {
+					world.Console().PrintPermanent(msg.Error())
+
+					if errors.Is(meta, logger.ErrFatal) {
+						world.Console().Flush()
+					}
+					if logger.IsWarning(meta) {
+						world.Console().Flush()
+						panic("Debug warning")
+					}
+				})
 			})
 			ioc.Wrap(b, func(c ioc.Dic, config netsyncpkg.Config) {
 				config.SetMaxPredictions(150)
@@ -111,8 +140,8 @@ func getDic() ioc.Dic {
 				// })
 			})
 			ioc.Wrap(b, func(c ioc.Dic, s text.Service) {
-				world := ioc.GetServices[*gamescenes.GameWorld](c)
-				s.FontFamily().SetEmpty(text.NewFontFamily(world.Definitions().FontAsset))
+				world := ioc.GetServices[game.GameWorld](c)
+				s.FontFamily().SetEmpty(text.NewFontFamily(world.Definitions().Assets().FontAsset))
 			})
 		},
 	}

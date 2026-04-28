@@ -1,11 +1,11 @@
 package generationpkg
 
 import (
+	"core/game"
 	"core/modules/generation"
 	"core/modules/generation/internal"
-	"engine/modules/registry"
+	"engine/modules/entityregistry"
 	"engine/services/ecs"
-	"engine/services/logger"
 	"strconv"
 
 	"github.com/ogiusek/ioc/v2"
@@ -19,15 +19,15 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 		return internal.NewService(c)
 	})
 
-	ioc.Wrap(b, func(c ioc.Dic, r registry.Service) {
+	ioc.Wrap(b, func(c ioc.Dic, r entityregistry.Service) {
 		type World struct {
-			Config *internal.Config `inject:""`
-			Logger logger.Logger    `inject:""`
+			game.GameWorld `inject:""`
+			Config         *internal.Config `inject:""`
 		}
 		r.Register("generate", func(entity ecs.EntityID, structTagValue string) {
 			world := ioc.GetServices[World](c)
 			chance, err := strconv.Atoi(structTagValue)
-			world.Logger.Warn(err)
+			world.Logger().Log(err)
 			if err == nil {
 				world.Config.AddChance(entity, chance)
 			}

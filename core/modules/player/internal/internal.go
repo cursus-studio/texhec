@@ -1,15 +1,15 @@
 package internal
 
 import (
+	"core/game"
 	"core/modules/player"
-	gamescenes "core/scenes"
 	"engine/services/ecs"
 
 	"github.com/ogiusek/ioc/v2"
 )
 
 type service struct {
-	gamescenes.GameWorld `inject:""`
+	game.GameWorld `inject:""`
 
 	owner ecs.ComponentsArray[player.OwnerComponent]
 }

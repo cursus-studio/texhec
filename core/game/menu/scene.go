@@ -1,0 +1,80 @@
+package menuscene
+
+import (
+	"core/game"
+	"core/modules/definitions"
+	"core/modules/ui"
+	"engine/modules/camera"
+	"engine/modules/groups"
+	"engine/modules/inputs"
+	"engine/modules/layout"
+	"engine/modules/loop"
+	"engine/modules/scene"
+	"engine/modules/text"
+	"engine/modules/transform"
+	"engine/services/ecs"
+	"strings"
+
+	"github.com/ogiusek/ioc/v2"
+)
+
+var Pkg = ioc.NewPkg(func(b ioc.Builder) {
+	ioc.Register(b, func(c ioc.Dic) game.MenuBuilder {
+		return func(sceneParent ecs.EntityID) {
+			world := ioc.GetServices[game.GameWorld](c)
+			cameraEntity := world.World().NewEntity()
+			world.Hierarchy().SetParent(cameraEntity, sceneParent)
+			world.Groups().Component().Set(cameraEntity, groups.DefaultGroups())
+			world.Camera().Ortho().Set(cameraEntity, camera.NewOrtho(-1000, 1000))
+			world.Ui().CursorCamera().Set(cameraEntity, ui.CursorCameraComponent{})
+
+			signature := world.World().NewEntity()
+			world.Hierarchy().SetParent(signature, cameraEntity)
+			world.Transform().Pos().Set(signature, transform.NewPos(5, 5, 0))
+			world.Transform().Size().Set(signature, transform.NewSize(100, 50, 1))
+			world.Transform().PivotPoint().Set(signature, transform.NewPivotPoint(0, .5, .5))
+			world.Transform().Parent().Set(signature, transform.NewParent(transform.RelativePos))
+			world.Transform().ParentPivotPoint().Set(signature, transform.NewParentPivotPoint(0, 0, .5))
+
+			world.Text().Content().Set(signature, text.NewText("menu"))
+			world.Text().FontSize().Set(signature, text.NewFontSize(32))
+			world.Text().Break().Set(signature, text.NewBreak(text.BreakNone))
+
+			background := world.World().NewEntity()
+			world.Hierarchy().SetParent(background, cameraEntity)
+			world.Transform().Pos().Set(background, transform.NewPos(0, 0, 1))
+			world.Transform().PivotPoint().Set(background, transform.NewPivotPoint(.5, .5, 0))
+			world.Transform().ParentPivotPoint().Set(background, transform.NewParentPivotPoint(.5, .5, 0))
+			world.Ui().AnimatedBackground().Set(background, ui.AnimatedBackgroundComponent{})
+
+			buttonArea := world.World().NewEntity()
+			world.Hierarchy().SetParent(buttonArea, cameraEntity)
+			world.Groups().Inherit().Set(buttonArea, groups.InheritGroupsComponent{})
+			world.Transform().Pos().Set(buttonArea, transform.NewPos(0, 0, 1))
+			world.Transform().Parent().Set(buttonArea, transform.NewParent(transform.RelativePos|transform.RelativeSizeX))
+
+			world.Layout().Order().Set(buttonArea, layout.NewOrder(layout.OrderVectical))
+			world.Layout().Align().Set(buttonArea, layout.NewAlign(.5, .5))
+			world.Layout().Gap().Set(buttonArea, layout.NewGap(10))
+
+			type Button struct {
+				Text    string
+				OnClick any
+			}
+			buttons := []Button{
+				{"play", scene.NewChangeSceneEvent(definitions.GameID)},
+				{"settings", scene.NewChangeSceneEvent(definitions.SettingsID)},
+				{"credits", scene.NewChangeSceneEvent(definitions.CreditsID)},
+				{"exit", loop.NewStopEvent()},
+			}
+
+			for _, button := range buttons {
+				btn := world.Prototype().Clone(world.Definitions().Hud().Btn)
+
+				world.Hierarchy().SetParent(btn, buttonArea)
+				world.Inputs().LeftClick().Set(btn, inputs.NewLeftClick(button.OnClick))
+				world.Text().Content().Set(btn, text.NewText(strings.ToUpper(button.Text)))
+			}
+		}
+	})
+})

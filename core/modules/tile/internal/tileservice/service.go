@@ -1,9 +1,9 @@
 package tileservice
 
 import (
+	"core/game"
 	"core/modules/definitions"
 	"core/modules/tile"
-	gamescenes "core/scenes"
 	"engine/modules/grid"
 	"engine/modules/relation"
 	"engine/modules/transform"
@@ -14,7 +14,7 @@ import (
 )
 
 type service struct {
-	gamescenes.GameWorld   `inject:""`
+	game.GameWorld         `inject:""`
 	TileGridService        grid.Service[tile.ID]          `inject:""`
 	ObstructionGridService grid.Service[tile.Obstruction] `inject:""`
 	TileTypeRelation       relation.Service[tile.ID]      `inject:""`
@@ -84,6 +84,8 @@ func (s *service) Deployed() ecs.ComponentsArray[tile.DeployedComponent]       {
 
 func (s *service) Speed() ecs.ComponentsArray[tile.SpeedComponent] { return s.speed }
 func (s *service) Step() ecs.ComponentsArray[tile.StepComponent]   { return s.step }
+
+// NewBiomAsset in other file
 
 func (s *service) GetPos(coords grid.Coords) transform.PosComponent {
 	size := s.GetTileSize().Size

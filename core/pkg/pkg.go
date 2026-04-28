@@ -1,6 +1,11 @@
 package corepkg
 
 import (
+	game "core/game"
+	creditsscene "core/game/credits"
+	gamescene "core/game/game"
+	menuscene "core/game/menu"
+	settingsscene "core/game/settings"
 	definitionspkg "core/modules/definitions/pkg"
 	deploypkg "core/modules/deploy/pkg"
 	fpsloggerpkg "core/modules/fpslogger/pkg"
@@ -11,11 +16,6 @@ import (
 	settingspkg "core/modules/settings/pkg"
 	tilepkg "core/modules/tile/pkg"
 	uipkg "core/modules/ui/pkg"
-	gamescenes "core/scenes"
-	creditsscene "core/scenes/credits"
-	gamescene "core/scenes/game"
-	menuscene "core/scenes/menu"
-	settingsscene "core/scenes/settings"
 	enginepkg "engine/pkg"
 
 	"github.com/ogiusek/ioc/v2"
@@ -36,7 +36,7 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 		tilepkg.Pkg,
 		uipkg.Pkg,
 
-		gamescenes.Pkg,
+		game.Pkg,
 		creditsscene.Pkg,
 		gamescene.Pkg,
 		menuscene.Pkg,

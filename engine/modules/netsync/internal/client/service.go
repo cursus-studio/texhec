@@ -100,7 +100,7 @@ func NewService(c ioc.Dic, config config.Config) *Service {
 			messageType := reflect.TypeOf(message)
 			listener, ok := listeners[messageType]
 			if !ok {
-				t.Logger().Warn(fmt.Errorf("invalid listener of type '%v' called", messageType.String()))
+				t.Logger().Log(fmt.Errorf("invalid listener of type '%v' called", messageType.String()))
 				_ = conn.Close()
 				return
 			}
@@ -130,11 +130,11 @@ func (t *Service) BeforeEventRecord(event any) {
 	}
 
 	if len(t.predictions) > t.MaxPredictions {
-		t.Logger().Warn(ErrExceededPredictions)
+		t.Logger().Log(ErrExceededPredictions)
 		t.undoPredictions()
 		// reconciliate
 		if err := clientConn.Send(clienttypes.FetchStateDTO{}); err != nil {
-			t.Logger().Warn(err)
+			t.Logger().Log(err)
 		}
 		return
 	}
@@ -161,7 +161,7 @@ func (t *Service) BeforeEvent(event any) {
 
 	dto := clienttypes.EmitEventDTO(t.recordedPrediction.PredictedEvent)
 	if err := clientConn.Send(dto); err != nil {
-		t.Logger().Warn(err)
+		t.Logger().Log(err)
 	}
 }
 
@@ -201,7 +201,7 @@ func (t *Service) OnTransparentEvent(event any) {
 
 	t.sentTransparentEvent = true
 	err := conn.Send(clienttypes.TransparentEventDTO{Event: event})
-	t.Logger().Warn(err)
+	t.Logger().Log(err)
 }
 
 func (t *Service) ListenSendChange(dto servertypes.SendChangeDTO) {
@@ -219,7 +219,7 @@ func (t *Service) ListenSendChange(dto servertypes.SendChangeDTO) {
 			}
 		}
 		t.applyPredictedEvents(reEmitedEvents)
-		t.Logger().Warn(dto.Error)
+		t.Logger().Log(dto.Error)
 		return
 	}
 	// check is event predicted. if is then remove first event from queue
@@ -263,7 +263,7 @@ func (t *Service) ListenSendState(dto servertypes.SendStateDTO) {
 	}
 	if dto.Error != nil {
 		t.predictions = nil
-		t.Logger().Warn(dto.Error)
+		t.Logger().Log(dto.Error)
 		_ = conn.Close()
 		return
 	}
@@ -277,7 +277,7 @@ func (t *Service) ListenTransparentEvent(dto servertypes.TransparentEventDTO) {
 		return
 	}
 	if dto.Error != nil {
-		t.Logger().Warn(dto.Error)
+		t.Logger().Log(dto.Error)
 		return
 	}
 	t.receivedTransparentEvent = true
@@ -292,7 +292,7 @@ func (t *Service) loadConnections() {
 		return
 	}
 	if len(ei) != 1 {
-		t.Logger().Warn(errors.New("has more than one server"))
+		t.Logger().Log(errors.New("has more than one server"))
 		return
 	}
 	entity := ei[0]
@@ -310,7 +310,7 @@ func (t *Service) loadConnections() {
 	conn := comp.Conn()
 	messages := conn.Messages()
 	if err := conn.Send(clienttypes.FetchStateDTO{}); err != nil {
-		t.Logger().Warn(err)
+		t.Logger().Log(err)
 		return
 	}
 	go func(entity ecs.EntityID) {

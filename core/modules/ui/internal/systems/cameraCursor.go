@@ -1,7 +1,7 @@
 package systems
 
 import (
-	gamescenes "core/scenes"
+	"core/game"
 	"engine/modules/groups"
 	"engine/modules/loop"
 	"engine/modules/render"
@@ -17,7 +17,7 @@ import (
 type CursorComponent struct{}
 
 type cursorSystem struct {
-	gamescenes.GameWorld `inject:""`
+	game.GameWorld `inject:""`
 
 	CursorComponent ecs.ComponentsArray[CursorComponent]
 }
@@ -38,7 +38,7 @@ func (s *cursorSystem) Listen(loop.FrameEvent) {
 
 	cameras := s.Ui().CursorCamera().GetEntities()
 	if len(cameras) > 1 {
-		s.Logger().Warn(fmt.Errorf("expected at most one cursor camera component"))
+		s.Logger().Log(fmt.Errorf("expected at most one cursor camera component"))
 	}
 	if len(cameras) != 1 {
 		for _, cursor := range s.CursorComponent.GetEntities() {
@@ -66,7 +66,7 @@ func (s *cursorSystem) Listen(loop.FrameEvent) {
 	s.Hierarchy().SetParent(cursor, camera)
 	s.Transform().Parent().Set(cursor, transform.NewParent(transform.Absolute))
 	s.Transform().Pos().Set(cursor, pos)
-	s.Render().Mesh().Set(cursor, render.NewMesh(s.Definitions().SquareMesh))
+	s.Render().Mesh().Set(cursor, render.NewMesh(s.Definitions().Assets().SquareMesh))
 	s.Render().Texture().Set(cursor, render.NewTexture(s.Definitions().Hud().Cursor))
 	s.Groups().Inherit().Set(cursor, groups.InheritGroupsComponent{})
 	s.Transform().Size().Set(cursor, transform.NewSize(50, 50, 1))

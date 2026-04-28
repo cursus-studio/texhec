@@ -147,7 +147,7 @@ func (t *service) CollidesWithRay(entity ecs.EntityID, ray collider.Ray) *collid
 	colliderAsset, err := assets.GetAsset[collider.ColliderAsset](t.Assets(), colliderComponent.ID)
 	if err != nil {
 		// invalid internal state
-		t.Logger().Warn(err)
+		t.Logger().Log(err)
 		return nil
 	}
 
@@ -216,7 +216,7 @@ func (t *service) CollidesWithRay(entity ecs.EntityID, ray collider.Ray) *collid
 
 func (t *service) CollidesWithObject(entityA ecs.EntityID, entityB ecs.EntityID) *collider.ObjectObjectCollision {
 	t.ApplyChanges()
-	t.Logger().Warn(errors.New("501"))
+	t.Logger().Log(errors.New("501"))
 	return nil
 }
 
@@ -303,7 +303,7 @@ func (t *service) RaycastAll(ray collider.Ray) []collider.ObjectRayCollision {
 
 func (t *service) NarrowCollisions(entity ecs.EntityID) []ecs.EntityID {
 	t.ApplyChanges()
-	t.Logger().Warn(errors.New("501"))
+	t.Logger().Log(errors.New("501"))
 	return nil
 }
 func (t *service) AddRayFallThroughPolicy(rayFallTroughPolicy collider.FallTroughPolicy) {

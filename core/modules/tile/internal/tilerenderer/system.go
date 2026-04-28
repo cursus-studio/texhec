@@ -1,19 +1,14 @@
 package tilerenderer
 
 import (
+	"core/game"
 	"core/modules/tile"
-	gamescenes "core/scenes"
 	_ "embed"
 	"engine/modules/assets"
+	"engine/modules/graphics"
 	"engine/modules/render"
 	"engine/services/datastructures"
 	"engine/services/ecs"
-	"engine/services/graphics/buffers"
-	"engine/services/graphics/program"
-	"engine/services/graphics/shader"
-	gtexture "engine/services/graphics/texture"
-	"engine/services/graphics/texturearray"
-	"engine/services/graphics/vao"
 	"image"
 
 	"github.com/go-gl/gl/v4.5-core/gl"
@@ -36,7 +31,7 @@ type TileType struct {
 }
 
 type Batch struct {
-	buffer buffers.Buffer[int32]
+	buffer graphics.Buffer[int32]
 }
 
 func (b *Batch) Release() {
@@ -55,15 +50,15 @@ type locations struct {
 }
 
 type system struct {
-	gamescenes.GameWorld `inject:""`
+	game.GameWorld `inject:""`
 
-	program   program.Program
+	program   graphics.Program
 	locations locations
 	ids       datastructures.SparseArray[tile.ID, uint32]
 	// lod shrinks
-	lodTextureArrays []texturearray.TextureArray
-	texturesBuffer   buffers.Buffer[mgl32.Vec2] // [index, amount]
-	vao              vao.VAO
+	lodTextureArrays []graphics.TextureArray
+	texturesBuffer   graphics.Buffer[mgl32.Vec2] // [index, amount]
+	vao              graphics.VAO
 
 	tileTextures datastructures.SparseArray[uint32, mgl32.Vec2]
 	textures     datastructures.SparseArray[uint32, image.Image]
@@ -76,19 +71,19 @@ type system struct {
 func NewSystem(c ioc.Dic) error {
 	s := ioc.GetServices[*system](c)
 
-	vert, err := shader.NewShader(vertSource, shader.VertexShader)
+	vert, err := s.Graphics().NewShader(vertSource, graphics.VertexShader)
 	if err != nil {
 		return err
 	}
 	defer vert.Release()
 
-	geom, err := shader.NewShader(geomSource, shader.GeomShader)
+	geom, err := s.Graphics().NewShader(geomSource, graphics.GeomShader)
 	if err != nil {
 		return err
 	}
 	defer geom.Release()
 
-	frag, err := shader.NewShader(fragSource, shader.FragmentShader)
+	frag, err := s.Graphics().NewShader(fragSource, graphics.FragmentShader)
 	if err != nil {
 		return err
 	}
@@ -99,23 +94,23 @@ func NewSystem(c ioc.Dic) error {
 	gl.AttachShader(programID, geom.ID())
 	gl.AttachShader(programID, frag.ID())
 
-	p, err := program.NewProgram(programID, nil)
+	p, err := s.Graphics().NewProgram(programID, nil)
 	if err != nil {
 		return err
 	}
 
-	locations, err := program.GetProgramLocations[locations](p)
+	locations, err := graphics.GetProgramLocations[locations](p)
 	if err != nil {
 		return err
 	}
 
 	s.program = p
-	s.vao = vao.NewVAO(nil, nil)
+	s.vao = s.Graphics().NewVAO(nil, nil)
 	s.locations = locations
 	s.ids = datastructures.NewSparseArray[tile.ID, uint32]()
-	s.lodTextureArrays = []texturearray.TextureArray{}
+	s.lodTextureArrays = []graphics.TextureArray{}
 
-	s.texturesBuffer = buffers.NewBuffer[mgl32.Vec2](gl.SHADER_STORAGE_BUFFER, gl.DYNAMIC_DRAW, 1)
+	s.texturesBuffer = graphics.NewBuffer[mgl32.Vec2](gl.SHADER_STORAGE_BUFFER, gl.DYNAMIC_DRAW, 1)
 
 	s.tileTextures = datastructures.NewSparseArray[uint32, mgl32.Vec2]()
 	s.textures = datastructures.NewSparseArray[uint32, image.Image]()
@@ -145,7 +140,7 @@ func (s *system) ListenRender(render render.RenderEvent) {
 			s.ids.Set(tileComp.ID, id)
 			texture, err := assets.GetAsset[tile.BiomAsset](s.Assets(), entity)
 			if err != nil {
-				s.Logger().Warn(err)
+				s.Logger().Log(err)
 				continue
 			}
 
@@ -162,21 +157,21 @@ func (s *system) ListenRender(render render.RenderEvent) {
 			}
 		}
 		if len(dirtyTiles) != 0 {
-			highLodTextureArray, err := s.TextureArrayFactory().New(s.textures)
+			highLodTextureArray, err := s.Graphics().TextureArray().New(s.textures)
 			if err != nil {
-				s.Logger().Warn(err)
+				s.Logger().Log(err)
 				return
 			}
 
 			lowLodTextures := datastructures.NewSparseArray[uint32, image.Image]()
 			for _, texture := range s.textures.GetIndices() {
 				img, _ := s.textures.Get(texture)
-				img = gtexture.NewImage(img).Scale(2, 2).Opaque().Image()
+				img = s.Graphics().NewImage(img).Scale(2, 2).Opaque().Image()
 				lowLodTextures.Set(texture, img)
 			}
-			lowLodTextureArray, err := s.TextureArrayFactory().New(lowLodTextures)
+			lowLodTextureArray, err := s.Graphics().TextureArray().New(lowLodTextures)
 			if err != nil {
-				s.Logger().Warn(err)
+				s.Logger().Log(err)
 				return
 			}
 
@@ -187,7 +182,7 @@ func (s *system) ListenRender(render render.RenderEvent) {
 				t.Release()
 			}
 
-			s.lodTextureArrays = []texturearray.TextureArray{
+			s.lodTextureArrays = []graphics.TextureArray{
 				highLodTextureArray,
 				lowLodTextureArray,
 			}
@@ -218,7 +213,7 @@ func (s *system) ListenRender(render render.RenderEvent) {
 		}
 		if !batchOk && compOk {
 			batch = Batch{
-				buffers.NewBuffer[int32](gl.SHADER_STORAGE_BUFFER, gl.DYNAMIC_DRAW, 0),
+				graphics.NewBuffer[int32](gl.SHADER_STORAGE_BUFFER, gl.DYNAMIC_DRAW, 0),
 			}
 			s.batches.Set(entity, batch)
 		}

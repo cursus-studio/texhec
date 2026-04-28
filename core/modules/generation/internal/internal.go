@@ -1,9 +1,9 @@
 package internal
 
 import (
+	"core/game"
 	"core/modules/generation"
 	"core/modules/tile"
-	gamescenes "core/scenes"
 	"engine/modules/batcher"
 	"engine/modules/collider"
 	"engine/modules/grid"
@@ -43,8 +43,8 @@ func (c *Config) AddChance(tileType ecs.EntityID, chanceInProcent int) {
 //
 
 type service struct {
-	gamescenes.GameWorld `inject:""`
-	C                    ioc.Dic
+	game.GameWorld `inject:""`
+	C              ioc.Dic
 }
 
 func NewService(c ioc.Dic) generation.Service {
@@ -62,7 +62,7 @@ func (s *service) Chances() (*Config, []tile.ID) {
 	for _, chance := range config.chances {
 		tileComp, ok := s.Tile().TileType().Get(chance.tileType)
 		if !ok {
-			s.Logger().Warn(fmt.Errorf("\"%v\" isn't a tile tile and therefor cannot be used in generation", chance.tileType))
+			s.Logger().Log(fmt.Errorf("\"%v\" isn't a tile tile and therefor cannot be used in generation", chance.tileType))
 			continue
 		}
 		types = append(types, slices.Repeat([]tile.ID{tileComp.ID}, chance.chance)...)
@@ -197,7 +197,7 @@ func (s *service) Generate(c generation.Config) batcher.Task {
 		s.Transform().Size().Set(c.Entity, size)
 		s.Transform().PivotPoint().Set(c.Entity, transform.NewPivotPoint(0, 0, .5))
 
-		s.Collider().Component().Set(c.Entity, collider.NewCollider(s.Definitions().SquareCollider))
+		s.Collider().Component().Set(c.Entity, collider.NewCollider(s.Definitions().Assets().SquareCollider))
 		s.Inputs().Stack().Set(c.Entity, inputs.StackComponent{})
 		s.Tile().TileGrid().Set(c.Entity, gridStateComponent)
 		s.Tile().ObstructionGrid().Set(c.Entity, obstructGridComponent)

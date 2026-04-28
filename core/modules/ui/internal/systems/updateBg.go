@@ -1,10 +1,9 @@
 package systems
 
 import (
+	"core/game"
 	"core/modules/ui"
-	gamescenes "core/scenes"
 	"engine/modules/assets"
-	"engine/modules/loop"
 	"engine/modules/render"
 	"engine/modules/transform"
 	"engine/modules/transition"
@@ -18,7 +17,7 @@ import (
 type UpdateBgEvent struct{}
 
 type System struct {
-	gamescenes.GameWorld `inject:""`
+	game.GameWorld `inject:""`
 
 	blueprint     ecs.EntityID
 	bgDirtySet    ecs.DirtySet
@@ -92,14 +91,11 @@ func (s *System) BeforeGet() {
 		}
 		s.Transform().Parent().Set(entity, transform.NewParent(transform.RelativePos|transform.RelativeSizeXY))
 		if entity != s.blueprint {
-			s.Render().Mesh().Set(entity, render.NewMesh(s.Definitions().SquareMesh))
+			s.Render().Mesh().Set(entity, render.NewMesh(s.Definitions().Assets().SquareMesh))
 		}
 		s.Render().Texture().Set(entity, texture)
 		s.transitionArr.Set(entity, transitionComp)
 	}
-}
-
-func (s *System) ListenFrame(e loop.FrameEvent) {
 }
 
 func (s *System) ListenUpdateBg(event UpdateBgEvent) {
@@ -111,7 +107,7 @@ func (s *System) ListenUpdateBg(event UpdateBgEvent) {
 	for _, entity := range s.Ui().AnimatedBackground().GetEntities() {
 		s.Transform().Parent().Set(entity, transform.NewParent(transform.RelativePos|transform.RelativeSizeXY))
 		if entity != s.blueprint {
-			s.Render().Mesh().Set(entity, render.NewMesh(s.Definitions().SquareMesh))
+			s.Render().Mesh().Set(entity, render.NewMesh(s.Definitions().Assets().SquareMesh))
 		}
 		s.Render().Texture().Set(entity, render.NewTexture(bg))
 		s.transitionArr.Set(entity, transition.NewTransition(

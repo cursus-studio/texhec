@@ -1,12 +1,12 @@
 package internal
 
 import (
+	"core/game"
 	"core/modules/definitions"
 	"core/modules/deploy"
 	"core/modules/player"
 	"core/modules/tile"
 	"core/modules/ui"
-	gamescenes "core/scenes"
 	"engine/modules/grid"
 	"engine/modules/groups"
 	"engine/modules/inputs"
@@ -19,7 +19,7 @@ import (
 )
 
 type service struct {
-	gamescenes.GameWorld `inject:""`
+	game.GameWorld `inject:""`
 
 	component ecs.ComponentsArray[deploy.Component]
 }
@@ -106,12 +106,12 @@ func (s *service) Preview(e deploy.PreviewEvent) {
 cannotPlace:
 	// place indicator on occupied tiles
 	for _, collision := range collisions {
-		entity := s.Prototype().Clone(s.Definitions().Blank)
+		entity := s.Prototype().Clone(s.Definitions().Assets().Blank)
 		s.Hierarchy().SetParent(entity, s.Scene().Scene())
 
 		s.Tile().Layer().Set(entity, tile.NewLayer(definitions.TilePlaceholderLayer))
-		s.Render().Mesh().Set(entity, render.NewMesh(s.Definitions().SquareMesh))
-		s.Render().Texture().Set(entity, render.NewTexture(s.Definitions().Blank))
+		s.Render().Mesh().Set(entity, render.NewMesh(s.Definitions().Assets().SquareMesh))
+		s.Render().Texture().Set(entity, render.NewTexture(s.Definitions().Assets().Blank))
 		s.Groups().Component().Set(entity, groups.EmptyGroups().Ptr().Enable(definitions.GameGroup).Val())
 
 		s.Tile().Layer().Set(entity, tile.NewLayer(definitions.TilePlaceholderLayer))
@@ -138,19 +138,19 @@ func (s *service) Execute(e deploy.ExecuteEvent) {
 	obstructionGridEntity := s.Tile().ObstructionGrid().GetEntities()[0]
 	obstructed, ok := s.Tile().ObstructionGrid().Get(obstructionGridEntity)
 	if !ok {
-		s.Logger().Warn(tile.ErrPositionIsOccupied)
+		s.Logger().Log(tile.ErrPositionIsOccupied)
 		return
 	}
 	aabb := tile.NewAABB(pos, size)
 	for _, coords := range aabb.Tiles {
 		index, ok := obstructed.GetIndex(coords.Coords())
 		if !ok {
-			s.Logger().Warn(tile.ErrPositionIsOccupied)
+			s.Logger().Log(tile.ErrPositionIsOccupied)
 			return
 		}
 		coordsObstruction := obstructed.GetTile(index)
 		if blueprintObstruction.Obstruction&coordsObstruction != 0 {
-			s.Logger().Warn(tile.ErrPositionIsOccupied)
+			s.Logger().Log(tile.ErrPositionIsOccupied)
 			return
 		}
 	}

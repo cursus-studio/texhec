@@ -177,7 +177,7 @@ func (s *service) AddConnection(entity ecs.EntityID, rawConn net.Conn) {
 
 			message, err := s.Codec().Decode(messageBytes)
 			if err != nil {
-				s.Logger().Warn(err)
+				s.Logger().Log(err)
 				continue
 			}
 			// f.logger.Info(fmt.Sprintf("received '***' type '%v'", reflect.TypeOf(message).String()))

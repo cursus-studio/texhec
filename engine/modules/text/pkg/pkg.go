@@ -1,15 +1,14 @@
 package textpkg
 
 import (
+	"engine"
 	"engine/modules/assets"
-	prototypepkg "engine/modules/prototype/pkg"
+	"engine/modules/graphics"
 	"engine/modules/text"
 	"engine/modules/text/internal/textrenderer"
 	"engine/modules/text/internal/textservice"
+	typeregistrypkg "engine/modules/typeregistry/pkg"
 	"engine/services/datastructures"
-	gtexture "engine/services/graphics/texture"
-	"engine/services/graphics/vao/vbo"
-	"engine/services/logger"
 	"image"
 	"image/color"
 	"os"
@@ -50,13 +49,14 @@ func (c *config) SetSize(size, normalizedYBaseline float64) {
 //
 
 var Pkg = ioc.NewPkg(func(b ioc.Builder) {
-	for _, pkg := range []ioc.Pkg{
-		prototypepkg.PkgT[text.BreakComponent](),
-		prototypepkg.PkgT[text.TextComponent](),
-		prototypepkg.PkgT[text.FontFamilyComponent](),
-		prototypepkg.PkgT[text.FontSizeComponent](),
-		prototypepkg.PkgT[text.AlignComponent](),
-	} {
+	pkgs := []ioc.Pkg{
+		typeregistrypkg.PkgT[text.BreakComponent],
+		typeregistrypkg.PkgT[text.TextComponent],
+		typeregistrypkg.PkgT[text.FontFamilyComponent],
+		typeregistrypkg.PkgT[text.FontSizeComponent],
+		typeregistrypkg.PkgT[text.AlignComponent],
+	}
+	for _, pkg := range pkgs {
 		pkg(b)
 	}
 	ioc.Register(b, func(c ioc.Dic) Config { return NewConfig() })
@@ -64,10 +64,9 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 	ioc.Register(b, func(c ioc.Dic) textrenderer.FontService {
 		config := ioc.Get[Config](c).(*config)
 		return textrenderer.NewFontService(
-			ioc.Get[assets.Service](c),
+			c,
 			config.UsedGlyphs(),
 			config.faceOptions,
-			ioc.Get[logger.Logger](c),
 			int(config.faceOptions.Size),
 			config.yBaseline,
 		)
@@ -85,9 +84,9 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 		return textrenderer.NewTextRenderer(c, 1)
 	})
 
-	ioc.Register(b, func(c ioc.Dic) vbo.VBOFactory[textrenderer.Glyph] {
-		return func() vbo.VBOSetter[textrenderer.Glyph] {
-			vbo := vbo.NewVBO[textrenderer.Glyph](func() {
+	ioc.Register(b, func(c ioc.Dic) graphics.VBOFactory[textrenderer.Glyph] {
+		return func() graphics.VBOSetter[textrenderer.Glyph] {
+			vbo := graphics.NewVBO[textrenderer.Glyph](func() {
 				var i uint32 = 0
 
 				gl.VertexAttribPointerWithOffset(0, 2, gl.FLOAT, false,
@@ -104,6 +103,7 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 	})
 
 	ioc.Wrap(b, func(c ioc.Dic, b assets.Service) {
+		world := ioc.GetServices[engine.EngineWorld](c)
 		config := ioc.Get[Config](c).(*config)
 		getLetterImage := func(drawer font.Drawer, letter rune) *image.RGBA {
 			var text = string(letter)
@@ -154,7 +154,7 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 					Face: fontFace,
 				}
 				image := getLetterImage(drawer, glyph)
-				glyphs.Images.Set(glyphID, gtexture.NewImage(image).FlipV().Image())
+				glyphs.Images.Set(glyphID, world.Graphics().NewImage(image).FlipV().Image())
 			}
 
 			asset := text.NewFontAsset(*rawFont, glyphs)

@@ -1,8 +1,8 @@
 package obstructionsystem
 
 import (
+	"core/game"
 	"core/modules/tile"
-	gamescenes "core/scenes"
 	"engine/modules/record"
 	"engine/services/ecs"
 	"errors"
@@ -11,7 +11,7 @@ import (
 )
 
 type system struct {
-	gamescenes.GameWorld `inject:""`
+	game.GameWorld `inject:""`
 
 	config        record.Config
 	recordingID   record.RecordingID
@@ -54,7 +54,7 @@ func (s *system) BeforeGet() {
 	obstructionGridEntity := s.Tile().ObstructionGrid().GetEntities()[0]
 	obstructionGrid, ok := s.Tile().ObstructionGrid().Get(obstructionGridEntity)
 	if !ok {
-		s.Logger().Warn(errors.New("didn't found obstruction grid"))
+		s.Logger().Log(errors.New("didn't found obstruction grid"))
 		return
 	}
 
@@ -87,7 +87,7 @@ func (s *system) BeforeGet() {
 		for _, coords := range aabb.Tiles {
 			index, ok := obstructionGrid.GetIndex(coords.Coords())
 			if !ok {
-				s.Logger().Warn(tile.ErrInvalidPosition)
+				s.Logger().Log(tile.ErrInvalidPosition)
 				continue
 			}
 			obstructionGrid.SetTile(index, obstructionGrid.GetTile(index)&^obstruction.Obstruction)
@@ -110,14 +110,14 @@ entityLoop:
 		for _, coords := range aabb.Tiles {
 			index, ok := obstructionGrid.GetIndex(coords.Coords())
 			if !ok {
-				s.Logger().Warn(tile.ErrInvalidPosition)
+				s.Logger().Log(tile.ErrInvalidPosition)
 				continue
 			}
 			if obstructionGrid.GetTile(index)&obstruction.Obstruction == 0 {
 				continue
 			}
 			s.World().RemoveEntity(entity)
-			s.Logger().Warn(tile.ErrPositionIsOccupied)
+			s.Logger().Log(tile.ErrPositionIsOccupied)
 			continue entityLoop
 		}
 		for _, coords := range aabb.Tiles {

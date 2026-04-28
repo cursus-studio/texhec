@@ -3,15 +3,16 @@ package colliderpkg
 import (
 	"engine/modules/collider"
 	"engine/modules/collider/internal/collisions"
-	prototypepkg "engine/modules/prototype/pkg"
+	typeregistrypkg "engine/modules/typeregistry/pkg"
 
 	"github.com/ogiusek/ioc/v2"
 )
 
 var Pkg = ioc.NewPkg(func(b ioc.Builder) {
-	for _, pkg := range []ioc.Pkg{
-		prototypepkg.PkgT[collider.Component](),
-	} {
+	pkgs := []ioc.Pkg{
+		typeregistrypkg.PkgT[collider.Component],
+	}
+	for _, pkg := range pkgs {
 		pkg(b)
 	}
 	ioc.Register(b, func(c ioc.Dic) collider.Service {

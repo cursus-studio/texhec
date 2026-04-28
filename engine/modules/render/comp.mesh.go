@@ -1,8 +1,8 @@
 package render
 
 import (
+	"engine/modules/graphics"
 	"engine/services/ecs"
-	"engine/services/graphics/vao/ebo"
 )
 
 type MeshComponent struct {
@@ -27,18 +27,18 @@ type Vertex struct {
 
 type MeshAsset interface {
 	Vertices() []Vertex
-	Indices() []ebo.Index
+	Indices() []graphics.Index
 	Release()
 }
 
 type meshAsset struct {
 	vertices []Vertex
-	indices  []ebo.Index
+	indices  []graphics.Index
 }
 
 func NewMeshAsset(
 	vertices []Vertex,
-	indices []ebo.Index,
+	indices []graphics.Index,
 ) MeshAsset {
 	asset := &meshAsset{
 		vertices: vertices,
@@ -47,6 +47,6 @@ func NewMeshAsset(
 	return asset
 }
 
-func (asset *meshAsset) Vertices() []Vertex   { return asset.vertices }
-func (asset *meshAsset) Indices() []ebo.Index { return asset.indices }
-func (a *meshAsset) Release()                 {}
+func (asset *meshAsset) Vertices() []Vertex        { return asset.vertices }
+func (asset *meshAsset) Indices() []graphics.Index { return asset.indices }
+func (a *meshAsset) Release()                      {}

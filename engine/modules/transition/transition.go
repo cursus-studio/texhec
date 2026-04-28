@@ -28,13 +28,15 @@ func Lerp[Number, T constraints.Float](a, b Number, t T) Number {
 
 type Progress float32
 
-type TransitionComponent[Component LerpConstraint[Component]] struct {
+// type TransitionComponent[Component LerpConstraint[Component]] struct {
+type TransitionComponent[Component any] struct {
 	From, To Component
 	Progress,
 	Duration time.Duration
 }
 
-func NewTransition[Component LerpConstraint[Component]](
+// func NewTransition[Component LerpConstraint[Component]](
+func NewTransition[Component any](
 	from, to Component,
 	duration time.Duration,
 ) TransitionComponent[Component] {
@@ -49,7 +51,8 @@ func NewTransition[Component LerpConstraint[Component]](
 //
 
 // saves transition component
-type TransitionEvent[Component LerpConstraint[Component]] struct {
+// type TransitionEvent[Component LerpConstraint[Component]] struct {
+type TransitionEvent[Component any] struct {
 	Entity    ecs.EntityID
 	Component TransitionComponent[Component]
 }

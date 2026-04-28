@@ -125,7 +125,7 @@ func _(hierarchy hierarchy.Service, parent ecs.EntityID) {
 ```
 
 ## Dependencies
-- [codec](/engine/services/codec/readme/README.md)
+- [codec](/engine/modules/codec/readme/README.md)
 - [datastructures](/engine/services/datastructures/readme/README.md)
 - [ecs](/engine/services/ecs/readme/README.md)
-- [logger](/engine/services/logger/readme/README.md)
+- [logger](/engine/modules/logger/readme/README.md)

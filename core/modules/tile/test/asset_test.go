@@ -1,7 +1,6 @@
 package test
 
 import (
-	"core/modules/tile"
 	"image"
 	"image/color"
 	"testing"
@@ -25,6 +24,7 @@ func newImage(v uint8) image.Image {
 }
 
 func TestNewAsset(t *testing.T) {
+	setup := NewSetup()
 	srcImages := [6][]image.Image{
 		{newImage(0b0011)},
 		{newImage(0b1111)},
@@ -34,7 +34,7 @@ func TestNewAsset(t *testing.T) {
 		{newImage(0b0001)},
 	}
 
-	biom, err := tile.NewBiomAsset(srcImages)
+	biom, err := setup.Tile().NewBiomAsset(srcImages)
 	if err != nil {
 		t.Error(err)
 	}

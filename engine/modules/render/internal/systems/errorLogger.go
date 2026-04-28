@@ -25,6 +25,6 @@ func NewErrorLogger(c ioc.Dic) render.System {
 
 func (logger *errorLogger) Listen(args loop.FrameEvent) {
 	if err := logger.Render().Error(); err != nil {
-		logger.Logger().Warn(fmt.Errorf("opengl error: %s", err))
+		logger.Logger().Log(fmt.Errorf("opengl error: %s", err))
 	}
 }

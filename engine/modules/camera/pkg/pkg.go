@@ -7,10 +7,9 @@ import (
 	"engine/modules/camera/internal/projectionsys"
 	"engine/modules/camera/internal/service"
 	"engine/modules/collider"
-	prototypepkg "engine/modules/prototype/pkg"
 	"engine/modules/transform"
+	typeregistrypkg "engine/modules/typeregistry/pkg"
 	"engine/modules/window"
-	"engine/services/codec"
 	"engine/services/ecs"
 	"errors"
 	"reflect"
@@ -22,36 +21,23 @@ import (
 )
 
 var Pkg = ioc.NewPkg(func(b ioc.Builder) {
-	for _, pkg := range []ioc.Pkg{
-		prototypepkg.PkgT[camera.Component](),
-		prototypepkg.PkgT[camera.MobileCameraComponent](),
-		prototypepkg.PkgT[camera.CameraLimitsComponent](),
-		prototypepkg.PkgT[camera.ViewportComponent](),
-		prototypepkg.PkgT[camera.NormalizedViewportComponent](),
+	pkgs := []ioc.Pkg{
+		typeregistrypkg.PkgT[camera.Component],
+		typeregistrypkg.PkgT[camera.MobileCameraComponent],
+		typeregistrypkg.PkgT[camera.CameraLimitsComponent],
+		typeregistrypkg.PkgT[camera.ViewportComponent],
+		typeregistrypkg.PkgT[camera.NormalizedViewportComponent],
 
-		prototypepkg.PkgT[camera.OrthoComponent](),
-		prototypepkg.PkgT[camera.OrthoResolutionComponent](),
-		prototypepkg.PkgT[camera.PerspectiveComponent](),
-		prototypepkg.PkgT[camera.DynamicPerspectiveComponent](),
-	} {
+		typeregistrypkg.PkgT[camera.OrthoComponent],
+		typeregistrypkg.PkgT[camera.OrthoResolutionComponent],
+		typeregistrypkg.PkgT[camera.PerspectiveComponent],
+		typeregistrypkg.PkgT[camera.DynamicPerspectiveComponent],
+
+		typeregistrypkg.PkgT[camera.ChangedResolutionEvent],
+	}
+	for _, pkg := range pkgs {
 		pkg(b)
 	}
-	ioc.Wrap(b, func(c ioc.Dic, b codec.Builder) {
-		b.
-			// camera components
-			Register(camera.Component{}).
-			Register(camera.MobileCameraComponent{}).
-			Register(camera.CameraLimitsComponent{}).
-			Register(camera.ViewportComponent{}).
-			Register(camera.NormalizedViewportComponent{}).
-			// projections components
-			Register(camera.OrthoComponent{}).
-			Register(camera.OrthoResolutionComponent{}).
-			Register(camera.PerspectiveComponent{}).
-			Register(camera.DynamicPerspectiveComponent{}).
-			// events
-			Register(camera.ChangedResolutionEvent{})
-	})
 	ioc.Register(b, func(c ioc.Dic) service.Service {
 		return service.NewService(c)
 	})

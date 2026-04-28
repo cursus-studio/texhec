@@ -3,14 +3,10 @@ package instancing
 import (
 	_ "embed"
 	"engine"
+	"engine/modules/graphics"
 	"engine/modules/render"
 	"engine/services/datastructures"
 	"engine/services/ecs"
-	"engine/services/graphics/program"
-	"engine/services/graphics/shader"
-	"engine/services/graphics/texturearray"
-	"engine/services/graphics/vao"
-	"engine/services/graphics/vao/vbo"
 
 	"github.com/go-gl/gl/v4.5-core/gl"
 	"github.com/ogiusek/events"
@@ -32,29 +28,30 @@ type locations struct {
 
 type system struct {
 	engine.EngineWorld `inject:""`
-	VboFactory         vbo.VBOFactory[render.Vertex] `inject:""`
+	VboFactory         graphics.VBOFactory[render.Vertex] `inject:""`
 
 	// batches
 	dirtyEntities   ecs.DirtySet
 	entitiesBatches datastructures.SparseArray[ecs.EntityID, batchKey]
 	batches         map[batchKey]*batch
 
-	meshes   map[ecs.EntityID]vao.VAO
-	textures map[ecs.EntityID]texturearray.TextureArray
+	meshes   map[ecs.EntityID]graphics.VAO
+	textures map[ecs.EntityID]graphics.TextureArray
 
-	program   program.Program
+	program   graphics.Program
 	locations locations
 }
 
 func NewSystem(c ioc.Dic) render.SystemRenderer {
+	world := ioc.GetServices[engine.EngineWorld](c)
 	return ecs.NewSystemRegister(func() error {
-		vert, err := shader.NewShader(vertSource, shader.VertexShader)
+		vert, err := world.Graphics().NewShader(vertSource, graphics.VertexShader)
 		if err != nil {
 			return err
 		}
 		defer vert.Release()
 
-		frag, err := shader.NewShader(fragSource, shader.FragmentShader)
+		frag, err := world.Graphics().NewShader(fragSource, graphics.FragmentShader)
 		if err != nil {
 			return err
 		}
@@ -64,12 +61,12 @@ func NewSystem(c ioc.Dic) render.SystemRenderer {
 		gl.AttachShader(programID, vert.ID())
 		gl.AttachShader(programID, frag.ID())
 
-		p, err := program.NewProgram(programID, nil)
+		p, err := world.Graphics().NewProgram(programID, nil)
 		if err != nil {
 			return err
 		}
 
-		locations, err := program.GetProgramLocations[locations](p)
+		locations, err := graphics.GetProgramLocations[locations](p)
 		if err != nil {
 			return err
 		}
@@ -80,8 +77,8 @@ func NewSystem(c ioc.Dic) render.SystemRenderer {
 		s.entitiesBatches = datastructures.NewSparseArray[ecs.EntityID, batchKey]()
 		s.batches = make(map[batchKey]*batch)
 
-		s.meshes = make(map[ecs.EntityID]vao.VAO)
-		s.textures = make(map[ecs.EntityID]texturearray.TextureArray)
+		s.meshes = make(map[ecs.EntityID]graphics.VAO)
+		s.textures = make(map[ecs.EntityID]graphics.TextureArray)
 
 		s.program = p
 		s.locations = locations

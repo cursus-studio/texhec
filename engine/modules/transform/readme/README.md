@@ -73,7 +73,7 @@ type ParentPivotPointComponent PivotPointComponent
 
 ## Dependencies
 - [ecs](/engine/services/ecs/readme/README.md)
-- [codec](/engine/services/codec/readme/README.md)
+- [codec](/engine/modules/codec/readme/README.md)
 - [hierarchy](/engine/modules/hierarchy/readme/README.md)
-- [logger](/engine/services/logger/readme/README.md)
+- [logger](/engine/modules/logger/readme/README.md)
 - [transition](/engine/modules/transition/readme/README.md)

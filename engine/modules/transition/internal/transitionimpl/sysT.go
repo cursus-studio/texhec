@@ -10,7 +10,8 @@ import (
 	"github.com/ogiusek/ioc/v2"
 )
 
-type sysT[Component transition.LerpConstraint[Component]] struct {
+// type sysT[Component transition.LerpConstraint[Component]] struct {
+type sysT[Component any] struct {
 	engine.EngineWorld `inject:""`
 
 	dirtySet ecs.DirtySet
@@ -20,7 +21,8 @@ type sysT[Component transition.LerpConstraint[Component]] struct {
 	componentArray  ecs.ComponentsArray[Component]
 }
 
-func NewSysT[Component transition.LerpConstraint[Component]](c ioc.Dic) transition.System {
+// func NewSysT[Component transition.LerpConstraint[Component]](c ioc.Dic) transition.System {
+func NewSysT[Component any](c ioc.Dic) transition.System {
 	return ecs.NewSystemRegister(func() error {
 		s := ioc.GetServices[*sysT[Component]](c)
 
@@ -64,7 +66,8 @@ func (s *sysT[Component]) ListenFrame(event loop.FrameEvent) {
 			}
 		}
 
-		component := transitionComponent.From.Lerp(transitionComponent.To, float32(progress))
+		component := any(transitionComponent.From).(transition.LerpConstraint[Component]).
+			Lerp(transitionComponent.To, float32(progress))
 
 		s.transitionArray.Set(entity, transitionComponent)
 		s.componentArray.Set(entity, component)

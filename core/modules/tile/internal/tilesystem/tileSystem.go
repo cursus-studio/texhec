@@ -1,9 +1,9 @@
 package tilesystem
 
 import (
+	"core/game"
 	"core/modules/tile"
 	"core/modules/ui"
-	gamescenes "core/scenes"
 	"engine/modules/grid"
 	"engine/modules/inputs"
 	"engine/modules/loop"
@@ -20,7 +20,7 @@ import (
 var invSpeedTable [256]tile.Coord
 
 type system struct {
-	gamescenes.GameWorld `inject:""`
+	game.GameWorld `inject:""`
 
 	dirtyDeployedSet  ecs.DirtySet
 	dirtyTransformSet ecs.DirtySet
@@ -139,13 +139,13 @@ func (s *system) OnTick(e loop.TickEvent) {
 		pos, ok := s.Tile().Pos().Get(entity)
 		if !ok {
 			s.Tile().Step().Remove(entity)
-			s.Logger().Warn(tile.ErrPositionAndSpeedIsRequiredToStep)
+			s.Logger().Log(tile.ErrPositionAndSpeedIsRequiredToStep)
 			continue
 		}
 		speed, ok := s.Tile().Speed().Get(entity)
 		if !ok {
 			s.Tile().Step().Remove(entity)
-			s.Logger().Warn(tile.ErrPositionAndSpeedIsRequiredToStep)
+			s.Logger().Log(tile.ErrPositionAndSpeedIsRequiredToStep)
 			continue
 		}
 		arrived := tile.Coord(step.X) == pos.X && tile.Coord(step.Y) == pos.Y
@@ -158,7 +158,7 @@ func (s *system) OnTick(e loop.TickEvent) {
 		aligned, isFirstStep := pos.Aligned()
 		if isFirstStep && !s.Tile().CanStep(aligned, size, obstruction, step) {
 			s.Tile().Step().Remove(entity)
-			s.Logger().Warn(tile.ErrInvalidStep)
+			s.Logger().Log(tile.ErrInvalidStep)
 			continue
 		}
 
@@ -178,7 +178,7 @@ func (s *system) OnTick(e loop.TickEvent) {
 			pos.Y = max(pos.Y-stepSpeed, tile.Coord(step.Y))
 			rot = rotDown
 		} else {
-			s.Logger().Warn(fmt.Errorf("tile system isn't able to handle StepComponent"))
+			s.Logger().Log(fmt.Errorf("tile system isn't able to handle StepComponent"))
 		}
 		const epsilon tile.Coord = 1e-3
 		if abs(tile.Coord(step.X)-pos.X) < epsilon {
@@ -216,7 +216,7 @@ func (s *system) OnHover(e tile.HoverEvent) {
 	}
 	grid, ok := s.Tile().TileGrid().Get(e.Grid)
 	if !ok {
-		s.Logger().Warn(fmt.Errorf("grid doesn't exist"))
+		s.Logger().Log(fmt.Errorf("grid doesn't exist"))
 		return
 	}
 	coords := grid.GetCoords(e.Tile)
