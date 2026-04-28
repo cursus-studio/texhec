@@ -1,9 +1,11 @@
 package internal
 
 import (
+	"engine"
 	"engine/modules/codec"
-	"engine/services/logger"
 	"reflect"
+
+	"github.com/ogiusek/ioc/v2"
 )
 
 type Builder interface {
@@ -12,15 +14,14 @@ type Builder interface {
 }
 
 type builder struct {
-	logger logger.Logger
-	types  map[reflect.Type]struct{}
+	engine.EngineWorld `inject:""`
+	types              map[reflect.Type]struct{}
 }
 
-func NewBuilder(logger logger.Logger) Builder {
-	return &builder{
-		logger: logger,
-		types:  make(map[reflect.Type]struct{}),
-	}
+func NewBuilder(c ioc.Dic) Builder {
+	b := ioc.GetServices[*builder](c)
+	b.types = make(map[reflect.Type]struct{})
+	return b
 }
 
 type GobTypesHook interface { // types to register
@@ -49,5 +50,5 @@ func (b *builder) Build() codec.Service {
 	for codecType := range b.types {
 		types = append(types, codecType)
 	}
-	return newCodec(b.logger, types)
+	return newCodec(b.EngineWorld, types)
 }

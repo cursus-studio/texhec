@@ -32,23 +32,23 @@ func NewSystem(c ioc.Dic) ecs.SystemRegister {
 func (s *system) OnClickEntity(e tile.ClickEntityEvent) {
 	link, ok := s.Metadata().Link().Get(e.Entity)
 	if !ok {
-		s.Logger().Warn(errors.New("expected entity to have link component"))
+		s.Logger().Log(errors.New("expected entity to have link component"))
 		return
 	}
 	name, ok := s.Metadata().Name().Get(link.Entity)
 	if !ok {
-		s.Logger().Warn(errors.New("expected link to have name component"))
+		s.Logger().Log(errors.New("expected link to have name component"))
 		return
 	}
 	deployed, _ := s.Deploy().Component().Get(link.Entity)
 	owner, ok := s.Player().Owner().Get(e.Entity)
 	if !ok {
-		s.Logger().Warn(errors.New("object without owner cannot build"))
+		s.Logger().Log(errors.New("object without owner cannot build"))
 		return
 	}
 	playerName, ok := s.Metadata().Name().Get(owner.Owner)
 	if !ok {
-		s.Logger().Warn(errors.New("expected player to have player component"))
+		s.Logger().Log(errors.New("expected player to have player component"))
 		return
 	}
 
@@ -68,7 +68,7 @@ func (s *system) OnClickEntity(e tile.ClickEntityEvent) {
 	for _, deployed := range deployed.Deployable {
 		name, ok := s.Metadata().Name().Get(deployed)
 		if !ok {
-			s.Logger().Warn(errors.New("expected entity to have name component"))
+			s.Logger().Log(errors.New("expected entity to have name component"))
 			continue
 		}
 		btn := Button{fmt.Sprintf("%v", name.Name), deploy.NewSelectEvent(e.Entity, deployed)}

@@ -9,7 +9,6 @@ import (
 	"engine/modules/text/internal/textservice"
 	typeregistrypkg "engine/modules/typeregistry/pkg"
 	"engine/services/datastructures"
-	"engine/services/logger"
 	"image"
 	"image/color"
 	"os"
@@ -65,10 +64,9 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 	ioc.Register(b, func(c ioc.Dic) textrenderer.FontService {
 		config := ioc.Get[Config](c).(*config)
 		return textrenderer.NewFontService(
-			ioc.Get[assets.Service](c),
+			c,
 			config.UsedGlyphs(),
 			config.faceOptions,
-			ioc.Get[logger.Logger](c),
 			int(config.faceOptions.Size),
 			config.yBaseline,
 		)

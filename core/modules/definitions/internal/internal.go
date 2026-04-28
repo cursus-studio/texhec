@@ -49,13 +49,13 @@ func (s *service) Assets() definitions.Assets {
 		return *s.assets
 	}
 	def, err := entityregistry.GetRegistry[definitions.Assets](s.World.EntityRegistry())
-	s.World.Logger().Warn(err)
+	s.World.Logger().Log(err)
 	{
 		img := image.NewRGBA(image.Rect(0, 0, 1, 1))
 		white := color.RGBA{255, 255, 255, 255}
 		img.Set(0, 0, white)
 		asset, err := render.NewTextureAsset(img)
-		s.World.Logger().Warn(err)
+		s.World.Logger().Log(err)
 		def.Blank = s.World.World().NewEntity()
 		s.World.Assets().Cache().Set(def.Blank, assets.NewCache(asset))
 	}
@@ -93,11 +93,11 @@ func (s *service) Hud() definitions.Hud {
 		return *s.hud
 	}
 	def, err := entityregistry.GetRegistry[definitions.Hud](s.World.EntityRegistry())
-	s.World.Logger().Warn(err)
+	s.World.Logger().Log(err)
 	{
 		btnAsset, err := assets.GetAsset[render.TextureAsset](s.World.Assets(), def.Btn)
 		if err != nil {
-			s.World.Logger().Warn(err)
+			s.World.Logger().Log(err)
 		}
 		btnAspectRatio := btnAsset.AspectRatio()
 		s.World.Groups().Inherit().Set(def.Btn, groups.InheritGroupsComponent{})
@@ -120,7 +120,7 @@ func (s *service) Hud() definitions.Hud {
 	{
 		btnAsset, err := assets.GetAsset[render.TextureAsset](s.World.Assets(), def.Btn)
 		if err != nil {
-			s.World.Logger().Warn(err)
+			s.World.Logger().Log(err)
 		}
 		btnAspectRatio := btnAsset.AspectRatio()
 		s.World.Groups().Inherit().Set(def.Text, groups.InheritGroupsComponent{})
@@ -148,7 +148,7 @@ func (s *service) Tiles() definitions.Tiles {
 		return *s.tiles
 	}
 	def, err := entityregistry.GetRegistry[definitions.Tiles](s.World.EntityRegistry())
-	s.World.Logger().Warn(err)
+	s.World.Logger().Log(err)
 	s.tiles = &def
 	return def
 }
@@ -157,7 +157,7 @@ func (s *service) Objects() definitions.Objects {
 		return *s.objects
 	}
 	def, err := entityregistry.GetRegistry[definitions.Objects](s.World.EntityRegistry())
-	s.World.Logger().Warn(err)
+	s.World.Logger().Log(err)
 
 	s.World.Deploy().Component().Set(def.Tank, deploy.NewDeploy(def.Tank, def.Farm))
 	s.World.Deploy().Component().Set(def.Farm, deploy.NewDeploy(def.Tank, def.Farm, def.HouseT1, def.HouseT2, def.HouseT3, def.HouseT4))
@@ -169,7 +169,7 @@ func (s *service) Transitions() definitions.Transitions {
 		return *s.transitions
 	}
 	def, err := entityregistry.GetRegistry[definitions.Transitions](s.World.EntityRegistry())
-	s.World.Logger().Warn(err)
+	s.World.Logger().Log(err)
 	transitionEntity := func(easing func(t transition.Progress) transition.Progress) ecs.EntityID {
 		entity := s.World.World().NewEntity()
 		s.World.Transition().EasingFunction().Set(entity, transition.NewEasingFunction(easing))

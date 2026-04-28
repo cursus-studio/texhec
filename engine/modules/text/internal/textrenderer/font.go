@@ -1,12 +1,13 @@
 package textrenderer
 
 import (
+	"engine"
 	"engine/modules/assets"
 	"engine/modules/text"
 	"engine/services/datastructures"
 	"engine/services/ecs"
-	"engine/services/logger"
 
+	"github.com/ogiusek/ioc/v2"
 	"golang.org/x/image/font/opentype"
 )
 
@@ -17,29 +18,25 @@ type FontService interface {
 }
 
 type fontService struct {
-	assets      assets.Service
-	usedGlyphs  datastructures.SparseSet[rune]
-	faceOptions opentype.FaceOptions
-	logger      logger.Logger
+	engine.EngineWorld `inject:""`
+	usedGlyphs         datastructures.SparseSet[rune]
+	faceOptions        opentype.FaceOptions
 
 	cellSize, yBaseline int
 }
 
 func NewFontService(
-	assets assets.Service,
+	c ioc.Dic,
 	usedGlyphs datastructures.SparseSet[rune],
 	face opentype.FaceOptions,
-	logger logger.Logger,
 	cellSize, yBaseline int,
 ) FontService {
-	return &fontService{
-		assets,
-		usedGlyphs,
-		face,
-		logger,
-		cellSize,
-		yBaseline,
-	}
+	s := ioc.GetServices[*fontService](c)
+	s.usedGlyphs = usedGlyphs
+	s.faceOptions = face
+	s.cellSize = cellSize
+	s.yBaseline = yBaseline
+	return s
 }
 
 // temporary fix for performance
@@ -48,7 +45,7 @@ func NewFontService(
 //
 
 func (s *fontService) AssetFont(assetID ecs.EntityID) (text.Glyphs, error) {
-	asset, err := assets.GetAsset[text.FontFaceAsset](s.assets, assetID)
+	asset, err := assets.GetAsset[text.FontFaceAsset](s.Assets(), assetID)
 	if err != nil {
 		return text.Glyphs{}, err
 	}

@@ -138,19 +138,19 @@ func (s *service) Execute(e deploy.ExecuteEvent) {
 	obstructionGridEntity := s.Tile().ObstructionGrid().GetEntities()[0]
 	obstructed, ok := s.Tile().ObstructionGrid().Get(obstructionGridEntity)
 	if !ok {
-		s.Logger().Warn(tile.ErrPositionIsOccupied)
+		s.Logger().Log(tile.ErrPositionIsOccupied)
 		return
 	}
 	aabb := tile.NewAABB(pos, size)
 	for _, coords := range aabb.Tiles {
 		index, ok := obstructed.GetIndex(coords.Coords())
 		if !ok {
-			s.Logger().Warn(tile.ErrPositionIsOccupied)
+			s.Logger().Log(tile.ErrPositionIsOccupied)
 			return
 		}
 		coordsObstruction := obstructed.GetTile(index)
 		if blueprintObstruction.Obstruction&coordsObstruction != 0 {
-			s.Logger().Warn(tile.ErrPositionIsOccupied)
+			s.Logger().Log(tile.ErrPositionIsOccupied)
 			return
 		}
 	}

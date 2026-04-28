@@ -42,7 +42,7 @@ func (service *Service) ChangeScene(event scene.ChangeSceneEvent) {
 
 	scene, ok := service.scenes[event.ID]
 	if !ok {
-		service.Logger().Warn(fmt.Errorf("scene with id %v doesn't exist", event.ID))
+		service.Logger().Log(fmt.Errorf("scene with id %v doesn't exist", event.ID))
 		return
 	}
 	scene(sceneEntity)

@@ -90,7 +90,7 @@ func (s *inputsSystem) Listen(args loop.FrameEvent) {
 		case *sdl.TouchFingerEvent:
 			e = *event
 		default:
-			s.Logger().Warn(errors.Join(
+			s.Logger().Log(errors.Join(
 				ErrNotHandledInput,
 				fmt.Errorf("event not handled: type \"%d\": \"%v\"", event.GetType(), event),
 			))

@@ -140,7 +140,7 @@ func (s *system) ListenRender(render render.RenderEvent) {
 			s.ids.Set(tileComp.ID, id)
 			texture, err := assets.GetAsset[tile.BiomAsset](s.Assets(), entity)
 			if err != nil {
-				s.Logger().Warn(err)
+				s.Logger().Log(err)
 				continue
 			}
 
@@ -159,7 +159,7 @@ func (s *system) ListenRender(render render.RenderEvent) {
 		if len(dirtyTiles) != 0 {
 			highLodTextureArray, err := s.Graphics().TextureArray().New(s.textures)
 			if err != nil {
-				s.Logger().Warn(err)
+				s.Logger().Log(err)
 				return
 			}
 
@@ -171,7 +171,7 @@ func (s *system) ListenRender(render render.RenderEvent) {
 			}
 			lowLodTextureArray, err := s.Graphics().TextureArray().New(lowLodTextures)
 			if err != nil {
-				s.Logger().Warn(err)
+				s.Logger().Log(err)
 				return
 			}
 

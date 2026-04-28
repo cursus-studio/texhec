@@ -155,5 +155,5 @@ func AssetRelease(assetsService assets.Service, assetEntity ecs.EntityID) {
 ## Dependencies
 - [datastructures](/engine/services/datastructures/readme/README.md)
 - [ecs](/engine/services/ecs/readme/README.md)
-- [logger](/engine/services/logger/readme/README.md)
+- [logger](/engine/modules/logger/readme/README.md)
 - [registry](/engine/modules/registry/readme/README.md)

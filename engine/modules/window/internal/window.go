@@ -1,8 +1,10 @@
 package internal
 
 import (
+	"engine"
+	"engine/modules/logger"
 	"engine/modules/window"
-	"engine/services/logger"
+	"errors"
 	"sync"
 
 	"github.com/go-gl/gl/v4.5-core/gl"
@@ -13,10 +15,10 @@ import (
 )
 
 type service struct {
-	Logger  logger.Logger `inject:""`
-	window  *sdl.Window
-	context sdl.GLContext
-	once    sync.Once
+	engine.EngineWorld `inject:""`
+	window             *sdl.Window
+	context            sdl.GLContext
+	once               sync.Once
 }
 
 func NewService(c ioc.Dic) window.Service {
@@ -28,7 +30,7 @@ func (s *service) init() {
 	s.once.Do(func() {
 		var err error
 		if err := sdl.Init(sdl.INIT_EVERYTHING); err != nil {
-			s.Logger.Fatal(err)
+			s.Logger().Log(errors.Join(logger.ErrFatal, err))
 			return
 		}
 
@@ -40,7 +42,7 @@ func (s *service) init() {
 
 		// audio
 		if err := mix.OpenAudio(48000, sdl.AUDIO_F32SYS, 2, 1024); err != nil {
-			s.Logger.Fatal(err)
+			s.Logger().Log(errors.Join(logger.ErrFatal, err))
 			return
 		}
 
@@ -52,21 +54,21 @@ func (s *service) init() {
 			sdl.WINDOW_SHOWN|sdl.WINDOW_OPENGL,
 		)
 		if err != nil {
-			s.Logger.Fatal(err)
+			s.Logger().Log(errors.Join(logger.ErrFatal, err))
 			return
 		}
 
 		s.context, err = s.window.GLCreateContext()
 		if err != nil {
-			s.Logger.Fatal(err)
+			s.Logger().Log(errors.Join(logger.ErrFatal, err))
 			return
 		}
 		if err := gl.Init(); err != nil {
-			s.Logger.Fatal(err)
+			s.Logger().Log(errors.Join(logger.ErrFatal, err))
 			return
 		}
 		if err := s.window.GLMakeCurrent(s.context); err != nil {
-			s.Logger.Fatal(err)
+			s.Logger().Log(errors.Join(logger.ErrFatal, err))
 			return
 		}
 		_ = sdl.GLSetSwapInterval(0)

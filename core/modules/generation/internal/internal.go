@@ -62,7 +62,7 @@ func (s *service) Chances() (*Config, []tile.ID) {
 	for _, chance := range config.chances {
 		tileComp, ok := s.Tile().TileType().Get(chance.tileType)
 		if !ok {
-			s.Logger().Warn(fmt.Errorf("\"%v\" isn't a tile tile and therefor cannot be used in generation", chance.tileType))
+			s.Logger().Log(fmt.Errorf("\"%v\" isn't a tile tile and therefor cannot be used in generation", chance.tileType))
 			continue
 		}
 		types = append(types, slices.Repeat([]tile.ID{tileComp.ID}, chance.chance)...)

@@ -12,14 +12,16 @@ import (
 	"engine/modules/graphics"
 	"engine/modules/grid"
 	"engine/modules/inputs"
+	"engine/modules/logger"
+	loggerpkg "engine/modules/logger/pkg"
 	netsyncpkg "engine/modules/netsync/pkg"
 	"engine/modules/record"
 	"engine/modules/text"
 	textpkg "engine/modules/text/pkg"
 	"engine/modules/transform"
 	"engine/modules/window"
-	"engine/services/console"
-	"engine/services/logger"
+	"errors"
+	"fmt"
 
 	"github.com/go-gl/gl/v4.5-core/gl"
 	"github.com/ogiusek/ioc/v2"
@@ -30,6 +32,8 @@ func getDic() ioc.Dic {
 		corepkg.Pkg,
 		func(b ioc.Builder) {
 			ioc.Wrap(b, func(c ioc.Dic, def definitions.Service) {
+				// definitions have to be loaded explicitly
+				// they aren't loaded by default so tests won't look for files
 				def.Load()
 			})
 			ioc.Wrap(b, func(c ioc.Dic, w window.Service) {
@@ -80,9 +84,38 @@ func getDic() ioc.Dic {
 				}
 				c.UsedGlyphs().Add(' ')
 			})
-			ioc.Wrap(b, func(c ioc.Dic, config logger.Config) {
-				config.PanicOnWarn(true)
-				config.Flush(ioc.Get[console.Console](c).PrintPermanent)
+			ioc.Wrap(b, func(c ioc.Dic, config loggerpkg.Config) {
+				world := ioc.GetServices[game.GameWorld](c)
+				config.AddFormatHandler(func(meta, msg error) error {
+					typeMsg, color := "LOG", "37"
+					if errors.Is(meta, logger.ErrInfo) {
+						typeMsg, color = "Info", "34"
+					}
+					if logger.IsWarning(meta) {
+						typeMsg, color = "Warn", "33"
+					}
+					if errors.Is(meta, logger.ErrFatal) {
+						typeMsg, color = "Fatal", "31"
+					}
+					return fmt.Errorf(
+						"\033[%sm[ %s ]\033[0m %s %s",
+						color,
+						typeMsg,
+						world.Clock().Now().Format("15:04:05.000000"),
+						msg.Error(),
+					)
+				})
+				config.AddDeliverHandler(func(meta, msg error) {
+					world.Console().PrintPermanent(msg.Error())
+
+					if errors.Is(meta, logger.ErrFatal) {
+						world.Console().Flush()
+					}
+					if logger.IsWarning(meta) {
+						world.Console().Flush()
+						panic("Debug warning")
+					}
+				})
 			})
 			ioc.Wrap(b, func(c ioc.Dic, config netsyncpkg.Config) {
 				config.SetMaxPredictions(150)

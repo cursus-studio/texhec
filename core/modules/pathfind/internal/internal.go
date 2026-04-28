@@ -48,7 +48,7 @@ func (s *service) PreviewPath(e pathfind.PreviewPathEvent) {
 
 	from, ok := s.Tile().Pos().Get(e.Entity)
 	if !ok {
-		s.Logger().Warn(tile.ErrInvalidPosition)
+		s.Logger().Log(tile.ErrInvalidPosition)
 		return
 	}
 	to := tile.NewPos(e.Coords.Coords())
@@ -103,7 +103,7 @@ func (s *service) FindPath(e pathfind.FindPathEvent) {
 
 	from, ok := s.Tile().Pos().Get(e.Entity)
 	if !ok {
-		s.Logger().Warn(tile.ErrInvalidPosition)
+		s.Logger().Log(tile.ErrInvalidPosition)
 		return
 	}
 	to := tile.NewPos(e.Coords.Coords())
@@ -112,7 +112,7 @@ func (s *service) FindPath(e pathfind.FindPathEvent) {
 	fromCoords, _ := from.Aligned()
 	toCoords, _ := to.Aligned()
 	if _, ok := s.findPath(fromCoords, toCoords, size, obstruction); !ok {
-		s.Logger().Warn(pathfind.ErrInvalidPath)
+		s.Logger().Log(pathfind.ErrInvalidPath)
 		return
 	}
 	s.Target().Set(e.Entity, pathfind.NewTarget(e.Coords))
@@ -128,7 +128,7 @@ func (s *service) OnTick(e loop.TickEvent) {
 
 		from, ok := s.Tile().Pos().Get(entity)
 		if !ok {
-			s.Logger().Warn(tile.ErrInvalidPosition)
+			s.Logger().Log(tile.ErrInvalidPosition)
 			return
 		}
 		target, _ := s.Target().Get(entity)
@@ -145,7 +145,7 @@ func (s *service) OnTick(e loop.TickEvent) {
 		toCoords, _ := to.Aligned()
 		path, ok := s.findPath(fromCoords, toCoords, size, obstruction)
 		if !ok {
-			s.Logger().Warn(pathfind.ErrInvalidPath)
+			s.Logger().Log(pathfind.ErrInvalidPath)
 			continue
 		}
 		step := tile.NewStep(grid.Coord(path[0].X), grid.Coord(path[0].Y))

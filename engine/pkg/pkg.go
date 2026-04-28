@@ -15,6 +15,7 @@ import (
 	hierarchypkg "engine/modules/hierarchy/pkg"
 	inputspkg "engine/modules/inputs/pkg"
 	layoutpkg "engine/modules/layout/pkg"
+	loggerpkg "engine/modules/logger/pkg"
 	looppkg "engine/modules/loop/pkg"
 	metadatapkg "engine/modules/metadata/pkg"
 	netsyncpkg "engine/modules/netsync/pkg"
@@ -33,7 +34,6 @@ import (
 	"engine/services/clock"
 	"engine/services/console"
 	"engine/services/ecs"
-	"engine/services/logger"
 
 	"github.com/ogiusek/ioc/v2"
 )
@@ -54,6 +54,7 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 		hierarchypkg.Pkg,
 		inputspkg.Pkg,
 		layoutpkg.Pkg,
+		loggerpkg.Pkg,
 		looppkg.Pkg,
 		metadatapkg.Pkg,
 		netsyncpkg.Pkg,
@@ -73,7 +74,6 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 		clock.Pkg,
 		console.Pkg,
 		ecs.Pkg,
-		logger.Pkg,
 	}
 	for _, pkg := range pkgs {
 		pkg(b)

@@ -184,17 +184,17 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 			errInvalidFormat := fmt.Errorf("size should be in format \"1x1\" where first number is width and second is height")
 			xy := strings.Split(structTagValue, "x")
 			if len(xy) != 2 {
-				world.Logger().Warn(errInvalidFormat)
+				world.Logger().Log(errInvalidFormat)
 				return
 			}
 			x, err := strconv.Atoi(xy[0])
 			if err != nil {
-				world.Logger().Warn(errInvalidFormat)
+				world.Logger().Log(errInvalidFormat)
 				return
 			}
 			y, err := strconv.Atoi(xy[1])
 			if err != nil {
-				world.Logger().Warn(errInvalidFormat)
+				world.Logger().Log(errInvalidFormat)
 				return
 			}
 			world.Tile().Size().Set(entity, tile.NewSize(x, y))
@@ -202,12 +202,12 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 		b.Register("speed", func(entity ecs.EntityID, structTagValue string) {
 			v, err := strconv.Atoi(structTagValue)
 			if err != nil {
-				world.Logger().Warn(err)
+				world.Logger().Log(err)
 				return
 			}
 			speed := tile.NewSpeed(v)
 			if int(speed.InvSpeed) != v {
-				world.Logger().Warn(fmt.Errorf("speed has to be clamped between 0 and 255"))
+				world.Logger().Log(fmt.Errorf("speed has to be clamped between 0 and 255"))
 				return
 			}
 			world.Tile().Speed().Set(entity, speed)

@@ -14,6 +14,7 @@ import (
 	"engine/modules/hierarchy"
 	"engine/modules/inputs"
 	"engine/modules/layout"
+	"engine/modules/logger"
 	"engine/modules/loop"
 	"engine/modules/metadata"
 	"engine/modules/netsync"
@@ -32,7 +33,6 @@ import (
 	"engine/services/clock"
 	"engine/services/console"
 	"engine/services/ecs"
-	"engine/services/logger"
 
 	"github.com/ogiusek/events"
 	"github.com/ogiusek/ioc/v2"
@@ -56,6 +56,7 @@ type EngineWorld struct {
 	Hierarchy      ioc.Lazy[hierarchy.Service]      `inject:""`
 	Inputs         ioc.Lazy[inputs.Service]         `inject:""`
 	Layout         ioc.Lazy[layout.Service]         `inject:""`
+	Logger         ioc.Lazy[logger.Service]         `inject:""`
 	Loop           ioc.Lazy[loop.Service]           `inject:""`
 	Metadata       ioc.Lazy[metadata.Service]       `inject:""`
 	NetSync        ioc.Lazy[netsync.Service]        `inject:""`
@@ -74,5 +75,4 @@ type EngineWorld struct {
 
 	Clock   ioc.Lazy[clock.Clock]     `inject:""`
 	Console ioc.Lazy[console.Console] `inject:""`
-	Logger  ioc.Lazy[logger.Logger]   `inject:""`
 }

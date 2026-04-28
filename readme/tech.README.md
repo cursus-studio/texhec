@@ -185,6 +185,7 @@ Engine modules:
 - [hierarchy](/engine/modules/hierarchy/readme/README.md)
 - [inputs (placeholder)](/engine/modules/inputs/readme/README.md)
 - [layout (placeholder)](/engine/modules/layout/readme/README.md)
+- [logger (placeholder)](/engine/modules/logger/readme/README.md)
 - [loop (placeholder)](/engine/modules/loop/readme/README.md)
 - [metadata (placeholder)](/engine/modules/metadata/readme/README.md)
 - [netsync (placeholder)](/engine/modules/netsync/readme/README.md)
@@ -209,7 +210,6 @@ Engine services:
 - [console (placeholder)](/engine/services/console/readme/README.md)
 - [datastructures (placeholder)](/engine/services/datastructures/readme/README.md)
 - [ecs](/engine/services/ecs/readme/README.md)
-- [logger (placeholder)](/engine/services/logger/readme/README.md)
 
 ### Technical challenges
 Each and every module had unique challenges and they are described in these readmes.

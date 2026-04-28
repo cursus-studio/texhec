@@ -80,7 +80,7 @@ func (s *textRenderer) ListenRender(render rendersys.RenderEvent) {
 
 		// add freshly added fonts
 		for _, value := range fonts.GetValues() {
-			s.Logger().Warn(s.ensureFontExists(value))
+			s.Logger().Log(s.ensureFontExists(value))
 		}
 
 		//

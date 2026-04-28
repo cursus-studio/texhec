@@ -3,18 +3,18 @@ package internal
 import (
 	"bytes"
 	"encoding/gob"
+	"engine"
 	"engine/modules/codec"
-	"engine/services/logger"
 	"errors"
 	"reflect"
 )
 
 type service struct {
-	logger logger.Logger
+	engine.EngineWorld
 }
 
 func newCodec(
-	logger logger.Logger,
+	engine engine.EngineWorld,
 	types []reflect.Type,
 ) codec.Service {
 	for _, codecType := range types {
@@ -22,7 +22,7 @@ func newCodec(
 		value := reflect.New(codecType).Elem().Interface()
 		gob.RegisterName(name, value)
 	}
-	return &service{logger}
+	return &service{engine}
 }
 
 func (s *service) Encode(model any) ([]byte, error) {

@@ -28,7 +28,7 @@ func NewService(c ioc.Dic) entityregistry.Service {
 
 func (s *service) Register(structTagKey string, handler func(entity ecs.EntityID, structTagValue string)) {
 	if _, ok := s.presentTags[structTagKey]; ok {
-		s.Logger().Warn(errors.Join(
+		s.Logger().Log(errors.Join(
 			fmt.Errorf("already registered struct tag key"),
 			fmt.Errorf("struct tag is already registered \"%v\"", structTagKey),
 		))

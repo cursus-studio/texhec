@@ -38,7 +38,7 @@ func (s *cursorSystem) Listen(loop.FrameEvent) {
 
 	cameras := s.Ui().CursorCamera().GetEntities()
 	if len(cameras) > 1 {
-		s.Logger().Warn(fmt.Errorf("expected at most one cursor camera component"))
+		s.Logger().Log(fmt.Errorf("expected at most one cursor camera component"))
 	}
 	if len(cameras) != 1 {
 		for _, cursor := range s.CursorComponent.GetEntities() {

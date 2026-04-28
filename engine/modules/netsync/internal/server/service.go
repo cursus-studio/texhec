@@ -84,7 +84,7 @@ func NewService(c ioc.Dic, config config.Config) *Service {
 			messageType := reflect.TypeOf(message.Message)
 			listener, ok := listeners[messageType]
 			if !ok {
-				t.Logger().Warn(fmt.Errorf("invalid listener called there is no %v type", messageType.String()))
+				t.Logger().Log(fmt.Errorf("invalid listener called there is no %v type", messageType.String()))
 				continue
 			}
 			listener(message.Client, message.Message)
@@ -133,7 +133,7 @@ func (t *Service) OnTransparentEvent(event any) {
 		if !ok {
 			return
 		}
-		t.Logger().Warn(connComp.Conn().Send(servertypes.TransparentEventDTO{Event: event}))
+		t.Logger().Log(connComp.Conn().Send(servertypes.TransparentEventDTO{Event: event}))
 	}
 }
 
@@ -150,7 +150,7 @@ func (t *Service) ListenEmitEvent(entity ecs.EntityID, dto clienttypes.EmitEvent
 	event, err := t.Auth(entity, dto.Event)
 	if err != nil {
 		err := conn.Conn().Send(servertypes.SendChangeDTO{Error: err})
-		t.Logger().Warn(err)
+		t.Logger().Log(err)
 		return
 	}
 	t.recordedEventUUID = &dto.ID
@@ -165,7 +165,7 @@ func (t *Service) ListenTransparentEvent(entity ecs.EntityID, dto clienttypes.Tr
 	event, err := t.Auth(entity, dto.Event)
 	if err != nil {
 		err := conn.Conn().Send(servertypes.TransparentEventDTO{Error: err})
-		t.Logger().Warn(err)
+		t.Logger().Log(err)
 		return
 	}
 	events.EmitAny(t.Events(), event)
