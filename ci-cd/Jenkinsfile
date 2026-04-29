@@ -1,0 +1,57 @@
+pipeline {
+	agent {
+		node {
+			label '' // An empty label string means "any"
+		}
+	}
+	// environment { }
+
+	stages {
+		stage('Sync Repo') {
+			steps {
+				checkout scm
+			}
+		}
+		stage ('Logging') {
+			steps {
+				echo "Current branch is: ${env.GIT_BRANCH}"
+				echo "Succesfully started pipeline"
+			}
+		}
+		// stage ('Security scans') {
+		// 	agent {
+		// 		dockerfile {
+		// 			filename 'security.Dockerfile'
+		// 			dir 'ci-cd/jenkins/agent'
+		// 		}
+		// 	}
+		// 	steps {
+		// 		dir ("ci-cd"){
+		// 			sh 'trivy config --skip-dirs jenkins/home --exit-code 1 --severity HIGH,CRITICAL .'
+		// 		}
+		// 	}
+		// }
+		// stage ('Deploy') {
+		// 	when {
+		// 		expression { return env.GIT_BRANCH.contains ('prod') }
+		// 	}
+		// 	steps {
+		// 		dir ("ci-cd") {
+		// 			sh 'bash jenkins/scripts/deploy.sh'
+		// 		}
+		// 	}
+		// }
+	}
+
+	// post {
+	// 	always {
+	// 		echo 'Cleanup'
+	// 	}
+	// 	success {
+	// 		echo 'Success'
+	// 	}
+	// 	failure {
+	// 		echo 'Failure'
+	// 	}
+	// }
+}
