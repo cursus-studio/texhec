@@ -33,7 +33,7 @@ pipeline {
 }
 
 def updateGitHubStatus(String state, String description) {
-    withCredentials([usernamePassword(credentialsId: 'texhec-app', passwordVariable: 'GITHUB_TOKEN', usernameVariable: 'GITHUB_APP_USER')]) {
+    withCredentials([usernamePassword(credentialsId: 'texhec-app', passwordVariable: 'GITHUB_TOKEN')]) {
         withEnv([
             "TOKEN=${GITHUB_TOKEN}",
             "URL=https://api.github.com/repos/${OWNER}/${REPO}/statuses/${env.GIT_COMMIT}",
