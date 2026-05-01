@@ -1,57 +1,71 @@
 pipeline {
-	agent {
-		node {
-			label '' // An empty label string means "any"
-		}
-	}
-	// environment { }
+    agent {
+        node {
+            label ''             // An empty label string means "any"
+        }
+    }
+    // agent any
+    environment {
+        CONTEXT = 'jenkins/ci-cd'
+            OWNER = 'cursus-studio'
+            REPO = 'texhec'
+            GITHUB_TOKEN = credentials('759bb157-db18-4616-a402-324204b7027a')
+            SHA = sh(script: 'git rev-parse HEAD', returnStdout: true).trim()
+    }
 
-	stages {
-		stage('Sync Repo') {
-			steps {
-				checkout scm
-			}
-		}
-		stage ('Logging') {
-			steps {
-				echo "Current branch is: ${env.GIT_BRANCH}"
-				echo "Succesfully started pipeline"
-			}
-		}
-		// stage ('Security scans') {
-		// 	agent {
-		// 		dockerfile {
-		// 			filename 'security.Dockerfile'
-		// 			dir 'ci-cd/jenkins/agent'
-		// 		}
-		// 	}
-		// 	steps {
-		// 		dir ("ci-cd"){
-		// 			sh 'trivy config --skip-dirs jenkins/home --exit-code 1 --severity HIGH,CRITICAL .'
-		// 		}
-		// 	}
-		// }
-		// stage ('Deploy') {
-		// 	when {
-		// 		expression { return env.GIT_BRANCH.contains ('prod') }
-		// 	}
-		// 	steps {
-		// 		dir ("ci-cd") {
-		// 			sh 'bash jenkins/scripts/deploy.sh'
-		// 		}
-		// 	}
-		// }
-	}
+    stages {
+        stage('Loading') {
+            steps {
+                sh "echo Current SHA is ${SHA}"
 
-	// post {
-	// 	always {
-	// 		echo 'Cleanup'
-	// 	}
-	// 	success {
-	// 		echo 'Success'
-	// 	}
-	// 	failure {
-	// 		echo 'Failure'
-	// 	}
-	// }
+                sh """
+curl -L \
+  -X POST \
+  -H "Accept: application/vnd.github+json" \
+  -H "Authorization: Bearer ${TOKEN}" \
+  -H "X-GitHub-Api-Version: 2026-03-10" \
+  https://api.github.com/repos/${OWNER}/${REPO}/statuses/${SHA} \
+  -d "{\"state\":\"pending\",\"description\":\"Pending...\",\"context\":\"${CONTEXT}\"}"
+                """
+            }
+        }
+        stage('Sync Repo') {
+            steps {
+                checkout scm
+            }
+        }
+        stage ('Logging') {
+            steps {
+                echo "Current branch is: ${env.GIT_BRANCH}"
+                echo "Succesfully started pipeline"
+            }
+        }
+    }
+    post {
+        //  always {
+        //          echo 'Cleanup'
+        //  }
+        success {
+            sh """
+curl -L \
+  -X POST \
+  -H "Accept: application/vnd.github+json" \
+  -H "Authorization: Bearer ${TOKEN}" \
+  -H "X-GitHub-Api-Version: 2026-03-10" \
+  https://api.github.com/repos/${OWNER}/${REPO}/statuses/${SHA} \
+  -d "{\"state\":\"success\",\"description\":\"Success!\",\"context\":\"${CONTEXT}\"}"
+            """
+        }
+        failure {
+            sh """
+curl -L \
+  -X POST \
+  -H "Accept: application/vnd.github+json" \
+  -H "Authorization: Bearer ${TOKEN}" \
+  -H "X-GitHub-Api-Version: 2026-03-10" \
+  https://api.github.com/repos/${OWNER}/${REPO}/statuses/${SHA} \
+  -d "{\"state\":\"failure\",\"description\":\"Failure!\",\"context\":\"${CONTEXT}\"}"
+            """
+        }
+    }
 }
