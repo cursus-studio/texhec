@@ -33,14 +33,14 @@ pipeline {
 }
 
 def updateGitHubStatus(String STATE, String DESC) {
-    withCredentials([usernamePassword(credentialsId: 'texhec-app',
-        passwordVariable: 'GITHUB_TOKEN',
-        usernameVariable: 'GITHUB_APP_USER')]) {
+    withCredentials([usernamePassword(credentialsId: 'texhec-app', passwordVariable: 'TOKEN', usernameVariable: 'USER')]) {
         withEnv([
             "GIT_COMMIT=${env.GIT_COMMIT}",
             "TARGET_URL=${env.BUILD_URL}",
+            "STATE=${STATE}",
+            "DESC=${DESC}",
         ]) {
             sh 'bash ci-cd/set_status.sh'
         }
-        }
+    }
 }
