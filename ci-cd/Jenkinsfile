@@ -33,16 +33,19 @@ pipeline {
 }
 
 def updateGitHubStatus(String state, String description) {
-    withCredentials([usernamePassword(credentialsId: 'texhec-app', passwordVariable: 'GITHUB_TOKEN')]) {
-        withEnv([
-            "TOKEN=${GITHUB_TOKEN}",
-            "URL=https://api.github.com/repos/${OWNER}/${REPO}/statuses/${env.GIT_COMMIT}",
-            "STATE=${state}",
-            "TARGET_URL=${env.BUILD_URL}",
-            "DESCRIPTION=${description}",
-            'CONTEXT=jenkins/ci-cd',
-        ]) {
+    withCredentials([string(credentialsId: 'github-token-secret-id', variable: 'GITHUB_TOKEN')]) {
+            // withCredentials([usernamePassword(credentialsId: 'texhec-app',
+            //     passwordVariable: 'GITHUB_TOKEN',
+            //     usernameVariable: 'GITHUB_APP_USER')]) {
+            //     withEnv([
+            //         "TOKEN=${GITHUB_TOKEN}",
+            //         "URL=https://api.github.com/repos/${OWNER}/${REPO}/statuses/${env.GIT_COMMIT}",
+            //         "STATE=${state}",
+            //         "TARGET_URL=${env.BUILD_URL}",
+            //         "DESCRIPTION=${description}",
+            //         'CONTEXT=jenkins/ci-cd',
+            //     ]) {
             sh 'bash ci-cd/set_status.sh'
-        }
+            // }
+            }
     }
-}
