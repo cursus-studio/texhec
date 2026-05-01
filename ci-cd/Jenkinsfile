@@ -1,5 +1,4 @@
 pipeline {
-    // agent any // agent should have sdl2, opengl, golang lint and golang
     agent {
             dockerfile {
                 filename 'Dockerfile'
@@ -24,18 +23,18 @@ pipeline {
         }
         stage('Engine: Lint & Test') {
             steps {
-                dir('engine') {
+                dir("${env.WORKSPACE}/engine") {
                     updateGitHubStatus('pending', 'Engine: Lint & Test...')
-                    sh 'golangci-lint run --timeout=5m'
+                    sh 'golangci-lint run'
                     sh 'go test ./...'
                 }
             }
         }
         stage('Core: Lint & Test') {
             steps {
-                dir('core') {
+                dir("${env.WORKSPACE}/core") {
                     updateGitHubStatus('pending', 'Core: Lint & Test')
-                    sh 'golangci-lint run --timeout=5m'
+                    sh 'golangci-lint run'
                     sh 'go test ./...'
                 }
             }
