@@ -4,13 +4,12 @@ pipeline {
         OWNER = 'cursus-studio'
         CONTEXT = 'jenkins/ci-cd'
         REPO = 'texhec'
-        GITHUB_TOKEN = credentials('texhec-app')
     }
 
     stages {
         stage('Loading') {
             steps {
-                withCredentials([string(credentialsId: 'texhec-app', variable: 'TOKEN')]) {
+                withCredentials([githubApp(credentialsId: 'texhec-app', variable: 'TOKEN')]) {
                     script {
                         updateGitHubStatus('pending', 'Build is in progress...', TOKEN)
                     }
@@ -28,20 +27,20 @@ pipeline {
         //          echo 'Cleanup'
         //  }
         success {
-                // updateGitHubStatus('success', 'Pipeline passed!')
-                withCredentials([string(credentialsId: 'texhec-app', variable: 'TOKEN')]) {
+            // updateGitHubStatus('success', 'Pipeline passed!')
+            withCredentials([githubApp(credentialsId: 'texhec-app', variable: 'TOKEN')]) {
                     script {
                         updateGitHubStatus('success', 'Pipeline passed!', TOKEN)
                     }
-                }
+            }
         }
         failure {
-                // updateGitHubStatus('failure', 'Pipeline failed!')
-                withCredentials([string(credentialsId: 'texhec-app', variable: 'TOKEN')]) {
+            // updateGitHubStatus('failure', 'Pipeline failed!')
+            withCredentials([githubApp(credentialsId: 'texhec-app', variable: 'TOKEN')]) {
                     script {
                         updateGitHubStatus('failure', 'Pipeline failed!', TOKEN)
                     }
-                }
+            }
         }
     }
 }
