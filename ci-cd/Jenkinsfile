@@ -16,20 +16,13 @@ pipeline {
                 updateGitHubStatus('pending', 'Build is in progress...')
             }
         }
-        stage('Sync Repo') {
-            steps {
-                checkout scm
-            }
-        }
-        stage('Logging') {
-            steps {
-                echo "Current branch is: ${env.GIT_BRANCH}"
-                echo 'Succesfully started pipeline'
-            }
-        }
+    // stage('Sync Repo') {
+    //     steps {
+    //         checkout scm
+    //     }
+    // }
     }
     post {
-        //
         //  always {
         //          echo 'Cleanup'
         //  }
