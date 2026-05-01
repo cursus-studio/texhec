@@ -59,7 +59,7 @@ def updateGitHubStatus(String STATE, String DESC) {
             "STATE=${STATE}",
             "DESC=${DESC}",
         ]) {
-                dir('/ci-cd') {
+                dir("${env.WORKSPACE}/ci-cd") {
                 sh 'bash set_status.sh'
                 }
         }
