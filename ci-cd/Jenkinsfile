@@ -44,7 +44,7 @@ def updateGitHubStatus(String state, String description) {
     //     -d "{\\"state\\":\\"${state}\\",\\"target_url\\":\\"${BUILD_URL}\\",\\"description\\":\\"${description}\\",\\"context\\":\\"${CONTEXT}\\"}"
     // """
     withEnv([
-        "TOKEN=${GITHUB_TOKEN}",
+        'TOKEN=' + GITHUB_TOKEN,
         "URL=https://api.github.com/repos/${OWNER}/${REPO}/statuses/${env.GIT_COMMIT}",
 
         "STATE=${state}",
