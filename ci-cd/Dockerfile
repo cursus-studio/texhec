@@ -1,7 +1,7 @@
 # TODO
 # agent dockerfile should have sdl2, opengl, golang lint and golang
 # Use the official Golang image as the base
-FROM golang:1.22-bookworm
+FROM golang:1.24-bookworm
 
 ENV DEBIAN_FRONTEND=noninteractive
 
