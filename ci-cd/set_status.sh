@@ -8,6 +8,8 @@ export TARGET_URL
 export DESCRIPTION
 export CONTEXT
 
+echo $TOKEN
+
 curl -L \
   -X POST \
   -H "Accept: application/vnd.github+json" \
