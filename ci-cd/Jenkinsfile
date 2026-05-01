@@ -1,5 +1,13 @@
 pipeline {
-    agent any
+    // agent any // agent should have sdl2, opengl, golang lint and golang
+    agent {
+            dockerfile {
+                filename 'Dockerfile'
+                dir 'ci-cd'
+                // Necessary for OpenGL/Graphics testing if running on a headful agent
+                additionalBuildArgs  '--build-arg CACHE_DATE=$(date +%Y-%m-%d)'
+            }
+    }
     environment {
         CONTEXT = 'jenkins/ci-cd'
 
@@ -8,26 +16,37 @@ pipeline {
     }
 
     stages {
-        stage('Initialize') {
+        stage('Initializing') {
             steps {
+                checkout scm
                 updateGitHubStatus('pending', 'Build is in progress...')
             }
         }
-    // stage('Sync Repo') {
-    //     steps {
-    //         checkout scm
-    //     }
-    // }
+        stage('Engine: Lint & Test') {
+            steps {
+                dir('engine') {
+                    updateGitHubStatus('pending', 'Engine: Lint & Test...')
+                    sh 'golangci-lint run --timeout=5m'
+                    sh 'go test ./...'
+                }
+            }
+        }
+        stage('Core: Lint & Test') {
+            steps {
+                dir('core') {
+                    updateGitHubStatus('pending', 'Core: Lint & Test')
+                    sh 'golangci-lint run --timeout=5m'
+                    sh 'go test ./...'
+                }
+            }
+        }
     }
     post {
-        //  always {
-        //          echo 'Cleanup'
-        //  }
         success {
-            updateGitHubStatus('success', 'Pipeline passed!')
+            updateGitHubStatus('success', 'All tests passed!')
         }
         failure {
-            updateGitHubStatus('failure', 'Pipeline failed!')
+            updateGitHubStatus('failure', 'Tests failed!')
         }
     }
 }
