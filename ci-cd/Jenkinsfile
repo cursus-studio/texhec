@@ -9,7 +9,7 @@ pipeline {
         CONTEXT = 'jenkins/ci-cd'
             OWNER = 'cursus-studio'
             REPO = 'texhec'
-            GITHUB_TOKEN = credentials('759bb157-db18-4616-a402-324204b7027a')
+            TOKEN = credentials('759bb157-db18-4616-a402-324204b7027a')
             SHA = sh(script: 'git rev-parse HEAD', returnStdout: true).trim()
     }
 
