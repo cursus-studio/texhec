@@ -3,6 +3,7 @@ pipeline {
             dockerfile {
                 filename 'Dockerfile'
                 dir 'ci-cd'
+                args '-v /home/jenkins/go-cache:/root/.cache/go-build -v /home/jenkins/golangci-lint:/root/.cache/golangci-lint'
                 // Necessary for OpenGL/Graphics testing if running on a headful agent
                 additionalBuildArgs  '--build-arg CACHE_DATE=$(date +%Y-%m-%d)'
             }
