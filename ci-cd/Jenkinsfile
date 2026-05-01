@@ -10,9 +10,6 @@ pipeline {
     stages {
         stage('Initialize') {
             steps {
-                withCredentials([gitHubApp(credentialsId: 'texhec-app', variable: 'TEMP_TOKEN')]) {
-                        GITHUB_TOKEN = TEMP_TOKEN
-                }
                 updateGitHubStatus('pending', 'Build is in progress...')
             }
         }
