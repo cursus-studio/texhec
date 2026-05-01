@@ -24,8 +24,8 @@ pipeline {
         }
         stage('Engine: Lint & Test') {
             steps {
+                updateGitHubStatus('pending', 'Engine: Lint & Test...')
                 dir("${env.WORKSPACE}/engine") {
-                    updateGitHubStatus('pending', 'Engine: Lint & Test...')
                     sh 'golangci-lint run'
                     sh 'go test ./...'
                 }
@@ -33,8 +33,8 @@ pipeline {
         }
         stage('Core: Lint & Test') {
             steps {
+                updateGitHubStatus('pending', 'Core: Lint & Test')
                 dir("${env.WORKSPACE}/core") {
-                    updateGitHubStatus('pending', 'Core: Lint & Test')
                     sh 'golangci-lint run'
                     sh 'go test ./...'
                 }
