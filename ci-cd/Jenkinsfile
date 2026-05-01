@@ -24,11 +24,9 @@ pipeline {
         //          echo 'Cleanup'
         //  }
         success {
-            // updateGitHubStatus('success', 'Pipeline passed!')
             updateGitHubStatus('success', 'Pipeline passed!')
         }
         failure {
-            // updateGitHubStatus('failure', 'Pipeline failed!')
             updateGitHubStatus('failure', 'Pipeline failed!')
         }
     }
@@ -37,7 +35,7 @@ pipeline {
 def updateGitHubStatus(String state, String description) {
     withCredentials([gitHubApp(credentialsId: 'texhec-app', variable: 'GITHUB_TOKEN')]) {
         withEnv([
-        "TOKEN=${env.GITHUB_TOKEN}",
+        "TOKEN=${GITHUB_TOKEN}",
         "URL=https://api.github.com/repos/${OWNER}/${REPO}/statuses/${env.GIT_COMMIT}",
 
         "STATE=${state}",
