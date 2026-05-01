@@ -26,6 +26,8 @@ pipeline {
             steps {
                 updateGitHubStatus('pending', 'Engine: Lint & Test...')
                 dir("${env.WORKSPACE}/engine") {
+                    sh 'go mod download'
+                    sh 'go mod tidy'
                     sh 'golangci-lint run'
                     sh 'go test ./...'
                 }
@@ -35,6 +37,8 @@ pipeline {
             steps {
                 updateGitHubStatus('pending', 'Core: Lint & Test')
                 dir("${env.WORKSPACE}/core") {
+                    sh 'go mod download'
+                    sh 'go mod tidy'
                     sh 'golangci-lint run'
                     sh 'go test ./...'
                 }
