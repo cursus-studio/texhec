@@ -1,10 +1,5 @@
 pipeline {
-    agent {
-        node {
-            label ''             // An empty label string means "any"
-        }
-    }
-    // agent any
+    agent any
     environment {
         CONTEXT = 'jenkins/ci-cd'
             OWNER = 'cursus-studio'
@@ -18,7 +13,7 @@ pipeline {
             steps {
                 sh "echo Current SHA is ${SHA}"
 
-updateGitHubStatus('pending', 'Build is in progress...')
+                updateGitHubStatus('pending', 'Build is in progress...')
             }
         }
         stage('Sync Repo') {
@@ -26,10 +21,10 @@ updateGitHubStatus('pending', 'Build is in progress...')
                 checkout scm
             }
         }
-        stage ('Logging') {
+        stage('Logging') {
             steps {
                 echo "Current branch is: ${env.GIT_BRANCH}"
-                echo "Succesfully started pipeline"
+                echo 'Succesfully started pipeline'
             }
         }
     }
@@ -38,10 +33,10 @@ updateGitHubStatus('pending', 'Build is in progress...')
         //          echo 'Cleanup'
         //  }
         success {
-updateGitHubStatus('success', 'Pipeline passed!')
+            updateGitHubStatus('success', 'Pipeline passed!')
         }
         failure {
-         updateGitHubStatus('failure', 'Pipeline failed!')
+            updateGitHubStatus('failure', 'Pipeline failed!')
         }
     }
 }
