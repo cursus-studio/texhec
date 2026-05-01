@@ -33,7 +33,7 @@ pipeline {
 }
 
 def updateGitHubStatus(String state, String description) {
-    withCredentials([string(credentialsId: 'github-token-secret-id', variable: 'GITHUB_TOKEN')]) {
+    withCredentials([string(credentialsId: 'texhec-app', variable: 'GITHUB_TOKEN')]) {
             // withCredentials([usernamePassword(credentialsId: 'texhec-app',
             //     passwordVariable: 'GITHUB_TOKEN',
             //     usernameVariable: 'GITHUB_APP_USER')]) {
