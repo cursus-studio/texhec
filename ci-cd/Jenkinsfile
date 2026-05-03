@@ -19,28 +19,50 @@ pipeline {
         stage('Initializing') {
             steps {
                 checkout scm
-                updateGitHubStatus('pending', 'Build is in progress...')
+                updateGitHubStatus('pending', 'Testing...')
             }
         }
-        stage('Engine: Lint & Test') {
+        stage('Setup dependencies') {
             steps {
-                updateGitHubStatus('pending', 'Engine: Lint & Test...')
-                dir("${env.WORKSPACE}/engine") {
-                    sh 'go mod download'
-                    sh 'go mod tidy'
-                    sh 'go test ./...'
-                    sh 'golangci-lint run ./...'
-                }
-            }
-        }
-        stage('Core: Lint & Test') {
-            steps {
-                updateGitHubStatus('pending', 'Core: Lint & Test')
                 dir("${env.WORKSPACE}/core") {
                     sh 'go mod download'
                     sh 'go mod tidy'
-                    sh 'go test ./...'
-                    sh 'golangci-lint run ./...'
+                }
+                dir("${env.WORKSPACE}/engine") {
+                    sh 'go mod download'
+                    sh 'go mod tidy'
+                }
+            }
+        }
+        stage('Core & Engine: Lint & Test') {
+            parallel {
+                stage('Engine: Lint') {
+                    steps {
+                        dir("${env.WORKSPACE}/engine") {
+                            sh 'golangci-lint run ./... -v'
+                        }
+                    }
+                }
+                stage('Engine: Test') {
+                    steps {
+                        dir("${env.WORKSPACE}/engine") {
+                            sh 'go test ./...'
+                        }
+                    }
+                }
+                stage('Core: Lint') {
+                    steps {
+                        dir("${env.WORKSPACE}/core") {
+                            sh 'golangci-lint run ./... -v'
+                        }
+                    }
+                }
+                stage('Core: Test') {
+                    steps {
+                        dir("${env.WORKSPACE}/core") {
+                            sh 'go test ./...'
+                        }
+                    }
                 }
             }
         }
