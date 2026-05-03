@@ -19,11 +19,11 @@ pipeline {
         stage('Initializing') {
             steps {
                 checkout scm
-                updateGitHubStatus('pending', 'Testing...')
             }
         }
         stage('Setup dependencies') {
             steps {
+                updateGitHubStatus('pending', 'Loading dependencies...')
                 dir("${env.WORKSPACE}/core") {
                     sh 'go mod download'
                     sh 'go mod tidy'
@@ -34,35 +34,25 @@ pipeline {
                 }
             }
         }
-        stage('Core & Engine: Lint & Test') {
-            parallel {
-                stage('Engine: Lint') {
-                    steps {
-                        dir("${env.WORKSPACE}/engine") {
-                            sh 'golangci-lint run ./... -v'
-                        }
-                    }
+        stage('Tests') {
+            steps {
+                updateGitHubStatus('pending', 'Testing...')
+                dir("${env.WORKSPACE}/engine") {
+                    sh 'go test ./...'
                 }
-                stage('Engine: Test') {
-                    steps {
-                        dir("${env.WORKSPACE}/engine") {
-                            sh 'go test ./...'
-                        }
-                    }
+                dir("${env.WORKSPACE}/core") {
+                    sh 'go test ./...'
                 }
-                stage('Core: Lint') {
-                    steps {
-                        dir("${env.WORKSPACE}/core") {
-                            sh 'golangci-lint run ./... -v'
-                        }
-                    }
+            }
+        }
+        stage('Linting') {
+            steps {
+                updateGitHubStatus('pending', 'Linting...')
+                dir("${env.WORKSPACE}/engine") {
+                    sh 'golangci-lint run ./... -v'
                 }
-                stage('Core: Test') {
-                    steps {
-                        dir("${env.WORKSPACE}/core") {
-                            sh 'go test ./...'
-                        }
-                    }
+                dir("${env.WORKSPACE}/core") {
+                    sh 'golangci-lint run ./... -v'
                 }
             }
         }
