@@ -1,0 +1,83 @@
+pipeline {
+    agent {
+            dockerfile {
+                filename 'Dockerfile'
+                dir 'ci-cd'
+                args '-v /home/jenkins/go-cache:/root/.cache/go-build -v /home/jenkins/golangci-lint:/root/.cache/golangci-lint'
+                // Necessary for OpenGL/Graphics testing if running on a headful agent
+                additionalBuildArgs  '--build-arg CACHE_DATE=$(date +%Y-%m-%d)'
+            }
+    }
+    environment {
+        CONTEXT = 'jenkins/ci-cd'
+
+        OWNER = 'cursus-studio'
+        REPO = 'texhec'
+    }
+
+    stages {
+        stage('Initializing') {
+            steps {
+                checkout scm
+            }
+        }
+        stage('Setup dependencies') {
+            steps {
+                updateGitHubStatus('pending', 'Loading dependencies...')
+                dir("${env.WORKSPACE}/core") {
+                    sh 'go mod download'
+                    sh 'go mod tidy'
+                }
+                dir("${env.WORKSPACE}/engine") {
+                    sh 'go mod download'
+                    sh 'go mod tidy'
+                }
+            }
+        }
+        stage('Tests') {
+            steps {
+                updateGitHubStatus('pending', 'Testing...')
+                dir("${env.WORKSPACE}/engine") {
+                    sh 'go test ./...'
+                }
+                dir("${env.WORKSPACE}/core") {
+                    sh 'go test ./...'
+                }
+            }
+        }
+        stage('Linting') {
+            steps {
+                updateGitHubStatus('pending', 'Linting...')
+                dir("${env.WORKSPACE}/engine") {
+                    sh 'golangci-lint run ./... -v'
+                }
+                dir("${env.WORKSPACE}/core") {
+                    sh 'golangci-lint run ./... -v'
+                }
+            }
+        }
+    }
+    post {
+        success {
+            updateGitHubStatus('success', 'All tests passed!')
+        }
+        failure {
+            updateGitHubStatus('failure', 'Tests failed!')
+        }
+    }
+}
+
+def updateGitHubStatus(String STATE, String DESC) {
+    dir("${env.WORKSPACE}/ci-cd") {
+        withCredentials([usernamePassword(credentialsId: 'texhec-app', passwordVariable: 'TOKEN', usernameVariable: 'USER')]) {
+            withEnv([
+            "GIT_COMMIT=${env.GIT_COMMIT}",
+            "TARGET_URL=${env.BUILD_URL}",
+            "STATE=${STATE}",
+            "DESC=${DESC}",
+        ]) {
+                sh 'bash set_status.sh'
+        }
+        }
+    }
+}
