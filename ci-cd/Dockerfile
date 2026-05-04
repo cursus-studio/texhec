@@ -23,10 +23,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     git \
     && rm -rf /var/lib/apt/lists/*
 
-# Install golangci-lint
-# Using the binary installation method recommended for Linux
-RUN go install github.com/golangci/golangci-lint/v2/cmd/golangci-lint@v2.12.1
-
 ENV PATH="/go/bin:${PATH}"
 
 WORKDIR /go/src/app
