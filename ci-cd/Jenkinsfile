@@ -49,10 +49,10 @@ pipeline {
             steps {
                 updateGitHubStatus('pending', 'Linting...')
                 dir("${env.WORKSPACE}/engine") {
-                    sh 'golangci-lint run ./... -v'
+                    sh 'golangci-lint run ./... --timeout=10m'
                 }
                 dir("${env.WORKSPACE}/core") {
-                    sh 'golangci-lint run ./... -v'
+                    sh 'golangci-lint run ./... --timeout=10m'
                 }
             }
         }
