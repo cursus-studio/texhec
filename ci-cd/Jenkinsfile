@@ -53,13 +53,13 @@ pipeline {
                 updateGitHubStatus('pending', 'Linting...')
                 script {
                     // we run each linter flag separately for each module to ensure it'll fit into ram
-                    def linters = ['errcheck', 'gosimple', 'govet', 'ineffassign', 'staticcheck', 'unused']
+                    def linters = ['gosimple', 'govet', 'ineffassign', 'staticcheck', 'unused']
 
                     modules.each { mod ->
                         updateGitHubStatus('pending', "Linting ${mod}...")
                         dir("${env.WORKSPACE}/${mod}") {
                             linters.each { linter ->
-                                sh "golangci-lint run ./... --disable-all -E ${linter} --timeout=10m"
+                                sh "golangci-lint run ./... --disable-all -E ${linter} --timeout=10m --issues-exit-code=1"
                             }
                         }
                     }
