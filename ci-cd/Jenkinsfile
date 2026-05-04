@@ -2,13 +2,13 @@ def modules = ['engine', 'core']
 
 pipeline {
     agent {
-            dockerfile {
-                filename 'Dockerfile'
-                dir 'ci-cd'
-                args '-v /home/jenkins/go-cache:/root/.cache/go-build -v /home/jenkins/golangci-lint:/root/.cache/golangci-lint'
-                // Necessary for OpenGL/Graphics testing if running on a headful agent
-                additionalBuildArgs  '--build-arg CACHE_DATE=$(date +%Y-%m-%d)'
-            }
+        dockerfile {
+            filename 'Dockerfile'
+            dir 'ci-cd'
+            args '-v /home/jenkins/go-cache:/root/.cache/go-build -v /home/jenkins/golangci-lint:/root/.cache/golangci-lint'
+            // Necessary for OpenGL/Graphics testing if running on a headful agent
+            additionalBuildArgs  '--build-arg CACHE_DATE=$(date +%Y-%m-%d)'
+        }
     }
     environment {
         CONTEXT = 'jenkins/ci-cd'
@@ -21,6 +21,8 @@ pipeline {
         stage('Initializing') {
             steps {
                 checkout scm
+                sh 'go version'
+                sh 'golangci-lint --version'
             }
         }
         stage('Setup dependencies') {
@@ -53,7 +55,7 @@ pipeline {
                 updateGitHubStatus('pending', 'Linting...')
                 script {
                     // we run each linter flag separately for each module to ensure it'll fit into ram
-                    def linters = ['gosimple', 'govet', 'ineffassign', 'staticcheck', 'unused']
+                    def linters = ['errcheck', 'gosimple', 'govet', 'ineffassign', 'staticcheck', 'unused']
 
                     modules.each { mod ->
                         updateGitHubStatus('pending', "Linting ${mod}...")
