@@ -24,11 +24,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 # Install golangci-lint
 # Using the binary installation method recommended for Linux
-RUN curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v2.12.1
+RUN go install github.com/golangci/golangci-lint/v2/cmd/golangci-lint@v2.12.1
 
 ENV PATH="/go/bin:${PATH}"
 
 WORKDIR /go/src/app
-
-ARG CACHE_DATE=1
-RUN echo "Last build date: $CACHE_DATE"
