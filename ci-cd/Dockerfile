@@ -1,6 +1,7 @@
-# TODO
-# agent dockerfile should have sdl2, opengl, golang lint and golang
+FROM golangci/golangci-lint:v2.12.1 AS linter
+
 FROM golang:1.24-bookworm
+COPY --from=linter /usr/bin/golangci-lint /usr/bin/golangci-lint
 
 ENV DEBIAN_FRONTEND=noninteractive
 
