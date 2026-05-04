@@ -49,10 +49,22 @@ pipeline {
             steps {
                 updateGitHubStatus('pending', 'Linting...')
                 dir("${env.WORKSPACE}/engine") {
-                    sh 'golangci-lint run ./... --disable-all -E errcheck,gosimple,govet,ineffassign,staticcheck,unused --timeout=10m'
+                    sh 'GOGC=20 golangci-lint run ./... --concurrency 2 --timeout=10m'
+                // sh 'golangci-lint run ./... --concurrency 2 --disable-all -E errcheck --timeout=10m'
+                // sh 'golangci-lint run ./... --concurrency 2 --disable-all -E gosimple --timeout=10m'
+                // sh 'golangci-lint run ./... --concurrency 2 --disable-all -E govet --timeout=10m'
+                // sh 'golangci-lint run ./... --concurrency 2 --disable-all -E ineffassign --timeout=10m'
+                // sh 'golangci-lint run ./... --concurrency 2 --disable-all -E staticcheck --timeout=10m'
+                // sh 'golangci-lint run ./... --concurrency 2 --disable-all -E unused --timeout=10m'
                 }
                 dir("${env.WORKSPACE}/core") {
-                    sh 'golangci-lint run ./... --disable-all -E errcheck,gosimple,govet,ineffassign,staticcheck,unused --timeout=10m'
+                    sh 'GOGC=20 golangci-lint run ./... --concurrency 2 --timeout=10m'
+                // sh 'golangci-lint run ./... --concurrency 2 --disable-all -E errcheck --timeout=10m'
+                // sh 'golangci-lint run ./... --concurrency 2 --disable-all -E gosimple --timeout=10m'
+                // sh 'golangci-lint run ./... --concurrency 2 --disable-all -E govet --timeout=10m'
+                // sh 'golangci-lint run ./... --concurrency 2 --disable-all -E ineffassign --timeout=10m'
+                // sh 'golangci-lint run ./... --concurrency 2 --disable-all -E staticcheck --timeout=10m'
+                // sh 'golangci-lint run ./... --concurrency 2 --disable-all -E unused --timeout=10m'
                 }
             }
         }
