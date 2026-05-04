@@ -1,3 +1,5 @@
+def modules = ['engine', 'core']
+
 pipeline {
     agent {
             dockerfile {
@@ -36,35 +38,31 @@ pipeline {
         }
         stage('Tests') {
             steps {
-                updateGitHubStatus('pending', 'Testing...')
-                dir("${env.WORKSPACE}/engine") {
-                    sh 'go test ./...'
-                }
-                dir("${env.WORKSPACE}/core") {
-                    sh 'go test ./...'
+                script {
+                    modules.each { mod ->
+                        updateGitHubStatus('pending', "Testing ${mod}...")
+                        dir("${env.WORKSPACE}/${mod}") {
+                            sh 'go test ./...'
+                        }
+                    }
                 }
             }
         }
         stage('Linting') {
             steps {
                 updateGitHubStatus('pending', 'Linting...')
-                dir("${env.WORKSPACE}/engine") {
-                    // sh 'GOGC=20 golangci-lint run ./... --concurrency 2 --timeout=10m'
-                    sh 'golangci-lint run ./... --concurrency 2 --disable-all -E errcheck --timeout=10m'
-                    sh 'golangci-lint run ./... --concurrency 2 --disable-all -E gosimple --timeout=10m'
-                    sh 'golangci-lint run ./... --concurrency 2 --disable-all -E govet --timeout=10m'
-                    sh 'golangci-lint run ./... --concurrency 2 --disable-all -E ineffassign --timeout=10m'
-                    sh 'golangci-lint run ./... --concurrency 2 --disable-all -E staticcheck --timeout=10m'
-                    sh 'golangci-lint run ./... --concurrency 2 --disable-all -E unused --timeout=10m'
-                }
-                dir("${env.WORKSPACE}/core") {
-                    // sh 'GOGC=20 golangci-lint run ./... --concurrency 2 --timeout=10m'
-                    sh 'golangci-lint run ./... --concurrency 2 --disable-all -E errcheck --timeout=10m'
-                    sh 'golangci-lint run ./... --concurrency 2 --disable-all -E gosimple --timeout=10m'
-                    sh 'golangci-lint run ./... --concurrency 2 --disable-all -E govet --timeout=10m'
-                    sh 'golangci-lint run ./... --concurrency 2 --disable-all -E ineffassign --timeout=10m'
-                    sh 'golangci-lint run ./... --concurrency 2 --disable-all -E staticcheck --timeout=10m'
-                    sh 'golangci-lint run ./... --concurrency 2 --disable-all -E unused --timeout=10m'
+                script {
+                    // we run each linter flag separately for each module to ensure it'll fit into ram
+                    def linters = ['errcheck', 'gosimple', 'govet', 'ineffassign', 'staticcheck', 'unused']
+
+                    modules.each { mod ->
+                        updateGitHubStatus('pending', "Linting ${mod}...")
+                        dir("${env.WORKSPACE}/${mod}") {
+                            linters.each { linter ->
+                                sh "golangci-lint run ./... --disable-all -E ${linter} --timeout=10m"
+                            }
+                        }
+                    }
                 }
             }
         }
