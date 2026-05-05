@@ -50,7 +50,6 @@ pipeline {
                     modules.each { mod ->
                         updateGitHubStatus('pending', "Testing ${mod}...")
                         dir("${env.WORKSPACE}/${mod}") {
-                            sh 'exit 1'
                             sh 'go test ./...'
                         }
                     }
@@ -76,7 +75,7 @@ pipeline {
             updateGitHubStatus('success', 'Success!')
         }
         failure {
-            updateGitHubStatus('failure', "Build failed at stage: ${env.LAST_STATUS_DESC}")
+            updateGitHubStatus('failure', "Build failed at stage: \"${env.LAST_STATUS_DESC}\"")
         }
     }
 }
