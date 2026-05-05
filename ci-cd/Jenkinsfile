@@ -1,4 +1,5 @@
 def modules = ['engine', 'core']
+def lastStatusDescription = ''
 
 pipeline {
     agent {
@@ -47,6 +48,7 @@ pipeline {
                     modules.each { mod ->
                         updateGitHubStatus('pending', "Testing ${mod}...")
                         dir("${env.WORKSPACE}/${mod}") {
+                            sh 'exit 1'
                             sh 'go test ./...'
                         }
                     }
@@ -72,12 +74,14 @@ pipeline {
             updateGitHubStatus('success', 'Success!')
         }
         failure {
-            updateGitHubStatus('failure', 'Failure!')
+            def failureMsg = "Build failed at stage: ${lastStatusDescription}"
+            updateGitHubStatus('failure', failureMsg)
         }
     }
 }
 
 def updateGitHubStatus(String STATE, String DESC) {
+    lastStatusDescription = DESC
     dir("${env.WORKSPACE}/ci-cd") {
         withCredentials([usernamePassword(credentialsId: 'texhec-app', passwordVariable: 'TOKEN', usernameVariable: 'USER')]) {
             withEnv([
