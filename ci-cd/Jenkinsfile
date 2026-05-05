@@ -1,5 +1,4 @@
 def modules = ['engine', 'core']
-def lastStatusDescription = ''
 
 pipeline {
     agent {
@@ -13,6 +12,9 @@ pipeline {
     }
     triggers {
         githubPush()
+    }
+    options {
+        buildDiscarder(logRotator(numToKeepStr: '20', artifactNumToKeepStr: '20'))
     }
     environment {
         CONTEXT = 'jenkins/ci-cd'
@@ -74,20 +76,20 @@ pipeline {
             updateGitHubStatus('success', 'Success!')
         }
         failure {
-            updateGitHubStatus('failure', "Build failed at stage: ${lastStatusDescription}")
+            updateGitHubStatus('failure', "Build failed at stage: ${env.LAST_STATUS_DESC}")
         }
     }
 }
 
-def updateGitHubStatus(String STATE, String DESC) {
-    lastStatusDescription = DESC
+def updateGitHubStatus(String state, String desc) {
+    env.LAST_STATUS_DESC = desc
     dir("${env.WORKSPACE}/ci-cd") {
         withCredentials([usernamePassword(credentialsId: 'texhec-app', passwordVariable: 'TOKEN', usernameVariable: 'USER')]) {
             withEnv([
             "GIT_COMMIT=${env.GIT_COMMIT}",
             "TARGET_URL=${env.BUILD_URL}",
-            "STATE=${STATE}",
-            "DESC=${DESC}",
+            "STATE=${state}",
+            "DESC=${desc}",
         ]) {
                 sh 'bash set_status.sh'
         }
