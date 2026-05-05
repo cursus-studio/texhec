@@ -74,8 +74,7 @@ pipeline {
             updateGitHubStatus('success', 'Success!')
         }
         failure {
-            def failureMsg = "Build failed at stage: ${lastStatusDescription}"
-            updateGitHubStatus('failure', failureMsg)
+            updateGitHubStatus('failure', "Build failed at stage: ${lastStatusDescription}")
         }
     }
 }
