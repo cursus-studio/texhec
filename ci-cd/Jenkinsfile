@@ -10,6 +10,9 @@ pipeline {
             additionalBuildArgs  '--build-arg CACHE_DATE=$(date +%Y-%m-%d)'
         }
     }
+    triggers {
+        githubPush()
+    }
     environment {
         CONTEXT = 'jenkins/ci-cd'
 
