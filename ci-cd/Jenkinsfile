@@ -69,10 +69,10 @@ pipeline {
     }
     post {
         success {
-            updateGitHubStatus('success', 'All tests passed!')
+            updateGitHubStatus('success', 'Success!')
         }
         failure {
-            updateGitHubStatus('failure', 'Tests failed!')
+            updateGitHubStatus('failure', 'Failure!')
         }
     }
 }
