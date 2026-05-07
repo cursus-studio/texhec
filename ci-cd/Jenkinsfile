@@ -97,14 +97,6 @@ pipeline {
 def updateGitHubStatus(String state, String desc) {
     env.LAST_STATUS_DESC = desc
     withCredentials([usernamePassword(credentialsId: 'texhec-app', passwordVariable: 'TOKEN', usernameVariable: 'USER')]) {
-        def payload = """
-        {
-            "state": "${state}",
-            "target_url": "${env.BUILD_URL}",
-            "description": "${desc}",
-            "context": "${env.CONTEXT}"
-        }
-        """
         sh """
             curl -L \
                 -X POST \
@@ -112,7 +104,7 @@ def updateGitHubStatus(String state, String desc) {
                 -H "Authorization: Bearer ${TOKEN}" \
                 -H "X-GitHub-Api-Version: 2026-03-10" \
                 https://api.github.com/repos/${env.OWNER}/${env.REPO}/statuses/${env.GIT_COMMIT} \
-                -d '{"state":"${STATE}","target_url":"${TARGET_URL}","description":"${DESC}","context":"${CONTEXT}"}'
+                -d '{"state":"${state}","target_url":"${env.BUILD_URL}","description":"${desc}","context":"${env.CONTEXT}"}'
         """
     }
 }
