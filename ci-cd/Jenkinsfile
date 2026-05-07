@@ -89,7 +89,7 @@ pipeline {
             updateGitHubStatus('success', 'Success!')
         }
         failure {
-            updateGitHubStatus('failure', "Build failed at stage: \"${env.LAST_STATUS_DESC}\"")
+            updateGitHubStatus('failure', "Build failed at stage: '${env.LAST_STATUS_DESC}'")
         }
     }
 }
