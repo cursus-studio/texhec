@@ -62,6 +62,11 @@ pipeline {
                 updateGitHubStatus('failure', "Build failed at stage: \"${env.LAST_STATUS_DESC}\"")
             }
         }
+        aborted {
+            node('') {
+                updateGitHubStatus('error', 'Build was aborted.')
+            }
+        }
     }
 }
 
