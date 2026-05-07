@@ -1,5 +1,5 @@
 FROM golangci/golangci-lint:v2.12.1 AS linter
-FROM aquasec/trivy:0.25.3 AS trivy
+FROM aquasec/trivy:0.70.0 AS trivy
 
 FROM golang:1.25-bookworm
 
