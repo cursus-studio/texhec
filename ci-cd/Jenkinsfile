@@ -1,7 +1,5 @@
 // TODO:
 // - start using proper error handling
-modules = ['engine', 'core']
-
 pipeline {
     agent {
         dockerfile {
@@ -68,6 +66,8 @@ pipeline {
 
 def runModuleStep(String statusMsg, String command, boolean isParallel = true) {
     script {
+        def modules = ['engine', 'core']
+
         updateGitHubStatus('pending', "${statusMsg}...")
         def tasks = [:]
 
