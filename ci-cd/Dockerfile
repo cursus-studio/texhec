@@ -1,5 +1,5 @@
 FROM golangci/golangci-lint:v2.12.1 AS linter
-FROM securego/gosec:v2.25.0 AS gosec
+FROM securego/gosec:v2.24.6 AS gosec
 FROM aquasec/trivy:0.25.3 AS trivy
 
 FROM golang:1.24-bookworm

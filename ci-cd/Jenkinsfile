@@ -43,7 +43,7 @@ pipeline {
         stage('Pipeline Security') {
             steps {
                 updateGitHubStatus('pending', 'Pipeline security')
-					      sh 'trivy config --exit-code 1 --severity HIGH,CRITICAL .'
+                sh 'trivy config --exit-code 1 --severity HIGH,CRITICAL .'
             }
         }
         stage('Lint') {
@@ -58,7 +58,9 @@ pipeline {
             updateGitHubStatus('success', 'Success!')
         }
         failure {
-            updateGitHubStatus('failure', "Build failed at stage: \"${env.LAST_STATUS_DESC}\"")
+            node {
+                updateGitHubStatus('failure', "Build failed at stage: \"${env.LAST_STATUS_DESC}\"")
+            }
         }
     }
 }
