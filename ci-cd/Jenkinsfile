@@ -17,6 +17,7 @@ pipeline {
     }
     options {
         buildDiscarder(logRotator(numToKeepStr: '20', artifactNumToKeepStr: '20'))
+        preserveStashes(buildCount: 5)
     }
     environment {
         CONTEXT = 'jenkins/ci-cd'
@@ -36,68 +37,22 @@ pipeline {
         }
         stage('Check dependencies') {
             steps {
-                script {
-                    updateGitHubStatus('pending', 'Check dependencies...')
-                    def tasks = [:]
-                    modules.each { mod ->
-                        tasks[mod] = {
-                            dir("${env.WORKSPACE}/${mod}") {
-                                sh 'go mod download'
-                                sh 'go mod tidy -diff'
-                                sh 'go mod verify'
-                            }
-                        }
-                    }
-                    parallel tasks
-                }
+                runModuleStep('Check dependencies', 'go mod download && go mod tidy -diff && go mod verify')
             }
         }
         stage('Check compilation') {
             steps {
-                script {
-                    updateGitHubStatus('pending', 'Check compilation...')
-                    def tasks = [:]
-                    modules.each { mod ->
-                        tasks[mod] = {
-                            dir("${env.WORKSPACE}/${mod}") {
-                                sh 'go build -o /dev/null'
-                            }
-                        }
-                    }
-                    parallel tasks
-                }
+                runModuleStep('Check compilation', 'go build -o /dev/null')
             }
         }
         stage('Tests') {
             steps {
-                script {
-                    updateGitHubStatus('pending', 'Testing...')
-                    def tasks = [:]
-                    modules.each { mod ->
-                        tasks[mod] = {
-                            dir("${env.WORKSPACE}/${mod}") {
-                                sh 'go test ./...'
-                            }
-                        }
-                    }
-                    parallel tasks
-                }
+                runModuleStep('Testing', 'go test ./...')
             }
         }
         stage('Linting') {
             steps {
-                script {
-                    updateGitHubStatus('pending', 'Linting...')
-                    def tasks = [:]
-                    modules.each { mod ->
-                        tasks[mod] = {
-                            dir("${env.WORKSPACE}/${mod}") {
-                                sh 'golangci-lint run'
-                            }
-                        }
-                    }
-                    parallel tasks
-                }
+                runModuleStep('Linting', 'golangci-lint run')
             }
         }
     }
@@ -108,6 +63,23 @@ pipeline {
         failure {
             updateGitHubStatus('failure', "Build failed at stage: \"${env.LAST_STATUS_DESC}\"")
         }
+    }
+}
+
+def runModuleStep(String statusMsg, String command) {
+    script {
+        updateGitHubStatus('pending', "${statusMsg}...")
+        def tasks = [:]
+
+        moduleList.each { mod ->
+            tasks[mod] = {
+                dir(mod) {
+                    sh command
+                }
+            }
+        }
+        tasks.failFast = true
+        parallel tasks
     }
 }
 
