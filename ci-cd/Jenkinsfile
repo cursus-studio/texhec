@@ -89,7 +89,7 @@ pipeline {
             updateGitHubStatus('success', 'Success!')
         }
         failure {
-            updateGitHubStatus('failure', "Build failed at stage: '${env.LAST_STATUS_DESC}'")
+            updateGitHubStatus('failure', "Build failed at stage: \"${env.LAST_STATUS_DESC}\"")
         }
     }
 }
@@ -112,7 +112,7 @@ def updateGitHubStatus(String state, String desc) {
                 -H "Authorization: Bearer ${TOKEN}" \
                 -H "X-GitHub-Api-Version: 2026-03-10" \
                 https://api.github.com/repos/${env.OWNER}/${env.REPO}/statuses/${env.GIT_COMMIT} \
-                -d "{\"state\":\"${STATE}\",\"target_url\":\"${TARGET_URL}\",\"description\":\"${DESC}\",\"context\":\"${CONTEXT}\"}"
+                -d '{"state":"${STATE}","target_url":"${TARGET_URL}","description":"${DESC}","context":"${CONTEXT}"}'
         """
     }
 }
