@@ -1,9 +1,8 @@
 module core
 
-go 1.24.3
+go 1.25
 
 require (
-	engine v0.0.0-00010101000000-000000000000
 	github.com/go-gl/gl v0.0.0-20231021071112-07e5d0ea2e71
 	github.com/go-gl/mathgl v1.2.0
 	github.com/ogiusek/events v1.0.6
@@ -11,11 +10,3 @@ require (
 	github.com/veandco/go-sdl2 v0.4.40
 	golang.org/x/exp v0.0.0-20250911091902-df9299821621
 )
-
-require (
-	github.com/google/uuid v1.6.0 // indirect
-	golang.org/x/image v0.32.0 // indirect
-	golang.org/x/text v0.30.0 // indirect
-)
-
-replace engine => ../engine
