@@ -1,5 +1,3 @@
-// TODO:
-// - start using proper error handling
 pipeline {
     agent {
         dockerfile {
