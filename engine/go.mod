@@ -1,6 +1,6 @@
 module engine
 
-go 1.24.3
+go 1.25
 
 require (
 	github.com/go-gl/gl v0.0.0-20231021071112-07e5d0ea2e71
