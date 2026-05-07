@@ -1,7 +1,11 @@
 FROM golangci/golangci-lint:v2.12.1 AS linter
 FROM aquasec/trivy:0.25.3 AS trivy
 
-FROM golang:1.24-bookworm
+FROM golang:1.25-bookworm
+
+ENV GOTOOLCHAIN=go1.25.0
+ENV PATH="/go/bin:${PATH}"
+
 COPY --from=linter /usr/bin/golangci-lint /usr/bin/golangci-lint
 RUN go install github.com/securego/gosec/v2/cmd/gosec@v2.24.6
 COPY --from=trivy /usr/local/bin/trivy /usr/bin/trivy
@@ -25,8 +29,5 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     curl \
     git \
     && rm -rf /var/lib/apt/lists/*
-
-ENV PATH="/go/bin:${PATH}"
-ENV GOTOOLCHAIN=go1.25.0
 
 WORKDIR /go/src/app
