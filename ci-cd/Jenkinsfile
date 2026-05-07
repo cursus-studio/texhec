@@ -1,5 +1,4 @@
 // TODO:
-// - stop using ./set_status.sh and start using some jenkins extension
 // - start using proper error handling
 def modules = ['engine', 'core']
 
@@ -29,15 +28,16 @@ pipeline {
     stages {
         stage('Initializing') {
             steps {
+                updateGitHubStatus('pending', 'Started...')
                 checkout scm
                 sh 'go version'
                 sh 'golangci-lint --version'
             }
         }
-        stage('Setup dependencies') {
+        stage('Check dependencies') {
             steps {
                 script {
-                    updateGitHubStatus('pending', 'Loading dependencies...')
+                    updateGitHubStatus('pending', 'Check dependencies...')
                     def tasks = [:]
                     modules.each { mod ->
                         tasks[mod] = {
@@ -52,10 +52,26 @@ pipeline {
                 }
             }
         }
+        stage('Check compilation') {
+            steps {
+                script {
+                    updateGitHubStatus('pending', 'Check compilation...')
+                    def tasks = [:]
+                    modules.each { mod ->
+                        tasks[mod] = {
+                            dir("${env.WORKSPACE}/${mod}") {
+                                sh 'go build -o /dev/null'
+                            }
+                        }
+                    }
+                    parallel tasks
+                }
+            }
+        }
         stage('Tests') {
             steps {
                 script {
-                    updateGitHubStatus('pending', 'Testing ...')
+                    updateGitHubStatus('pending', 'Testing...')
                     def tasks = [:]
                     modules.each { mod ->
                         tasks[mod] = {
@@ -80,6 +96,7 @@ pipeline {
                             }
                         }
                     }
+                    parallel tasks
                 }
             }
         }
