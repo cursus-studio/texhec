@@ -1,3 +1,8 @@
+// TODO:
+// - remove go mod tidy
+// - parallelize
+// - stop using ./set_status.sh and start using some jenkins extension
+// - start using proper error handling
 def modules = ['engine', 'core']
 
 pipeline {
@@ -35,24 +40,32 @@ pipeline {
             steps {
                 updateGitHubStatus('pending', 'Loading dependencies...')
                 script {
+                    def tasks = [:]
                     modules.each { mod ->
-                        dir("${env.WORKSPACE}/${mod}") {
-                            sh 'go mod download'
-                            sh 'go mod tidy'
+                        tasks[mod] = {
+                            dir("${env.WORKSPACE}/${mod}") {
+                                sh 'go mod download'
+                                sh 'go mod tidy'
+                            }
                         }
                     }
+                    parallel tasks
                 }
             }
         }
         stage('Tests') {
             steps {
                 script {
+                    updateGitHubStatus('pending', 'Testing ...')
+                    def tasks = [:]
                     modules.each { mod ->
-                        updateGitHubStatus('pending', "Testing ${mod}...")
-                        dir("${env.WORKSPACE}/${mod}") {
-                            sh 'go test ./...'
+                        tasks[mod] = {
+                            dir("${env.WORKSPACE}/${mod}") {
+                                sh 'go test ./...'
+                            }
                         }
                     }
+                    parallel tasks
                 }
             }
         }
@@ -60,10 +73,13 @@ pipeline {
             steps {
                 updateGitHubStatus('pending', 'Linting...')
                 script {
+                    updateGitHubStatus('pending', 'Linting ...')
+                    def tasks = [:]
                     modules.each { mod ->
-                        updateGitHubStatus('pending', "Linting ${mod}...")
-                        dir("${env.WORKSPACE}/${mod}") {
-                            sh 'golangci-lint run'
+                        tasks[mod] = {
+                            dir("${env.WORKSPACE}/${mod}") {
+                                sh 'golangci-lint run'
+                            }
                         }
                     }
                 }
