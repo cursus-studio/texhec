@@ -52,7 +52,7 @@ pipeline {
         }
         stage('Linting') {
             steps {
-                runModuleStep('Linting', 'golangci-lint run')
+                runModuleStep('Linting', 'golangci-lint run', false)
             }
         }
     }
@@ -66,7 +66,7 @@ pipeline {
     }
 }
 
-def runModuleStep(String statusMsg, String command) {
+def runModuleStep(String statusMsg, String command, boolean isParallel = true) {
     script {
         updateGitHubStatus('pending', "${statusMsg}...")
         def tasks = [:]
@@ -78,8 +78,15 @@ def runModuleStep(String statusMsg, String command) {
                 }
             }
         }
-        tasks.failFast = true
-        parallel tasks
+        if (isParallel) {
+            tasks.failFast = true
+            parallel tasks
+        } else {
+            tasks.each { name, task ->
+                echo "Running task for module: ${name}"
+                task()
+            }
+        }
     }
 }
 
