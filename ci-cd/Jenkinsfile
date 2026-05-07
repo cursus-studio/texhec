@@ -1,6 +1,6 @@
 // TODO:
 // - start using proper error handling
-def modules = ['engine', 'core']
+modules = ['engine', 'core']
 
 pipeline {
     agent {
