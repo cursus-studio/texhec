@@ -71,7 +71,7 @@ def runModuleStep(String statusMsg, String command, boolean isParallel = true) {
         updateGitHubStatus('pending', "${statusMsg}...")
         def tasks = [:]
 
-        moduleList.each { mod ->
+        modules.each { mod ->
             tasks[mod] = {
                 dir(mod) {
                     sh command
