@@ -1,7 +1,11 @@
 FROM golangci/golangci-lint:v2.12.1 AS linter
+FROM securego/gosec:v2.25.0 AS gosec
+FROM aquasec/trivy:0.25.3 AS trivy
 
 FROM golang:1.24-bookworm
 COPY --from=linter /usr/bin/golangci-lint /usr/bin/golangci-lint
+COPY --from=gosec /usr/bin/gosec /usr/bin/gosec
+COPY --from=trivy /usr/local/bin/trivy /usr/bin/trivy
 
 ENV DEBIAN_FRONTEND=noninteractive
 

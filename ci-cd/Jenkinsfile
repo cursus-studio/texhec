@@ -23,7 +23,7 @@ pipeline {
     }
 
     stages {
-        stage('Initializing') {
+        stage('Setup') {
             steps {
                 updateGitHubStatus('pending', 'Started...')
                 checkout scm
@@ -31,25 +31,26 @@ pipeline {
                 sh 'golangci-lint --version'
             }
         }
-        stage('Check dependencies') {
+        stage('Deps') {
+            steps { runModuleStep('Deps', 'go mod download && go mod tidy -diff && go mod verify') }
+        }
+        stage('Build') {
+            steps { runModuleStep('Build', 'go build -o /dev/null') }
+        }
+        stage('Security') {
+            steps { runModuleStep('Security', 'gosec ./...') }
+        }
+        stage('Pipeline Security') {
             steps {
-                runModuleStep('Check dependencies', 'go mod download && go mod tidy -diff && go mod verify')
+                updateGitHubStatus('pending', 'Pipeline security')
+					      sh 'trivy config --exit-code 1 --severity HIGH,CRITICAL .'
             }
         }
-        stage('Check compilation') {
-            steps {
-                runModuleStep('Check compilation', 'go build -o /dev/null')
-            }
+        stage('Lint') {
+            steps { runModuleStep('Lint', 'golangci-lint run', false) }
         }
-        stage('Tests') {
-            steps {
-                runModuleStep('Testing', 'go test ./...')
-            }
-        }
-        stage('Linting') {
-            steps {
-                runModuleStep('Linting', 'golangci-lint run', false)
-            }
+        stage('Test') {
+            steps { runModuleStep('Test', 'go test ./...') }
         }
     }
     post {
