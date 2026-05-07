@@ -37,13 +37,13 @@ pipeline {
         stage('Build') {
             steps { runModuleStep('Build', 'go build -o /dev/null') }
         }
-        // stage('Security') {
-        //     steps { runModuleStep('Security', 'gosec -quiet ./...') }
-        // }
+        stage('Security') {
+            steps { runModuleStep('Security', 'gosec -quiet ./...') }
+        }
         stage('Pipeline Security') {
             steps {
-                updateGitHubStatus('pending', 'Pipeline security')
-                sh 'trivy config --exit-code 1 --severity HIGH,CRITICAL .'
+                updateGitHubStatus('pending', 'Pipeline Security')
+                sh 'trivy config --exit-code 1 --quiet --severity HIGH,CRITICAL .'
             }
         }
         stage('Lint') {
@@ -59,7 +59,7 @@ pipeline {
         }
         failure {
             node('') {
-                updateGitHubStatus('failure', "Build failed at stage: '${env.LAST_STATUS_DESC}'")
+                updateGitHubStatus('failure', "Build failed at stage: \"${env.LAST_STATUS_DESC}\"")
             }
         }
     }
