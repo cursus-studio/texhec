@@ -9,7 +9,7 @@
 - [Implicit dependency graph](#implicit-dependency-graph)
 - [Engine](#engine)
 - [Technical challenges](#technical-challenges)
-- [CI/CD](#ci/cd)
+- [CI/CD](#cicd)
 - [Graphics](#graphics)
 - [How to run ?](#how-to-run-)
 - [Contribution](#contribution)
