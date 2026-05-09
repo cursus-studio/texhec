@@ -7,6 +7,7 @@ import (
 	"engine/modules/window"
 	"engine/services/datastructures"
 	"engine/services/ecs"
+	"fmt"
 	"reflect"
 	"slices"
 	"sort"
@@ -21,7 +22,7 @@ type Service interface {
 	Register(
 		reflect.Type,
 		ProjectionData,
-	)
+	) error
 	camera.Service
 }
 
@@ -180,13 +181,18 @@ func (t *service) ShootRay(camera ecs.EntityID, mousePos window.MousePos) collid
 func (t *service) Register(
 	componentType reflect.Type,
 	data ProjectionData,
-) {
+) error {
 	if _, ok := t.projectionIDs[componentType]; ok {
-		return
+		return nil
 	}
-	i := projectionID(len(t.projections.GetIndices()))
-	t.projectionIDs[componentType] = i
-	t.projections.Set(i, data)
+	i := len(t.projections.GetIndices())
+	if i > int(^projectionID(0)) {
+		return fmt.Errorf("exceeded maximal projections count")
+	}
+	projectionI := projectionID(i)
+	t.projectionIDs[componentType] = projectionI
+	t.projections.Set(projectionI, data)
+	return nil
 }
 
 //
