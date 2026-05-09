@@ -141,7 +141,7 @@ type Texture interface {
 }
 type TextureArray interface {
 	Texture() uint32
-	ImagesCount() int
+	ImagesCount() int16
 	Bind()
 	Release()
 }
@@ -159,20 +159,20 @@ type VAO interface {
 type VBOFactory[Vertex any] func() VBOSetter[Vertex]
 type VBO interface {
 	ID() uint32
-	Len() int
+	Len() int32
 	Configure()
 	Release()
 }
 type VBOSetter[Vertex any] interface {
 	VBO
-	SetVertices(vertices []Vertex)
+	SetVertices(vertices []Vertex) error
 }
 
 type Index uint32
 type EBO interface {
 	ID() uint32
-	Len() int
+	Len() int32
 	Configure()
 	Release()
-	SetIndices(indices []Index)
+	SetIndices(indices []Index) error
 }

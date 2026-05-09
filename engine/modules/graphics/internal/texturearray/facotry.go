@@ -3,7 +3,9 @@ package texturearray
 import (
 	"engine/modules/graphics"
 	"engine/services/datastructures"
+	"fmt"
 	"image"
+	"math"
 )
 
 type factory struct {
@@ -34,8 +36,18 @@ func (f *factory) New(asset datastructures.SparseArray[uint32, image.Image]) (gr
 		images.Set(i, image)
 	}
 
-	array.texture = createTexs(w, h, images)
-	array.imagesCount = images.Size()
+	imagesSize := images.Size()
+	if imagesSize < 0 || imagesSize > math.MaxInt16 {
+		return nil, fmt.Errorf("invalid images count. Cannot have more than %v images", math.MaxInt16)
+	}
+
+	texture, err := createTexs(w, h, images)
+	if err != nil {
+		return nil, err
+	}
+
+	array.texture = texture
+	array.imagesCount = int16(imagesSize)
 
 	for _, wrapper := range f.wrappers {
 		wrapper(array)

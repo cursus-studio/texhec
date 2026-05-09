@@ -9,10 +9,13 @@ import (
 )
 
 func perlinHash(seed uint64, c mgl64.Vec2) mgl64.Vec2 {
+	// #nosec G115
 	sLow := uint32(seed)
 	sHigh := uint32(seed >> 32)
 
+	// #nosec G115
 	x := uint32(int32(c.X())) ^ sLow
+	// #nosec G115
 	y := uint32(int32(c.Y())) ^ sHigh
 
 	const mult uint32 = 1664525

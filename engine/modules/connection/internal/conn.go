@@ -2,6 +2,8 @@ package internal
 
 import (
 	"encoding/binary"
+	"fmt"
+	"math"
 	"net"
 )
 
@@ -20,8 +22,13 @@ func (conn *conn) Send(message any) error {
 		return err
 	}
 
+	bytesLength := len(bytes)
+	if bytesLength < 0 || bytesLength > math.MaxUint32 {
+		return fmt.Errorf("message length exceeded maximal %v length", bytesLength)
+	}
+
 	// conn.logger.Info(fmt.Sprintf("sending '***' of type '%v'", reflect.TypeOf(message).String()))
-	length := uint32(len(bytes))
+	length := uint32(bytesLength)
 	lengthInByes := make([]byte, 4)
 	binary.BigEndian.PutUint32(lengthInByes, length)
 	if _, err := conn.conn.Write(append(lengthInByes, bytes...)); err != nil {

@@ -9,6 +9,7 @@
 - [Implicit dependency graph](#implicit-dependency-graph)
 - [Engine](#engine)
 - [Technical challenges](#technical-challenges)
+- [CI/CD](#cicd)
 - [Graphics](#graphics)
 - [How to run ?](#how-to-run-)
 - [Contribution](#contribution)
@@ -217,6 +218,17 @@ Each and every module had unique challenges and they are described in these read
 Biggest challenge of the whole project was architecture.\
 Finding file structure which allows for most logic with least friction between modules.\
 Current approach reduces whole friction to a few interface files and often in a single `Service` interface.
+
+## CI/CD
+Current pipeline is hosted using Jenkins on **Raspberry PI**.
+Current pipeline has **CI** and checks code:
+- `quality`: `golangci-lint`, cleaniness dependencies
+- `correctness`: `unit tests`
+- `security`: `gosec`, `trivy`
+and using **GitHub Status API** integrates notifications into developer worflow.\
+Current design leaves space to add in the future stages for **CD**.
+
+[CI/CD directory](/ci-cd)
 
 ## Graphics
 

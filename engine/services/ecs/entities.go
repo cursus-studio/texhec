@@ -10,8 +10,6 @@ type EntityID uint32
 
 func (id EntityID) Index() int { return int(id) }
 
-func NewEntityID(id uint64) EntityID { return EntityID(id) }
-
 //
 
 type entitiesInterface interface {
@@ -26,7 +24,7 @@ type entitiesInterface interface {
 // impl
 
 type entitiesImpl struct {
-	counter uint64
+	counter EntityID
 	holes   datastructures.SparseSet[EntityID]
 
 	entities datastructures.SparseSet[EntityID]

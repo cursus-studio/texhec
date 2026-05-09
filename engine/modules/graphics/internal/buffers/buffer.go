@@ -2,6 +2,7 @@ package buffers
 
 import (
 	"engine/services/datastructures"
+	"math"
 	"reflect"
 	"sync"
 	"unsafe"
@@ -28,6 +29,12 @@ func NewBuffer[Stored comparable](
 	index uint32,
 ) *buffer[Stored] {
 	mutex := &sync.Mutex{}
+	elementSize := reflect.TypeFor[Stored]().Size()
+	if elementSize > math.MaxInt {
+		// here panic is used because this is treated like compilation error
+		// program using this generic shouldn't compile
+		panic("cannot create buffer for type which size is bigger than maximal int")
+	}
 	b := &buffer[Stored]{
 		mutex:  mutex,
 		target: target,
@@ -36,7 +43,7 @@ func NewBuffer[Stored comparable](
 
 		buffer: 0,
 
-		elementSize:   int(reflect.TypeFor[Stored]().Size()),
+		elementSize:   int(elementSize),
 		TrackingArray: datastructures.NewThreadSafeTrackingArray[Stored](mutex),
 		bufferLen:     0,
 	}

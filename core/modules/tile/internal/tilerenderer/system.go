@@ -9,7 +9,9 @@ import (
 	"engine/modules/render"
 	"engine/services/datastructures"
 	"engine/services/ecs"
+	"fmt"
 	"image"
+	"math"
 
 	"github.com/go-gl/gl/v4.5-core/gl"
 	"github.com/go-gl/mathgl/mgl32"
@@ -136,7 +138,13 @@ func (s *system) ListenRender(render render.RenderEvent) {
 				continue
 			}
 
-			id := uint32(s.ids.Size())
+			idsCount := s.ids.Size()
+			if idsCount < 0 || idsCount > math.MaxUint32 {
+				s.Logger().Log(fmt.Errorf("cannot create tile type. run out of ids"))
+				continue
+			}
+
+			id := uint32(idsCount)
 			s.ids.Set(tileComp.ID, id)
 			texture, err := assets.GetAsset[tile.BiomAsset](s.Assets(), entity)
 			if err != nil {
@@ -152,7 +160,12 @@ func (s *system) ListenRender(render render.RenderEvent) {
 
 				imageBase := size
 				for i, img := range images {
-					s.textures.Set(uint32(imageBase+i), img)
+					index := imageBase + i
+					if index < 0 || index > math.MaxUint32 {
+						s.Logger().Log(fmt.Errorf("run out of ids for images"))
+						break
+					}
+					s.textures.Set(uint32(index), img)
 				}
 			}
 		}
@@ -226,6 +239,7 @@ func (s *system) ListenRender(render render.RenderEvent) {
 			if !ok {
 				continue
 			}
+			// #nosec G115
 			batch.buffer.Set(i, int32(id))
 		}
 		batch.buffer.Flush()
@@ -257,7 +271,10 @@ func (s *system) ListenRender(render render.RenderEvent) {
 
 		grid, _ := s.Tile().TileGrid().Get(entity)
 
+		// width or height won't be below 0
+		// #nosec G115
 		gl.Uniform1ui(s.locations.Width, uint32(grid.Width()))
+		// #nosec G115
 		gl.Uniform1ui(s.locations.Height, uint32(grid.Height()))
 		gl.Uniform1f(s.locations.WidthInv, 2/float32(grid.Width()))
 		gl.Uniform1f(s.locations.HeightInv, 2/float32(grid.Height()))

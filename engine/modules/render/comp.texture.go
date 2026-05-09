@@ -28,9 +28,9 @@ func NewTextureFrame(frameNormalized float64) TextureFrameComponent {
 	}
 }
 
-func (c TextureFrameComponent) GetFrame(frameLen int) int {
+func (c TextureFrameComponent) GetFrame(frameLen int16) int16 {
 	return min(
-		int(c.FrameNormalized*float64(frameLen)),
+		int16(c.FrameNormalized*float64(frameLen)),
 		frameLen-1,
 	)
 }

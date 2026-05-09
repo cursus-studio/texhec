@@ -6,6 +6,8 @@ import (
 	"engine/modules/render"
 	"engine/services/datastructures"
 	"engine/services/ecs"
+	"fmt"
+	"math"
 
 	"github.com/go-gl/gl/v4.5-core/gl"
 	"github.com/go-gl/mathgl/mgl32"
@@ -39,9 +41,13 @@ func (s *system) NewBatch(batchKey batchKey) (*batch, error) {
 			return nil, err
 		}
 		VBO := s.VboFactory()
-		VBO.SetVertices(meshAsset.Vertices())
+		if err := VBO.SetVertices(meshAsset.Vertices()); err != nil {
+			return nil, err
+		}
 		EBO := s.Graphics().NewEBO()
-		EBO.SetIndices(meshAsset.Indices())
+		if err := EBO.SetIndices(meshAsset.Indices()); err != nil {
+			return nil, err
+		}
 		VAO = s.Graphics().NewVAO(VBO, EBO)
 		s.meshes[batchKey.mesh.ID] = VAO
 	}
@@ -117,9 +123,9 @@ func (s *batch) Remove(entity ecs.EntityID) {
 
 //
 
-func (s *batch) Render() {
+func (s *batch) Render() error {
 	if len(s.Entities.Get()) == 0 {
-		return
+		return nil
 	}
 
 	if s.Dirty {
@@ -138,11 +144,17 @@ func (s *batch) Render() {
 	s.Frames.Bind()
 	s.Groups.Bind()
 
+	entitiesLen := len(s.Entities.Get())
+	if entitiesLen < 0 || entitiesLen > math.MaxInt32 {
+		return fmt.Errorf("there can be max render %v entities in a render batch", math.MaxInt32)
+	}
+
 	gl.DrawElementsInstanced(
 		gl.TRIANGLES,
-		int32(s.VAO.EBO().Len()),
+		s.VAO.EBO().Len(),
 		gl.UNSIGNED_INT,
 		nil,
-		int32(len(s.Entities.Get())),
+		int32(entitiesLen),
 	)
+	return nil
 }

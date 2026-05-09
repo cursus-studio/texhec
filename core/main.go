@@ -27,6 +27,7 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"path/filepath"
 	"runtime"
 	"runtime/pprof"
 
@@ -44,7 +45,7 @@ func main() {
 		if len(os.Args) > 1 {
 			name = os.Args[1]
 		}
-		f, err := os.Create(fmt.Sprintf("ignore.cpu.pprof%v", name))
+		f, err := os.Create(filepath.Base(fmt.Sprintf("ignore.cpu.pprof%v", name)))
 		if err != nil {
 			panic(err)
 		}

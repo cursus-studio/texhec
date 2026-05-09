@@ -5,6 +5,8 @@ import (
 	"engine"
 	typeregistrypkg "engine/modules/typeregistry/pkg"
 	enginepkg "engine/pkg"
+	"fmt"
+	"math"
 	"net"
 	"sync"
 	"time"
@@ -51,7 +53,12 @@ func (s *Setup) Send(conn net.Conn, message Message) error {
 		return err
 	}
 
-	length := uint32(len(bytes))
+	bytesLength := len(bytes)
+	if bytesLength < 0 || bytesLength > math.MaxUint32 {
+		return fmt.Errorf("message length exceeded maximal %v length", bytesLength)
+	}
+
+	length := uint32(bytesLength)
 	lengthInByes := make([]byte, 4)
 	binary.BigEndian.PutUint32(lengthInByes, length)
 	if _, err := conn.Write(append(lengthInByes, bytes...)); err != nil {

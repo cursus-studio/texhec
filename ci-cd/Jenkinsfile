@@ -5,7 +5,7 @@ pipeline {
             dir 'ci-cd'
             args '-v /home/jenkins/go-cache:/root/.cache/go-build -v /home/jenkins/golangci-lint:/root/.cache/golangci-lint'
             // Necessary for OpenGL/Graphics testing if running on a headful agent
-            additionalBuildArgs  '--build-arg CACHE_DATE=$(date +%Y-%m-%d)'
+            additionalBuildArgs  '--build-arg CACHE_VERSION=1.0.0'
         }
     }
     triggers {
@@ -37,9 +37,9 @@ pipeline {
         stage('Build') {
             steps { runModuleStep('Build', 'go build -o /dev/null') }
         }
-        // stage('Security') {
-        //     steps { runModuleStep('Security', 'gosec -quiet ./...') }
-        // }
+        stage('Security') {
+            steps { runModuleStep('Security', 'gosec -quiet ./...') }
+        }
         stage('Pipeline Security') {
             steps {
                 updateGitHubStatus('pending', 'Pipeline Security')

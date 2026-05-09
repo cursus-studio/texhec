@@ -5,6 +5,7 @@ import (
 	"image"
 	"image/color"
 	"image/draw"
+	"math"
 
 	xdraw "golang.org/x/image/draw"
 )
@@ -126,17 +127,22 @@ func (s *img) Opaque() graphics.Image {
 	for y := bounds.Min.Y; y <= bounds.Max.Y; y++ {
 		for x := bounds.Min.X; x <= bounds.Max.X; x++ {
 			c := s.img.At(x, y)
+			// r, g, b, a is from 0 to max uint16
 			r, g, b, a := c.RGBA()
-			if uint16(a) < ^uint16(0)/2 {
+			if a < math.MaxUint16/2 {
 				a = 0
 			} else {
-				a = uint32(^uint16(0))
+				a = uint32(math.MaxUint16)
 			}
 
 			dst.Set(x, y, color.RGBA64{
+				// #nosec G115
 				R: uint16(r),
+				// #nosec G115
 				G: uint16(g),
+				// #nosec G115
 				B: uint16(b),
+				// #nosec G115
 				A: uint16(a),
 			})
 		}

@@ -4,6 +4,8 @@ import (
 	"engine"
 	"engine/modules/text"
 	"engine/services/ecs"
+	"fmt"
+	"math"
 	"unicode/utf8"
 
 	"github.com/go-gl/mathgl/mgl32"
@@ -66,6 +68,10 @@ func (s *layoutService) EntityLayout(entity ecs.EntityID) (Layout, error) {
 	breakComponent, _ := s.Text().Break().Get(entity)
 	textAlign, _ := s.Text().Align().Get(entity)
 
+	if fontSize.FontSize > math.MaxUint32 {
+		return Layout{}, fmt.Errorf("maximal font size is %v", math.MaxUint32)
+	}
+
 	font, err := s.FontService.AssetFont(fontFamily.FontFamily)
 	if err != nil {
 		return Layout{}, err
@@ -90,6 +96,8 @@ func (s *layoutService) EntityLayout(entity ecs.EntityID) (Layout, error) {
 			continue
 		}
 		letterLine := lines[len(lines)-1]
+		// here nosec can be used because int32 and uint32 has the same amount of bytes under the hood
+		// #nosec G115
 		letterWidth, ok := font.GlyphsWidth.Get(uint32(letter))
 		if !ok {
 			continue

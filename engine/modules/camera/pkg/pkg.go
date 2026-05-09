@@ -1,13 +1,13 @@
 package camerapkg
 
 import (
+	"engine"
 	"engine/modules/camera"
 	"engine/modules/camera/internal/cameralimitsys"
 	"engine/modules/camera/internal/mobilecamerasys"
 	"engine/modules/camera/internal/projectionsys"
 	"engine/modules/camera/internal/service"
 	"engine/modules/collider"
-	"engine/modules/transform"
 	typeregistrypkg "engine/modules/typeregistry/pkg"
 	"engine/modules/window"
 	"engine/services/ecs"
@@ -49,13 +49,13 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 	ioc.Register(b, func(c ioc.Dic) camera.CameraForward { return camera.CameraForward(mgl32.Vec3{0, 0, -1}) })
 
 	ioc.Wrap(b, func(c ioc.Dic, s service.Service) {
-		transform := ioc.Get[transform.Service](c)
+		world := ioc.GetServices[engine.EngineWorld](c)
 		cameraService := s
 		// transform := ioc.Get[transform.Service](c)
-		s.Register(reflect.TypeFor[camera.OrthoComponent](), func() service.ProjectionData {
+		if err := s.Register(reflect.TypeFor[camera.OrthoComponent](), func() service.ProjectionData {
 			getCameraTransformMatrix := func(entity ecs.EntityID) mgl32.Mat4 {
-				pos, _ := transform.AbsolutePos().Get(entity)
-				rot, _ := transform.AbsoluteRotation().Get(entity)
+				pos, _ := world.Transform().AbsolutePos().Get(entity)
+				rot, _ := world.Transform().AbsoluteRotation().Get(entity)
 
 				cameraRot := rot.Rotation.Inverse()
 				cameraPos := rot.Rotation.Rotate(pos.Pos.Mul(-1))
@@ -87,14 +87,16 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 					)
 				},
 			}
-		}())
+		}()); err != nil {
+			world.Logger().Log(err)
+		}
 
 		//
 
-		s.Register(reflect.TypeFor[camera.PerspectiveComponent](), func() service.ProjectionData {
+		if err := s.Register(reflect.TypeFor[camera.PerspectiveComponent](), func() service.ProjectionData {
 			getCameraTransformMatrix := func(entity ecs.EntityID) mgl32.Mat4 {
-				pos, _ := transform.AbsolutePos().Get(entity)
-				rot, _ := transform.AbsoluteRotation().Get(entity)
+				pos, _ := world.Transform().AbsolutePos().Get(entity)
+				rot, _ := world.Transform().AbsoluteRotation().Get(entity)
 
 				up, forward := ioc.Get[camera.CameraUp](c), ioc.Get[camera.CameraForward](c)
 				return mgl32.LookAtV(
@@ -115,7 +117,7 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 					return projMatrix.Mul4(cameraTransformMatrix)
 				},
 				ShootRay: func(entity ecs.EntityID, mousePos window.MousePos) collider.Ray {
-					pos, _ := transform.AbsolutePos().Get(entity)
+					pos, _ := world.Transform().AbsolutePos().Get(entity)
 					return mobilecamerasys.ShootRay(
 						getProjectionMatrix(entity),
 						getCameraTransformMatrix(entity),
@@ -127,7 +129,9 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 					)
 				},
 			}
-		}())
+		}()); err != nil {
+			world.Logger().Log(err)
+		}
 	})
 
 	ioc.Register(b, func(c ioc.Dic) camera.System {
