@@ -37,9 +37,9 @@ pipeline {
         stage('Build') {
             steps { runModuleStep('Build', 'go build -o /dev/null') }
         }
-        // stage('Security') {
-        //     steps { runModuleStep('Security', 'gosec -quiet ./...') }
-        // }
+        stage('Security') {
+            steps { runModuleStep('Security', 'gosec -quiet ./...') }
+        }
         stage('Pipeline Security') {
             steps {
                 updateGitHubStatus('pending', 'Pipeline Security')
