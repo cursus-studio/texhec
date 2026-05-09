@@ -12,7 +12,9 @@ func perlinHash(seed uint64, c mgl64.Vec2) mgl64.Vec2 {
 	sLow := uint32(seed)
 	sHigh := uint32(seed >> 32)
 
+	// #nosec
 	x := uint32(int32(c.X())) ^ sLow
+	// #nosec
 	y := uint32(int32(c.Y())) ^ sHigh
 
 	const mult uint32 = 1664525
