@@ -39,11 +39,11 @@ func (vbo *vbo[Vertex]) Release() {
 
 func (vbo *vbo[Vertex]) SetVertices(vertices []Vertex) error {
 	verticesLen := len(vertices)
-	if verticesLen < 0 || verticesLen > math.MaxInt32 {
+	if verticesLen < 0 || verticesLen > math.MaxInt32 || verticesLen > int(^int(0)>>1) {
 		return fmt.Errorf("vertices length %d exceeds maximum allowed size (%d)", verticesLen, math.MaxInt32)
 	}
 	vbo.len = int32(verticesLen)
-	verticesSize := int(unsafe.Sizeof(vertices[0]) * uintptr(vbo.len))
+	verticesSize := int(unsafe.Sizeof(vertices[0]) * uintptr(verticesLen))
 	gl.BindBuffer(gl.ARRAY_BUFFER, vbo.id)
 	var ptr unsafe.Pointer
 	if vbo.len != 0 {
