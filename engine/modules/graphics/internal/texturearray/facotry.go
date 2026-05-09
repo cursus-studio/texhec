@@ -34,7 +34,12 @@ func (f *factory) New(asset datastructures.SparseArray[uint32, image.Image]) (gr
 		images.Set(i, image)
 	}
 
-	array.texture = createTexs(w, h, images)
+	texture, err := createTexs(w, h, images)
+	if err != nil {
+		return nil, err
+	}
+
+	array.texture = texture
 	array.imagesCount = images.Size()
 
 	for _, wrapper := range f.wrappers {
