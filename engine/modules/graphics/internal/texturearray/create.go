@@ -2,13 +2,19 @@ package texturearray
 
 import (
 	"engine/services/datastructures"
+	"fmt"
 	"image"
 	"image/draw"
+	"math"
 
 	"github.com/go-gl/gl/v4.5-core/gl"
 )
 
-func createTexs(w, h int, imgs datastructures.SparseArray[uint32, image.Image]) uint32 {
+func createTexs(w, h int, imgs datastructures.SparseArray[uint32, image.Image]) (uint32, error) {
+	if w <= 0 || h <= 0 || w > math.MaxInt32 || h > math.MaxInt32 {
+		return 0, fmt.Errorf("invalid image dimensions for OpenGL: %dx%d", w, h)
+
+	}
 	var texs uint32
 
 	gl.GenTextures(1, &texs)
@@ -22,9 +28,6 @@ func createTexs(w, h int, imgs datastructures.SparseArray[uint32, image.Image]) 
 		}
 	}
 	size := maxIndex + 1
-	if w == 0 || h == 0 {
-		return texs
-	}
 	gl.TexStorage3D(gl.TEXTURE_2D_ARRAY, 1, gl.RGBA8, int32(w), int32(h), int32(size))
 
 	for _, i := range imgs.GetIndices() {
@@ -44,5 +47,5 @@ func createTexs(w, h int, imgs datastructures.SparseArray[uint32, image.Image]) 
 	gl.TexParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_WRAP_T, gl.REPEAT)
 	gl.BindTexture(gl.TEXTURE_2D_ARRAY, 0)
 
-	return texs
+	return texs, nil
 }
