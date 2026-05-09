@@ -38,6 +38,8 @@ func createTexs(w, h int, imgs datastructures.SparseArray[uint32, image.Image]) 
 			draw.Draw(rgbaImg, rgbaImg.Bounds(), img, image.Point{}, draw.Src)
 		}
 
+		// here nosec can be used because int32 and uint32 has the same amount of bytes under the hood
+		// #nosec G115
 		gl.TexSubImage3D(gl.TEXTURE_2D_ARRAY, 0, 0, 0, int32(i), int32(w), int32(h), 1, gl.RGBA, gl.UNSIGNED_BYTE, gl.Ptr(rgbaImg.Pix))
 	}
 
