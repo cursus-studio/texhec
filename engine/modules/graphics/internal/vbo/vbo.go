@@ -9,18 +9,27 @@ import (
 )
 
 type vbo[Vertex any] struct {
-	id        uint32
-	len       int32
-	configure func()
+	id         uint32
+	len        int32
+	vertexSize int
+	configure  func()
 }
 
 func NewVBO[Vertex any](configure func()) *vbo[Vertex] {
 	var id uint32
+	var v Vertex
+	vertexSize := unsafe.Sizeof(v)
+	if vertexSize > math.MaxInt {
+		// here panic is used because this is treated like compilation error
+		// program using this generic shouldn't compile
+		panic("cannot create vbo for type which size is bigger than maximal int")
+	}
 	gl.GenBuffers(1, &id)
 	return &vbo[Vertex]{
-		id:        id,
-		len:       0,
-		configure: configure,
+		id:         id,
+		len:        0,
+		vertexSize: int(vertexSize),
+		configure:  configure,
 	}
 }
 
@@ -43,7 +52,7 @@ func (vbo *vbo[Vertex]) SetVertices(vertices []Vertex) error {
 		return fmt.Errorf("vertices length %d exceeds maximum allowed size (%d)", verticesLen, int(^int(0)>>1))
 	}
 	vbo.len = int32(verticesLen)
-	verticesSize := int(unsafe.Sizeof(vertices[0]) * uintptr(verticesLen))
+	verticesSize := vbo.vertexSize * verticesLen
 	gl.BindBuffer(gl.ARRAY_BUFFER, vbo.id)
 	var ptr unsafe.Pointer
 	if vbo.len != 0 {
