@@ -9,6 +9,7 @@ import (
 )
 
 func perlinHash(seed uint64, c mgl64.Vec2) mgl64.Vec2 {
+	// #nosec G115
 	sLow := uint32(seed)
 	sHigh := uint32(seed >> 32)
 
