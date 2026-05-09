@@ -14,9 +14,11 @@ func NewLayoutBatch(
 	s graphics.Service,
 	v graphics.VBOFactory[Glyph],
 	layout Layout,
-) layoutBatch {
+) (layoutBatch, error) {
 	VBO := v()
-	VBO.SetVertices(layout.Glyphs)
+	if err := VBO.SetVertices(layout.Glyphs); err != nil {
+		return layoutBatch{}, err
+	}
 	VAO := s.NewVAO(VBO, nil)
 	return layoutBatch{
 		vao:           VAO,
@@ -24,7 +26,7 @@ func NewLayoutBatch(
 		verticesCount: int32(len(layout.Glyphs)),
 
 		Layout: layout,
-	}
+	}, nil
 }
 
 func (b layoutBatch) Release() {

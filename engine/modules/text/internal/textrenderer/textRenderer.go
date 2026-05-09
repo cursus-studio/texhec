@@ -98,7 +98,10 @@ func (s *textRenderer) ListenRender(render rendersys.RenderEvent) {
 				continue
 			}
 
-			batch := NewLayoutBatch(s.Graphics(), s.VboFactory, layout)
+			batch, err := NewLayoutBatch(s.Graphics(), s.VboFactory, layout)
+			if err != nil {
+				continue
+			}
 			s.layoutsBatches.Set(entity, batch)
 		}
 	}

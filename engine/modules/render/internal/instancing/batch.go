@@ -39,9 +39,13 @@ func (s *system) NewBatch(batchKey batchKey) (*batch, error) {
 			return nil, err
 		}
 		VBO := s.VboFactory()
-		VBO.SetVertices(meshAsset.Vertices())
+		if err := VBO.SetVertices(meshAsset.Vertices()); err != nil {
+			return nil, err
+		}
 		EBO := s.Graphics().NewEBO()
-		EBO.SetIndices(meshAsset.Indices())
+		if err := EBO.SetIndices(meshAsset.Indices()); err != nil {
+			return nil, err
+		}
 		VAO = s.Graphics().NewVAO(VBO, EBO)
 		s.meshes[batchKey.mesh.ID] = VAO
 	}

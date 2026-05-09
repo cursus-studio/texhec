@@ -1,6 +1,8 @@
 package vbo
 
 import (
+	"fmt"
+	"math"
 	"unsafe"
 
 	"github.com/go-gl/gl/v4.5-core/gl"
@@ -8,7 +10,7 @@ import (
 
 type vbo[Vertex any] struct {
 	id        uint32
-	len       int
+	len       int32
 	configure func()
 }
 
@@ -23,7 +25,7 @@ func NewVBO[Vertex any](configure func()) *vbo[Vertex] {
 }
 
 func (vbo *vbo[Vertex]) ID() uint32 { return vbo.id }
-func (vbo *vbo[Vertex]) Len() int   { return vbo.len }
+func (vbo *vbo[Vertex]) Len() int32 { return vbo.len }
 
 func (vbo *vbo[Vertex]) Configure() {
 	gl.BindBuffer(gl.ARRAY_BUFFER, vbo.id)
@@ -35,8 +37,12 @@ func (vbo *vbo[Vertex]) Release() {
 	gl.DeleteBuffers(1, &vbo.id)
 }
 
-func (vbo *vbo[Vertex]) SetVertices(vertices []Vertex) {
-	vbo.len = len(vertices)
+func (vbo *vbo[Vertex]) SetVertices(vertices []Vertex) error {
+	verticesLen := len(vertices)
+	if verticesLen < 0 || verticesLen > math.MaxInt32 {
+		return fmt.Errorf("vertices length %d exceeds maximum allowed size (%d)", verticesLen, math.MaxInt32)
+	}
+	vbo.len = int32(verticesLen)
 	verticesSize := int(unsafe.Sizeof(vertices[0]) * uintptr(vbo.len))
 	gl.BindBuffer(gl.ARRAY_BUFFER, vbo.id)
 	var ptr unsafe.Pointer
@@ -45,4 +51,5 @@ func (vbo *vbo[Vertex]) SetVertices(vertices []Vertex) {
 	}
 	gl.BufferData(gl.ARRAY_BUFFER, verticesSize, ptr, gl.STATIC_DRAW)
 	gl.BindBuffer(gl.ARRAY_BUFFER, 0)
+	return nil
 }
