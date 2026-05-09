@@ -145,7 +145,9 @@ func (s *system) ListenRender(render render.RenderEvent) error {
 		camGroups, _ := s.Groups().Component().Get(render.Camera)
 		gl.Uniform1ui(s.locations.CameraGroups, camGroups.Mask)
 
-		batch.Render()
+		if err := batch.Render(); err != nil {
+			return err
+		}
 	}
 	return nil
 }
