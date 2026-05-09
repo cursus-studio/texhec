@@ -121,10 +121,22 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 				if len(files) == 0 {
 					return nil, fmt.Errorf("there is no tile variant for %v tile", i)
 				}
+				root, err := os.OpenRoot(tileDir)
+				if err != nil {
+					return nil, err
+				}
+				defer func() {
+					_ = root.Close()
+				}()
 
 				for _, file := range files {
-					filePath := fmt.Sprintf("%v/%v", tileDir, file.Name())
-					source, err := os.ReadFile(filePath)
+					// filePath := fmt.Sprintf("%v/%v", tileDir, file.Name())
+					// source, err := os.ReadFile(filePath)
+					// if err != nil {
+					// 	return nil, err
+					// }
+
+					source, err := root.ReadFile(file.Name())
 					if err != nil {
 						return nil, err
 					}
