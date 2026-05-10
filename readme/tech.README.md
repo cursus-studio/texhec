@@ -7,8 +7,7 @@
 - [Module structure](#module-structure)
 - [Module readme schema](#module-readme-schema)
 - [Implicit dependency graph](#implicit-dependency-graph)
-- [Core](#core)
-- [Engine](#engine)
+- [Modules](#modules)
 - [Technical challenges](#technical-challenges)
 - [CI/CD](#cicd)
 - [Graphics](#graphics)
@@ -156,10 +155,18 @@ maintaining this rule shouldn't be at a cost of boilerplate.
 Code isn't about enforcing rules its about composition of functionalities.
 Forbidding functionalities in code BECAUSE, with no technical reason is a bad practice.
 
-### Core
-Core is game source code.
-It defines game specific objects like `tiles`, `units`, map `generation` or `pathfinding`
+### Modules
+**Currently only cherry picked readmes are written**
+Cherry picked readmes to show project complexity:
+- [ecs](/engine/services/ecs/readme/README.md)
+- [assets](/engine/modules/assets/readme/README.md)
+- [hierarchy](/engine/modules/hierarchy/readme/README.md)
+- [record](/engine/modules/record/readme/README.md)
+- [transform](/engine/modules/transform/readme/README.md)
 
+#### Core
+Core is game source code.\
+It defines game specific objects like `tiles`, `units`, map `generation` or `pathfinding`.\
 Core modules:
 - [definitions (readme placeholder)](/core/modules/definitions/readme/README.md)
 - [deploy (readme placeholder)](/core/modules/deploy/readme/README.md)
@@ -172,19 +179,9 @@ Core modules:
 - [tile (readme placeholder)](/core/modules/tile/readme/README.md)
 - [ui (readme placeholder)](/core/modules/ui/readme/README.md)
 
-### Engine
+#### Engine
 Engine is reusable in other projects.\
-It defines ecs framework and basic engine modules like `transform` or `hierarchy`
-
-**Currently only cherry picked readmes are written**
-
-Cherry picked readmes to show project complexity:
-- [ecs](/engine/services/ecs/readme/README.md)
-- [assets](/engine/modules/assets/readme/README.md)
-- [hierarchy](/engine/modules/hierarchy/readme/README.md)
-- [record](/engine/modules/record/readme/README.md)
-- [transform](/engine/modules/transform/readme/README.md)
-
+It defines ecs framework and basic engine modules like `transform` or `hierarchy`.\
 Engine modules:
 - [assets](/engine/modules/assets/readme/README.md)
 - [audio (readme placeholder)](/engine/modules/audio/readme/README.md)
