@@ -5,7 +5,6 @@ import (
 	"engine/modules/loop"
 	"engine/modules/smooth"
 	"engine/modules/smooth/internal"
-	"engine/modules/transition"
 	"engine/services/ecs"
 
 	"github.com/ogiusek/events"
@@ -38,10 +37,10 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 	})
 })
 
-// func PkgT[Component transition.LerpConstraint[Component]](b ioc.Builder) {
+// func PkgT[Component smooth.SmoothConstraint[Component]](b ioc.Builder) {
 func PkgT[Component any](b ioc.Builder) {
 	var zero Component
-	_ = any(zero).(transition.LerpConstraint[Component])
+	_ = any(zero).(smooth.SmoothConstraint[Component])
 	ioc.Register(b, func(c ioc.Dic) *internal.Service[Component] {
 		return internal.NewService[Component](c)
 	})
