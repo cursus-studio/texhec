@@ -35,9 +35,8 @@ type squareFallThroughPolicy[Tile grid.TileConstraint] struct {
 	engine.EngineWorld `inject:""`
 	Grid               grid.Service[Tile] `inject:""`
 
-	zero          Tile
-	dirtyEntities ecs.DirtySet
-	hoverEvent    func(ecs.EntityID, grid.Index) any
+	zero       Tile
+	hoverEvent func(ecs.EntityID, grid.Index) any
 }
 
 func NewColliderWithPolicy[Tile grid.TileConstraint](
@@ -45,27 +44,18 @@ func NewColliderWithPolicy[Tile grid.TileConstraint](
 	hoverEvent func(ecs.EntityID, grid.Index) any,
 ) collider.FallTroughPolicy {
 	s := ioc.GetServices[*squareFallThroughPolicy[Tile]](c)
-
-	s.dirtyEntities = ecs.NewDirtySet()
 	s.hoverEvent = hoverEvent
 
-	s.Grid.Component().AddDirtySet(s.dirtyEntities)
-	s.Inputs().LeftClick().BeforeGet(s.BeforeGet)
+	s.Grid.Component().OnUpsert(s.OnUpsert)
 
 	events.Listen(s.EventsBuilder(), s.OnHover)
 
 	return s
 }
 
-func (t *squareFallThroughPolicy[Tile]) BeforeGet() {
-	entities := t.dirtyEntities.Get()
-	for _, entity := range entities {
-		if !t.World().EntityExists(entity) {
-			continue
-		}
-		t.Inputs().Hover().Set(entity, inputs.NewHoverComponent(HoverEvent[Tile]{}))
-		t.Inputs().LeftClick().Set(entity, inputs.NewLeftClick(ClickEvent[Tile]{}))
-	}
+func (t *squareFallThroughPolicy[Tile]) OnUpsert(entity ecs.EntityID) {
+	t.Inputs().Hover().Set(entity, inputs.NewHoverComponent(HoverEvent[Tile]{}))
+	t.Inputs().LeftClick().Set(entity, inputs.NewLeftClick(ClickEvent[Tile]{}))
 }
 
 func (t *squareFallThroughPolicy[Tile]) getIndex(
