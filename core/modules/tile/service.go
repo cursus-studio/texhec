@@ -56,6 +56,7 @@ func NewPos[Number constraints.Integer | constraints.Float](x, y Number) PosComp
 	return PosComponent{Coord(x), Coord(y)}
 }
 
+func (PosComponent) Smooth() {}
 func (c1 PosComponent) Lerp(c2 PosComponent, mix32 float32) PosComponent {
 	return PosComponent{
 		transition.Lerp(c1.X, c2.X, mix32),
@@ -104,6 +105,7 @@ func NewRot(radians float32) RotComponent {
 	return RotComponent{radians}
 }
 
+func (RotComponent) Smooth() {}
 func (c1 RotComponent) Lerp(c2 RotComponent, mix32 float32) RotComponent {
 	const Tau = 2 * math.Pi
 	c2.Radians = c1.Radians + float32(math.Remainder(float64(c2.Radians-c1.Radians), Tau))

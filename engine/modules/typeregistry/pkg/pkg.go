@@ -3,6 +3,7 @@ package typeregistrypkg
 import (
 	codecpkg "engine/modules/codec/pkg"
 	prototypepkg "engine/modules/prototype/pkg"
+	"engine/modules/smooth"
 	smoothpkg "engine/modules/smooth/pkg"
 	"engine/modules/transition"
 	transitionpkg "engine/modules/transition/pkg"
@@ -39,10 +40,10 @@ func PkgT[T any](b ioc.Builder) {
 	}
 
 	if _, ok := any(zero).(transition.LerpConstraint[T]); ok {
-		pkgs = append(pkgs,
-			transitionpkg.PkgT[T],
-			smoothpkg.PkgT[T],
-		)
+		pkgs = append(pkgs, transitionpkg.PkgT[T])
+	}
+	if _, ok := any(zero).(smooth.SmoothConstraint[T]); ok {
+		pkgs = append(pkgs, smoothpkg.PkgT[T])
 	}
 
 register:

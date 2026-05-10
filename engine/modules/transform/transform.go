@@ -106,33 +106,41 @@ func NewParentPivotPoint(x, y, z float32) ParentPivotPointComponent {
 
 // blend
 
+func (PosComponent) Smooth() {}
 func (c1 PosComponent) Lerp(c2 PosComponent, mix32 float32) PosComponent {
 	return PosComponent{c1.Pos.Mul(1 - mix32).Add(c2.Pos.Mul(mix32))}
 }
+func (RotationComponent) Smooth() {}
 func (c1 RotationComponent) Lerp(c2 RotationComponent, mix32 float32) RotationComponent {
 	return RotationComponent{mgl32.QuatSlerp(c1.Rotation, c2.Rotation, mix32)}
 }
+func (SizeComponent) Smooth() {}
 func (c1 SizeComponent) Lerp(c2 SizeComponent, mix32 float32) SizeComponent {
 	return SizeComponent{c1.Size.Mul(1 - mix32).Add(c2.Size.Mul(mix32))}
 }
 
+func (MaxSizeComponent) Smooth() {}
 func (c1 MaxSizeComponent) Lerp(c2 MaxSizeComponent, mix32 float32) MaxSizeComponent {
 	return MaxSizeComponent{c1.Size.Mul(1 - mix32).Add(c2.Size.Mul(mix32))}
 }
+func (MinSizeComponent) Smooth() {}
 func (c1 MinSizeComponent) Lerp(c2 MinSizeComponent, mix32 float32) MinSizeComponent {
 	return MinSizeComponent{c1.Size.Mul(1 - mix32).Add(c2.Size.Mul(mix32))}
 }
 
+func (AspectRatioComponent) Smooth() {}
 func (c1 AspectRatioComponent) Lerp(c2 AspectRatioComponent, mix32 float32) AspectRatioComponent {
 	return AspectRatioComponent{
 		c1.AspectRatio.Mul(1 - mix32).Add(c2.AspectRatio.Mul(mix32)),
 		[2]PrimaryAxis{c1.PrimaryAxis, c2.PrimaryAxis}[int(mix32+.5)],
 	}
 }
+func (PivotPointComponent) Smooth() {}
 func (c1 PivotPointComponent) Lerp(c2 PivotPointComponent, mix32 float32) PivotPointComponent {
 	return PivotPointComponent{c1.Point.Mul(1 - mix32).Add(c2.Point.Mul(mix32))}
 }
 
+func (ParentPivotPointComponent) Smooth() {}
 func (c1 ParentPivotPointComponent) Lerp(c2 ParentPivotPointComponent, mix32 float32) ParentPivotPointComponent {
 	return ParentPivotPointComponent{c1.Point.Mul(1 - mix32).Add(c2.Point.Mul(mix32))}
 }

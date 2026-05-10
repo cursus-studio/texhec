@@ -11,7 +11,7 @@ import (
 	"github.com/ogiusek/ioc/v2"
 )
 
-// type Service[Component transition.LerpConstraint[Component]] struct {
+// type Service[Component smooth.SmoothConstraint[Component]] struct {
 type Service[Component any] struct {
 	engine.EngineWorld `inject:""`
 	recordingID        record.RecordingID
@@ -21,7 +21,7 @@ type Service[Component any] struct {
 	lerpArray      ecs.ComponentsArray[transition.TransitionComponent[Component]]
 }
 
-// func NewService[Component transition.LerpConstraint[Component]](c ioc.Dic) *Service[Component] {
+// func NewService[Component smooth.SmoothConstraint[Component]](c ioc.Dic) *Service[Component] {
 func NewService[Component any](c ioc.Dic) *Service[Component] {
 	config := record.NewConfig()
 	record.AddToConfig[Component](config)
@@ -37,7 +37,7 @@ func NewService[Component any](c ioc.Dic) *Service[Component] {
 
 //
 
-// type system[Component transition.LerpConstraint[Component]] struct {
+// type system[Component smooth.SmoothConstraint[Component]] struct {
 type system[Component any] struct {
 	engine.EngineWorld `inject:""`
 	Service            *Service[Component] `inject:""`
@@ -46,7 +46,7 @@ type system[Component any] struct {
 type FirstEvent loop.TickEvent
 type LastEvent loop.TickEvent
 
-// func NewSystems[Component transition.LerpConstraint[Component]](c ioc.Dic) {
+// func NewSystems[Component smooth.SmoothConstraint[Component]](c ioc.Dic) {
 func NewSystems[Component any](c ioc.Dic) {
 	s := ioc.GetServices[*system[Component]](c)
 	events.Listen(s.EventsBuilder(), func(FirstEvent) {
@@ -82,6 +82,7 @@ func NewSystems[Component any](c ioc.Dic) {
 			}
 			lerpComponent := transition.NewTransition(before, after, tick.Delta)
 			s.Service.lerpArray.Set(entity, lerpComponent)
+			s.Service.componentArray.Set(entity, before)
 		}
 	})
 }
