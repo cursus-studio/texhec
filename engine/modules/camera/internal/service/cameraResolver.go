@@ -50,8 +50,6 @@ type service struct {
 	projectionIDs map[reflect.Type]projectionID
 	projections   datastructures.SparseArray[projectionID, ProjectionData]
 
-	dirtySet ecs.DirtySet
-
 	mobileCamera       ecs.ComponentsArray[camera.MobileCameraComponent]
 	cameraLimits       ecs.ComponentsArray[camera.CameraLimitsComponent]
 	viewport           ecs.ComponentsArray[camera.ViewportComponent]
@@ -71,7 +69,6 @@ func NewService(c ioc.Dic) Service {
 
 	s.projectionIDs = make(map[reflect.Type]projectionID)
 	s.projections = datastructures.NewSparseArray[projectionID, ProjectionData]()
-	s.dirtySet = ecs.NewDirtySet()
 
 	s.mobileCamera = ecs.GetComponentsArray[camera.MobileCameraComponent](s.World())
 	s.cameraLimits = ecs.GetComponentsArray[camera.CameraLimitsComponent](s.World())
@@ -83,8 +80,7 @@ func NewService(c ioc.Dic) Service {
 	s.perspective = ecs.GetComponentsArray[camera.PerspectiveComponent](s.World())
 	s.dynamicPerspective = ecs.GetComponentsArray[camera.DynamicPerspectiveComponent](s.World())
 
-	s.projectionsArray.BeforeGet(s.BeforeGet)
-	s.cameraArray.AddDirtySet(s.dirtySet)
+	s.cameraArray.OnUpsert(s.OnCameraUpsert)
 	return s
 }
 
@@ -197,24 +193,17 @@ func (t *service) Register(
 
 //
 
-func (t *service) BeforeGet() {
-	dirtyEntities := t.dirtySet.Get()
-	if len(dirtyEntities) == 0 {
+func (t *service) OnCameraUpsert(entity ecs.EntityID) {
+	cam, ok := t.cameraArray.Get(entity)
+	if !ok {
+		t.projectionsArray.Remove(entity)
 		return
 	}
-
-	for _, entity := range dirtyEntities {
-		cam, ok := t.cameraArray.Get(entity)
-		if !ok {
-			t.projectionsArray.Remove(entity)
-			continue
-		}
-		projID, ok := t.projectionIDs[cam.Projection]
-		if !ok {
-			t.projectionsArray.Remove(entity)
-			continue
-		}
-		projComp := projectionComponent{projID}
-		t.projectionsArray.Set(entity, projComp)
+	projID, ok := t.projectionIDs[cam.Projection]
+	if !ok {
+		t.projectionsArray.Remove(entity)
+		return
 	}
+	projComp := projectionComponent{projID}
+	t.projectionsArray.Set(entity, projComp)
 }
