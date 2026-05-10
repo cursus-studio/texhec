@@ -21,10 +21,8 @@ var invSpeedTable [256]tile.Coord
 type system struct {
 	game.GameWorld `inject:""`
 
-	dirtyDeployedSet  ecs.DirtySet
-	dirtyTransformSet ecs.DirtySet
-	tileSize          transform.SizeComponent
-	selectedEvent     *tile.SelectEvent
+	tileSize      transform.SizeComponent
+	selectedEvent *tile.SelectEvent
 }
 
 func NewSystem(c ioc.Dic) tile.System {
@@ -35,31 +33,17 @@ func NewSystem(c ioc.Dic) tile.System {
 		s := ioc.GetServices[*system](c)
 
 		s.tileSize = s.Tile().GetTileSize()
-		s.dirtyDeployedSet = ecs.NewDirtySet()
-		s.dirtyTransformSet = ecs.NewDirtySet()
 		s.selectedEvent = nil
 
 		//
-		s.Tile().Pos().AddDirtySet(s.dirtyTransformSet)
-		s.Tile().Size().AddDirtySet(s.dirtyTransformSet)
-		s.Tile().Rot().AddDirtySet(s.dirtyTransformSet)
 
-		s.Transform().PivotPoint().AddDependency(s.Tile().Pos())
-		s.Transform().Pos().AddDependency(s.Tile().Pos())
-		s.Transform().Size().AddDependency(s.Tile().Size())
-		s.Transform().Rotation().AddDependency(s.Tile().Rot())
+		s.Tile().Pos().OnRemove(s.OnTilePosRemove)
 
-		s.Transform().PivotPoint().BeforeGet(s.BeforeTransformGet)
-		s.Transform().Pos().BeforeGet(s.BeforeTransformGet)
-		s.Transform().Size().BeforeGet(s.BeforeTransformGet)
-		s.Transform().Rotation().BeforeGet(s.BeforeTransformGet)
+		s.Tile().Pos().OnUpsert(s.OnTilePosSizeRotUpsert)
+		s.Tile().Size().OnUpsert(s.OnTilePosSizeRotUpsert)
+		s.Tile().Rot().OnUpsert(s.OnTilePosSizeRotUpsert)
 
-		//
-
-		s.Tile().Deployed().AddDirtySet(s.dirtyDeployedSet)
-		s.Inputs().Stack().AddDependency(s.Tile().Deployed())
-
-		s.Inputs().Stack().BeforeGet(s.BeforeStackGet)
+		s.Tile().Deployed().OnUpsert(s.OnDeployUpsert)
 
 		//
 
@@ -71,46 +55,40 @@ func NewSystem(c ioc.Dic) tile.System {
 	})
 }
 
-func (s *system) BeforeStackGet() {
-	for _, entity := range s.dirtyDeployedSet.Get() {
-		if _, ok := s.Tile().Deployed().Get(entity); !ok {
-			s.Inputs().Stack().Remove(entity)
-			continue
-		}
-
-		s.Inputs().Stack().Set(entity, inputs.StackComponent{})
-	}
+func (s *system) OnTilePosRemove(entity ecs.EntityID) {
+	s.Transform().Size().Remove(entity)
+	s.Inputs().Stack().Remove(entity)
 }
 
-func (s *system) BeforeTransformGet() {
-	for _, entity := range s.dirtyTransformSet.Get() {
-		pos, ok := s.Tile().Pos().Get(entity)
-		if !ok {
-			s.Transform().Size().Remove(entity)
-			s.Inputs().Stack().Remove(entity)
-			continue
-		}
-		size, _ := s.Tile().Size().Get(entity)
-		rot, _ := s.Tile().Rot().Get(entity)
-		layer, _ := s.Tile().Layer().Get(entity)
+func (s *system) OnDeployUpsert(entity ecs.EntityID) {
+	s.Inputs().Stack().Set(entity, inputs.StackComponent{})
+}
 
-		transformPos := transform.NewPos(
-			s.tileSize.Size.X()*float32(pos.X),
-			s.tileSize.Size.Y()*float32(pos.Y),
-			float32(layer.Z),
-		)
-		transformSize := transform.NewSize(
-			s.tileSize.Size[0]*float32(size.X),
-			s.tileSize.Size[1]*float32(size.Y),
-			s.tileSize.Size[2],
-		)
-		transformRot := transform.NewRotation(rot.Quat())
-
-		s.Transform().PivotPoint().Set(entity, transform.NewPivotPoint(0, 0, .5))
-		s.Transform().Pos().Set(entity, transformPos)
-		s.Transform().Size().Set(entity, transformSize)
-		s.Transform().Rotation().Set(entity, transformRot)
+func (s *system) OnTilePosSizeRotUpsert(entity ecs.EntityID) {
+	pos, ok := s.Tile().Pos().Get(entity)
+	if !ok {
+		return
 	}
+	size, _ := s.Tile().Size().Get(entity)
+	rot, _ := s.Tile().Rot().Get(entity)
+	layer, _ := s.Tile().Layer().Get(entity)
+
+	transformPos := transform.NewPos(
+		s.tileSize.Size.X()*float32(pos.X),
+		s.tileSize.Size.Y()*float32(pos.Y),
+		float32(layer.Z),
+	)
+	transformSize := transform.NewSize(
+		s.tileSize.Size[0]*float32(size.X),
+		s.tileSize.Size[1]*float32(size.Y),
+		s.tileSize.Size[2],
+	)
+	transformRot := transform.NewRotation(rot.Quat())
+
+	s.Transform().PivotPoint().Set(entity, transform.NewPivotPoint(0, 0, .5))
+	s.Transform().Pos().Set(entity, transformPos)
+	s.Transform().Size().Set(entity, transformSize)
+	s.Transform().Rotation().Set(entity, transformRot)
 }
 
 var (
