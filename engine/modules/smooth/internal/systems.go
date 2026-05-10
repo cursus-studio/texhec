@@ -82,6 +82,7 @@ func NewSystems[Component any](c ioc.Dic) {
 			}
 			lerpComponent := transition.NewTransition(before, after, tick.Delta)
 			s.Service.lerpArray.Set(entity, lerpComponent)
+			s.Service.componentArray.Set(entity, before)
 		}
 	})
 }
