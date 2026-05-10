@@ -60,10 +60,7 @@ func NewSystem(c ioc.Dic, bgTimePerFrame time.Duration) ui.System {
 			s.backgroundsFrames = append(s.backgroundsFrames, len(texture.Images()))
 		}
 
-		s.Transform().Parent().BeforeGet(s.BeforeGet)
-		s.Render().Mesh().BeforeGet(s.BeforeGet)
-		s.Render().Texture().BeforeGet(s.BeforeGet)
-		s.Render().TextureFrame().BeforeGet(s.BeforeGet)
+		s.Ui().AnimatedBackground().OnUpsert(s.OnBackgroundUpsert)
 
 		events.Listen(s.EventsBuilder(), s.ListenUpdateBg)
 		events.Emit(s.Events(), UpdateBgEvent{})
@@ -71,31 +68,24 @@ func NewSystem(c ioc.Dic, bgTimePerFrame time.Duration) ui.System {
 	})
 }
 
-func (s *System) BeforeGet() {
-	entities := s.bgDirtySet.Get()
-	if len(entities) == 0 {
+func (s *System) OnBackgroundUpsert(entity ecs.EntityID) {
+	if entity == s.blueprint {
 		return
 	}
-
 	texture, _ := s.Render().Texture().Get(s.blueprint)
 	transitionComp, _ := s.transitionArr.Get(s.blueprint)
-	for _, entity := range entities {
-		if entity == s.blueprint {
-			continue
-		}
-		if _, ok := s.Ui().AnimatedBackground().Get(entity); !ok {
-			continue
-		}
-		if _, ok := s.transitionArr.Get(entity); ok {
-			continue
-		}
-		s.Transform().Parent().Set(entity, transform.NewParent(transform.RelativePos|transform.RelativeSizeXY))
-		if entity != s.blueprint {
-			s.Render().Mesh().Set(entity, render.NewMesh(s.Definitions().Assets().SquareMesh))
-		}
-		s.Render().Texture().Set(entity, texture)
-		s.transitionArr.Set(entity, transitionComp)
+	if _, ok := s.Ui().AnimatedBackground().Get(entity); !ok {
+		return
 	}
+	if _, ok := s.transitionArr.Get(entity); ok {
+		return
+	}
+	s.Transform().Parent().Set(entity, transform.NewParent(transform.RelativePos|transform.RelativeSizeXY))
+	if entity != s.blueprint {
+		s.Render().Mesh().Set(entity, render.NewMesh(s.Definitions().Assets().SquareMesh))
+	}
+	s.Render().Texture().Set(entity, texture)
+	s.transitionArr.Set(entity, transitionComp)
 }
 
 func (s *System) ListenUpdateBg(event UpdateBgEvent) {
