@@ -4,7 +4,6 @@ import (
 	"core/game"
 	"core/modules/tile"
 	"core/modules/ui"
-	"engine/modules/grid"
 	"engine/modules/inputs"
 	"engine/modules/loop"
 	"engine/modules/transform"
@@ -26,7 +25,6 @@ type system struct {
 	dirtyTransformSet ecs.DirtySet
 	tileSize          transform.SizeComponent
 	selectedEvent     *tile.SelectEvent
-	previousCoords    grid.Coords
 }
 
 func NewSystem(c ioc.Dic) tile.System {
@@ -202,12 +200,10 @@ func (s *system) OnTick(e loop.TickEvent) {
 
 func (s *system) OnUnselect(e ui.HideUiEvent) {
 	s.selectedEvent = nil
-	s.previousCoords = grid.NewCoords(-1, -1)
 }
 
 func (s *system) OnSelect(e tile.SelectEvent) {
 	s.selectedEvent = &e
-	s.previousCoords = grid.NewCoords(-1, -1)
 }
 
 func (s *system) OnHover(e tile.HoverEvent) {
@@ -220,10 +216,6 @@ func (s *system) OnHover(e tile.HoverEvent) {
 		return
 	}
 	coords := grid.GetCoords(e.Tile)
-	if s.previousCoords == coords {
-		return
-	}
-	s.previousCoords = coords
 	if event, ok := s.selectedEvent.HoverEvent.(tile.ApplyCoordsEvent); ok {
 		s.selectedEvent.HoverEvent = event.ApplyCoords(coords)
 	}
