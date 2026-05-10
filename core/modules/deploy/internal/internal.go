@@ -12,22 +12,34 @@ import (
 	"engine/modules/inputs"
 	"engine/modules/render"
 	"engine/services/ecs"
+	"slices"
 
 	"github.com/go-gl/mathgl/mgl32"
 	"github.com/ogiusek/events"
 	"github.com/ogiusek/ioc/v2"
 )
 
+type PreviewedComponent struct {
+	Event      deploy.PreviewEvent
+	Collisions []grid.Coords
+}
+
+func (c1 *PreviewedComponent) Equal(c2 PreviewedComponent) bool {
+	return c1.Event == c2.Event && slices.Equal(c1.Collisions, c2.Collisions)
+}
+
 type service struct {
 	game.GameWorld `inject:""`
 
 	component ecs.ComponentsArray[deploy.Component]
+	previewed ecs.ComponentsArray[PreviewedComponent]
 }
 
 func NewService(c ioc.Dic) deploy.Service {
 	s := ioc.GetServices[*service](c)
 
 	s.component = ecs.GetComponentsArray[deploy.Component](s.World())
+	s.previewed = ecs.GetComponentsArray[PreviewedComponent](s.World())
 
 	events.Listen(s.EventsBuilder(), s.Unselect)
 	events.Listen(s.EventsBuilder(), s.Execute)
@@ -76,36 +88,51 @@ func (s *service) Select(e deploy.SelectEvent) {
 	events.Emit(s.Events(), tile.NewSelectEvent(deploy.NewPreviewEvent(e.By, e.Blueprint)))
 }
 func (s *service) Preview(e deploy.PreviewEvent) {
+	pos := tile.NewPos(e.Coords.Coords())
+	blueprintObstruction, _ := s.Tile().Obstruction().Get(e.Blueprint)
+	size, _ := s.Tile().Size().Get(e.Blueprint)
+	aabb := tile.NewAABB(pos, size)
+	previewComp := PreviewedComponent{
+		Event:      e,
+		Collisions: s.Tile().Collisions(aabb, blueprintObstruction.Obstruction),
+	}
+
+	if len(s.previewed.GetEntities()) == 1 {
+		previewed := s.previewed.GetEntities()[0]
+		previousPreviewComp, _ := s.previewed.Get(previewed)
+		if previousPreviewComp.Equal(previewComp) {
+			return
+		}
+	}
+
+	// this is part of how we handle placeholders
+	// this is to expand
 	for _, entity := range s.Tile().Placeholder().GetEntities() {
 		s.World().RemoveEntity(entity)
 	}
-	var collisions []grid.Coords
+
+	// here we can potentially optimize placing by using existing entity
+	// we only have to establish mental model for placeholders
+	// how to split placeholders:
+	// - deploy preview
+	// - other placeholders like current path
+
 	placeholderEntity := s.Prototype().Clone(e.Blueprint)
 	s.Hierarchy().SetParent(placeholderEntity, s.Scene().Scene())
 	s.Tile().Layer().Set(placeholderEntity, tile.NewLayer(definitions.ObjectPlaceholderLayer))
-
-	pos := tile.NewPos(e.Coords.Coords())
 	s.Tile().Pos().Set(placeholderEntity, pos)
 	s.Tile().Placeholder().Set(placeholderEntity, tile.NewPlaceholder())
-	size, _ := s.Tile().Size().Get(e.Blueprint)
+	s.Inputs().KeepSelected().Set(placeholderEntity, inputs.KeepSelectedComponent{})
+	s.previewed.Set(placeholderEntity, previewComp)
 
-	{ // check can place:
-		// - is position occupied
-		blueprintObstruction, _ := s.Tile().Obstruction().Get(e.Blueprint)
-		aabb := tile.NewAABB(pos, size)
-		collisions = s.Tile().Collisions(aabb, blueprintObstruction.Obstruction)
-		if len(collisions) != 0 {
-			goto cannotPlace
-		}
-
-		// place
+	if len(previewComp.Collisions) == 0 {
 		s.Render().Color().Set(placeholderEntity, render.NewColor(mgl32.Vec4{0, 1, 0, 1}))
 		s.Inputs().LeftClick().Set(placeholderEntity, inputs.NewLeftClick(deploy.NewExecuteEvent(e.By, e.Blueprint).ApplyCoords(e.Coords)))
 		return
 	}
-cannotPlace:
+
 	// place indicator on occupied tiles
-	for _, collision := range collisions {
+	for _, collision := range previewComp.Collisions {
 		entity := s.Prototype().Clone(s.Definitions().Assets().Blank)
 		s.Hierarchy().SetParent(entity, s.Scene().Scene())
 
