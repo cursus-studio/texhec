@@ -36,7 +36,7 @@ func NewSystem(c ioc.Dic) settings.System {
 		})
 		events.Listen(s.EventsBuilder(), s.ListenOnTick)
 		events.Listen(s.EventsBuilder(), func(settings.EnterSettingsEvent) {
-			for _, p := range s.Ui().Show() {
+			for _, p := range s.Ui().ShowMenu() {
 				event := settings.EnterSettingsForParentEvent{Parent: p}
 				events.Emit(s.Events(), event)
 			}

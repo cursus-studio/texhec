@@ -5,7 +5,6 @@ import (
 	"core/modules/definitions"
 	"core/modules/settings"
 	"core/modules/tile"
-	"core/modules/ui"
 	corepkg "core/pkg"
 	"engine/modules/camera"
 	"engine/modules/drag"
@@ -133,7 +132,6 @@ func getDic() ioc.Dic {
 
 				netsyncpkg.AddTransparentEvent[settings.EnterSettingsEvent](config)
 				netsyncpkg.AddTransparentEvent[tile.HoverEvent](config)
-				netsyncpkg.AddTransparentEvent[ui.HideUiEvent](config)
 
 				// netsyncpkg.AddEventAuthorization(config, func(c inputs.DragEvent) error {
 				// 	return errors.New("no")

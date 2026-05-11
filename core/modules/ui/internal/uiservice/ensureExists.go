@@ -13,65 +13,65 @@ import (
 	"github.com/go-gl/mathgl/mgl32"
 )
 
-func (t *service) EnsureExists() {
+func (s *service) EnsureExists() {
 mainLoop:
-	for _, camera := range t.uiCameraArray.GetEntities() {
+	for _, camera := range s.uiCameraArray.GetEntities() {
 		// objects
 		// menu
-		for _, child := range t.Hierarchy().Children(camera).GetIndices() {
-			if _, ok := t.menuArray.Get(child); ok {
+		for _, child := range s.Hierarchy().Children(camera).GetIndices() {
+			if _, ok := s.menuArray.Get(child); ok {
 				continue mainLoop
 			}
 		}
-		menu := t.World().NewEntity()
-		t.Hierarchy().SetParent(menu, camera)
-		t.Transform().ParentPivotPoint().Set(menu, transform.NewParentPivotPoint(1, 1, .5))
-		t.Transform().Pos().Set(menu, transform.NewPos(0, 0, 1))
-		t.Transform().Size().Set(menu, transform.NewSize(.2, 1, 1))
-		t.Transform().PivotPoint().Set(menu, transform.NewPivotPoint(0, 1, .5))
+		menu := s.World().NewEntity()
+		s.Hierarchy().SetParent(menu, camera)
+		s.Transform().ParentPivotPoint().Set(menu, transform.NewParentPivotPoint(1, 1, .5))
+		s.Transform().Pos().Set(menu, transform.NewPos(0, 0, 1))
+		s.Transform().Size().Set(menu, transform.NewSize(.2, 1, 1))
+		s.Transform().PivotPoint().Set(menu, transform.NewPivotPoint(0, 1, .5))
 
-		t.Render().Color().Set(menu, render.NewColor(mgl32.Vec4{1, 1, 1, .5}))
-		t.AnimatedBackground().Set(menu, ui.AnimatedBackgroundComponent{})
+		s.Render().Color().Set(menu, render.NewColor(mgl32.Vec4{1, 1, 1, .5}))
+		s.AnimatedBackground().Set(menu, ui.AnimatedBackgroundComponent{})
 
-		t.Groups().Inherit().Set(menu, groups.InheritGroupsComponent{})
-		t.Collider().Component().Set(menu, collider.NewCollider(t.Definitions().Assets().SquareCollider))
-		t.Inputs().KeepSelected().Set(menu, inputs.KeepSelectedComponent{})
-		t.menuArray.Set(menu, menuComponent{})
+		s.Groups().Inherit().Set(menu, groups.InheritGroupsComponent{})
+		s.Collider().Component().Set(menu, collider.NewCollider(s.Definitions().Assets().SquareCollider))
+		s.Inputs().KeepSelected().Set(menu, inputs.KeepSelectedComponent{})
+		s.menuArray.Set(menu, menuComponent{})
 
 		// quit btn
-		quit := t.World().NewEntity()
+		quit := s.World().NewEntity()
 
-		t.Hierarchy().SetParent(quit, menu)
-		t.Groups().Inherit().Set(quit, groups.InheritGroupsComponent{})
+		s.Hierarchy().SetParent(quit, menu)
+		s.Groups().Inherit().Set(quit, groups.InheritGroupsComponent{})
 
-		t.Transform().Pos().Set(quit, transform.NewPos(0, 0, 1))
-		t.Transform().Parent().Set(quit, transform.NewParent(transform.RelativePos))
-		t.Transform().ParentPivotPoint().Set(quit, transform.NewParentPivotPoint(1, 1, .5))
-		t.Transform().Size().Set(quit, transform.NewSize(25, 25, 1))
-		t.Transform().PivotPoint().Set(quit, transform.NewPivotPoint(1, 1, .5))
+		s.Transform().Pos().Set(quit, transform.NewPos(0, 0, 1))
+		s.Transform().Parent().Set(quit, transform.NewParent(transform.RelativePos))
+		s.Transform().ParentPivotPoint().Set(quit, transform.NewParentPivotPoint(1, 1, .5))
+		s.Transform().Size().Set(quit, transform.NewSize(25, 25, 1))
+		s.Transform().PivotPoint().Set(quit, transform.NewPivotPoint(1, 1, .5))
 
-		t.Text().Content().Set(quit, text.NewText("X"))
-		t.Text().FontSize().Set(quit, text.NewFontSize(25))
-		t.Text().Align().Set(quit, text.NewAlign(.5, .5))
+		s.Text().Content().Set(quit, text.NewText("X"))
+		s.Text().FontSize().Set(quit, text.NewFontSize(25))
+		s.Text().Align().Set(quit, text.NewAlign(.5, .5))
 
-		t.Render().Color().Set(quit, render.NewColor(mgl32.Vec4{1, 0, 0, 1}))
-		t.Render().Mesh().Set(quit, render.NewMesh(t.Definitions().Assets().SquareMesh))
-		t.Render().Texture().Set(quit, render.NewTexture(t.Definitions().Assets().Blank))
+		s.Render().Color().Set(quit, render.NewColor(mgl32.Vec4{1, 0, 0, 1}))
+		s.Render().Mesh().Set(quit, render.NewMesh(s.Definitions().Assets().SquareMesh))
+		s.Render().Texture().Set(quit, render.NewTexture(s.Definitions().Assets().Blank))
 
-		t.Inputs().LeftClick().Set(quit, inputs.NewLeftClick(ui.HideUiEvent{}))
-		t.Inputs().KeepSelected().Set(quit, inputs.KeepSelectedComponent{})
-		t.Collider().Component().Set(quit, collider.NewCollider(t.Definitions().Assets().SquareCollider))
+		s.Inputs().LeftClick().Set(quit, inputs.NewLeftClick(ui.NewUnselect[ui.ObjectComponent]()))
+		s.Inputs().KeepSelected().Set(quit, inputs.KeepSelectedComponent{})
+		s.Collider().Component().Set(quit, collider.NewCollider(s.Definitions().Assets().SquareCollider))
 
 		// child wrapper
-		childWrapper := t.World().NewEntity()
-		t.Hierarchy().SetParent(childWrapper, menu)
-		t.Groups().Inherit().Set(childWrapper, groups.InheritGroupsComponent{})
-		t.Transform().Pos().Set(childWrapper, transform.NewPos(0, -30 /* quit height + margin */, 0))
-		t.Transform().Parent().Set(childWrapper, transform.NewParent(transform.RelativePos|transform.RelativeSizeXY))
+		childWrapper := s.World().NewEntity()
+		s.Hierarchy().SetParent(childWrapper, menu)
+		s.Groups().Inherit().Set(childWrapper, groups.InheritGroupsComponent{})
+		s.Transform().Pos().Set(childWrapper, transform.NewPos(0, -30 /* quit height + margin */, 0))
+		s.Transform().Parent().Set(childWrapper, transform.NewParent(transform.RelativePos|transform.RelativeSizeXY))
 
-		t.Layout().Order().Set(childWrapper, layout.NewOrder(layout.OrderVectical))
-		t.Layout().Align().Set(childWrapper, layout.NewAlign(0, .5))
-		t.Layout().Gap().Set(childWrapper, layout.NewGap(10))
-		t.childrenWrapperArray.Set(childWrapper, childrenComponent{})
+		s.Layout().Order().Set(childWrapper, layout.NewOrder(layout.OrderVectical))
+		s.Layout().Align().Set(childWrapper, layout.NewAlign(0, .5))
+		s.Layout().Gap().Set(childWrapper, layout.NewGap(10))
+		s.childrenWrapperArray.Set(childWrapper, childrenComponent{})
 	}
 }

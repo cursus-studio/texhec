@@ -20,83 +20,101 @@ type childrenComponent struct{}
 type service struct {
 	game.GameWorld `inject:""`
 
+	systems []ecs.SystemRegister
+
 	animationDuration time.Duration
 
 	uiCameraArray           ecs.ComponentsArray[ui.UiCameraComponent]
-	cursorCameraArray       ecs.ComponentsArray[ui.CursorCameraComponent]
 	animatedBackgroundArray ecs.ComponentsArray[ui.AnimatedBackgroundComponent]
-	menuArray               ecs.ComponentsArray[menuComponent]
-	childrenWrapperArray    ecs.ComponentsArray[childrenComponent]
+	cursorCameraArray       ecs.ComponentsArray[ui.CursorCameraComponent]
+
+	objects ui.SelectionGroup[ui.ObjectComponent]
+	actions ui.SelectionGroup[ui.ActionComponent]
+
+	menuArray            ecs.ComponentsArray[menuComponent]
+	childrenWrapperArray ecs.ComponentsArray[childrenComponent]
 }
 
 func NewService(
 	c ioc.Dic,
 	animationDuration time.Duration,
 ) *service {
-	t := ioc.GetServices[*service](c)
-	t.animationDuration = animationDuration
+	s := ioc.GetServices[*service](c)
+	s.animationDuration = animationDuration
 
-	t.uiCameraArray = ecs.GetComponentsArray[ui.UiCameraComponent](t.World())
-	t.cursorCameraArray = ecs.GetComponentsArray[ui.CursorCameraComponent](t.World())
-	t.animatedBackgroundArray = ecs.GetComponentsArray[ui.AnimatedBackgroundComponent](t.World())
-	t.menuArray = ecs.GetComponentsArray[menuComponent](t.World())
-	t.childrenWrapperArray = ecs.GetComponentsArray[childrenComponent](t.World())
+	s.uiCameraArray = ecs.GetComponentsArray[ui.UiCameraComponent](s.World())
+	s.animatedBackgroundArray = ecs.GetComponentsArray[ui.AnimatedBackgroundComponent](s.World())
+	s.cursorCameraArray = ecs.GetComponentsArray[ui.CursorCameraComponent](s.World())
 
-	events.Listen(t.EventsBuilder(), func(e ui.HideUiEvent) {
-		t.Hide()
+	s.objects = NewSelectionGroup[ui.ObjectComponent](c, s)
+	s.actions = NewSelectionGroup[ui.ActionComponent](c, s)
+
+	s.menuArray = ecs.GetComponentsArray[menuComponent](s.World())
+	s.childrenWrapperArray = ecs.GetComponentsArray[childrenComponent](s.World())
+
+	events.Listen(s.EventsBuilder(), func(ui.UnselectEvent[ui.ObjectComponent]) {
+		events.Emit(s.Events(), ui.NewUnselect[ui.ActionComponent]())
+		s.HideMenu()
 	})
 
-	t.EnsureExists()
+	s.EnsureExists()
 
-	return t
+	return s
 }
 
-func (t *service) ResetChildWrapper() {
-	t.EnsureExists()
+func (s *service) ResetChildWrapper() {
+	s.EnsureExists()
 
-	for _, childWrapper := range t.childrenWrapperArray.GetEntities() {
-		for _, child := range t.Hierarchy().Children(childWrapper).GetIndices() {
-			t.World().RemoveEntity(child)
+	for _, childWrapper := range s.childrenWrapperArray.GetEntities() {
+		for _, child := range s.Hierarchy().Children(childWrapper).GetIndices() {
+			s.World().RemoveEntity(child)
 		}
 	}
 }
 
-func (t *service) UiCamera() ecs.ComponentsArray[ui.UiCameraComponent] { return t.uiCameraArray }
-func (t *service) AnimatedBackground() ecs.ComponentsArray[ui.AnimatedBackgroundComponent] {
-	return t.animatedBackgroundArray
+func (s *service) UiCamera() ecs.ComponentsArray[ui.UiCameraComponent] { return s.uiCameraArray }
+func (s *service) AnimatedBackground() ecs.ComponentsArray[ui.AnimatedBackgroundComponent] {
+	return s.animatedBackgroundArray
 }
 func (s *service) CursorCamera() ecs.ComponentsArray[ui.CursorCameraComponent] {
 	return s.cursorCameraArray
 }
 
-func (t *service) Show() []ecs.EntityID {
-	t.ResetChildWrapper()
+func (s *service) Systems() []ecs.SystemRegister {
+	return s.systems
+}
 
-	for _, menu := range t.menuArray.GetEntities() {
-		if component, _ := t.menuArray.Get(menu); !component.Visible {
-			t.menuArray.Set(menu, menuComponent{true})
-			events.Emit(t.Events(), transition.NewTransitionEvent(
+func (s *service) Objects() ui.SelectionGroup[ui.ObjectComponent] { return s.objects }
+func (s *service) Actions() ui.SelectionGroup[ui.ActionComponent] { return s.actions }
+
+func (s *service) ShowMenu() []ecs.EntityID {
+	s.ResetChildWrapper()
+
+	for _, menu := range s.menuArray.GetEntities() {
+		if component, _ := s.menuArray.Get(menu); !component.Visible {
+			s.menuArray.Set(menu, menuComponent{true})
+			events.Emit(s.Events(), transition.NewTransitionEvent(
 				menu,
 				transform.NewPivotPoint(0, 1, .5),
 				transform.NewPivotPoint(1, 1, .5),
-				t.animationDuration,
+				s.animationDuration,
 			))
 		}
 	}
-	return t.childrenWrapperArray.GetEntities()
+	return s.childrenWrapperArray.GetEntities()
 }
 
-func (t *service) Hide() {
-	t.EnsureExists()
+func (s *service) HideMenu() {
+	s.EnsureExists()
 
-	for _, menu := range t.menuArray.GetEntities() {
-		if component, _ := t.menuArray.Get(menu); component.Visible {
-			t.menuArray.Set(menu, menuComponent{false})
-			events.Emit(t.Events(), transition.NewTransitionEvent(
+	for _, menu := range s.menuArray.GetEntities() {
+		if component, _ := s.menuArray.Get(menu); component.Visible {
+			s.menuArray.Set(menu, menuComponent{false})
+			events.Emit(s.Events(), transition.NewTransitionEvent(
 				menu,
 				transform.NewPivotPoint(1, 1, .5),
 				transform.NewPivotPoint(0, 1, .5),
-				t.animationDuration,
+				s.animationDuration,
 			))
 		}
 	}

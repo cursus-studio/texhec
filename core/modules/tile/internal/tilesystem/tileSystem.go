@@ -176,7 +176,7 @@ func (s *system) OnTick(e loop.TickEvent) {
 	}
 }
 
-func (s *system) OnUnselect(e ui.HideUiEvent) {
+func (s *system) OnUnselect(ui.UnselectEvent[ui.ObjectComponent]) {
 	s.selectedEvent = nil
 }
 

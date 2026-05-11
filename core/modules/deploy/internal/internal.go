@@ -41,7 +41,6 @@ func NewService(c ioc.Dic) deploy.Service {
 	s.component = ecs.GetComponentsArray[deploy.Component](s.World())
 	s.previewed = ecs.GetComponentsArray[PreviewedComponent](s.World())
 
-	events.Listen(s.EventsBuilder(), s.Unselect)
 	events.Listen(s.EventsBuilder(), s.Execute)
 	events.Listen(s.EventsBuilder(), s.Preview)
 	events.Listen(s.EventsBuilder(), s.Select)
@@ -56,6 +55,7 @@ func (s *service) Deploy(
 	owner ecs.EntityID,
 	coords grid.Coords,
 ) (ecs.EntityID, error) {
+	events.Emit(s.Events(), ui.NewUnselect[ui.ObjectComponent]())
 	// check can place:
 
 	// - is position occuped
@@ -75,15 +75,9 @@ func (s *service) Deploy(
 	s.Tile().Deployed().Set(deployed, tile.NewDeployed())
 	s.Inputs().LeftClick().Set(deployed, inputs.NewLeftClick(tile.NewClickEntityEvent()))
 	s.Tile().Pos().Set(deployed, pos)
-	events.Emit(s.Events(), ui.HideUiEvent{})
 	return deployed, nil
 }
 
-func (s *service) Unselect(e ui.HideUiEvent) {
-	for _, entity := range s.Tile().Placeholder().GetEntities() {
-		s.World().RemoveEntity(entity)
-	}
-}
 func (s *service) Select(e deploy.SelectEvent) {
 	events.Emit(s.Events(), tile.NewSelectEvent(deploy.NewPreviewEvent(e.By, e.Blueprint)))
 }
@@ -105,23 +99,13 @@ func (s *service) Preview(e deploy.PreviewEvent) {
 		}
 	}
 
-	// this is part of how we handle placeholders
-	// this is to expand
-	for _, entity := range s.Tile().Placeholder().GetEntities() {
-		s.World().RemoveEntity(entity)
-	}
-
-	// here we can potentially optimize placing by using existing entity
-	// we only have to establish mental model for placeholders
-	// how to split placeholders:
-	// - deploy preview
-	// - other placeholders like current path
+	events.Emit(s.Events(), ui.NewUnselect[ui.ActionComponent]())
 
 	placeholderEntity := s.Prototype().Clone(e.Blueprint)
 	s.Hierarchy().SetParent(placeholderEntity, s.Scene().Scene())
 	s.Tile().Layer().Set(placeholderEntity, tile.NewLayer(definitions.ObjectPlaceholderLayer))
 	s.Tile().Pos().Set(placeholderEntity, pos)
-	s.Tile().Placeholder().Set(placeholderEntity, tile.NewPlaceholder())
+	s.Ui().Actions().Set(placeholderEntity, ui.ActionComponent{})
 	s.Inputs().KeepSelected().Set(placeholderEntity, inputs.KeepSelectedComponent{})
 	s.previewed.Set(placeholderEntity, previewComp)
 
@@ -143,16 +127,13 @@ func (s *service) Preview(e deploy.PreviewEvent) {
 
 		s.Tile().Layer().Set(entity, tile.NewLayer(definitions.TilePlaceholderLayer))
 		s.Tile().Pos().Set(entity, tile.NewPos(collision.Coords()))
-		s.Tile().Placeholder().Set(entity, tile.NewPlaceholder())
+		s.Ui().Actions().Set(entity, ui.ActionComponent{})
 		s.Render().Color().Set(entity, render.NewColor(mgl32.Vec4{1, 0, 0, 1}))
 	}
 	s.Render().Color().Set(placeholderEntity, render.NewColor(mgl32.Vec4{1, 0, 0, 1}))
 }
 func (s *service) Execute(e deploy.ExecuteEvent) {
-	// remove placeholder entities
-	for _, entity := range s.Tile().Placeholder().GetEntities() {
-		s.World().RemoveEntity(entity)
-	}
+	events.Emit(s.Events(), ui.NewUnselect[ui.ObjectComponent]())
 
 	// pay
 	// ...
@@ -191,5 +172,4 @@ func (s *service) Execute(e deploy.ExecuteEvent) {
 	s.Tile().Deployed().Set(deployed, tile.NewDeployed())
 	s.Inputs().LeftClick().Set(deployed, inputs.NewLeftClick(tile.NewClickEntityEvent()))
 	s.Tile().Pos().Set(deployed, tile.NewPos(e.Coords.Coords()))
-	events.Emit(s.Events(), ui.HideUiEvent{})
 }

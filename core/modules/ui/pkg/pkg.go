@@ -1,6 +1,7 @@
 package uipkg
 
 import (
+	"core/game"
 	"core/modules/ui"
 	"core/modules/ui/internal/systems"
 	"core/modules/ui/internal/uiservice"
@@ -37,35 +38,44 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 		typeregistrypkg.PkgT[ui.AnimatedBackgroundComponent],
 		typeregistrypkg.PkgT[ui.CursorCameraComponent],
 		typeregistrypkg.PkgT[ui.UiCameraComponent],
-
-		typeregistrypkg.PkgT[ui.HideUiEvent],
 	}
 	for _, pkg := range pkgs {
 		pkg(b)
 	}
 	ioc.Register(b, func(c ioc.Dic) Config { return newConfig() })
 
-	ioc.Register(b, func(c ioc.Dic) ui.Service {
+	type Service interface {
+		ui.Service
+		Systems() []ecs.SystemRegister
+	}
+
+	ioc.Register(b, func(c ioc.Dic) Service {
 		config := ioc.Get[Config](c).(*config)
 		return uiservice.NewService(c, config.animationDuration)
 	})
+	ioc.Register(b, func(c ioc.Dic) ui.Service {
+		return ioc.Get[Service](c)
+	})
 	ioc.Register(b, func(c ioc.Dic) ui.System {
-		eventsBuilder := ioc.Get[events.Builder](c)
+		world := ioc.GetServices[game.GameWorld](c)
 		config := ioc.Get[Config](c).(*config)
 		return ecs.NewSystemRegister(func() error {
 			errs := ecs.RegisterSystems(
 				systems.NewSystem(c, config.bgTimePerFrame),
 				systems.NewCursorSystem(c),
 			)
+			errs = append(errs, ecs.RegisterSystems(
+				ioc.Get[Service](c).Systems()...,
+			)...)
 			if len(errs) != 0 {
 				return errs[0]
 			}
 
-			events.Listen(eventsBuilder, func(e sdl.MouseButtonEvent) {
+			events.Listen(world.EventsBuilder(), func(e sdl.MouseButtonEvent) {
 				if e.Button != sdl.BUTTON_RIGHT || e.State != sdl.RELEASED {
 					return
 				}
-				events.Emit(eventsBuilder.Events(), ui.HideUiEvent{})
+				events.Emit(world.Events(), ui.NewUnselect[ui.ObjectComponent]())
 			})
 			ioc.Get[ui.Service](c)
 			return nil

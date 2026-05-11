@@ -107,6 +107,7 @@ func main() {
 		temporaryInlineSystems,
 
 		ioc.Get[tile.System](c),
+		world.Pathfind().System(),
 
 		// ui update
 		ioc.Get[ui.System](c),
