@@ -8,10 +8,10 @@ import (
 	"github.com/ogiusek/ioc/v2"
 )
 
-func NewSystem(c ioc.Dic) audio.System {
-	s := ioc.Get[Service](c)
-	eventsBuilder := ioc.Get[events.Builder](c)
+func NewSystem(c ioc.Dic) ecs.SystemRegister {
 	return ecs.NewSystemRegister(func() error {
+		s := ioc.Get[Service](c)
+		eventsBuilder := ioc.Get[events.Builder](c)
 		events.ListenE(eventsBuilder, func(e audio.StopEvent) error {
 			return s.Stop(e.Channel)
 		})

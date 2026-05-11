@@ -10,6 +10,7 @@ import (
 
 	"github.com/ogiusek/events"
 	"github.com/ogiusek/ioc/v2"
+	"github.com/veandco/go-sdl2/sdl"
 )
 
 type menuComponent struct {
@@ -19,8 +20,7 @@ type childrenComponent struct{}
 
 type service struct {
 	game.GameWorld `inject:""`
-
-	systems []ecs.SystemRegister
+	systems        []ecs.SystemRegister
 
 	animationDuration time.Duration
 
@@ -37,9 +37,11 @@ type service struct {
 
 func NewService(
 	c ioc.Dic,
+	systems []ecs.SystemRegister,
 	animationDuration time.Duration,
-) *service {
+) ui.Service {
 	s := ioc.GetServices[*service](c)
+	s.systems = systems
 	s.animationDuration = animationDuration
 
 	s.uiCameraArray = ecs.GetComponentsArray[ui.UiCameraComponent](s.World())
@@ -52,14 +54,32 @@ func NewService(
 	s.menuArray = ecs.GetComponentsArray[menuComponent](s.World())
 	s.childrenWrapperArray = ecs.GetComponentsArray[childrenComponent](s.World())
 
-	events.Listen(s.EventsBuilder(), func(ui.UnselectEvent[ui.ObjectComponent]) {
-		events.Emit(s.Events(), ui.NewUnselect[ui.ActionComponent]())
-		s.HideMenu()
-	})
+	s.systems = append(s.systems, ecs.NewSystemRegister(func() error {
+		events.Listen(s.EventsBuilder(), func(e sdl.MouseButtonEvent) {
+			if e.Button != sdl.BUTTON_RIGHT || e.State != sdl.RELEASED {
+				return
+			}
+			events.Emit(s.Events(), ui.NewUnselect[ui.ObjectComponent]())
+		})
+
+		events.Listen(s.EventsBuilder(), func(ui.UnselectEvent[ui.ObjectComponent]) {
+			events.Emit(s.Events(), ui.NewUnselect[ui.ActionComponent]())
+			s.HideMenu()
+		})
+		return nil
+	}))
 
 	s.EnsureExists()
 
 	return s
+}
+
+func (s *service) Register() error {
+	errs := ecs.RegisterSystems(s.systems...)
+	if len(errs) != 0 {
+		return errs[0]
+	}
+	return nil
 }
 
 func (s *service) ResetChildWrapper() {
@@ -78,10 +98,6 @@ func (s *service) AnimatedBackground() ecs.ComponentsArray[ui.AnimatedBackground
 }
 func (s *service) CursorCamera() ecs.ComponentsArray[ui.CursorCameraComponent] {
 	return s.cursorCameraArray
-}
-
-func (s *service) Systems() []ecs.SystemRegister {
-	return s.systems
 }
 
 func (s *service) Objects() ui.SelectionGroup[ui.ObjectComponent] { return s.objects }

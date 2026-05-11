@@ -9,11 +9,19 @@ import (
 	"github.com/go-gl/mathgl/mgl32"
 )
 
+// updates dynamic projections
+type ChangedResolutionEvent struct{}
+
+func NewUpdateProjectionsEvent() ChangedResolutionEvent {
+	return ChangedResolutionEvent{}
+}
+
 var (
 	ErrNotCamera error = errors.New("this isn't a camera")
 )
 
 type Service interface {
+	ecs.SystemRegister
 	Component() ecs.ComponentsArray[Component]
 	Priority() ecs.ComponentsArray[PriorityComponent]
 

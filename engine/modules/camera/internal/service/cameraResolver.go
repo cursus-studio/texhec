@@ -19,7 +19,7 @@ import (
 // extra data
 
 type Service interface {
-	Register(
+	RegisterProjection(
 		reflect.Type,
 		ProjectionData,
 	) error
@@ -42,6 +42,7 @@ type projectionComponent struct {
 
 type service struct {
 	engine.EngineWorld `inject:""`
+	ecs.SystemRegister
 
 	cameraArray      ecs.ComponentsArray[camera.Component]
 	priorityArray    ecs.ComponentsArray[camera.PriorityComponent]
@@ -61,8 +62,9 @@ type service struct {
 	dynamicPerspective ecs.ComponentsArray[camera.DynamicPerspectiveComponent]
 }
 
-func NewService(c ioc.Dic) Service {
+func NewService(c ioc.Dic, register ecs.SystemRegister) Service {
 	s := ioc.GetServices[*service](c)
+	s.SystemRegister = register
 	s.cameraArray = ecs.GetComponentsArray[camera.Component](s.World())
 	s.priorityArray = ecs.GetComponentsArray[camera.PriorityComponent](s.World())
 	s.projectionsArray = ecs.GetComponentsArray[projectionComponent](s.World())
@@ -174,7 +176,7 @@ func (t *service) ShootRay(camera ecs.EntityID, mousePos window.MousePos) collid
 
 //
 
-func (t *service) Register(
+func (t *service) RegisterProjection(
 	componentType reflect.Type,
 	data ProjectionData,
 ) error {

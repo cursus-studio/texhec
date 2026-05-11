@@ -11,8 +11,8 @@ import (
 	"github.com/ogiusek/ioc/v2"
 )
 
-// type Service[Component smooth.SmoothConstraint[Component]] struct {
-type Service[Component any] struct {
+// type ServiceT[Component smooth.SmoothConstraint[Component]] struct {
+type ServiceT[Component any] struct {
 	engine.EngineWorld `inject:""`
 	recordingID        record.RecordingID
 	config             record.Config
@@ -21,12 +21,12 @@ type Service[Component any] struct {
 	lerpArray      ecs.ComponentsArray[transition.TransitionComponent[Component]]
 }
 
-// func NewService[Component smooth.SmoothConstraint[Component]](c ioc.Dic) *Service[Component] {
-func NewService[Component any](c ioc.Dic) *Service[Component] {
+// func NewServiceT[Component smooth.SmoothConstraint[Component]](c ioc.Dic) *Service[Component] {
+func NewServiceT[Component any](c ioc.Dic) *ServiceT[Component] {
 	config := record.NewConfig()
 	record.AddToConfig[Component](config)
 
-	s := ioc.GetServices[*Service[Component]](c)
+	s := ioc.GetServices[*ServiceT[Component]](c)
 
 	s.recordingID = 0
 	s.config = config
@@ -40,7 +40,7 @@ func NewService[Component any](c ioc.Dic) *Service[Component] {
 // type system[Component smooth.SmoothConstraint[Component]] struct {
 type system[Component any] struct {
 	engine.EngineWorld `inject:""`
-	Service            *Service[Component] `inject:""`
+	Service            *ServiceT[Component] `inject:""`
 }
 
 type FirstEvent loop.TickEvent

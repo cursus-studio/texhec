@@ -8,6 +8,7 @@ import (
 	"engine/modules/codec"
 	"engine/modules/collider"
 	"engine/modules/connection"
+	"engine/modules/drag"
 	"engine/modules/entityregistry"
 	"engine/modules/graphics"
 	"engine/modules/groups"
@@ -50,6 +51,7 @@ type EngineWorld struct {
 	Codec          ioc.Lazy[codec.Service]          `inject:""`
 	Collider       ioc.Lazy[collider.Service]       `inject:""`
 	Connection     ioc.Lazy[connection.Service]     `inject:""`
+	Drag           ioc.Lazy[drag.Service]           `inject:""`
 	EntityRegistry ioc.Lazy[entityregistry.Service] `inject:""`
 	Graphics       ioc.Lazy[graphics.Service]       `inject:""`
 	Groups         ioc.Lazy[groups.Service]         `inject:""`

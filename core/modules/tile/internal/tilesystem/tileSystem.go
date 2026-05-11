@@ -25,7 +25,7 @@ type system struct {
 	selectedEvent *tile.SelectEvent
 }
 
-func NewSystem(c ioc.Dic) tile.System {
+func NewSystem(c ioc.Dic) ecs.SystemRegister {
 	for i := 1; i < 256; i++ {
 		invSpeedTable[i] = 1. / tile.Coord(i)
 	}

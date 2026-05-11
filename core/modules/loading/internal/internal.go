@@ -25,7 +25,7 @@ type system struct {
 	TextArr ecs.ComponentsArray[TextComp]
 }
 
-func NewSystem(c ioc.Dic) loading.System {
+func NewSystem(c ioc.Dic) loading.Service {
 	s := ioc.GetServices[*system](c)
 	s.CamArr = ecs.GetComponentsArray[CamComp](s.World())
 	s.TextArr = ecs.GetComponentsArray[TextComp](s.World())

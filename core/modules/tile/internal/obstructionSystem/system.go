@@ -23,7 +23,7 @@ type system struct {
 	deployedGetter    record.ComponentGetter[tile.DeployedComponent]
 }
 
-func NewSystem(c ioc.Dic) tile.System {
+func NewSystem(c ioc.Dic) ecs.SystemRegister {
 	return ecs.NewSystemRegister(func() error {
 		s := ioc.GetServices[*system](c)
 

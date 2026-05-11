@@ -3,9 +3,12 @@ package game
 import (
 	"core/modules/definitions"
 	"core/modules/deploy"
+	"core/modules/fpslogger"
 	"core/modules/generation"
+	"core/modules/loading"
 	"core/modules/pathfind"
 	"core/modules/player"
+	"core/modules/settings"
 	"core/modules/tile"
 	"core/modules/ui"
 	"engine"
@@ -20,9 +23,12 @@ type GameWorld struct {
 	// game
 	Definitions ioc.Lazy[definitions.Service] `inject:""`
 	Deploy      ioc.Lazy[deploy.Service]      `inject:""`
+	FpsLogger   ioc.Lazy[fpslogger.Service]   `inject:""`
 	Generation  ioc.Lazy[generation.Service]  `inject:""`
+	Loading     ioc.Lazy[loading.Service]     `inject:""`
 	Pathfind    ioc.Lazy[pathfind.Service]    `inject:""`
 	Player      ioc.Lazy[player.Service]      `inject:""`
+	Settings    ioc.Lazy[settings.Service]    `inject:""`
 	Tile        ioc.Lazy[tile.Service]        `inject:""`
 	Ui          ioc.Lazy[ui.Service]          `inject:""`
 }

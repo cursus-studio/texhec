@@ -5,10 +5,10 @@ import (
 	"engine/services/ecs"
 )
 
-type StartSystem ecs.SystemRegister
-type StopSystem ecs.SystemRegister
-
-type Service any
+type Service interface {
+	Start() ecs.SystemRegister
+	Stop() ecs.SystemRegister
+}
 
 type SmoothConstraint[Component any] interface {
 	transition.LerpConstraint[Component]

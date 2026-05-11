@@ -5,8 +5,6 @@ import (
 	"engine/services/ecs"
 )
 
-type System ecs.SystemRegister
-
 // this event is called when nothing is dragged
 type DragEvent struct {
 	Camera   ecs.EntityID

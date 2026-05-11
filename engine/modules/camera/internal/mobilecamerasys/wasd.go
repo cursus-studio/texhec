@@ -2,7 +2,6 @@ package mobilecamerasys
 
 import (
 	"engine"
-	"engine/modules/camera"
 	"engine/modules/loop"
 	"engine/services/ecs"
 
@@ -18,7 +17,7 @@ type wasdMoveSystem struct {
 	cameraSpeed float32
 }
 
-func NewWasdSystem(c ioc.Dic, cameraSpeed float32) camera.System {
+func NewWasdSystem(c ioc.Dic, cameraSpeed float32) ecs.SystemRegister {
 	return ecs.NewSystemRegister(func() error {
 		s := ioc.GetServices[*wasdMoveSystem](c)
 		s.cameraSpeed = cameraSpeed

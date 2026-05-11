@@ -30,7 +30,7 @@ type System struct {
 	backgroundsFrames []int
 }
 
-func NewSystem(c ioc.Dic, bgTimePerFrame time.Duration) ui.System {
+func NewSystem(c ioc.Dic, bgTimePerFrame time.Duration) ecs.SystemRegister {
 	return ecs.NewSystemRegister(func() error {
 		s := ioc.GetServices[*System](c)
 

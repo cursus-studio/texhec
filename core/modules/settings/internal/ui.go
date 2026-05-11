@@ -27,7 +27,7 @@ type system struct {
 
 type temporaryToggleColorComponent struct{}
 
-func NewSystem(c ioc.Dic) settings.System {
+func NewSystem(c ioc.Dic) settings.Service {
 	return ecs.NewSystemRegister(func() error {
 		s := ioc.GetServices[system](c)
 

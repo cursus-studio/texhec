@@ -5,10 +5,6 @@ import (
 	"net"
 )
 
-// system
-
-type System ecs.SystemRegister
-
 // types
 
 // singular connection interface
@@ -50,6 +46,7 @@ func (comp *ConnectionComponent) Conn() Conn {
 }
 
 type Service interface {
+	ecs.SystemRegister
 	Component() ecs.ComponentsArray[ConnectionComponent]
 	Listener() ecs.ComponentsArray[ListenerComponent]
 

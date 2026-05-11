@@ -35,7 +35,7 @@ type clickSystem struct {
 	stacked []inputs.Target
 }
 
-func NewClickSystem(c ioc.Dic) inputs.System {
+func NewClickSystem(c ioc.Dic) ecs.SystemRegister {
 	return ecs.NewSystemRegister(func() error {
 		s := ioc.GetServices[*clickSystem](c)
 		s.maxMoved = 3

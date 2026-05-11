@@ -4,7 +4,6 @@ import (
 	"engine"
 	"engine/modules/batcher"
 	"engine/modules/loop"
-	"engine/services/ecs"
 
 	"github.com/ogiusek/events"
 	"github.com/ogiusek/ioc/v2"
@@ -35,11 +34,9 @@ func (s *Service) Progress() float32 {
 	return -1
 }
 
-func (s *Service) System() batcher.System {
-	return ecs.NewSystemRegister(func() error {
-		events.Listen(s.EventsBuilder(), s.Listen)
-		return nil
-	})
+func (s *Service) Register() error {
+	events.Listen(s.EventsBuilder(), s.Listen)
+	return nil
 }
 
 func (s *Service) Listen(loop.FrameEvent) {

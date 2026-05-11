@@ -3,26 +3,9 @@ package main
 import (
 	"core/game"
 	"core/modules/definitions"
-	"core/modules/fpslogger"
-	"core/modules/loading"
-	"core/modules/settings"
-	"core/modules/tile"
-	"core/modules/ui"
-	_ "embed"
-	"engine/modules/audio"
-	"engine/modules/batcher"
-	"engine/modules/camera"
-	"engine/modules/connection"
-	"engine/modules/drag"
-	"engine/modules/inputs"
 	"engine/modules/logger"
 	"engine/modules/loop"
-	"engine/modules/netsync"
-	"engine/modules/render"
 	"engine/modules/scene"
-	"engine/modules/smooth"
-	"engine/modules/text"
-	"engine/modules/transition"
 	"engine/services/ecs"
 	"errors"
 	"fmt"
@@ -91,47 +74,46 @@ func main() {
 	})
 
 	errs := ecs.RegisterSystems(
-		ioc.Get[netsync.StartSystem](c),
-		ioc.Get[smooth.StartSystem](c),
+		world.NetSync().Start(),
+		world.Smooth().Start(),
 		// update {
-		ioc.Get[connection.System](c),
+		world.Connection(),
 
 		// inputs
-		ioc.Get[inputs.System](c),
-		ioc.Get[audio.System](c),
+		world.Inputs(),
+		world.Audio(),
 
 		// update
-		ioc.Get[camera.System](c),
-		ioc.Get[drag.System](c),
-		ioc.Get[transition.System](c),
+		world.Camera(),
+		world.Drag(),
+		world.Transition(),
 		temporaryInlineSystems,
 
-		ioc.Get[tile.System](c),
-		world.Pathfind().System(),
+		world.Tile(),
+		world.Pathfind(),
 
 		// ui update
-		ioc.Get[ui.System](c),
-		ioc.Get[settings.System](c),
-		ioc.Get[loading.System](c),
-		ioc.Get[batcher.System](c),
+		world.Ui(),
+		world.Settings(),
+		world.Loading(),
+		world.Batcher(),
 		// } (update)
 
-		ioc.Get[smooth.StopSystem](c),
-		ioc.Get[netsync.StopSystem](c),
+		world.Smooth().Stop(),
+		world.NetSync().Stop(),
 
 		// render
-		ioc.Get[render.System](c),
-		ioc.Get[tile.SystemRenderer](c),
-		ioc.Get[render.SystemRenderer](c),
-		ioc.Get[text.SystemRenderer](c),
-		ioc.Get[fpslogger.System](c),
+		world.Render(),
+		world.Tile().Renderer(),
+		world.Render().Renderer(),
+		world.Text().Renderer(),
+		world.FpsLogger(),
 	)
 	for _, err := range errs {
 		world.Logger().Log(err)
 	}
 
-	game := ioc.GetServices[game.GameWorld](c)
-	game.Logger().Log(errors.Join(logger.ErrInfo, errors.New("initialized engine")))
+	world.Logger().Log(errors.Join(logger.ErrInfo, errors.New("initialized engine")))
 	runtime.LockOSThread()
-	game.Loop().Run(loop.NewConfigureEvent(60, 1))
+	world.Loop().Run(loop.NewConfigureEvent(60, 1))
 }

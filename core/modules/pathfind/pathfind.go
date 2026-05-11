@@ -22,7 +22,7 @@ func NewTarget(coords grid.Coords) TargetComponent {
 //
 
 type Service interface {
-	System() ecs.SystemRegister
+	ecs.SystemRegister
 
 	Target() ecs.ComponentsArray[TargetComponent]
 

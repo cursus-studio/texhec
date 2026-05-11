@@ -22,7 +22,7 @@ type sysT[Component any] struct {
 }
 
 // func NewSysT[Component transition.LerpConstraint[Component]](c ioc.Dic) transition.System {
-func NewSysT[Component any](c ioc.Dic) transition.System {
+func NewSysT[Component any](c ioc.Dic) ecs.SystemRegister {
 	return ecs.NewSystemRegister(func() error {
 		s := ioc.GetServices[*sysT[Component]](c)
 

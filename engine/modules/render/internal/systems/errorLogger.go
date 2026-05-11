@@ -3,7 +3,6 @@ package systems
 import (
 	"engine"
 	"engine/modules/loop"
-	"engine/modules/render"
 	"engine/services/ecs"
 	"fmt"
 
@@ -15,7 +14,7 @@ type errorLogger struct {
 	engine.EngineWorld `inject:""`
 }
 
-func NewErrorLogger(c ioc.Dic) render.System {
+func NewErrorLogger(c ioc.Dic) ecs.SystemRegister {
 	return ecs.NewSystemRegister(func() error {
 		s := ioc.GetServices[*errorLogger](c)
 		events.Listen(s.EventsBuilder(), s.Listen)

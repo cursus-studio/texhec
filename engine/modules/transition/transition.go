@@ -7,9 +7,8 @@ import (
 	"golang.org/x/exp/constraints"
 )
 
-type System ecs.SystemRegister
-
 type Service interface {
+	ecs.SystemRegister
 	Easing() ecs.ComponentsArray[EasingComponent]
 	EasingFunction() ecs.ComponentsArray[EasingFunctionComponent]
 }

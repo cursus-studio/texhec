@@ -3,6 +3,8 @@ package service
 import (
 	"engine"
 	"engine/modules/render"
+	"engine/modules/render/internal/instancing"
+	"engine/modules/render/internal/systems"
 	"engine/services/ecs"
 	"fmt"
 
@@ -13,14 +15,31 @@ import (
 
 type service struct {
 	engine.EngineWorld `inject:""`
-	colorArray         ecs.ComponentsArray[render.ColorComponent]
-	meshArray          ecs.ComponentsArray[render.MeshComponent]
-	textureArray       ecs.ComponentsArray[render.TextureComponent]
-	textureFrameArray  ecs.ComponentsArray[render.TextureFrameComponent]
+	ecs.SystemRegister
+	renderer ecs.SystemRegister
+
+	colorArray        ecs.ComponentsArray[render.ColorComponent]
+	meshArray         ecs.ComponentsArray[render.MeshComponent]
+	textureArray      ecs.ComponentsArray[render.TextureComponent]
+	textureFrameArray ecs.ComponentsArray[render.TextureFrameComponent]
 }
 
 func NewService(c ioc.Dic) render.Service {
 	s := ioc.GetServices[*service](c)
+
+	s.SystemRegister = ecs.NewSystemRegister(func() error {
+		errs := ecs.RegisterSystems(
+			systems.NewErrorLogger(c),
+			systems.NewRenderSystem(c),
+		)
+		if len(errs) != 0 {
+			return errs[0]
+		}
+		return nil
+	})
+
+	s.renderer = instancing.NewSystem(c)
+
 	s.colorArray = ecs.GetComponentsArray[render.ColorComponent](s.World())
 	s.meshArray = ecs.GetComponentsArray[render.MeshComponent](s.World())
 	s.textureArray = ecs.GetComponentsArray[render.TextureComponent](s.World())
@@ -50,17 +69,19 @@ var GlErrorStrings = map[uint32]string{
 	// gl.TABLE_TOO_LARGE:               "GL_TABLE_TOO_LARGE", // Less common in modern GL
 }
 
-func (t *service) Color() ecs.ComponentsArray[render.ColorComponent] {
-	return t.colorArray
+func (s *service) Renderer() ecs.SystemRegister { return s.renderer }
+
+func (s *service) Color() ecs.ComponentsArray[render.ColorComponent] {
+	return s.colorArray
 }
-func (t *service) Mesh() ecs.ComponentsArray[render.MeshComponent] {
-	return t.meshArray
+func (s *service) Mesh() ecs.ComponentsArray[render.MeshComponent] {
+	return s.meshArray
 }
-func (t *service) Texture() ecs.ComponentsArray[render.TextureComponent] {
-	return t.textureArray
+func (s *service) Texture() ecs.ComponentsArray[render.TextureComponent] {
+	return s.textureArray
 }
-func (t *service) TextureFrame() ecs.ComponentsArray[render.TextureFrameComponent] {
-	return t.textureFrameArray
+func (s *service) TextureFrame() ecs.ComponentsArray[render.TextureFrameComponent] {
+	return s.textureFrameArray
 }
 
 func (*service) Error() error {

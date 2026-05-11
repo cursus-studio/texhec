@@ -13,7 +13,7 @@ type s struct {
 	engine.EngineWorld `inject:""`
 }
 
-func NewSystem(c ioc.Dic) drag.System {
+func NewSystem(c ioc.Dic) drag.Service {
 	return ioc.GetServices[s](c)
 }
 

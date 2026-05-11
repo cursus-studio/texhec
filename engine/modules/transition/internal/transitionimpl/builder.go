@@ -1,17 +1,16 @@
 package transitionimpl
 
 import (
-	"engine/modules/transition"
 	"engine/services/ecs"
 )
 
 type Builder interface {
-	Register(transition.System)
-	Build() transition.System
+	Register(ecs.SystemRegister)
+	Build() ecs.SystemRegister
 }
 
 type builder struct {
-	systems []transition.System
+	systems []ecs.SystemRegister
 }
 
 func NewBuilder() Builder {
@@ -20,13 +19,13 @@ func NewBuilder() Builder {
 	}
 }
 
-func (b *builder) Register(system transition.System) {
+func (b *builder) Register(system ecs.SystemRegister) {
 	b.systems = append(b.systems, system)
 }
 
 //
 
-func (b *builder) Build() transition.System {
+func (b *builder) Build() ecs.SystemRegister {
 	systems := b.systems
 	return ecs.NewSystemRegister(func() error {
 		for _, system := range systems {

@@ -6,11 +6,8 @@ import (
 	"engine/modules/assets"
 	"engine/modules/graphics"
 	"engine/modules/render"
-	"engine/modules/render/internal/instancing"
 	"engine/modules/render/internal/service"
-	"engine/modules/render/internal/systems"
 	typeregistrypkg "engine/modules/typeregistry/pkg"
-	"engine/services/ecs"
 	"image"
 	"image/gif"
 	_ "image/jpeg"
@@ -51,31 +48,6 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 
 	ioc.Register(b, func(c ioc.Dic) render.Service {
 		return service.NewService(c)
-	})
-
-	ioc.Register(b, func(c ioc.Dic) render.System {
-		return ecs.NewSystemRegister(func() error {
-			errs := ecs.RegisterSystems(
-				systems.NewErrorLogger(c),
-				systems.NewRenderSystem(c),
-			)
-			if len(errs) != 0 {
-				return errs[0]
-			}
-			return nil
-		})
-	})
-
-	ioc.Register(b, func(c ioc.Dic) render.SystemRenderer {
-		return ecs.NewSystemRegister(func() error {
-			errs := ecs.RegisterSystems(
-				instancing.NewSystem(c),
-			)
-			if len(errs) != 0 {
-				return errs[0]
-			}
-			return nil
-		})
 	})
 
 	ioc.Wrap(b, func(c ioc.Dic, b assets.Service) {

@@ -2,8 +2,6 @@ package batcher
 
 import "engine/services/ecs"
 
-type System ecs.SystemRegister
-
 type Batch struct {
 	Steps   int
 	Handler func(int)
@@ -25,6 +23,7 @@ type Task interface {
 }
 
 type Service interface {
+	ecs.SystemRegister
 	NewTask() TaskFactory
 
 	Queue(Task)

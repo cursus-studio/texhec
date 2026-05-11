@@ -5,10 +5,6 @@ import (
 	"engine/services/ecs"
 )
 
-type System ecs.SystemRegister
-
-//
-
 type DraggableEvent struct {
 	Entity ecs.EntityID
 	Drag   inputs.DragEvent
@@ -25,4 +21,8 @@ func NewDraggable(
 func (e DraggableEvent) ApplyDrag(dragEvent inputs.DragEvent) any {
 	e.Drag = dragEvent
 	return e
+}
+
+type Service interface {
+	ecs.SystemRegister
 }

@@ -16,7 +16,7 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 		pkg(b)
 	}
 
-	ioc.Register(b, func(c ioc.Dic) settings.System {
+	ioc.Register(b, func(c ioc.Dic) settings.Service {
 		return internal.NewSystem(c)
 	})
 })

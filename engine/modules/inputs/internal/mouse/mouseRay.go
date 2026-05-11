@@ -3,7 +3,7 @@ package mouse
 import (
 	"engine"
 	"engine/modules/inputs"
-	"engine/modules/inputs/internal/service"
+	"engine/modules/inputs/internal"
 	"engine/services/ecs"
 	"slices"
 
@@ -24,7 +24,7 @@ type cameraRaySystem struct {
 	targets []inputs.Target
 }
 
-func NewCameraRaySystem(c ioc.Dic) inputs.System {
+func NewCameraRaySystem(c ioc.Dic) ecs.SystemRegister {
 	return ecs.NewSystemRegister(func() error {
 		s := ioc.GetServices[*cameraRaySystem](c)
 		s.targets = nil
@@ -81,7 +81,7 @@ func (s *cameraRaySystem) Listen(args ShootRayEvent) error {
 
 	targetsCopy := make([]inputs.Target, len(s.targets))
 	copy(targetsCopy, s.targets)
-	events.Emit(s.Events(), service.RayChangedTargetEvent{
+	events.Emit(s.Events(), internal.RayChangedTargetEvent{
 		Targets: targetsCopy,
 	})
 

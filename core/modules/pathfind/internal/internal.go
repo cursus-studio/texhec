@@ -31,15 +31,13 @@ func NewService(c ioc.Dic) pathfind.Service {
 	return s
 }
 
-func (s *service) System() ecs.SystemRegister {
-	return ecs.NewSystemRegister(func() error {
-		events.Listen(s.EventsBuilder(), s.Select)
-		events.Listen(s.EventsBuilder(), s.PreviewPath)
-		events.Listen(s.EventsBuilder(), s.FindPath)
-		events.Listen(s.EventsBuilder(), s.OnTick)
-		events.Listen(s.EventsBuilder(), s.OnObjectSelect)
-		return nil
-	})
+func (s *service) Register() error {
+	events.Listen(s.EventsBuilder(), s.Select)
+	events.Listen(s.EventsBuilder(), s.PreviewPath)
+	events.Listen(s.EventsBuilder(), s.FindPath)
+	events.Listen(s.EventsBuilder(), s.OnTick)
+	events.Listen(s.EventsBuilder(), s.OnObjectSelect)
+	return nil
 }
 
 func (s *service) Target() ecs.ComponentsArray[pathfind.TargetComponent] { return s.target }
