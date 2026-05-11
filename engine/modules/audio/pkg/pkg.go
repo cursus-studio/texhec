@@ -30,10 +30,6 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 	ioc.Register(b, func(c ioc.Dic) audio.VolumeService { return ioc.Get[internal.Service](c) })
 	ioc.Register(b, func(c ioc.Dic) audio.Service { return ioc.Get[internal.Service](c) })
 
-	ioc.Register(b, func(c ioc.Dic) audio.System {
-		return internal.NewSystem(c)
-	})
-
 	ioc.Wrap(b, func(c ioc.Dic, b assets.Service) {
 		b.Register("wav", func(id assets.PathComponent) (assets.Asset, error) {
 			source, err := os.ReadFile(id.Path)

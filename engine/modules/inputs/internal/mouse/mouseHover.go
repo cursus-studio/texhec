@@ -3,7 +3,7 @@ package mouse
 import (
 	"engine"
 	"engine/modules/inputs"
-	"engine/modules/inputs/internal/service"
+	"engine/modules/inputs/internal"
 	"engine/services/ecs"
 	"slices"
 
@@ -16,7 +16,7 @@ type hoverSystem struct {
 	targets            []inputs.Target
 }
 
-func NewHoverSystem(c ioc.Dic) inputs.System {
+func NewHoverSystem(c ioc.Dic) ecs.SystemRegister {
 	return ecs.NewSystemRegister(func() error {
 		s := ioc.GetServices[*hoverSystem](c)
 		s.targets = nil
@@ -39,7 +39,7 @@ func (s *hoverSystem) handleMouseLeave(entity ecs.EntityID) {
 	events.EmitAny(s.Events(), mouseLeave.Event)
 }
 
-func (s *hoverSystem) Listen(event service.RayChangedTargetEvent) {
+func (s *hoverSystem) Listen(event internal.RayChangedTargetEvent) {
 	left := []inputs.Target{}
 	entered := []inputs.Target{}
 

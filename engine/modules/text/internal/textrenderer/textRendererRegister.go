@@ -34,7 +34,7 @@ type textRendererRegister struct {
 
 func NewTextRenderer(c ioc.Dic,
 	removeOncePerNCalls uint16,
-) text.SystemRenderer {
+) ecs.SystemRegister {
 	s := ioc.GetServices[*textRendererRegister](c)
 	s.removeOncePerNCalls = removeOncePerNCalls
 	return s

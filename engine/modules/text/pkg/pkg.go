@@ -60,7 +60,9 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 		pkg(b)
 	}
 	ioc.Register(b, func(c ioc.Dic) Config { return NewConfig() })
-	ioc.Register(b, textservice.NewService)
+	ioc.Register(b, func(c ioc.Dic) text.Service {
+		return textservice.NewService(c, textrenderer.NewTextRenderer(c, 1))
+	})
 	ioc.Register(b, func(c ioc.Dic) textrenderer.FontService {
 		config := ioc.Get[Config](c).(*config)
 		return textrenderer.NewFontService(
@@ -78,10 +80,6 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 
 	ioc.Register(b, func(c ioc.Dic) textrenderer.FontKeys {
 		return textrenderer.NewFontKeys()
-	})
-
-	ioc.Register(b, func(c ioc.Dic) text.SystemRenderer {
-		return textrenderer.NewTextRenderer(c, 1)
 	})
 
 	ioc.Register(b, func(c ioc.Dic) graphics.VBOFactory[textrenderer.Glyph] {

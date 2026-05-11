@@ -8,6 +8,7 @@ type Channel int
 type Volume float32 // volume is normalized
 
 type Service interface {
+	ecs.SystemRegister
 	PlayerService
 	VolumeService
 }

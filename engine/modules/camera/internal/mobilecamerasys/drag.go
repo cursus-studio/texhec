@@ -2,7 +2,6 @@ package mobilecamerasys
 
 import (
 	"engine"
-	"engine/modules/camera"
 	"engine/modules/inputs"
 	"engine/services/ecs"
 
@@ -17,7 +16,7 @@ type dragSystem struct {
 	button             uint8
 }
 
-func NewDragSystem(c ioc.Dic, dragButton uint8) camera.System {
+func NewDragSystem(c ioc.Dic, dragButton uint8) ecs.SystemRegister {
 	return ecs.NewSystemRegister(func() error {
 		s := ioc.GetServices[*dragSystem](c)
 		s.isHeld = false

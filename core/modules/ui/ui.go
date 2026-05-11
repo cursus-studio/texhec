@@ -5,8 +5,6 @@ import (
 	"engine/services/ecs"
 )
 
-type System ecs.SystemRegister
-
 // marker which says module relative to which element to position
 type UiCameraComponent struct{}
 type AnimatedBackgroundComponent struct{}
@@ -44,6 +42,8 @@ type ActionComponent struct{}
 //
 
 type Service interface {
+	ecs.SystemRegister
+
 	UiCamera() ecs.ComponentsArray[UiCameraComponent]
 	AnimatedBackground() ecs.ComponentsArray[AnimatedBackgroundComponent]
 	CursorCamera() ecs.ComponentsArray[CursorCameraComponent]

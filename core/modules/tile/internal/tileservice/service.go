@@ -19,6 +19,9 @@ type service struct {
 	ObstructionGridService grid.Service[tile.Obstruction] `inject:""`
 	TileTypeRelation       relation.Service[tile.ID]      `inject:""`
 
+	ecs.SystemRegister
+	renderer ecs.SystemRegister
+
 	tile ecs.ComponentsArray[tile.TypeComponent]
 
 	pos   ecs.ComponentsArray[tile.PosComponent]
@@ -33,8 +36,11 @@ type service struct {
 	step  ecs.ComponentsArray[tile.StepComponent]
 }
 
-func NewService(c ioc.Dic) tile.Service {
+func NewService(c ioc.Dic, system, renderer ecs.SystemRegister) tile.Service {
 	s := ioc.GetServices[*service](c)
+	s.SystemRegister = system
+	s.renderer = renderer
+
 	s.tile = ecs.GetComponentsArray[tile.TypeComponent](s.World())
 
 	s.pos = ecs.GetComponentsArray[tile.PosComponent](s.World())
@@ -54,6 +60,8 @@ func NewService(c ioc.Dic) tile.Service {
 
 	return s
 }
+
+func (s *service) Renderer() ecs.SystemRegister { return s.renderer }
 
 func (s *service) TileType() ecs.ComponentsArray[tile.TypeComponent] {
 	return s.tile

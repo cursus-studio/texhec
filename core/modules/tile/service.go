@@ -13,11 +13,6 @@ import (
 	"golang.org/x/exp/constraints"
 )
 
-type System ecs.SystemRegister
-type SystemRenderer ecs.SystemRegister
-
-//
-
 var (
 	// error logged when grid.GetIndex returns !ok
 	ErrInvalidPosition                  error = errors.New("tile:position not found on the grid")
@@ -200,6 +195,9 @@ func NewStep(x, y grid.Coord) StepComponent {
 //
 
 type Service interface {
+	ecs.SystemRegister
+	Renderer() ecs.SystemRegister
+
 	TileType() ecs.ComponentsArray[TypeComponent]
 	TileGrid() ecs.ComponentsArray[grid.SquareGridComponent[ID]]
 	ObstructionGrid() ecs.ComponentsArray[grid.SquareGridComponent[Obstruction]]

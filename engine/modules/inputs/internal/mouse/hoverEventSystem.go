@@ -14,7 +14,7 @@ type hoverEventSystem struct {
 	engine.EngineWorld `inject:""`
 }
 
-func NewHoverEventsSystem(c ioc.Dic) inputs.System {
+func NewHoverEventsSystem(c ioc.Dic) ecs.SystemRegister {
 	return ecs.NewSystemRegister(func() error {
 		s := ioc.GetServices[*hoverEventSystem](c)
 		events.Listen(s.EventsBuilder(), s.Listen)

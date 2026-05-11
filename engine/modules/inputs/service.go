@@ -6,6 +6,8 @@ import (
 )
 
 type Service interface {
+	ecs.SystemRegister
+
 	Hovered() ecs.ComponentsArray[HoveredComponent]
 	Dragged() ecs.ComponentsArray[DraggedComponent]
 	Stacked() ecs.ComponentsArray[StackedComponent]

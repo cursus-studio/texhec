@@ -15,7 +15,7 @@ type renderSystem struct {
 	engine.EngineWorld `inject:""`
 }
 
-func NewRenderSystem(c ioc.Dic) render.System {
+func NewRenderSystem(c ioc.Dic) ecs.SystemRegister {
 	return ecs.NewSystemRegister(func() error {
 		s := ioc.GetServices[*renderSystem](c)
 		events.ListenE(s.EventsBuilder(), s.Listen)

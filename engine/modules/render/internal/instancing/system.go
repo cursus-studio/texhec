@@ -42,7 +42,7 @@ type system struct {
 	locations locations
 }
 
-func NewSystem(c ioc.Dic) render.SystemRenderer {
+func NewSystem(c ioc.Dic) ecs.SystemRegister {
 	world := ioc.GetServices[engine.EngineWorld](c)
 	return ecs.NewSystemRegister(func() error {
 		vert, err := world.Graphics().NewShader(vertSource, graphics.VertexShader)

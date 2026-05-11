@@ -2,7 +2,6 @@ package systems
 
 import (
 	"engine"
-	"engine/modules/inputs"
 	"engine/modules/loop"
 	"engine/services/ecs"
 	"errors"
@@ -21,7 +20,7 @@ type inputsSystem struct {
 	engine.EngineWorld `inject:""`
 }
 
-func NewInputsSystem(c ioc.Dic) inputs.System {
+func NewInputsSystem(c ioc.Dic) ecs.SystemRegister {
 	return ecs.NewSystemRegister(func() error {
 		s := ioc.GetServices[*inputsSystem](c)
 		events.Listen(s.EventsBuilder(), s.Listen)

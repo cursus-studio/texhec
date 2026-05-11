@@ -5,12 +5,11 @@ import (
 )
 
 type Service interface {
+	Start() ecs.SystemRegister
+	Stop() ecs.SystemRegister
 	Server() ecs.ComponentsArray[ServerComponent]
 	Client() ecs.ComponentsArray[ClientComponent]
 }
-
-type StartSystem ecs.SystemRegister
-type StopSystem ecs.SystemRegister
 
 // entity with this component and with connection component will be one with which we'll synchronize
 type ServerComponent struct{}

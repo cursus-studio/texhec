@@ -2,7 +2,6 @@ package cameralimitsys
 
 import (
 	"engine"
-	"engine/modules/camera"
 	"engine/modules/transform"
 	"engine/services/ecs"
 
@@ -16,7 +15,7 @@ type orthoSys struct {
 	dirtySet ecs.DirtySet
 }
 
-func NewOrthoSys(c ioc.Dic) camera.System {
+func NewOrthoSys(c ioc.Dic) ecs.SystemRegister {
 	s := ioc.GetServices[*orthoSys](c)
 	s.dirtySet = ecs.NewDirtySet()
 

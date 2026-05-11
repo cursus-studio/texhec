@@ -4,8 +4,6 @@ import (
 	"engine/services/ecs"
 )
 
-type System ecs.SystemRegister
-
 type StopEvent struct {
 	Channel Channel
 }

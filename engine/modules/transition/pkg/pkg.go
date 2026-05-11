@@ -5,7 +5,6 @@ import (
 	prototypepkg "engine/modules/prototype/pkg"
 	"engine/modules/transition"
 	"engine/modules/transition/internal/service"
-	"engine/modules/transition/internal/system"
 	"engine/modules/transition/internal/transitionimpl"
 
 	"github.com/ogiusek/ioc/v2"
@@ -23,15 +22,10 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 		pkg(b)
 	}
 	ioc.Register(b, func(c ioc.Dic) transitionimpl.Builder {
-		b := transitionimpl.NewBuilder()
-		b.Register(system.NewSystem(c)) // delayedEvent system
-		return b
+		return transitionimpl.NewBuilder()
 	})
 
-	ioc.Register(b, func(c ioc.Dic) transition.System {
-		return ioc.Get[transitionimpl.Builder](c).Build()
-	})
 	ioc.Register(b, func(c ioc.Dic) transition.Service {
-		return service.NewService(c)
+		return service.NewService(c, ioc.Get[transitionimpl.Builder](c).Build())
 	})
 })

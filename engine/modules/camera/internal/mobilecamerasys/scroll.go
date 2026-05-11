@@ -2,7 +2,6 @@ package mobilecamerasys
 
 import (
 	"engine"
-	"engine/modules/camera"
 	"engine/services/ecs"
 	"math"
 
@@ -16,7 +15,7 @@ type scrollSystem struct {
 	engine.EngineWorld `inject:""`
 }
 
-func NewScrollSystem(c ioc.Dic) camera.System {
+func NewScrollSystem(c ioc.Dic) ecs.SystemRegister {
 	return ecs.NewSystemRegister(func() error {
 		s := ioc.GetServices[*scrollSystem](c)
 		events.Listen(s.EventsBuilder(), s.Listen)

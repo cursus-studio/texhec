@@ -8,7 +8,7 @@ import (
 )
 
 var Pkg = ioc.NewPkg(func(b ioc.Builder) {
-	ioc.Register(b, func(c ioc.Dic) fpslogger.System {
+	ioc.Register(b, func(c ioc.Dic) fpslogger.Service {
 		return internal.NewFpsLoggerSystem(c)
 	})
 })

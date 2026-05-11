@@ -11,6 +11,7 @@ import (
 
 type service struct {
 	engine.EngineWorld `inject:""`
+	renderer           ecs.SystemRegister
 
 	breakArray      ecs.ComponentsArray[text.BreakComponent]
 	textArray       ecs.ComponentsArray[text.TextComponent]
@@ -20,8 +21,9 @@ type service struct {
 	fontSizeArray   ecs.ComponentsArray[text.FontSizeComponent]
 }
 
-func NewService(c ioc.Dic) text.Service {
+func NewService(c ioc.Dic, register ecs.SystemRegister) text.Service {
 	s := ioc.GetServices[*service](c)
+	s.renderer = register
 	s.breakArray = ecs.GetComponentsArray[text.BreakComponent](s.World())
 	s.textArray = ecs.GetComponentsArray[text.TextComponent](s.World())
 	s.alignArray = ecs.GetComponentsArray[text.AlignComponent](s.World())
@@ -36,19 +38,21 @@ func NewService(c ioc.Dic) text.Service {
 	return s
 }
 
-func (t *service) Break() ecs.ComponentsArray[text.BreakComponent]  { return t.breakArray }
-func (t *service) Content() ecs.ComponentsArray[text.TextComponent] { return t.textArray }
-func (t *service) Align() ecs.ComponentsArray[text.AlignComponent]  { return t.alignArray }
-func (t *service) Color() ecs.ComponentsArray[text.ColorComponent]  { return t.colorArray }
-func (t *service) FontFamily() ecs.ComponentsArray[text.FontFamilyComponent] {
-	return t.fontFamilyArray
-}
-func (t *service) FontSize() ecs.ComponentsArray[text.FontSizeComponent] { return t.fontSizeArray }
+func (s *service) Renderer() ecs.SystemRegister { return s.renderer }
 
-func (t *service) AddDirtySet(set ecs.DirtySet) {
-	t.breakArray.AddDirtySet(set)
-	t.alignArray.AddDirtySet(set)
-	t.colorArray.AddDirtySet(set)
-	t.fontFamilyArray.AddDirtySet(set)
-	t.fontSizeArray.AddDirtySet(set)
+func (s *service) Break() ecs.ComponentsArray[text.BreakComponent]  { return s.breakArray }
+func (s *service) Content() ecs.ComponentsArray[text.TextComponent] { return s.textArray }
+func (s *service) Align() ecs.ComponentsArray[text.AlignComponent]  { return s.alignArray }
+func (s *service) Color() ecs.ComponentsArray[text.ColorComponent]  { return s.colorArray }
+func (s *service) FontFamily() ecs.ComponentsArray[text.FontFamilyComponent] {
+	return s.fontFamilyArray
+}
+func (s *service) FontSize() ecs.ComponentsArray[text.FontSizeComponent] { return s.fontSizeArray }
+
+func (s *service) AddDirtySet(set ecs.DirtySet) {
+	s.breakArray.AddDirtySet(set)
+	s.alignArray.AddDirtySet(set)
+	s.colorArray.AddDirtySet(set)
+	s.fontFamilyArray.AddDirtySet(set)
+	s.fontSizeArray.AddDirtySet(set)
 }

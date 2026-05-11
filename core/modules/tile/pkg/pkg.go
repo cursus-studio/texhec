@@ -64,46 +64,41 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 		pkg(b)
 	}
 
-	{ // tilerenderer
-		// TODO
-		// currently doesn't support animated tiles
-		// always renderes first frame if something is animated
-		ioc.Register(b, func(c ioc.Dic) tile.SystemRenderer {
-			return ecs.NewSystemRegister(func() error { return tilerenderer.NewSystem(c) })
-		})
+	ioc.Register(b, func(c ioc.Dic) graphics.VBOFactory[tile.ID] {
+		return func() graphics.VBOSetter[tile.ID] {
+			vbo := graphics.NewVBO[tile.ID](func() {
+				var i uint32 = 0
 
-		ioc.Register(b, func(c ioc.Dic) graphics.VBOFactory[tile.ID] {
-			return func() graphics.VBOSetter[tile.ID] {
-				vbo := graphics.NewVBO[tile.ID](func() {
-					var i uint32 = 0
-
-					gl.VertexAttribIPointerWithOffset(i, 1, gl.UNSIGNED_BYTE,
-						int32(unsafe.Sizeof(tile.ID(0))), uintptr(0))
-					gl.EnableVertexAttribArray(i)
-				})
-				return vbo
-			}
-		})
-	}
-
-	ioc.Register(b, func(c ioc.Dic) tile.Service {
-		return tileservice.NewService(c)
+				gl.VertexAttribIPointerWithOffset(i, 1, gl.UNSIGNED_BYTE,
+					int32(unsafe.Sizeof(tile.ID(0))), uintptr(0))
+				gl.EnableVertexAttribArray(i)
+			})
+			return vbo
+		}
 	})
 
-	ioc.Register(b, func(c ioc.Dic) tile.System {
-		systems := []tile.System{
-			tilesystem.NewSystem(c),
-			clicksystem.NewSystem(c),
-			obstructionsystem.NewSystem(c),
-		}
-		return ecs.NewSystemRegister(func() error {
-			for _, system := range systems {
-				if err := system.Register(); err != nil {
-					return err
+	ioc.Register(b, func(c ioc.Dic) tile.Service {
+		return tileservice.NewService(c,
+			ecs.NewSystemRegister(func() error {
+				errs := ecs.RegisterSystems(
+					tilesystem.NewSystem(c),
+					clicksystem.NewSystem(c),
+					obstructionsystem.NewSystem(c),
+				)
+				if len(errs) != 0 {
+					return errs[0]
 				}
-			}
-			return nil
-		})
+				return nil
+			}),
+			ecs.NewSystemRegister(func() error {
+				// tilerenderer
+				// TODO
+				// currently doesn't support animated tiles
+				// always renderes first frame if something is animated
+
+				return tilerenderer.NewSystem(c)
+			}),
+		)
 	})
 
 	ioc.Wrap(b, func(c ioc.Dic, b assets.Service) {

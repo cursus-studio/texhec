@@ -97,6 +97,10 @@ func (s *service) BeforeConnectionGet(ecs.EntityID) {
 	}
 }
 
+func (s *service) Register() error {
+	return nil
+}
+
 func (s *service) Component() ecs.ComponentsArray[connection.ConnectionComponent] {
 	return s.connectionArray
 }

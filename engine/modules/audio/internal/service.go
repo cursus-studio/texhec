@@ -12,14 +12,16 @@ import (
 )
 
 type Service interface {
+	ecs.SystemRegister
 	audio.PlayerService
 	audio.VolumeService
 }
 
 type audioService struct {
-	assets assets.Service
+	ecs.SystemRegister
 
-	mutex *sync.Mutex
+	assets assets.Service
+	mutex  *sync.Mutex
 
 	masterVolume    audio.Volume
 	channelsVolumes datastructures.SparseArray[audio.Channel, audio.Volume]
@@ -27,7 +29,8 @@ type audioService struct {
 
 func NewService(c ioc.Dic) Service {
 	return &audioService{
-		assets: ioc.Get[assets.Service](c),
+		SystemRegister: NewSystem(c),
+		assets:         ioc.Get[assets.Service](c),
 
 		mutex:           &sync.Mutex{},
 		masterVolume:    1,

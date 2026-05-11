@@ -47,9 +47,9 @@ func NewBreak(b uint8) BreakComponent             { return BreakComponent{b} }
 
 //
 
-type SystemRenderer ecs.SystemRegister
-
 type Service interface {
+	Renderer() ecs.SystemRegister
+
 	Break() ecs.ComponentsArray[BreakComponent]
 	Content() ecs.ComponentsArray[TextComponent]
 	Align() ecs.ComponentsArray[AlignComponent]

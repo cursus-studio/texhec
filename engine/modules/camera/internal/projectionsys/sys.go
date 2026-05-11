@@ -22,7 +22,7 @@ type updateProjetionsSystem struct {
 	orthoDirtySet        ecs.DirtySet
 }
 
-func NewUpdateProjectionsSystem(c ioc.Dic) camera.System {
+func NewUpdateProjectionsSystem(c ioc.Dic) ecs.SystemRegister {
 	return ecs.NewSystemRegister(func() error {
 		s := ioc.GetServices[*updateProjetionsSystem](c)
 		s.perspectivesDirtySet = ecs.NewDirtySet()

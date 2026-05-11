@@ -16,7 +16,7 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 		pkg(b)
 	}
 
-	ioc.Register(b, func(c ioc.Dic) drag.System {
+	ioc.Register(b, func(c ioc.Dic) drag.Service {
 		return internal.NewSystem(c)
 	})
 })
