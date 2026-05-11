@@ -2,12 +2,17 @@ package clicksystem
 
 import (
 	"core/game"
+	"core/modules/definitions"
 	"core/modules/deploy"
 	"core/modules/pathfind"
 	"core/modules/tile"
 	"core/modules/ui"
+	"engine/modules/collider"
+	"engine/modules/groups"
 	"engine/modules/inputs"
+	"engine/modules/render"
 	"engine/modules/text"
+	"engine/modules/transform"
 	"engine/services/ecs"
 	"errors"
 	"fmt"
@@ -25,6 +30,7 @@ func NewSystem(c ioc.Dic) ecs.SystemRegister {
 		s := ioc.GetServices[*system](c)
 
 		events.Listen(s.EventsBuilder(), s.OnClickEntity)
+		events.Listen(s.EventsBuilder(), s.SelectEntity)
 		return nil
 	})
 }
@@ -96,4 +102,19 @@ skipDeploy:
 			s.Text().Content().Set(btnEntity, text.NewText(btn.text))
 		}
 	}
+}
+
+func (s *system) SelectEntity(e ui.SelectEvent[ui.ObjectComponent]) {
+	marker := s.World().NewEntity()
+	s.Hierarchy().SetParent(marker, e.Entity)
+
+	s.Render().Mesh().Set(marker, render.NewMesh(s.Definitions().Assets().SquareMesh))
+	s.Render().Texture().Set(marker, render.NewTexture(s.Definitions().Hud().Selected))
+	s.Groups().Component().Set(marker, groups.EmptyGroups().Ptr().Enable(definitions.GameGroup).Val())
+
+	s.Collider().Component().Set(marker, collider.NewCollider(s.Definitions().Assets().SquareCollider))
+
+	s.Transform().Pos().Set(marker, transform.NewPos(0, 0, -.1))
+	s.Transform().Parent().Set(marker, transform.NewParent(transform.RelativePos|transform.RelativeSizeXYZ))
+	s.Ui().Objects().Set(marker, ui.ObjectComponent{})
 }

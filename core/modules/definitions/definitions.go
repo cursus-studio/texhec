@@ -40,7 +40,6 @@ const (
 
 const (
 	TileLayer tile.Coord = iota + 1
-	SelectedLayer
 	ConstructLayer
 	UnitLayer
 	PathLayer
@@ -73,8 +72,9 @@ type Hud struct {
 	Background1 ecs.EntityID `path:"hud/bg1.gif-trim"`
 	Background2 ecs.EntityID `path:"hud/bg2.gif-trim"`
 
-	Can    ecs.EntityID `path:"hud/can.png-trim"`
-	Cannot ecs.EntityID `path:"hud/cannot.png-trim"`
+	Selected ecs.EntityID `path:"hud/can.png-trim"`
+	Can      ecs.EntityID `path:"hud/can.png-trim"`
+	Cannot   ecs.EntityID `path:"hud/cannot.png-trim"`
 }
 
 type Transitions struct {
