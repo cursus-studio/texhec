@@ -7,7 +7,7 @@
 - [Module structure](#module-structure)
 - [Module readme schema](#module-readme-schema)
 - [Implicit dependency graph](#implicit-dependency-graph)
-- [Engine](#engine)
+- [Modules](#modules)
 - [Technical challenges](#technical-challenges)
 - [CI/CD](#cicd)
 - [Graphics](#graphics)
@@ -155,12 +155,8 @@ maintaining this rule shouldn't be at a cost of boilerplate.
 Code isn't about enforcing rules its about composition of functionalities.
 Forbidding functionalities in code BECAUSE, with no technical reason is a bad practice.
 
-### Engine
-Engine is the core which can be re-used in other projects.\
-It defines ecs framework and basic engine modules like `transform` or `hierarchy`
-
+### Modules
 **Currently only cherry picked readmes are written**
-
 Cherry picked readmes to show project complexity:
 - [ecs](/engine/services/ecs/readme/README.md)
 - [assets](/engine/modules/assets/readme/README.md)
@@ -168,48 +164,64 @@ Cherry picked readmes to show project complexity:
 - [record](/engine/modules/record/readme/README.md)
 - [transform](/engine/modules/transform/readme/README.md)
 
-#### **Most modules have unfinished readmes.**
+#### Core
+Core is game source code.\
+It defines game specific objects like `tiles`, `units`, map `generation` or `pathfinding`.\
+Core modules:
+- [definitions (readme placeholder)](/core/modules/definitions/readme/README.md)
+- [deploy (readme placeholder)](/core/modules/deploy/readme/README.md)
+- [fpslogger (readme placeholder)](/core/modules/fpslogger/readme/README.md)
+- [generation (readme placeholder)](/core/modules/generation/readme/README.md)
+- [loading (readme placeholder)](/core/modules/loading/readme/README.md)
+- [pathfind (readme placeholder)](/core/modules/pathfind/readme/README.md)
+- [player (readme placeholder)](/core/modules/player/readme/README.md)
+- [settings (readme placeholder)](/core/modules/settings/readme/README.md)
+- [tile (readme placeholder)](/core/modules/tile/readme/README.md)
+- [ui (readme placeholder)](/core/modules/ui/readme/README.md)
 
+#### Engine
+Engine is reusable in other projects.\
+It defines ecs framework and basic engine modules like `transform` or `hierarchy`.\
 Engine modules:
 - [assets](/engine/modules/assets/readme/README.md)
-- [audio (placeholder)](/engine/modules/audio/readme/README.md)
-- [batcher (placeholder)](/engine/modules/batcher/readme/README.md)
-- [camera (placeholder)](/engine/modules/camera/readme/README.md)
-- [codec (placeholder)](/engine/modules/codec/readme/README.md)
-- [collider (placeholder)](/engine/modules/collider/readme/README.md)
-- [connection (placeholder)](/engine/modules/connection/readme/README.md)
-- [drag (placeholder)](/engine/modules/drag/readme/README.md)
-- [entityregistry (placeholder)](/engine/modules/entityregistry/readme/README.md)
-- [graphics (placeholder)](/engine/modules/graphics/readme/README.md)
-- [grid (placeholder)](/engine/modules/grid/readme/README.md)
-- [groups (placeholder)](/engine/modules/groups/readme/README.md)
+- [audio (readme placeholder)](/engine/modules/audio/readme/README.md)
+- [batcher (readme placeholder)](/engine/modules/batcher/readme/README.md)
+- [camera (readme placeholder)](/engine/modules/camera/readme/README.md)
+- [codec (readme placeholder)](/engine/modules/codec/readme/README.md)
+- [collider (readme placeholder)](/engine/modules/collider/readme/README.md)
+- [connection (readme placeholder)](/engine/modules/connection/readme/README.md)
+- [drag (readme placeholder)](/engine/modules/drag/readme/README.md)
+- [entityregistry (readme placeholder)](/engine/modules/entityregistry/readme/README.md)
+- [graphics (readme placeholder)](/engine/modules/graphics/readme/README.md)
+- [grid (readme placeholder)](/engine/modules/grid/readme/README.md)
+- [groups (readme placeholder)](/engine/modules/groups/readme/README.md)
 - [hierarchy](/engine/modules/hierarchy/readme/README.md)
-- [inputs (placeholder)](/engine/modules/inputs/readme/README.md)
-- [layout (placeholder)](/engine/modules/layout/readme/README.md)
-- [logger (placeholder)](/engine/modules/logger/readme/README.md)
-- [loop (placeholder)](/engine/modules/loop/readme/README.md)
-- [metadata (placeholder)](/engine/modules/metadata/readme/README.md)
-- [netsync (placeholder)](/engine/modules/netsync/readme/README.md)
-- [noise (placeholder)](/engine/modules/noise/readme/README.md)
-- [prototype (placeholder)](/engine/modules/prototype/readme/README.md)
+- [inputs (readme placeholder)](/engine/modules/inputs/readme/README.md)
+- [layout (readme placeholder)](/engine/modules/layout/readme/README.md)
+- [logger (readme placeholder)](/engine/modules/logger/readme/README.md)
+- [loop (readme placeholder)](/engine/modules/loop/readme/README.md)
+- [metadata (readme placeholder)](/engine/modules/metadata/readme/README.md)
+- [netsync (readme placeholder)](/engine/modules/netsync/readme/README.md)
+- [noise (readme placeholder)](/engine/modules/noise/readme/README.md)
+- [prototype (readme placeholder)](/engine/modules/prototype/readme/README.md)
 - [record](/engine/modules/record/readme/README.md)
-- [relation (placeholder)](/engine/modules/relation/readme/README.md)
-- [render (placeholder)](/engine/modules/render/readme/README.md)
-- [scene (placeholder)](/engine/modules/scene/readme/README.md)
-- [seed (placeholder)](/engine/modules/seed/readme/README.md)
-- [smooth (placeholder)](/engine/modules/smooth/readme/README.md)
-- [text (placeholder)](/engine/modules/text/readme/README.md)
+- [relation (readme placeholder)](/engine/modules/relation/readme/README.md)
+- [render (readme placeholder)](/engine/modules/render/readme/README.md)
+- [scene (readme placeholder)](/engine/modules/scene/readme/README.md)
+- [seed (readme placeholder)](/engine/modules/seed/readme/README.md)
+- [smooth (readme placeholder)](/engine/modules/smooth/readme/README.md)
+- [text (readme placeholder)](/engine/modules/text/readme/README.md)
 - [transform](/engine/modules/transform/readme/README.md)
-- [transition (placeholder)](/engine/modules/transition/readme/README.md)
-- [typeregistry (placeholder)](/engine/modules/typeregistry/readme/README.md)
-- [uuid (placeholder)](/engine/modules/uuid/readme/README.md)
-- [warmup (placeholder)](/engine/modules/warmup/readme/README.md)
-- [window (placeholder)](/engine/modules/window/readme/README.md)
+- [transition (readme placeholder)](/engine/modules/transition/readme/README.md)
+- [typeregistry (readme placeholder)](/engine/modules/typeregistry/readme/README.md)
+- [uuid (readme placeholder)](/engine/modules/uuid/readme/README.md)
+- [warmup (readme placeholder)](/engine/modules/warmup/readme/README.md)
+- [window (readme placeholder)](/engine/modules/window/readme/README.md)
 
 Engine services:
-- [clock (placeholder)](/engine/services/clock/readme/README.md)
-- [console (placeholder)](/engine/services/console/readme/README.md)
-- [datastructures (placeholder)](/engine/services/datastructures/readme/README.md)
+- [clock (readme placeholder)](/engine/services/clock/readme/README.md)
+- [console (readme placeholder)](/engine/services/console/readme/README.md)
+- [datastructures (readme placeholder)](/engine/services/datastructures/readme/README.md)
 - [ecs](/engine/services/ecs/readme/README.md)
 
 ### Technical challenges
