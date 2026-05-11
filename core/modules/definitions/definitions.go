@@ -40,9 +40,10 @@ const (
 
 const (
 	TileLayer tile.Coord = iota + 1
+	SelectedLayer
 	ConstructLayer
-	PathLayer
 	UnitLayer
+	PathLayer
 	TilePlaceholderLayer
 	ObjectPlaceholderLayer
 )

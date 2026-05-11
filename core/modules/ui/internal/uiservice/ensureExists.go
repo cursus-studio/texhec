@@ -58,7 +58,7 @@ mainLoop:
 		s.Render().Mesh().Set(quit, render.NewMesh(s.Definitions().Assets().SquareMesh))
 		s.Render().Texture().Set(quit, render.NewTexture(s.Definitions().Assets().Blank))
 
-		s.Inputs().LeftClick().Set(quit, inputs.NewLeftClick(s.Ui().Objects().UnselectEvent()))
+		s.Inputs().LeftClick().Set(quit, inputs.NewLeftClick(ui.NewUnselect[ui.ObjectComponent]()))
 		s.Inputs().KeepSelected().Set(quit, inputs.KeepSelectedComponent{})
 		s.Collider().Component().Set(quit, collider.NewCollider(s.Definitions().Assets().SquareCollider))
 

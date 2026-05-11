@@ -5,6 +5,7 @@ import (
 	"core/modules/definitions"
 	"core/modules/pathfind"
 	"core/modules/tile"
+	"core/modules/ui"
 	"engine/modules/collider"
 	"engine/modules/grid"
 	"engine/modules/groups"
@@ -41,7 +42,7 @@ func (s *service) Select(e pathfind.SelectEvent) {
 }
 
 func (s *service) PreviewPath(e pathfind.PreviewPathEvent) {
-	s.Ui().Actions().Unselect()
+	events.Emit(s.Events(), ui.NewUnselect[ui.ActionComponent]())
 
 	from, ok := s.Tile().Pos().Get(e.Entity)
 	if !ok {
@@ -54,47 +55,42 @@ func (s *service) PreviewPath(e pathfind.PreviewPathEvent) {
 	fromCoords, _ := from.Aligned()
 	toCoords, _ := to.Aligned()
 	_, ok = s.findPath(fromCoords, toCoords, size, obstruction)
-	path := []tile.PosComponent{
-		from,
-		tile.NewPos(e.Coords.Coords()),
-	}
+	destination := tile.NewPos(e.Coords.Coords())
 	if !ok {
-		for _, pos := range path {
-			entity := s.World().NewEntity()
-			s.Hierarchy().SetParent(entity, s.Scene().Scene())
-
-			s.Render().Mesh().Set(entity, render.NewMesh(s.Definitions().Assets().SquareMesh))
-			s.Render().Texture().Set(entity, render.NewTexture(s.Definitions().Hud().Cannot))
-			s.Groups().Component().Set(entity, groups.EmptyGroups().Ptr().Enable(definitions.GameGroup).Val())
-
-			s.Collider().Component().Set(entity, collider.NewCollider(s.Definitions().Assets().SquareCollider))
-
-			s.Tile().Layer().Set(entity, tile.NewLayer(definitions.PathLayer))
-			s.Tile().Pos().Set(entity, pos)
-			s.Ui().Actions().HideOnUnselect(entity)
-		}
-		return
-	}
-	for _, pos := range path {
 		entity := s.World().NewEntity()
 		s.Hierarchy().SetParent(entity, s.Scene().Scene())
 
 		s.Render().Mesh().Set(entity, render.NewMesh(s.Definitions().Assets().SquareMesh))
-		s.Render().Texture().Set(entity, render.NewTexture(s.Definitions().Hud().Can))
+		s.Render().Texture().Set(entity, render.NewTexture(s.Definitions().Hud().Cannot))
 		s.Groups().Component().Set(entity, groups.EmptyGroups().Ptr().Enable(definitions.GameGroup).Val())
 
 		s.Collider().Component().Set(entity, collider.NewCollider(s.Definitions().Assets().SquareCollider))
-		if pos.X == tile.Coord(e.Coords.X) && pos.Y == tile.Coord(e.Coords.Y) {
-			s.Inputs().LeftClick().Set(entity, inputs.NewLeftClick(pathfind.NewFindPathEvent(e.Entity).ApplyCoords(e.Coords)))
-		}
 
 		s.Tile().Layer().Set(entity, tile.NewLayer(definitions.PathLayer))
-		s.Tile().Pos().Set(entity, pos)
-		s.Ui().Actions().HideOnUnselect(entity)
+		s.Tile().Pos().Set(entity, destination)
+		s.Tile().Size().Set(entity, size)
+		s.Ui().Actions().Set(entity, ui.ActionComponent{})
+		return
 	}
+	entity := s.World().NewEntity()
+	s.Hierarchy().SetParent(entity, s.Scene().Scene())
+
+	s.Render().Mesh().Set(entity, render.NewMesh(s.Definitions().Assets().SquareMesh))
+	s.Render().Texture().Set(entity, render.NewTexture(s.Definitions().Hud().Can))
+	s.Groups().Component().Set(entity, groups.EmptyGroups().Ptr().Enable(definitions.GameGroup).Val())
+
+	s.Collider().Component().Set(entity, collider.NewCollider(s.Definitions().Assets().SquareCollider))
+	if destination.X == tile.Coord(e.Coords.X) && destination.Y == tile.Coord(e.Coords.Y) {
+		s.Inputs().LeftClick().Set(entity, inputs.NewLeftClick(pathfind.NewFindPathEvent(e.Entity).ApplyCoords(e.Coords)))
+	}
+
+	s.Tile().Layer().Set(entity, tile.NewLayer(definitions.PathLayer))
+	s.Tile().Pos().Set(entity, destination)
+	s.Tile().Size().Set(entity, size)
+	s.Ui().Actions().Set(entity, ui.ActionComponent{})
 }
 func (s *service) FindPath(e pathfind.FindPathEvent) {
-	s.Ui().Actions().Unselect()
+	events.Emit(s.Events(), ui.NewUnselect[ui.ActionComponent]())
 
 	from, ok := s.Tile().Pos().Get(e.Entity)
 	if !ok {
@@ -112,7 +108,7 @@ func (s *service) FindPath(e pathfind.FindPathEvent) {
 	}
 	s.Target().Set(e.Entity, pathfind.NewTarget(e.Coords))
 
-	s.Ui().Objects().Unselect()
+	events.Emit(s.Events(), ui.NewUnselect[ui.ObjectComponent]())
 }
 
 func (s *service) OnTick(e loop.TickEvent) {

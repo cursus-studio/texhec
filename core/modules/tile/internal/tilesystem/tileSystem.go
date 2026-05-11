@@ -3,6 +3,7 @@ package tilesystem
 import (
 	"core/game"
 	"core/modules/tile"
+	"core/modules/ui"
 	"engine/modules/inputs"
 	"engine/modules/loop"
 	"engine/modules/transform"
@@ -47,7 +48,7 @@ func NewSystem(c ioc.Dic) tile.System {
 		//
 
 		events.Listen(s.EventsBuilder(), s.OnTick)
-		s.Ui().Objects().OnUnselect(s.OnUnselect)
+		events.Listen(s.EventsBuilder(), s.OnUnselect)
 		events.Listen(s.EventsBuilder(), s.OnSelect)
 		events.Listen(s.EventsBuilder(), s.OnHover)
 		return nil
@@ -175,7 +176,7 @@ func (s *system) OnTick(e loop.TickEvent) {
 	}
 }
 
-func (s *system) OnUnselect() {
+func (s *system) OnUnselect(ui.UnselectEvent[ui.ObjectComponent]) {
 	s.selectedEvent = nil
 }
 

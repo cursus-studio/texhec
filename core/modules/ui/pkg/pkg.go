@@ -44,9 +44,17 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 	}
 	ioc.Register(b, func(c ioc.Dic) Config { return newConfig() })
 
-	ioc.Register(b, func(c ioc.Dic) ui.Service {
+	type Service interface {
+		ui.Service
+		Systems() []ecs.SystemRegister
+	}
+
+	ioc.Register(b, func(c ioc.Dic) Service {
 		config := ioc.Get[Config](c).(*config)
 		return uiservice.NewService(c, config.animationDuration)
+	})
+	ioc.Register(b, func(c ioc.Dic) ui.Service {
+		return ioc.Get[Service](c)
 	})
 	ioc.Register(b, func(c ioc.Dic) ui.System {
 		world := ioc.GetServices[game.GameWorld](c)
@@ -56,6 +64,9 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 				systems.NewSystem(c, config.bgTimePerFrame),
 				systems.NewCursorSystem(c),
 			)
+			errs = append(errs, ecs.RegisterSystems(
+				ioc.Get[Service](c).Systems()...,
+			)...)
 			if len(errs) != 0 {
 				return errs[0]
 			}
@@ -64,7 +75,7 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 				if e.Button != sdl.BUTTON_RIGHT || e.State != sdl.RELEASED {
 					return
 				}
-				events.EmitAny(world.Events(), world.Ui().Objects().UnselectEvent())
+				events.Emit(world.Events(), ui.NewUnselect[ui.ObjectComponent]())
 			})
 			ioc.Get[ui.Service](c)
 			return nil

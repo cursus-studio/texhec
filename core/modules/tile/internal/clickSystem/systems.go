@@ -5,6 +5,7 @@ import (
 	"core/modules/deploy"
 	"core/modules/pathfind"
 	"core/modules/tile"
+	"core/modules/ui"
 	"engine/modules/inputs"
 	"engine/modules/text"
 	"engine/services/ecs"
@@ -24,12 +25,13 @@ func NewSystem(c ioc.Dic) ecs.SystemRegister {
 		s := ioc.GetServices[*system](c)
 
 		events.Listen(s.EventsBuilder(), s.OnClickEntity)
-
 		return nil
 	})
 }
 
 func (s *system) OnClickEntity(e tile.ClickEntityEvent) {
+	events.Emit(s.Events(), ui.NewSelect[ui.ObjectComponent](e.Entity))
+
 	link, ok := s.Metadata().Link().Get(e.Entity)
 	if !ok {
 		s.Logger().Log(errors.New("expected entity to have link component"))

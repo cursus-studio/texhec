@@ -3,42 +3,50 @@ package uiservice
 import (
 	"core/game"
 	"core/modules/ui"
+	"engine/modules/loop"
 	"engine/services/ecs"
 
 	"github.com/ogiusek/events"
 	"github.com/ogiusek/ioc/v2"
 )
 
-type UnselectEvent[Component any] struct{}
-
 type selectionGroup[Component any] struct {
 	game.GameWorld `inject:""`
-	componentArray ecs.ComponentsArray[Component]
-
-	zero Component
+	arr            ecs.ComponentsArray[Component]
+	selected       ecs.ComponentsArray[selectedComponent[Component]]
 }
 
-func NewSelectionGroup[Component any](c ioc.Dic) ui.SelectionGroup {
+type selectedComponent[Component any] struct{}
+
+func NewSelectionGroup[Component any](c ioc.Dic, service *service) ui.SelectionGroup[Component] {
 	s := ioc.GetServices[*selectionGroup[Component]](c)
-	s.componentArray = ecs.GetComponentsArray[Component](s.World())
-	events.Listen(s.EventsBuilder(), s.unselectListener)
-	return s
+	s.arr = ecs.GetComponentsArray[Component](s.World())
+	s.selected = ecs.GetComponentsArray[selectedComponent[Component]](s.World())
+
+	system := ecs.NewSystemRegister(func() error {
+		events.Listen(s.EventsBuilder(), s.OnTick)
+		events.Listen(s.EventsBuilder(), s.OnSelect)
+		events.Listen(s.EventsBuilder(), s.OnUnselect)
+		return nil
+	})
+	service.systems = append(service.systems, system)
+
+	return s.arr
 }
 
-func (s *selectionGroup[Component]) unselectListener(UnselectEvent[Component]) {
-	for _, entity := range s.componentArray.GetEntities() {
-		s.World().RemoveEntity(entity)
+func (s *selectionGroup[Component]) OnTick(e loop.TickEvent) {
+	for _, entity := range s.selected.GetEntities() {
+		events.Emit(s.Events(), ui.NewSelectTick[Component](e, entity))
 	}
 }
-
-func (s *selectionGroup[Component]) HideOnUnselect(entity ecs.EntityID) {
-	s.componentArray.Set(entity, s.zero)
+func (s *selectionGroup[Component]) OnSelect(e ui.SelectEvent[Component]) {
+	s.selected.Set(e.Entity, selectedComponent[Component]{})
 }
-func (s *selectionGroup[Component]) Unselect() { events.Emit(s.Events(), UnselectEvent[Component]{}) }
-
-func (s *selectionGroup[Component]) UnselectEvent() any { return UnselectEvent[Component]{} }
-func (s *selectionGroup[Component]) OnUnselect(listener func()) {
-	events.Listen(s.EventsBuilder(), func(UnselectEvent[Component]) {
-		listener()
-	})
+func (s *selectionGroup[Component]) OnUnselect(e ui.UnselectEvent[Component]) {
+	for _, entity := range s.selected.GetEntities() {
+		s.selected.Remove(entity)
+	}
+	for _, entity := range s.arr.GetEntities() {
+		s.World().RemoveEntity(entity)
+	}
 }

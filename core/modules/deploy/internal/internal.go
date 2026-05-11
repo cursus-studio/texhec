@@ -6,6 +6,7 @@ import (
 	"core/modules/deploy"
 	"core/modules/player"
 	"core/modules/tile"
+	"core/modules/ui"
 	"engine/modules/grid"
 	"engine/modules/groups"
 	"engine/modules/inputs"
@@ -54,7 +55,7 @@ func (s *service) Deploy(
 	owner ecs.EntityID,
 	coords grid.Coords,
 ) (ecs.EntityID, error) {
-	s.Ui().Objects().Unselect()
+	events.Emit(s.Events(), ui.NewUnselect[ui.ObjectComponent]())
 	// check can place:
 
 	// - is position occuped
@@ -98,13 +99,13 @@ func (s *service) Preview(e deploy.PreviewEvent) {
 		}
 	}
 
-	s.Ui().Actions().Unselect()
+	events.Emit(s.Events(), ui.NewUnselect[ui.ActionComponent]())
 
 	placeholderEntity := s.Prototype().Clone(e.Blueprint)
 	s.Hierarchy().SetParent(placeholderEntity, s.Scene().Scene())
 	s.Tile().Layer().Set(placeholderEntity, tile.NewLayer(definitions.ObjectPlaceholderLayer))
 	s.Tile().Pos().Set(placeholderEntity, pos)
-	s.Ui().Actions().HideOnUnselect(placeholderEntity)
+	s.Ui().Actions().Set(placeholderEntity, ui.ActionComponent{})
 	s.Inputs().KeepSelected().Set(placeholderEntity, inputs.KeepSelectedComponent{})
 	s.previewed.Set(placeholderEntity, previewComp)
 
@@ -126,13 +127,13 @@ func (s *service) Preview(e deploy.PreviewEvent) {
 
 		s.Tile().Layer().Set(entity, tile.NewLayer(definitions.TilePlaceholderLayer))
 		s.Tile().Pos().Set(entity, tile.NewPos(collision.Coords()))
-		s.Ui().Actions().HideOnUnselect(entity)
+		s.Ui().Actions().Set(entity, ui.ActionComponent{})
 		s.Render().Color().Set(entity, render.NewColor(mgl32.Vec4{1, 0, 0, 1}))
 	}
 	s.Render().Color().Set(placeholderEntity, render.NewColor(mgl32.Vec4{1, 0, 0, 1}))
 }
 func (s *service) Execute(e deploy.ExecuteEvent) {
-	s.Ui().Objects().Unselect()
+	events.Emit(s.Events(), ui.NewUnselect[ui.ObjectComponent]())
 
 	// pay
 	// ...

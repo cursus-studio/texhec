@@ -243,6 +243,9 @@ type ApplyCoordsEvent interface {
 	ApplyCoords(grid.Coords) any
 }
 
+//
+
+// changes event emitted on tile hover
 type SelectEvent struct {
 	HoverEvent any
 }
