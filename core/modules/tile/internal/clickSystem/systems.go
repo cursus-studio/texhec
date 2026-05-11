@@ -79,7 +79,7 @@ skipDeploy:
 		btns = append(btns, Button{"Move", pathfind.NewSelectEvent(e.Entity)})
 	}
 
-	for _, p := range s.Ui().Show() {
+	for _, p := range s.Ui().ShowMenu() {
 		// i want here to display all actions which can be performed by entity
 		// currently implement only building
 		for _, btn := range btns {

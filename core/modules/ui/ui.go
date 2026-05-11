@@ -8,28 +8,27 @@ type System ecs.SystemRegister
 
 // marker which says module relative to which element to position
 type UiCameraComponent struct{}
+type AnimatedBackgroundComponent struct{}
+type CursorCameraComponent struct{}
 
-type HideUiEvent struct{}
-
-type Button struct {
-	Text  string
-	Event any
-}
-
-func NewButton(text string, event any) Button {
-	return Button{text, event}
+type SelectionGroup interface {
+	HideOnUnselect(ecs.EntityID)
+	Unselect()
+	UnselectEvent() any
+	OnUnselect(func())
 }
 
 type Service interface {
 	UiCamera() ecs.ComponentsArray[UiCameraComponent]
 	AnimatedBackground() ecs.ComponentsArray[AnimatedBackgroundComponent]
 	CursorCamera() ecs.ComponentsArray[CursorCameraComponent]
+
+	Objects() SelectionGroup
+	Actions() SelectionGroup
+
 	// returns parent to attach ui elements
 	// potentially with enter animation
-	Show() (parents []ecs.EntityID)
+	ShowMenu() (parents []ecs.EntityID)
 	// removes all children
-	Hide()
-
-	// elements
-	// Buttons(...Button) []ecs.EntityID
+	HideMenu()
 }
