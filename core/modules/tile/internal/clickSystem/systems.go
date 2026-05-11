@@ -105,16 +105,18 @@ skipDeploy:
 }
 
 func (s *system) SelectEntity(e ui.SelectEvent[ui.ObjectComponent]) {
-	marker := s.World().NewEntity()
-	s.Hierarchy().SetParent(marker, e.Entity)
+	for _, entity := range e.Entities {
+		marker := s.World().NewEntity()
+		s.Hierarchy().SetParent(marker, entity)
 
-	s.Render().Mesh().Set(marker, render.NewMesh(s.Definitions().Assets().SquareMesh))
-	s.Render().Texture().Set(marker, render.NewTexture(s.Definitions().Hud().Selected))
-	s.Groups().Component().Set(marker, groups.EmptyGroups().Ptr().Enable(definitions.GameGroup).Val())
+		s.Render().Mesh().Set(marker, render.NewMesh(s.Definitions().Assets().SquareMesh))
+		s.Render().Texture().Set(marker, render.NewTexture(s.Definitions().Hud().Selected))
+		s.Groups().Component().Set(marker, groups.EmptyGroups().Ptr().Enable(definitions.GameGroup).Val())
 
-	s.Collider().Component().Set(marker, collider.NewCollider(s.Definitions().Assets().SquareCollider))
+		s.Collider().Component().Set(marker, collider.NewCollider(s.Definitions().Assets().SquareCollider))
 
-	s.Transform().Pos().Set(marker, transform.NewPos(0, 0, -.1))
-	s.Transform().Parent().Set(marker, transform.NewParent(transform.RelativePos|transform.RelativeSizeXYZ))
-	s.Ui().Objects().Set(marker, ui.ObjectComponent{})
+		s.Transform().Pos().Set(marker, transform.NewPos(0, 0, -.1))
+		s.Transform().Parent().Set(marker, transform.NewParent(transform.RelativePos|transform.RelativeSizeXYZ))
+		s.Ui().Objects().Set(marker, ui.ObjectComponent{})
+	}
 }

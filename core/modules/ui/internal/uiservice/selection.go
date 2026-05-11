@@ -23,10 +23,11 @@ func NewSelectionGroup[Component any](c ioc.Dic, service *service) ui.SelectionG
 	s.arr = ecs.GetComponentsArray[Component](s.World())
 	s.selected = ecs.GetComponentsArray[selectedComponent[Component]](s.World())
 
+	events.Listen(s.EventsBuilder(), s.OnSelect)
+	events.Listen(s.EventsBuilder(), s.OnUnselect)
+
 	system := ecs.NewSystemRegister(func() error {
 		events.Listen(s.EventsBuilder(), s.OnTick)
-		events.Listen(s.EventsBuilder(), s.OnSelect)
-		events.Listen(s.EventsBuilder(), s.OnUnselect)
 		return nil
 	})
 	service.systems = append(service.systems, system)
@@ -35,14 +36,15 @@ func NewSelectionGroup[Component any](c ioc.Dic, service *service) ui.SelectionG
 }
 
 func (s *selectionGroup[Component]) OnTick(e loop.TickEvent) {
-	for _, entity := range s.selected.GetEntities() {
-		events.Emit(s.Events(), ui.NewSelectTick[Component](e, entity))
-	}
+	events.Emit(s.Events(), ui.NewSelectTick[Component](e, s.selected.GetEntities()))
 }
 func (s *selectionGroup[Component]) OnSelect(e ui.SelectEvent[Component]) {
-	s.selected.Set(e.Entity, selectedComponent[Component]{})
+	s.OnUnselect(ui.NewUnselect[Component]())
+	for _, entity := range e.Entities {
+		s.selected.Set(entity, selectedComponent[Component]{})
+	}
 }
-func (s *selectionGroup[Component]) OnUnselect(e ui.UnselectEvent[Component]) {
+func (s *selectionGroup[Component]) OnUnselect(ui.UnselectEvent[Component]) {
 	for _, entity := range s.selected.GetEntities() {
 		s.selected.Remove(entity)
 	}

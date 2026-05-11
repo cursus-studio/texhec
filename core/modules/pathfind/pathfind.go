@@ -22,6 +22,8 @@ func NewTarget(coords grid.Coords) TargetComponent {
 //
 
 type Service interface {
+	System() ecs.SystemRegister
+
 	Target() ecs.ComponentsArray[TargetComponent]
 
 	Select(SelectEvent)

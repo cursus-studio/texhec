@@ -14,22 +14,22 @@ type CursorCameraComponent struct{}
 
 // selection group events
 type UnselectEvent[Component any] struct{}
-type SelectEvent[Component any] struct{ Entity ecs.EntityID }
+type SelectEvent[Component any] struct{ Entities []ecs.EntityID }
 
 // each tick is emited with currently selected entity
 type SelectTickEvent[Component any] struct {
-	Tick   loop.TickEvent
-	Entity ecs.EntityID
+	Tick     loop.TickEvent
+	Entities []ecs.EntityID
 }
 
 func NewUnselect[Component any]() UnselectEvent[Component] {
 	return UnselectEvent[Component]{}
 }
-func NewSelect[Component any](entity ecs.EntityID) SelectEvent[Component] {
-	return SelectEvent[Component]{entity}
+func NewSelect[Component any](entities ...ecs.EntityID) SelectEvent[Component] {
+	return SelectEvent[Component]{entities}
 }
-func NewSelectTick[Component any](tick loop.TickEvent, entity ecs.EntityID) SelectTickEvent[Component] {
-	return SelectTickEvent[Component]{tick, entity}
+func NewSelectTick[Component any](tick loop.TickEvent, entities []ecs.EntityID) SelectTickEvent[Component] {
+	return SelectTickEvent[Component]{tick, entities}
 }
 
 //
