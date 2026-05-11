@@ -232,12 +232,13 @@ Finding file structure which allows for most logic with least friction between m
 Current approach reduces whole friction to a few interface files and often in a single `Service` interface.
 
 ## CI/CD
-Current pipeline is hosted using Jenkins on **Raspberry PI**.
-Current pipeline has **CI** and checks code:
-- `quality`: `golangci-lint`, cleaniness dependencies
+Current pipeline is hosted using **Jenkins** on **Raspberry PI**.
+Current pipeline **CI** flow:
+- `quality`: `golangci-lint`, dependency hygiene
 - `correctness`: `unit tests`
 - `security`: `gosec`, `trivy`
-and using **GitHub Status API** integrates notifications into developer worflow.\
+
+Using **GitHub Status API** integrates notifications into developer worflow.\
 Current design leaves space to add in the future stages for **CD**.
 
 [CI/CD directory](/ci-cd)
