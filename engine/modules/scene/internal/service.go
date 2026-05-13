@@ -33,25 +33,25 @@ func NewService(c ioc.Dic) scene.Service {
 	return service
 }
 
-func (service *Service) ChangeScene(event scene.ChangeSceneEvent) {
-	for _, entity := range service.SceneArr.GetEntities() {
-		service.World().RemoveEntity(entity)
+func (s *Service) ChangeScene(event scene.ChangeSceneEvent) {
+	for _, entity := range s.SceneArr.GetEntities() {
+		s.World().RemoveEntity(entity)
 	}
-	sceneEntity := service.World().NewEntity()
-	service.SceneArr.Set(sceneEntity, SceneComp{})
+	sceneEntity := s.World().NewEntity()
+	s.SceneArr.Set(sceneEntity, SceneComp{})
 
-	scene, ok := service.scenes[event.ID]
+	scene, ok := s.scenes[event.ID]
 	if !ok {
-		service.Logger().Log(fmt.Errorf("scene with id %v doesn't exist", event.ID))
+		s.Logger().Log(fmt.Errorf("scene with id %v doesn't exist", event.ID))
 		return
 	}
 	scene(sceneEntity)
 }
 
-func (service *Service) Scene() ecs.EntityID {
-	return service.SceneArr.GetEntities()[0]
+func (s *Service) Scene() ecs.EntityID {
+	return s.SceneArr.GetEntities()[0]
 }
 
-func (service *Service) SetScene(id scene.ID, scene scene.Scene) {
-	service.scenes[id] = scene
+func (s *Service) SetScene(id scene.ID, scene scene.Scene) {
+	s.scenes[id] = scene
 }
