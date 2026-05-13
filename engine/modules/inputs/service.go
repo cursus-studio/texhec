@@ -8,6 +8,9 @@ import (
 type Service interface {
 	ecs.SystemRegister
 
+	Focused() ecs.ComponentsArray[FocusedComponent]
+	CaptureKeyboard() ecs.ComponentsArray[CaptureKeyboardComponent]
+
 	Hovered() ecs.ComponentsArray[HoveredComponent]
 	Dragged() ecs.ComponentsArray[DraggedComponent]
 	Stacked() ecs.ComponentsArray[StackedComponent]

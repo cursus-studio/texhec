@@ -1,10 +1,16 @@
 package inputspkg
 
 import (
+	"engine"
 	"engine/modules/inputs"
 	"engine/modules/inputs/internal/service"
+	"engine/modules/logger"
+	"engine/modules/scene"
 	typeregistrypkg "engine/modules/typeregistry/pkg"
+	"errors"
+	"fmt"
 
+	"github.com/ogiusek/events"
 	"github.com/ogiusek/ioc/v2"
 )
 
@@ -31,6 +37,18 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 	for _, pkg := range pkgs {
 		pkg(b)
 	}
+
+	ioc.Wrap(b, func(c ioc.Dic, b events.Builder) {
+		world := ioc.GetServices[engine.EngineWorld](c)
+		world.Scene() // ensure scene events are loaded before current event
+		events.Listen(b, func(e scene.ChangeSceneEvent) {
+			events.Emit(world.Events(), inputs.NewDefaultFocusEvent(world.Scene().Scene()))
+			world.Logger().Log(errors.Join(
+				logger.ErrInfo,
+				fmt.Errorf("scene %v", world.Scene().Scene()),
+			))
+		})
+	})
 
 	ioc.Register(b, func(c ioc.Dic) inputs.Service {
 		return service.NewService(c)

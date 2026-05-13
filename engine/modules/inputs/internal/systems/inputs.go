@@ -2,6 +2,7 @@ package systems
 
 import (
 	"engine"
+	"engine/modules/inputs"
 	"engine/modules/loop"
 	"engine/services/ecs"
 	"errors"
@@ -16,16 +17,78 @@ var (
 	ErrNotHandledInput error = errors.New("not handled input")
 )
 
+type defaultFocusComponent struct{}
+
 type inputsSystem struct {
 	engine.EngineWorld `inject:""`
+	defaultFocus       ecs.ComponentsArray[defaultFocusComponent]
 }
 
 func NewInputsSystem(c ioc.Dic) ecs.SystemRegister {
 	return ecs.NewSystemRegister(func() error {
 		s := ioc.GetServices[*inputsSystem](c)
+		s.defaultFocus = ecs.GetComponentsArray[defaultFocusComponent](s.World())
+		events.Listen(s.EventsBuilder(), s.OnDefaultFocus)
+		events.Listen(s.EventsBuilder(), s.OnFocus)
+		events.Listen(s.EventsBuilder(), s.OnUnfocus)
+		events.Listen(s.EventsBuilder(), s.OnKeyboardEvent)
 		events.Listen(s.EventsBuilder(), s.Listen)
 		return nil
 	})
+}
+
+func (s *inputsSystem) OnDefaultFocus(e inputs.DefaultFocusEvent) {
+	for _, entity := range s.defaultFocus.GetEntities() {
+		s.defaultFocus.Remove(entity)
+	}
+	s.defaultFocus.Set(e.Entity, defaultFocusComponent{})
+}
+func (s *inputsSystem) OnFocus(e inputs.FocusEvent) {
+	for _, focusedEntity := range s.Inputs().Focused().GetEntities() {
+		s.Inputs().Focused().Remove(focusedEntity)
+	}
+	s.Inputs().Focused().Set(e.Entity, inputs.NewFocused())
+}
+func (s *inputsSystem) OnUnfocus(inputs.UnfocusEvent) {
+	for _, focusedEntity := range s.Inputs().Focused().GetEntities() {
+		s.Inputs().Focused().Remove(focusedEntity)
+	}
+}
+
+func (s *inputsSystem) OnKeyboardEvent(event sdl.KeyboardEvent) {
+	e := inputs.NewKeyboardEvent(event)
+	focusedEntities := s.Inputs().Focused().GetEntities()
+	if len(focusedEntities) > 1 {
+		s.Logger().Log(fmt.Errorf("expected most one focused element"))
+		for _, focusedEntity := range focusedEntities {
+			s.Inputs().Focused().Remove(focusedEntity)
+		}
+	}
+
+	if len(focusedEntities) == 0 {
+		focusedEntities = s.defaultFocus.GetEntities()
+	}
+
+	if len(focusedEntities) == 0 {
+		events.Emit(s.Events(), e)
+		return
+	}
+
+	focusedEntity := focusedEntities[0]
+	parents := append([]ecs.EntityID{focusedEntity}, s.Hierarchy().GetOrderedParents(focusedEntity)...)
+
+	for _, entity := range parents {
+		comp, ok := s.Inputs().CaptureKeyboard().Get(entity)
+		if !ok {
+			continue
+		}
+		events.EmitAny(s.Events(), comp.Capture(e))
+		if !comp.Fallthrough() {
+			return
+		}
+	}
+
+	events.Emit(s.Events(), e)
 }
 
 func (s *inputsSystem) Listen(args loop.FrameEvent) {
