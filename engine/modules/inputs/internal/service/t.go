@@ -131,7 +131,7 @@ func (s *service) IsCaptured(entity ecs.EntityID) bool {
 			return true
 		}
 	}
-	return true
+	return false
 }
 
 func (s *service) DefaultFocused() ecs.ComponentsArray[inputs.DefaultFocusedComponent] {
