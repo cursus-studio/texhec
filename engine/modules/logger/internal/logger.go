@@ -89,6 +89,10 @@ func (s *service) Log(err error) {
 	}
 }
 
+func (s *service) Info(err error)  { s.Log(errors.Join(logger.ErrInfo, err)) }
+func (s *service) Warn(err error)  { s.Log(err) }
+func (s *service) Fatal(err error) { s.Log(errors.Join(logger.ErrFatal, err)) }
+
 func (s *service) AddFormatHandler(handler func(meta, msg error) error) {
 	s.FormatHandlers = append(s.FormatHandlers, handler)
 }

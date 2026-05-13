@@ -2,9 +2,7 @@ package internal
 
 import (
 	"engine"
-	"engine/modules/logger"
 	"engine/modules/window"
-	"errors"
 	"sync"
 
 	"github.com/go-gl/gl/v4.5-core/gl"
@@ -30,7 +28,7 @@ func (s *service) init() {
 	s.once.Do(func() {
 		var err error
 		if err := sdl.Init(sdl.INIT_EVERYTHING); err != nil {
-			s.Logger().Log(errors.Join(logger.ErrFatal, err))
+			s.Logger().Fatal(err)
 			return
 		}
 
@@ -42,7 +40,7 @@ func (s *service) init() {
 
 		// audio
 		if err := mix.OpenAudio(48000, sdl.AUDIO_F32SYS, 2, 1024); err != nil {
-			s.Logger().Log(errors.Join(logger.ErrFatal, err))
+			s.Logger().Fatal(err)
 			return
 		}
 
@@ -54,21 +52,21 @@ func (s *service) init() {
 			sdl.WINDOW_SHOWN|sdl.WINDOW_OPENGL,
 		)
 		if err != nil {
-			s.Logger().Log(errors.Join(logger.ErrFatal, err))
+			s.Logger().Fatal(err)
 			return
 		}
 
 		s.context, err = s.window.GLCreateContext()
 		if err != nil {
-			s.Logger().Log(errors.Join(logger.ErrFatal, err))
+			s.Logger().Fatal(err)
 			return
 		}
 		if err := gl.Init(); err != nil {
-			s.Logger().Log(errors.Join(logger.ErrFatal, err))
+			s.Logger().Fatal(err)
 			return
 		}
 		if err := s.window.GLMakeCurrent(s.context); err != nil {
-			s.Logger().Log(errors.Join(logger.ErrFatal, err))
+			s.Logger().Fatal(err)
 			return
 		}
 		_ = sdl.GLSetSwapInterval(0)
