@@ -4,11 +4,8 @@ import (
 	"engine"
 	"engine/modules/inputs"
 	"engine/modules/inputs/internal/service"
-	"engine/modules/logger"
 	"engine/modules/scene"
 	typeregistrypkg "engine/modules/typeregistry/pkg"
-	"errors"
-	"fmt"
 
 	"github.com/ogiusek/events"
 	"github.com/ogiusek/ioc/v2"
@@ -43,10 +40,6 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 		world.Scene() // ensure scene events are loaded before current event
 		events.Listen(b, func(e scene.ChangeSceneEvent) {
 			events.Emit(world.Events(), inputs.NewDefaultFocusEvent(world.Scene().Scene()))
-			world.Logger().Log(errors.Join(
-				logger.ErrInfo,
-				fmt.Errorf("scene %v", world.Scene().Scene()),
-			))
 		})
 	})
 
