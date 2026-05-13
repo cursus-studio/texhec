@@ -16,24 +16,24 @@ import (
 
 type SceneComp struct{}
 
-type Service struct {
+type service struct {
 	engine.EngineWorld `inject:""`
 	scenes             map[scene.ID]scene.Scene
 	SceneArr           ecs.ComponentsArray[SceneComp]
 }
 
 func NewService(c ioc.Dic) scene.Service {
-	service := ioc.GetServices[*Service](c)
-	service.scenes = make(map[scene.ID]scene.Scene)
-	service.SceneArr = ecs.GetComponentsArray[SceneComp](service.World())
-	entity := service.World().NewEntity()
-	service.SceneArr.Set(entity, SceneComp{})
+	s := ioc.GetServices[*service](c)
+	s.scenes = make(map[scene.ID]scene.Scene)
+	s.SceneArr = ecs.GetComponentsArray[SceneComp](s.World())
+	entity := s.World().NewEntity()
+	s.SceneArr.Set(entity, SceneComp{})
 
-	events.Listen(service.EventsBuilder(), service.ChangeScene)
-	return service
+	events.Listen(s.EventsBuilder(), s.ChangeScene)
+	return s
 }
 
-func (s *Service) ChangeScene(event scene.ChangeSceneEvent) {
+func (s *service) ChangeScene(event scene.ChangeSceneEvent) {
 	for _, entity := range s.SceneArr.GetEntities() {
 		s.World().RemoveEntity(entity)
 	}
@@ -48,10 +48,10 @@ func (s *Service) ChangeScene(event scene.ChangeSceneEvent) {
 	scene(sceneEntity)
 }
 
-func (s *Service) Scene() ecs.EntityID {
+func (s *service) Scene() ecs.EntityID {
 	return s.SceneArr.GetEntities()[0]
 }
 
-func (s *Service) SetScene(id scene.ID, scene scene.Scene) {
+func (s *service) SetScene(id scene.ID, scene scene.Scene) {
 	s.scenes[id] = scene
 }
