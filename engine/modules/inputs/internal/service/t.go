@@ -8,6 +8,7 @@ import (
 	"engine/modules/inputs/internal/systems"
 	"engine/modules/loop"
 	"engine/services/ecs"
+	"fmt"
 
 	"github.com/ogiusek/events"
 	"github.com/ogiusek/ioc/v2"
@@ -18,6 +19,7 @@ type service struct {
 	engine.EngineWorld `inject:""`
 	c                  ioc.Dic
 
+	defaultFocused  ecs.ComponentsArray[inputs.DefaultFocusedComponent]
 	focused         ecs.ComponentsArray[inputs.FocusedComponent]
 	captureKeyboard ecs.ComponentsArray[inputs.CaptureKeyboardComponent]
 
@@ -47,6 +49,7 @@ type service struct {
 func NewService(c ioc.Dic) inputs.Service {
 	s := ioc.GetServices[*service](c)
 	s.c = c
+	s.defaultFocused = ecs.GetComponentsArray[inputs.DefaultFocusedComponent](s.World())
 	s.focused = ecs.GetComponentsArray[inputs.FocusedComponent](s.World())
 	s.captureKeyboard = ecs.GetComponentsArray[inputs.CaptureKeyboardComponent](s.World())
 
@@ -97,6 +100,41 @@ func (s *service) Register() error {
 	return nil
 }
 
+func (s *service) IsCaptured(entity ecs.EntityID) bool {
+	focusedEntities := s.Inputs().Focused().GetEntities()
+	if len(focusedEntities) > 1 {
+		s.Logger().Log(fmt.Errorf("expected most one focused element"))
+		for _, focusedEntity := range focusedEntities {
+			s.Inputs().Focused().Remove(focusedEntity)
+		}
+	}
+
+	if len(focusedEntities) == 0 {
+		focusedEntities = s.defaultFocused.GetEntities()
+	}
+
+	if len(focusedEntities) == 0 {
+		return false
+	}
+
+	focusedEntity := focusedEntities[0]
+	parents := append([]ecs.EntityID{focusedEntity}, s.Hierarchy().GetOrderedParents(focusedEntity)...)
+
+	for _, capturingEntity := range parents {
+		if capturingEntity == entity {
+			return false
+		}
+		comp, ok := s.Inputs().CaptureKeyboard().Get(capturingEntity)
+		if ok && !comp.Fallthrough() {
+			return true
+		}
+	}
+	return true
+}
+
+func (s *service) DefaultFocused() ecs.ComponentsArray[inputs.DefaultFocusedComponent] {
+	return s.defaultFocused
+}
 func (s *service) Focused() ecs.ComponentsArray[inputs.FocusedComponent] {
 	return s.focused
 }

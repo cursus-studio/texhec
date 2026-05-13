@@ -17,17 +17,13 @@ var (
 	ErrNotHandledInput error = errors.New("not handled input")
 )
 
-type defaultFocusComponent struct{}
-
 type inputsSystem struct {
 	engine.EngineWorld `inject:""`
-	defaultFocus       ecs.ComponentsArray[defaultFocusComponent]
 }
 
 func NewInputsSystem(c ioc.Dic) ecs.SystemRegister {
 	return ecs.NewSystemRegister(func() error {
 		s := ioc.GetServices[*inputsSystem](c)
-		s.defaultFocus = ecs.GetComponentsArray[defaultFocusComponent](s.World())
 		events.Listen(s.EventsBuilder(), s.OnDefaultFocus)
 		events.Listen(s.EventsBuilder(), s.OnFocus)
 		events.Listen(s.EventsBuilder(), s.OnUnfocus)
@@ -38,10 +34,10 @@ func NewInputsSystem(c ioc.Dic) ecs.SystemRegister {
 }
 
 func (s *inputsSystem) OnDefaultFocus(e inputs.DefaultFocusEvent) {
-	for _, entity := range s.defaultFocus.GetEntities() {
-		s.defaultFocus.Remove(entity)
+	for _, entity := range s.Inputs().DefaultFocused().GetEntities() {
+		s.Inputs().DefaultFocused().Remove(entity)
 	}
-	s.defaultFocus.Set(e.Entity, defaultFocusComponent{})
+	s.Inputs().DefaultFocused().Set(e.Entity, inputs.NewDefaultFocused())
 }
 func (s *inputsSystem) OnFocus(e inputs.FocusEvent) {
 	for _, focusedEntity := range s.Inputs().Focused().GetEntities() {
@@ -66,7 +62,7 @@ func (s *inputsSystem) OnKeyboardEvent(event sdl.KeyboardEvent) {
 	}
 
 	if len(focusedEntities) == 0 {
-		focusedEntities = s.defaultFocus.GetEntities()
+		focusedEntities = s.Inputs().DefaultFocused().GetEntities()
 	}
 
 	if len(focusedEntities) == 0 {

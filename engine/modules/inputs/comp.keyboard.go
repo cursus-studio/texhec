@@ -43,6 +43,12 @@ func NewCaptureKeyboard(event CaptureKeyboardConstraint) CaptureKeyboardComponen
 	return CaptureKeyboardComponent{event}
 }
 
+//
+
+type DefaultFocusedComponent struct{}
+
+func NewDefaultFocused() DefaultFocusedComponent { return DefaultFocusedComponent{} }
+
 // element should be focused on click for example
 // on right click or escape element should get unfocused
 type FocusedComponent struct{}
