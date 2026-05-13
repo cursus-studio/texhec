@@ -13,6 +13,7 @@ import (
 	"engine/modules/text"
 	"engine/modules/transform"
 	"engine/services/ecs"
+	"fmt"
 	"strings"
 
 	"github.com/ogiusek/ioc/v2"
@@ -75,6 +76,10 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 				world.Inputs().LeftClick().Set(btn, inputs.NewLeftClick(button.OnClick))
 				world.Text().Content().Set(btn, text.NewText(strings.ToUpper(button.Text)))
 			}
+
+			input := world.Prototype().Clone(world.Definitions().Hud().Input)
+			world.Hierarchy().SetParent(input, buttonArea)
+			world.Logger().Info(fmt.Errorf("created input with id %v", input))
 		}
 	})
 })

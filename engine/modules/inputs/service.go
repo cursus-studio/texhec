@@ -14,6 +14,7 @@ type Service interface {
 	DefaultFocused() ecs.ComponentsArray[DefaultFocusedComponent]
 	Focused() ecs.ComponentsArray[FocusedComponent]
 	CaptureKeyboard() ecs.ComponentsArray[CaptureKeyboardComponent]
+	TextInput() ecs.ComponentsArray[TextInputComponent]
 
 	Hovered() ecs.ComponentsArray[HoveredComponent]
 	Dragged() ecs.ComponentsArray[DraggedComponent]

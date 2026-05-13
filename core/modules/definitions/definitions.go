@@ -67,6 +67,7 @@ type Assets struct {
 type Hud struct {
 	Btn         ecs.EntityID `path:"hud/btn.png-trim"`
 	Text        ecs.EntityID
+	Input       ecs.EntityID
 	Cursor      ecs.EntityID `path:"hud/cursor.png-trim"`
 	Settings    ecs.EntityID `path:"hud/settings.png-trim"`
 	Background1 ecs.EntityID `path:"hud/bg1.gif-trim"`

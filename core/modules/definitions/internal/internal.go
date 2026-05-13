@@ -94,12 +94,13 @@ func (s *service) Hud() definitions.Hud {
 	}
 	def, err := entityregistry.GetRegistry[definitions.Hud](s.World.EntityRegistry())
 	s.World.Logger().Log(err)
+
+	btnAsset, err := assets.GetAsset[render.TextureAsset](s.World.Assets(), def.Btn)
+	if err != nil {
+		s.World.Logger().Log(err)
+	}
+	btnAspectRatio := btnAsset.AspectRatio()
 	{
-		btnAsset, err := assets.GetAsset[render.TextureAsset](s.World.Assets(), def.Btn)
-		if err != nil {
-			s.World.Logger().Log(err)
-		}
-		btnAspectRatio := btnAsset.AspectRatio()
 		s.World.Groups().Inherit().Set(def.Btn, groups.InheritGroupsComponent{})
 		s.World.Groups().Component().Set(def.Btn, groups.EmptyGroups())
 
@@ -118,11 +119,6 @@ func (s *service) Hud() definitions.Hud {
 		s.World.Text().FontSize().Set(def.Btn, text.NewFontSize(24))
 	}
 	{
-		btnAsset, err := assets.GetAsset[render.TextureAsset](s.World.Assets(), def.Btn)
-		if err != nil {
-			s.World.Logger().Log(err)
-		}
-		btnAspectRatio := btnAsset.AspectRatio()
 		s.World.Groups().Inherit().Set(def.Text, groups.InheritGroupsComponent{})
 		s.World.Groups().Component().Set(def.Text, groups.EmptyGroups())
 
@@ -139,6 +135,27 @@ func (s *service) Hud() definitions.Hud {
 
 		s.World.Text().Align().Set(def.Text, text.NewAlign(.5, .5))
 		s.World.Text().FontSize().Set(def.Text, text.NewFontSize(24))
+	}
+	{
+		s.World.Groups().Inherit().Set(def.Input, groups.InheritGroupsComponent{})
+		s.World.Groups().Component().Set(def.Input, groups.EmptyGroups())
+
+		s.World.Transform().AspectRatio().Set(def.Input, transform.NewAspectRatio(float32(btnAspectRatio.Dx()), float32(btnAspectRatio.Dy()), 0, transform.PrimaryAxisX))
+		s.World.Transform().Parent().Set(def.Input, transform.NewParent(transform.RelativePos|transform.RelativeSizeX))
+		s.World.Transform().MaxSize().Set(def.Input, transform.NewMaxSize(0, 50, 0))
+		s.World.Transform().Size().Set(def.Input, transform.NewSize(1, 50, 1))
+
+		s.World.Render().Mesh().Set(def.Input, render.NewMesh(s.World.Definitions().Assets().SquareMesh))
+		s.World.Render().Texture().Set(def.Input, render.NewTexture(def.Btn))
+
+		s.World.Collider().Component().Set(def.Input, collider.NewCollider(s.World.Definitions().Assets().SquareCollider))
+		s.World.Inputs().KeepSelected().Set(def.Input, inputs.KeepSelectedComponent{})
+
+		s.World.Inputs().CaptureKeyboard().Set(def.Input, inputs.NewCaptureKeyboard(inputs.NewTextInputEvent()))
+		s.World.Inputs().LeftClick().Set(def.Input, inputs.NewLeftClick(inputs.FocusEvent{}))
+
+		s.World.Text().Align().Set(def.Input, text.NewAlign(.5, .5))
+		s.World.Text().FontSize().Set(def.Input, text.NewFontSize(24))
 	}
 	s.hud = &def
 	return def

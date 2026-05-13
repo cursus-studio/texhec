@@ -60,28 +60,15 @@ func getDic() ioc.Dic {
 				})
 			})
 			ioc.Wrap(b, func(_ ioc.Dic, c textpkg.Config) {
-				for i := int32('a'); i <= int32('z'); i++ {
-					c.UsedGlyphs().Add(rune(i))
+				for i := rune(32); i <= 126; i++ {
+					c.UsedGlyphs().Add(i)
 				}
-				for i := int32('A'); i <= int32('Z'); i++ {
-					c.UsedGlyphs().Add(rune(i))
+
+				// 2. Polish Characters (Latin Extended-A)
+				polishRunes := []rune{'ą', 'ć', 'ę', 'ł', 'ń', 'ó', 'ś', 'ź', 'ż', 'Ą', 'Ć', 'Ę', 'Ł', 'Ń', 'Ó', 'Ś', 'Ź', 'Ż'}
+				for _, r := range polishRunes {
+					c.UsedGlyphs().Add(r)
 				}
-				for i := int32('0'); i <= int32('9'); i++ {
-					c.UsedGlyphs().Add(rune(i))
-				}
-				for i := int32('!'); i <= int32('/'); i++ {
-					c.UsedGlyphs().Add(rune(i))
-				}
-				for i := int32(':'); i <= int32('@'); i++ {
-					c.UsedGlyphs().Add(rune(i))
-				}
-				for i := int32('['); i <= int32('`'); i++ {
-					c.UsedGlyphs().Add(rune(i))
-				}
-				for i := int32('{'); i <= int32('~'); i++ {
-					c.UsedGlyphs().Add(rune(i))
-				}
-				c.UsedGlyphs().Add(' ')
 			})
 			ioc.Wrap(b, func(c ioc.Dic, config loggerpkg.Config) {
 				world := ioc.GetServices[game.GameWorld](c)

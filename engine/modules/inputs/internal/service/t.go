@@ -22,6 +22,7 @@ type service struct {
 	defaultFocused  ecs.ComponentsArray[inputs.DefaultFocusedComponent]
 	focused         ecs.ComponentsArray[inputs.FocusedComponent]
 	captureKeyboard ecs.ComponentsArray[inputs.CaptureKeyboardComponent]
+	textInput       ecs.ComponentsArray[inputs.TextInputComponent]
 
 	hovered ecs.ComponentsArray[inputs.HoveredComponent]
 	dragged ecs.ComponentsArray[inputs.DraggedComponent]
@@ -52,6 +53,7 @@ func NewService(c ioc.Dic) inputs.Service {
 	s.defaultFocused = ecs.GetComponentsArray[inputs.DefaultFocusedComponent](s.World())
 	s.focused = ecs.GetComponentsArray[inputs.FocusedComponent](s.World())
 	s.captureKeyboard = ecs.GetComponentsArray[inputs.CaptureKeyboardComponent](s.World())
+	s.textInput = ecs.GetComponentsArray[inputs.TextInputComponent](s.World())
 
 	s.hovered = ecs.GetComponentsArray[inputs.HoveredComponent](s.World())
 	s.dragged = ecs.GetComponentsArray[inputs.DraggedComponent](s.World())
@@ -140,6 +142,9 @@ func (s *service) Focused() ecs.ComponentsArray[inputs.FocusedComponent] {
 }
 func (s *service) CaptureKeyboard() ecs.ComponentsArray[inputs.CaptureKeyboardComponent] {
 	return s.captureKeyboard
+}
+func (s *service) TextInput() ecs.ComponentsArray[inputs.TextInputComponent] {
+	return s.textInput
 }
 
 func (s *service) Hovered() ecs.ComponentsArray[inputs.HoveredComponent] { return s.hovered }

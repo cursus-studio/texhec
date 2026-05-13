@@ -26,10 +26,19 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 		typeregistrypkg.PkgT[inputs.MouseLeaveComponent],
 		typeregistrypkg.PkgT[inputs.HoverComponent],
 		typeregistrypkg.PkgT[inputs.DragComponent],
+		typeregistrypkg.PkgT[inputs.CaptureKeyboardComponent],
+		typeregistrypkg.PkgT[inputs.DefaultFocusedComponent],
+		typeregistrypkg.PkgT[inputs.FocusedComponent],
+		typeregistrypkg.PkgT[inputs.TextInputComponent],
 
 		// events
 		typeregistrypkg.PkgT[inputs.DragEvent],
 		typeregistrypkg.PkgT[inputs.SynchronizePositionEvent],
+		typeregistrypkg.PkgT[inputs.KeyboardEvent],
+		typeregistrypkg.PkgT[inputs.UnfocusEvent],
+		typeregistrypkg.PkgT[inputs.FocusEvent],
+		typeregistrypkg.PkgT[inputs.DefaultFocusEvent],
+		typeregistrypkg.PkgT[inputs.TextInputEvent],
 	}
 	for _, pkg := range pkgs {
 		pkg(b)
