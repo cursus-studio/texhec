@@ -36,7 +36,7 @@ func NewInputsSystem(c ioc.Dic) ecs.SystemRegister {
 			if len(res) == 0 {
 				res = []string{"|"}
 			}
-			r := []rune(res[input.CursorRow])
+			r := res[input.CursorRow]
 			res[input.CursorRow] = string(r[:input.CursorCol]) + "|" + string(r[input.CursorCol:])
 
 			s.Text().Content().Set(ei, text.NewText(strings.Join(res, "\n")))
@@ -119,7 +119,11 @@ func (s *inputsSystem) OnTextInputEvent(event inputs.TextInputEvent) {
 		input.CursorRow++
 		input.CursorCol = 0
 	default:
-		if char := sdl.GetKeyName(event.Keysym.Sym); len(char) == 1 {
+		char := sdl.GetKeyName(event.Keysym.Sym)
+		if char == "Space" {
+			char = " "
+		}
+		if len(char) == 1 {
 			line := input.Lines[input.CursorRow]
 			input.Lines[input.CursorRow] = line[:input.CursorCol] + char + line[input.CursorCol:]
 			input.CursorCol++
