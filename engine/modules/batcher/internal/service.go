@@ -25,8 +25,12 @@ func NewService(
 	return s
 }
 
-func (s *Service) NewTask() batcher.TaskFactory { return NewTaskFactory(s.workers) }
-func (s *Service) Queue(task batcher.Task)      { s.tasks = append(s.tasks, task) }
+func (s *Service) NewTask() batcher.TaskFactory {
+	f := NewTaskFactory(s.workers)
+	f.AddOrderedBatch(batcher.NewBatch(1, func(int) { s.WarmUp().WarmUp() }))
+	return f
+}
+func (s *Service) Queue(task batcher.Task) { s.tasks = append(s.tasks, task) }
 func (s *Service) Progress() float32 {
 	if len(s.tasks) != 0 {
 		return s.tasks[0].Progress()
@@ -44,10 +48,6 @@ func (s *Service) Listen(loop.FrameEvent) {
 		return
 	}
 	task := s.tasks[0]
-	if task.Progress() == 0 {
-		s.WarmUp().WarmUp()
-	}
-
 	for s.Loop().Stats().FrameBudgetLeft() > 0 {
 		task.Step()
 		if task.Progress() != 1 {
