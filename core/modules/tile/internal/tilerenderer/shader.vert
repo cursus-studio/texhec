@@ -1,6 +1,6 @@
 #version 450 core
 
 out GS { flat int vertexID; }
-fs_out;
+vs_out;
 
-void main() { fs_out.vertexID = gl_VertexID; }
+void main() { vs_out.vertexID = gl_VertexID; }
