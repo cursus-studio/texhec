@@ -37,3 +37,9 @@ func (t *task) Step() {
 func (t *task) Progress() float32 {
 	return float32(t.currentStep) / float32(t.allSteps)
 }
+
+func (t *task) Perform() {
+	for t.Progress() != 1 {
+		t.Step()
+	}
+}
