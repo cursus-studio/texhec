@@ -188,7 +188,7 @@ func (s *system) OnHover(e tile.HoverEvent) {
 	if s.selectedEvent == nil {
 		return
 	}
-	grid, ok := s.Tile().TileGrid().Get(e.Grid)
+	grid, ok := s.Tile().Grid().Get(e.Grid)
 	if !ok {
 		s.Logger().Log(fmt.Errorf("grid doesn't exist"))
 		return

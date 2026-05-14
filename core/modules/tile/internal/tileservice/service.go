@@ -57,7 +57,7 @@ func (s *service) Renderer() ecs.SystemRegister { return s.renderer }
 func (s *service) TileType() ecs.ComponentsArray[tile.TypeComponent] {
 	return s.tile
 }
-func (s *service) TileGrid() ecs.ComponentsArray[grid.SquareGridComponent[tile.ID]] {
+func (s *service) Grid() ecs.ComponentsArray[grid.SquareGridComponent[tile.ID]] {
 	return s.TileGridService.Component()
 }
 func (s *service) GetTileType(id tile.ID) (ecs.EntityID, bool) {

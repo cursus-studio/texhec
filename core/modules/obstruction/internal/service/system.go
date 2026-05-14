@@ -98,7 +98,7 @@ entityLoop:
 				continue
 			}
 			s.World().RemoveEntity(entity)
-			s.Logger().Log(tile.ErrPositionIsOccupied)
+			s.Logger().Log(obstruction.ErrPositionIsOccupied)
 			continue entityLoop
 		}
 		for _, coords := range aabb.Tiles {

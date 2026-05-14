@@ -65,7 +65,7 @@ func (s *service) Deploy(
 	obstructionComp, _ := s.Obstruction().Component().Get(blueprint)
 	aabb := obstruction.NewAABB(pos, size)
 	if collisions := s.Obstruction().Collisions(aabb, obstructionComp.Obstruction); len(collisions) != 0 {
-		return 0, tile.ErrPositionIsOccupied
+		return 0, obstruction.ErrPositionIsOccupied
 	}
 
 	// place
@@ -147,19 +147,19 @@ func (s *service) Execute(e deploy.ExecuteEvent) {
 	obstructionGridEntity := s.Obstruction().Grid().GetEntities()[0]
 	obstructed, ok := s.Obstruction().Grid().Get(obstructionGridEntity)
 	if !ok {
-		s.Logger().Log(tile.ErrPositionIsOccupied)
+		s.Logger().Log(obstruction.ErrPositionIsOccupied)
 		return
 	}
 	aabb := obstruction.NewAABB(pos, size)
 	for _, coords := range aabb.Tiles {
 		index, ok := obstructed.GetIndex(coords.Coords())
 		if !ok {
-			s.Logger().Log(tile.ErrPositionIsOccupied)
+			s.Logger().Log(obstruction.ErrPositionIsOccupied)
 			return
 		}
 		coordsObstruction := obstructed.GetTile(index)
 		if blueprintObstruction.Obstruction&coordsObstruction != 0 {
-			s.Logger().Log(tile.ErrPositionIsOccupied)
+			s.Logger().Log(obstruction.ErrPositionIsOccupied)
 			return
 		}
 	}

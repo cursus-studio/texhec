@@ -73,8 +73,8 @@ func (s *service) Chances() (*Config, []tile.ID) {
 
 func (s *service) Generate(c generation.Config) batcher.Task {
 	config, tileTypes := s.Chances()
-	gridStateComponent := tile.NewTileGrid(c.Size.Coords())
-	gridModifiedComponent := tile.NewTileGrid(c.Size.Coords())
+	gridStateComponent := tile.NewGrid(c.Size.Coords())
+	gridModifiedComponent := tile.NewGrid(c.Size.Coords())
 
 	obstructGridComponent := obstruction.NewGrid(c.Size.Coords())
 
@@ -200,7 +200,7 @@ func (s *service) Generate(c generation.Config) batcher.Task {
 
 		s.Collider().Component().Set(c.Entity, collider.NewCollider(s.Definitions().Assets().SquareCollider))
 		s.Inputs().Stack().Set(c.Entity, inputs.StackComponent{})
-		s.Tile().TileGrid().Set(c.Entity, gridStateComponent)
+		s.Tile().Grid().Set(c.Entity, gridStateComponent)
 		s.Obstruction().Grid().Set(c.Entity, obstructGridComponent)
 
 		playerEntity := s.World().NewEntity()

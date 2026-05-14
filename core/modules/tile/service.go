@@ -16,7 +16,6 @@ import (
 var (
 	// error logged when grid.GetIndex returns !ok
 	ErrInvalidPosition                  error = errors.New("tile:position not found on the grid")
-	ErrPositionIsOccupied               error = errors.New("tile:position is occupied")
 	ErrInvalidStep                      error = errors.New("tile:invalid step")
 	ErrPositionAndSpeedIsRequiredToStep error = errors.New("tile:to step you need to have speed and position")
 )
@@ -25,7 +24,7 @@ var (
 
 type ID uint8
 
-func NewTileGrid(w, h grid.Coord) grid.SquareGridComponent[ID] {
+func NewGrid(w, h grid.Coord) grid.SquareGridComponent[ID] {
 	return grid.NewSquareGrid[ID](w, h)
 }
 
@@ -145,7 +144,7 @@ type Service interface {
 	Renderer() ecs.SystemRegister
 
 	TileType() ecs.ComponentsArray[TypeComponent]
-	TileGrid() ecs.ComponentsArray[grid.SquareGridComponent[ID]]
+	Grid() ecs.ComponentsArray[grid.SquareGridComponent[ID]]
 	GetTileType(ID) (ecs.EntityID, bool)
 
 	Pos() ecs.ComponentsArray[PosComponent]

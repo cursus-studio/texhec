@@ -121,7 +121,7 @@ func NewSystem(c ioc.Dic) error {
 	s.Tile().TileType().AddDirtySet(s.tilesDirtySet)
 
 	s.gridDirtySet = ecs.NewDirtySet()
-	s.Tile().TileGrid().AddDirtySet(s.gridDirtySet)
+	s.Tile().Grid().AddDirtySet(s.gridDirtySet)
 
 	s.batches = datastructures.NewSparseArray[ecs.EntityID, Batch]()
 
@@ -189,7 +189,7 @@ func (s *system) ListenRender(render render.RenderEvent) {
 			}
 
 			dirtySet := ecs.NewDirtySet()
-			s.Tile().TileGrid().AddDirtySet(dirtySet)
+			s.Tile().Grid().AddDirtySet(dirtySet)
 
 			for _, t := range s.lodTextureArrays {
 				t.Release()
@@ -214,7 +214,7 @@ func (s *system) ListenRender(render render.RenderEvent) {
 	// reload per grid buffers
 	for _, entity := range s.gridDirtySet.Get() {
 		batch, batchOk := s.batches.Get(entity)
-		grid, compOk := s.Tile().TileGrid().Get(entity)
+		grid, compOk := s.Tile().Grid().Get(entity)
 
 		if !batchOk && !compOk {
 			continue
@@ -269,7 +269,7 @@ func (s *system) ListenRender(render render.RenderEvent) {
 		}
 		batch.buffer.Bind()
 
-		grid, _ := s.Tile().TileGrid().Get(entity)
+		grid, _ := s.Tile().Grid().Get(entity)
 
 		// width or height won't be below 0
 		// #nosec G115
