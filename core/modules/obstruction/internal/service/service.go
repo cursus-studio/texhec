@@ -39,7 +39,7 @@ func NewService(c ioc.Dic) obstruction.Service {
 
 	s.obstruction.SetEmpty(obstruction.NewObstruction(definitions.LowlandObstruction))
 
-	s.Obstruction().Deployed().OnUpsert(s.OnDeployUpsert)
+	s.Deployed().OnUpsert(s.OnDeployUpsert)
 
 	//
 	s.config = record.NewConfig()

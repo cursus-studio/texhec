@@ -73,19 +73,19 @@ void sort4(inout int a[4]) {
 #undef SWAP
 }
 
-void setBioms(int index, vec2 coord) {
+void setBiomes(int index, vec2 coord) {
   int neighbours[4] = {
       getTile(coord + vec2(-1, -1)), getTile(coord + vec2(0, -1)),
       getTile(coord + vec2(-1, 0)), getTile(coord + vec2(0, 0))};
-  int bioms[4] = neighbours;
-  sort4(bioms);
+  int biomes[4] = neighbours;
+  sort4(biomes);
 
   int seed = seed(index);
   for (int i = 0; i < 4; i++) {
-    int base = bioms[i] * 15;
+    int base = biomes[i] * 15;
     int mask = 0;
     for (int n = 0; n < 4; n++) {
-      mask |= int(neighbours[n] == bioms[i]) * (1 << n);
+      mask |= int(neighbours[n] == biomes[i]) * (1 << n);
     }
     gs_out.textures[i] = getTexture(seed, base + mask);
   }
@@ -102,7 +102,7 @@ void main() {
   int i = gs_in[0].vertexID;
 
   vec2 coord = getCoord(i);
-  setBioms(i, coord);
+  setBiomes(i, coord);
 
   for (int i = 0; i < 4; i++) {
     vec4 pos = vec4(0, 0, 0, 1);

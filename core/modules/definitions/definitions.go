@@ -90,11 +90,11 @@ type Transitions struct {
 
 // generation configs should be in registry or in destined path and dispatched instantly on initialization
 type Tiles struct {
-	Water    ecs.EntityID `path:"tiles/water.biom" tile:"" generate:"35" obstruction:"lowland"`
-	Sand     ecs.EntityID `path:"tiles/sand.biom" tile:"" generate:"15" obstruction:"water"`
-	Texhec   ecs.EntityID `path:"tiles/texhec.biom" tile:"" generate:"5" obstruction:"water"`
-	Grass    ecs.EntityID `path:"tiles/grass.biom" tile:"" generate:"40" obstruction:"water"`
-	Mountain ecs.EntityID `path:"tiles/mountain.biom" tile:"" generate:"5" obstruction:"water lowland"`
+	Water    ecs.EntityID `path:"tiles/water.biome" tile:"" generate:"35" obstruction:"lowland"`
+	Sand     ecs.EntityID `path:"tiles/sand.biome" tile:"" generate:"15" obstruction:"water"`
+	Texhec   ecs.EntityID `path:"tiles/texhec.biome" tile:"" generate:"5" obstruction:"water"`
+	Grass    ecs.EntityID `path:"tiles/grass.biome" tile:"" generate:"40" obstruction:"water"`
+	Mountain ecs.EntityID `path:"tiles/mountain.biome" tile:"" generate:"5" obstruction:"water lowland"`
 }
 
 type Objects struct {

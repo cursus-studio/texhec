@@ -18,10 +18,10 @@ import (
 )
 
 type Tiles struct {
-	Water    ecs.EntityID `path:"tiles/water.biom" tile:"" generate:"25"`
-	Sand     ecs.EntityID `path:"tiles/sand.biom" tile:"" generate:"25"`
-	Grass    ecs.EntityID `path:"tiles/grass.biom" tile:"" generate:"25"`
-	Mountain ecs.EntityID `path:"tiles/mountain.biom" tile:"" generate:"25"`
+	Water    ecs.EntityID `path:"tiles/water.biome" tile:"" generate:"25"`
+	Sand     ecs.EntityID `path:"tiles/sand.biome" tile:"" generate:"25"`
+	Grass    ecs.EntityID `path:"tiles/grass.biome" tile:"" generate:"25"`
+	Mountain ecs.EntityID `path:"tiles/mountain.biome" tile:"" generate:"25"`
 }
 
 func BenchmarkRendering1MTilesMap(b *testing.B) {

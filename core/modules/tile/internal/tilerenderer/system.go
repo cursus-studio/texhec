@@ -146,7 +146,7 @@ func (s *system) ListenRender(render render.RenderEvent) {
 
 			id := uint32(idsCount)
 			s.ids.Set(tileComp.ID, id)
-			texture, err := assets.GetAsset[tile.BiomAsset](s.Assets(), entity)
+			texture, err := assets.GetAsset[tile.BiomeAsset](s.Assets(), entity)
 			if err != nil {
 				s.Logger().Log(err)
 				continue

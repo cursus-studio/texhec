@@ -34,11 +34,11 @@ func TestNewAsset(t *testing.T) {
 		{newImage(0b0001)},
 	}
 
-	biom, err := setup.Tile().NewBiomAsset(srcImages)
+	biome, err := setup.Tile().NewBiomeAsset(srcImages)
 	if err != nil {
 		t.Error(err)
 	}
-	images := biom.Images()
+	images := biome.Images()
 
 	for i, imgs := range images {
 		img := imgs[0]

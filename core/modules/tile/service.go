@@ -102,7 +102,7 @@ func (e *RotComponent) Quat() mgl32.Quat {
 	return mgl32.QuatRotate(e.Radians, mgl32.Vec3{0, 0, 1})
 }
 
-type BiomAsset interface {
+type BiomeAsset interface {
 	Images() [15][]image.Image
 	Res() image.Rectangle
 	AspectRatio() image.Rectangle
@@ -130,7 +130,7 @@ type Service interface {
 	// - 1010
 	// - 1001
 	// - 0001
-	NewBiomAsset(srcImages [6][]image.Image) (BiomAsset, error)
+	NewBiomeAsset(srcImages [6][]image.Image) (BiomeAsset, error)
 
 	GetPos(coords grid.Coords) transform.PosComponent
 	// transform 1x1 tile size.

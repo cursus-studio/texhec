@@ -63,7 +63,7 @@ func (s *service) Size() ecs.ComponentsArray[tile.SizeComponent]   { return s.si
 func (s *service) Rot() ecs.ComponentsArray[tile.RotComponent]     { return s.rot }
 func (s *service) Layer() ecs.ComponentsArray[tile.LayerComponent] { return s.layer }
 
-// NewBiomAsset in other file
+// NewBiomeAsset in other file
 
 func (s *service) GetPos(coords grid.Coords) transform.PosComponent {
 	size := s.GetTileSize().Size
