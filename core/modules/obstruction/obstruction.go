@@ -28,8 +28,6 @@ func NewObstruction(obstruction Obstruction) Component {
 	return Component{obstruction}
 }
 
-//
-
 // aabb on grid
 type AABB struct {
 	Coords tile.PosComponent

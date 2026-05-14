@@ -132,6 +132,7 @@ type Service interface {
 	// - 0001
 	NewBiomAsset(srcImages [6][]image.Image) (BiomAsset, error)
 
+	GetPos(coords grid.Coords) transform.PosComponent
 	// transform 1x1 tile size.
 	// can be used for graphics or collisions.
 	GetTileSize() transform.SizeComponent
