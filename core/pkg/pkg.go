@@ -11,6 +11,7 @@ import (
 	fpsloggerpkg "core/modules/fpslogger/pkg"
 	generationpkg "core/modules/generation/pkg"
 	loadingpkg "core/modules/loading/pkg"
+	obstructionpkg "core/modules/obstruction/pkg"
 	pathfindpkg "core/modules/pathfind/pkg"
 	playerpkg "core/modules/player/pkg"
 	settingspkg "core/modules/settings/pkg"
@@ -30,6 +31,7 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 		fpsloggerpkg.Pkg,
 		generationpkg.Pkg,
 		loadingpkg.Pkg,
+		obstructionpkg.Pkg,
 		pathfindpkg.Pkg,
 		playerpkg.Pkg,
 		settingspkg.Pkg,

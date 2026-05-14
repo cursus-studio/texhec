@@ -43,11 +43,11 @@ func NewSystem(c ioc.Dic) ecs.SystemRegister {
 		s.Tile().Size().OnUpsert(s.OnTilePosSizeRotUpsert)
 		s.Tile().Rot().OnUpsert(s.OnTilePosSizeRotUpsert)
 
-		s.Tile().Deployed().OnUpsert(s.OnDeployUpsert)
+		s.Obstruction().Deployed().OnUpsert(s.OnDeployUpsert)
 
 		//
 
-		events.Listen(s.EventsBuilder(), s.OnTick)
+		events.Listen(s.EventsBuilder(), s.StepOnTick)
 		events.Listen(s.EventsBuilder(), s.OnUnselect)
 		events.Listen(s.EventsBuilder(), s.OnSelect)
 		events.Listen(s.EventsBuilder(), s.OnHover)
@@ -100,7 +100,7 @@ var (
 
 func abs[Number constraints.Float | constraints.Integer](n Number) Number { return max(-n, n) }
 
-func (s *system) OnTick(e loop.TickEvent) {
+func (s *system) StepOnTick(e loop.TickEvent) {
 	entities := s.Tile().Step().GetEntities()
 	{
 		cp := make([]ecs.EntityID, len(entities))
@@ -130,9 +130,9 @@ func (s *system) OnTick(e loop.TickEvent) {
 			continue
 		}
 		size, _ := s.Tile().Size().Get(entity)
-		obstruction, _ := s.Tile().Obstruction().Get(entity)
+		obstruction, _ := s.Obstruction().Component().Get(entity)
 		aligned, isFirstStep := pos.Aligned()
-		if isFirstStep && !s.Tile().CanStep(aligned, size, obstruction, step) {
+		if isFirstStep && !s.Obstruction().CanStep(aligned, size, obstruction, step) {
 			s.Tile().Step().Remove(entity)
 			s.Logger().Log(tile.ErrInvalidStep)
 			continue

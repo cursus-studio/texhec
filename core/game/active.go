@@ -6,6 +6,7 @@ import (
 	"core/modules/fpslogger"
 	"core/modules/generation"
 	"core/modules/loading"
+	"core/modules/obstruction"
 	"core/modules/pathfind"
 	"core/modules/player"
 	"core/modules/settings"
@@ -26,6 +27,7 @@ type GameWorld struct {
 	FpsLogger   ioc.Lazy[fpslogger.Service]   `inject:""`
 	Generation  ioc.Lazy[generation.Service]  `inject:""`
 	Loading     ioc.Lazy[loading.Service]     `inject:""`
+	Obstruction ioc.Lazy[obstruction.Service] `inject:""`
 	Pathfind    ioc.Lazy[pathfind.Service]    `inject:""`
 	Player      ioc.Lazy[player.Service]      `inject:""`
 	Settings    ioc.Lazy[settings.Service]    `inject:""`

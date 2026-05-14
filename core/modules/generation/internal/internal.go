@@ -3,6 +3,7 @@ package internal
 import (
 	"core/game"
 	"core/modules/generation"
+	"core/modules/obstruction"
 	"core/modules/tile"
 	"engine/modules/batcher"
 	"engine/modules/collider"
@@ -75,7 +76,7 @@ func (s *service) Generate(c generation.Config) batcher.Task {
 	gridStateComponent := tile.NewTileGrid(c.Size.Coords())
 	gridModifiedComponent := tile.NewTileGrid(c.Size.Coords())
 
-	obstructGridComponent := tile.NewObstructGrid(c.Size.Coords())
+	obstructGridComponent := obstruction.NewObstructGrid(c.Size.Coords())
 
 	jobs := int(gridStateComponent.GetLastIndex()) / config.tilesPerJob
 
@@ -183,7 +184,7 @@ func (s *service) Generate(c generation.Config) batcher.Task {
 			if !ok {
 				continue
 			}
-			obstruction, _ := s.Tile().Obstruction().Get(entity)
+			obstruction, _ := s.Obstruction().Component().Get(entity)
 			obstructGridComponent.SetTile(gridI, obstruction.Obstruction)
 		}
 	})
@@ -200,7 +201,7 @@ func (s *service) Generate(c generation.Config) batcher.Task {
 		s.Collider().Component().Set(c.Entity, collider.NewCollider(s.Definitions().Assets().SquareCollider))
 		s.Inputs().Stack().Set(c.Entity, inputs.StackComponent{})
 		s.Tile().TileGrid().Set(c.Entity, gridStateComponent)
-		s.Tile().ObstructionGrid().Set(c.Entity, obstructGridComponent)
+		s.Obstruction().ObstructionGrid().Set(c.Entity, obstructGridComponent)
 
 		playerEntity := s.World().NewEntity()
 		s.Hierarchy().SetParent(playerEntity, c.Entity)

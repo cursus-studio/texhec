@@ -115,63 +115,6 @@ func (e *RotComponent) Quat() mgl32.Quat {
 //
 //
 
-// obstruction
-
-// mask of ways in which tile is obstructed
-type Obstruction uint8
-
-func NewObstructGrid(w, h grid.Coord) grid.SquareGridComponent[Obstruction] {
-	return grid.NewSquareGrid[Obstruction](w, h)
-}
-
-// Defines how entity or tile obstruct
-// On obstruction collision new entity is removed and warning is logged
-type ObstructionComponent struct {
-	Obstruction Obstruction
-}
-
-func NewObstruction(obstruction Obstruction) ObstructionComponent {
-	return ObstructionComponent{obstruction}
-}
-
-//
-
-// aabb on grid
-type AABB struct {
-	Coords PosComponent
-	Size   SizeComponent
-	Tiles  []grid.Coords
-}
-
-func NewAABB(coords PosComponent, size SizeComponent) AABB {
-	posX := grid.Coord(coords.X)
-	posY := grid.Coord(coords.Y)
-	if Coord(posX) != coords.X {
-		size.X++
-	}
-	if Coord(posY) != coords.Y {
-		size.Y++
-	}
-	tiles := make([]grid.Coords, 0, size.X*size.Y)
-	for x := posX; x < posX+size.X; x++ {
-		for y := posY; y < posY+size.Y; y++ {
-			tiles = append(tiles, grid.NewCoords(x, y))
-		}
-	}
-	return AABB{coords, size, tiles}
-}
-
-// adding and removing deployed component modifies obstruction component
-type DeployedComponent struct{}
-
-func NewDeployed() DeployedComponent {
-	return DeployedComponent{}
-}
-
-//
-//
-//
-
 type SpeedComponent struct {
 	InvSpeed int8 // ticks to move one tile
 }
@@ -184,12 +127,15 @@ func NewSpeed[Number constraints.Integer](invSpeed Number) SpeedComponent {
 
 // Step coords should be +/- 1 x or y from current target position.
 // Otherwise step will be removed and warning will be logged.
-type StepComponent struct {
-	grid.Coords
-}
+type StepComponent struct{ grid.Coords }
 
-func NewStep(x, y grid.Coord) StepComponent {
-	return StepComponent{grid.NewCoords(x, y)}
+func NewStep(x, y grid.Coord) StepComponent { return StepComponent{grid.NewCoords(x, y)} }
+
+type BiomAsset interface {
+	Images() [15][]image.Image
+	Res() image.Rectangle
+	AspectRatio() image.Rectangle
+	Release()
 }
 
 //
@@ -200,16 +146,12 @@ type Service interface {
 
 	TileType() ecs.ComponentsArray[TypeComponent]
 	TileGrid() ecs.ComponentsArray[grid.SquareGridComponent[ID]]
-	ObstructionGrid() ecs.ComponentsArray[grid.SquareGridComponent[Obstruction]]
 	GetTileType(ID) (ecs.EntityID, bool)
 
 	Pos() ecs.ComponentsArray[PosComponent]
 	Size() ecs.ComponentsArray[SizeComponent]
 	Rot() ecs.ComponentsArray[RotComponent]
 	Layer() ecs.ComponentsArray[LayerComponent]
-
-	Obstruction() ecs.ComponentsArray[ObstructionComponent]
-	Deployed() ecs.ComponentsArray[DeployedComponent]
 
 	Speed() ecs.ComponentsArray[SpeedComponent]
 	Step() ecs.ComponentsArray[StepComponent]
@@ -224,15 +166,8 @@ type Service interface {
 
 	//
 
-	// 1x1 size to transform
+	// 1x1 tile size to transform
 	GetTileSize() transform.SizeComponent
-	Collisions(AABB, Obstruction) []grid.Coords
-	CanStep(
-		grid.Coords,
-		SizeComponent,
-		ObstructionComponent,
-		StepComponent,
-	) bool
 }
 
 //
@@ -248,9 +183,7 @@ type SelectEvent struct {
 	HoverEvent any
 }
 
-func NewSelectEvent(hoverEvent any) SelectEvent {
-	return SelectEvent{hoverEvent}
-}
+func NewSelectEvent(hoverEvent any) SelectEvent { return SelectEvent{hoverEvent} }
 
 //
 
@@ -259,23 +192,13 @@ type HoverEvent struct {
 	Tile grid.Index
 }
 
-func NewHoverEvent(
-	grid ecs.EntityID,
-	tile grid.Index,
-) any {
-	return HoverEvent{grid, tile}
-}
+func NewHoverEvent(grid ecs.EntityID, tile grid.Index) any { return HoverEvent{grid, tile} }
 
 //
 
-type ClickEntityEvent struct {
-	Entity ecs.EntityID
-}
+type ClickEntityEvent struct{ Entity ecs.EntityID }
 
-func NewClickEntityEvent() ClickEntityEvent {
-	return ClickEntityEvent{}
-}
-
+func NewClickEntityEvent() ClickEntityEvent { return ClickEntityEvent{} }
 func (e ClickEntityEvent) ApplyEntity(entity ecs.EntityID) any {
 	e.Entity = entity
 	return e

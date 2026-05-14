@@ -1,6 +1,7 @@
 package test
 
 import (
+	"core/modules/obstruction"
 	"core/modules/tile"
 	"engine/modules/grid"
 	"testing"
@@ -26,7 +27,7 @@ func TestAABB(t *testing.T) {
 
 	expectEqual := func(pos tile.PosComponent, size tile.SizeComponent, expected []grid.Coords) {
 		t.Helper()
-		had := tile.NewAABB(pos, size).Tiles
+		had := obstruction.NewAABB(pos, size).Tiles
 		if !unorderedEqual(expected, had) {
 			t.Errorf("expected %v but got %v", expected, had)
 		}

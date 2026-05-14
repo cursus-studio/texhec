@@ -6,7 +6,6 @@ import (
 	"core/modules/definitions"
 	"core/modules/tile"
 	clicksystem "core/modules/tile/internal/clickSystem"
-	obstructionsystem "core/modules/tile/internal/obstructionSystem"
 	"core/modules/tile/internal/tilerenderer"
 	"core/modules/tile/internal/tileservice"
 	"core/modules/tile/internal/tilesystem"
@@ -34,7 +33,6 @@ import (
 var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 	pkgs := []ioc.Pkg{
 		gridpkg.PkgT(gridpkg.NewConfig[tile.ID](tile.NewHoverEvent)),
-		gridpkg.PkgT(gridpkg.NewConfig[tile.Obstruction](nil)),
 		relationpkg.SpatialRelationPkg(
 			func(w ecs.World) ecs.DirtySet {
 				dirtySet := ecs.NewDirtySet()
@@ -57,7 +55,6 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 		typeregistrypkg.PkgT[tile.SizeComponent],
 		typeregistrypkg.PkgT[tile.RotComponent],
 		typeregistrypkg.PkgT[tile.LayerComponent],
-		typeregistrypkg.PkgT[tile.ObstructionComponent],
 		typeregistrypkg.PkgT[tile.SpeedComponent],
 	}
 	for _, pkg := range pkgs {
@@ -83,7 +80,6 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 				errs := ecs.RegisterSystems(
 					tilesystem.NewSystem(c),
 					clicksystem.NewSystem(c),
-					obstructionsystem.NewSystem(c),
 				)
 				if len(errs) != 0 {
 					return errs[0]
@@ -173,19 +169,6 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 		b.Register("tile", func(entity ecs.EntityID, structTagValue string) {
 			counter++
 			world.Tile().TileType().Set(entity, tile.NewTileType(counter))
-		})
-		b.Register("obstruction", func(entity ecs.EntityID, structTagValue string) {
-			var obstruction tile.Obstruction
-			if strings.Contains(structTagValue, "water") {
-				obstruction |= definitions.WaterObstruction
-			}
-			if strings.Contains(structTagValue, "lowland") {
-				obstruction |= definitions.LowlandObstruction
-			}
-			if strings.Contains(structTagValue, "air") {
-				obstruction |= definitions.AirspaceObstruction
-			}
-			world.Tile().Obstruction().Set(entity, tile.NewObstruction(obstruction))
 		})
 		b.Register("size", func(entity ecs.EntityID, structTagValue string) {
 			errInvalidFormat := fmt.Errorf("size should be in format \"1x1\" where first number is width and second is height")

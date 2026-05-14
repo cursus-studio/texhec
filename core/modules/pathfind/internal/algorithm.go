@@ -2,6 +2,7 @@ package internal
 
 import (
 	"container/heap"
+	"core/modules/obstruction"
 	"core/modules/tile"
 	"engine/modules/grid"
 	"engine/services/datastructures"
@@ -42,10 +43,10 @@ func heuristic(a, b grid.Coords) int {
 func (s *service) findPath(
 	from, to grid.Coords,
 	size tile.SizeComponent,
-	obstruction tile.ObstructionComponent,
+	obstruction obstruction.ObstructionComponent,
 ) (path []tile.PosComponent, ok bool) {
-	obstructionGridEntity := s.Tile().ObstructionGrid().GetEntities()[0]
-	obstructed, ok := s.Tile().ObstructionGrid().Get(obstructionGridEntity)
+	obstructionGridEntity := s.Obstruction().ObstructionGrid().GetEntities()[0]
+	obstructed, ok := s.Obstruction().ObstructionGrid().Get(obstructionGridEntity)
 	if !ok {
 		return nil, false
 	}
@@ -99,7 +100,7 @@ func (s *service) findPath(
 			}
 
 			step := tile.NewStep(neighborCoords.X, neighborCoords.Y)
-			if !s.Tile().CanStep(current.coords, size, obstruction, step) {
+			if !s.Obstruction().CanStep(current.coords, size, obstruction, step) {
 				continue
 			}
 

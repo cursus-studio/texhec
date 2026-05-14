@@ -56,7 +56,7 @@ func (s *service) PreviewPath(e pathfind.PreviewPathEvent) {
 	}
 	to := tile.NewPos(e.Coords.Coords())
 	size, _ := s.Tile().Size().Get(e.Entity)
-	obstruction, _ := s.Tile().Obstruction().Get(e.Entity)
+	obstruction, _ := s.Obstruction().Component().Get(e.Entity)
 	fromCoords, _ := from.Aligned()
 	toCoords, _ := to.Aligned()
 	_, ok = s.findPath(fromCoords, toCoords, size, obstruction)
@@ -104,7 +104,7 @@ func (s *service) FindPath(e pathfind.FindPathEvent) {
 	}
 	to := tile.NewPos(e.Coords.Coords())
 	size, _ := s.Tile().Size().Get(e.Entity)
-	obstruction, _ := s.Tile().Obstruction().Get(e.Entity)
+	obstruction, _ := s.Obstruction().Component().Get(e.Entity)
 	fromCoords, _ := from.Aligned()
 	toCoords, _ := to.Aligned()
 	if _, ok := s.findPath(fromCoords, toCoords, size, obstruction); !ok {
@@ -136,7 +136,7 @@ func (s *service) OnTick(e loop.TickEvent) {
 			continue
 		}
 		size, _ := s.Tile().Size().Get(entity)
-		obstruction, _ := s.Tile().Obstruction().Get(entity)
+		obstruction, _ := s.Obstruction().Component().Get(entity)
 		fromCoords, _ := from.Aligned()
 		toCoords, _ := to.Aligned()
 		path, ok := s.findPath(fromCoords, toCoords, size, obstruction)
@@ -145,7 +145,7 @@ func (s *service) OnTick(e loop.TickEvent) {
 			continue
 		}
 		step := tile.NewStep(grid.Coord(path[0].X), grid.Coord(path[0].Y))
-		for !s.Tile().CanStep(fromCoords, size, obstruction, step) {
+		for !s.Obstruction().CanStep(fromCoords, size, obstruction, step) {
 			path, _ = s.findPath(fromCoords, toCoords, size, obstruction)
 			step = tile.NewStep(grid.Coord(path[0].X), grid.Coord(path[0].Y))
 		}

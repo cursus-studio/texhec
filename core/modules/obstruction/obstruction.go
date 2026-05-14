@@ -1,0 +1,82 @@
+package obstruction
+
+import (
+	"core/modules/tile"
+	"engine/modules/grid"
+	"engine/services/ecs"
+	"errors"
+)
+
+var (
+	ErrPositionIsOccupied error = errors.New("obstruction:position is occupied")
+)
+
+// mask of ways in which tile is obstructed
+type Obstruction uint8
+
+func NewObstructGrid(w, h grid.Coord) grid.SquareGridComponent[Obstruction] {
+	return grid.NewSquareGrid[Obstruction](w, h)
+}
+
+// Defines how entity or tile obstruct
+// On obstruction collision new entity is removed and warning is logged
+type ObstructionComponent struct {
+	Obstruction Obstruction
+}
+
+func NewObstruction(obstruction Obstruction) ObstructionComponent {
+	return ObstructionComponent{obstruction}
+}
+
+//
+
+// aabb on grid
+type AABB struct {
+	Coords tile.PosComponent
+	Size   tile.SizeComponent
+	Tiles  []grid.Coords
+}
+
+func NewAABB(coords tile.PosComponent, size tile.SizeComponent) AABB {
+	posX := grid.Coord(coords.X)
+	posY := grid.Coord(coords.Y)
+	if tile.Coord(posX) != coords.X {
+		size.X++
+	}
+	if tile.Coord(posY) != coords.Y {
+		size.Y++
+	}
+	tiles := make([]grid.Coords, 0, size.X*size.Y)
+	for x := posX; x < posX+size.X; x++ {
+		for y := posY; y < posY+size.Y; y++ {
+			tiles = append(tiles, grid.NewCoords(x, y))
+		}
+	}
+	return AABB{coords, size, tiles}
+}
+
+// adding and removing deployed component modifies obstruction component
+type DeployedComponent struct{}
+
+func NewDeployed() DeployedComponent {
+	return DeployedComponent{}
+}
+
+//
+
+type Service interface {
+	ecs.SystemRegister
+
+	ObstructionGrid() ecs.ComponentsArray[grid.SquareGridComponent[Obstruction]]
+
+	Component() ecs.ComponentsArray[ObstructionComponent]
+	Deployed() ecs.ComponentsArray[DeployedComponent]
+
+	Collisions(AABB, Obstruction) []grid.Coords
+	CanStep(
+		grid.Coords,
+		tile.SizeComponent,
+		ObstructionComponent,
+		tile.StepComponent,
+	) bool
+}

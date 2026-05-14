@@ -4,6 +4,7 @@ import (
 	"core/game"
 	"core/modules/definitions"
 	"core/modules/deploy"
+	"core/modules/obstruction"
 	"core/modules/player"
 	"core/modules/tile"
 	"core/modules/ui"
@@ -61,9 +62,9 @@ func (s *service) Deploy(
 	// - is position occuped
 	pos := tile.NewPos(coords.Coords())
 	size, _ := s.Tile().Size().Get(blueprint)
-	obstruction, _ := s.Tile().Obstruction().Get(blueprint)
-	aabb := tile.NewAABB(pos, size)
-	if collisions := s.Tile().Collisions(aabb, obstruction.Obstruction); len(collisions) != 0 {
+	obstructionComp, _ := s.Obstruction().Component().Get(blueprint)
+	aabb := obstruction.NewAABB(pos, size)
+	if collisions := s.Obstruction().Collisions(aabb, obstructionComp.Obstruction); len(collisions) != 0 {
 		return 0, tile.ErrPositionIsOccupied
 	}
 
@@ -72,7 +73,7 @@ func (s *service) Deploy(
 	s.Hierarchy().SetParent(deployed, s.Scene().Scene())
 
 	s.Player().Owner().Set(deployed, player.NewOwner(owner))
-	s.Tile().Deployed().Set(deployed, tile.NewDeployed())
+	s.Obstruction().Deployed().Set(deployed, obstruction.NewDeployed())
 	s.Inputs().LeftClick().Set(deployed, inputs.NewLeftClick(tile.NewClickEntityEvent()))
 	s.Tile().Pos().Set(deployed, pos)
 	return deployed, nil
@@ -83,12 +84,12 @@ func (s *service) Select(e deploy.SelectEvent) {
 }
 func (s *service) Preview(e deploy.PreviewEvent) {
 	pos := tile.NewPos(e.Coords.Coords())
-	blueprintObstruction, _ := s.Tile().Obstruction().Get(e.Blueprint)
+	blueprintObstruction, _ := s.Obstruction().Component().Get(e.Blueprint)
 	size, _ := s.Tile().Size().Get(e.Blueprint)
-	aabb := tile.NewAABB(pos, size)
+	aabb := obstruction.NewAABB(pos, size)
 	previewComp := PreviewedComponent{
 		Event:      e,
-		Collisions: s.Tile().Collisions(aabb, blueprintObstruction.Obstruction),
+		Collisions: s.Obstruction().Collisions(aabb, blueprintObstruction.Obstruction),
 	}
 
 	if len(s.previewed.GetEntities()) == 1 {
@@ -141,15 +142,15 @@ func (s *service) Execute(e deploy.ExecuteEvent) {
 	// check can place
 	pos := tile.NewPos(e.Coords.Coords())
 	size, _ := s.Tile().Size().Get(e.Blueprint)
-	blueprintObstruction, _ := s.Tile().Obstruction().Get(e.Blueprint)
+	blueprintObstruction, _ := s.Obstruction().Component().Get(e.Blueprint)
 
-	obstructionGridEntity := s.Tile().ObstructionGrid().GetEntities()[0]
-	obstructed, ok := s.Tile().ObstructionGrid().Get(obstructionGridEntity)
+	obstructionGridEntity := s.Obstruction().ObstructionGrid().GetEntities()[0]
+	obstructed, ok := s.Obstruction().ObstructionGrid().Get(obstructionGridEntity)
 	if !ok {
 		s.Logger().Log(tile.ErrPositionIsOccupied)
 		return
 	}
-	aabb := tile.NewAABB(pos, size)
+	aabb := obstruction.NewAABB(pos, size)
 	for _, coords := range aabb.Tiles {
 		index, ok := obstructed.GetIndex(coords.Coords())
 		if !ok {
@@ -169,7 +170,7 @@ func (s *service) Execute(e deploy.ExecuteEvent) {
 	if owner, ok := s.Player().Owner().Get(e.By); ok {
 		s.Player().Owner().Set(deployed, owner)
 	}
-	s.Tile().Deployed().Set(deployed, tile.NewDeployed())
+	s.Obstruction().Deployed().Set(deployed, obstruction.NewDeployed())
 	s.Inputs().LeftClick().Set(deployed, inputs.NewLeftClick(tile.NewClickEntityEvent()))
 	s.Tile().Pos().Set(deployed, tile.NewPos(e.Coords.Coords()))
 }
