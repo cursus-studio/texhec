@@ -13,7 +13,9 @@ import (
 	"sort"
 
 	"github.com/go-gl/mathgl/mgl32"
+	"github.com/ogiusek/events"
 	"github.com/ogiusek/ioc/v2"
+	"github.com/veandco/go-sdl2/sdl"
 )
 
 // extra data
@@ -83,6 +85,44 @@ func NewService(c ioc.Dic, register ecs.SystemRegister) Service {
 	s.dynamicPerspective = ecs.GetComponentsArray[camera.DynamicPerspectiveComponent](s.World())
 
 	s.cameraArray.OnUpsert(s.OnCameraUpsert)
+
+	{
+		s.cameraArray.AddDependency(s.ortho)
+		s.cameraArray.AddDependency(s.perspective)
+
+		orthoDirtySet := ecs.NewDirtySet()
+		s.ortho.AddDirtySet(orthoDirtySet)
+
+		s.cameraArray.BeforeGet(func() {
+			entities := orthoDirtySet.Get()
+			for _, entity := range entities {
+				if !s.World().EntityExists(entity) {
+					continue
+				}
+				s.cameraArray.Set(entity, camera.NewCamera[camera.OrthoComponent]())
+			}
+		})
+
+		perspectiveDirtySet := ecs.NewDirtySet()
+		s.perspective.AddDirtySet(perspectiveDirtySet)
+
+		s.cameraArray.BeforeGet(func() {
+			entities := perspectiveDirtySet.Get()
+			for _, entity := range entities {
+				if !s.World().EntityExists(entity) {
+					continue
+				}
+				s.cameraArray.Set(entity, camera.NewCamera[camera.PerspectiveComponent]())
+			}
+		})
+
+		events.Listen(s.EventsBuilder(), func(e sdl.WindowEvent) {
+			if e.Event == sdl.WINDOWEVENT_RESIZED {
+				events.Emit(s.Events(), camera.NewUpdateProjectionsEvent())
+			}
+		})
+	}
+
 	return s
 }
 
