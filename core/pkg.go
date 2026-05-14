@@ -70,6 +70,10 @@ func getDic() ioc.Dic {
 					c.UsedGlyphs().Add(r)
 				}
 			})
+			ioc.Wrap(b, func(c ioc.Dic, s text.Service) {
+				world := ioc.GetServices[game.GameWorld](c)
+				s.FontFamily().SetEmpty(text.NewFontFamily(world.Definitions().Assets().FontAsset))
+			})
 			ioc.Wrap(b, func(c ioc.Dic, config loggerpkg.Config) {
 				world := ioc.GetServices[game.GameWorld](c)
 				config.AddFormatHandler(func(meta, msg error) error {
@@ -123,10 +127,6 @@ func getDic() ioc.Dic {
 				// netsyncpkg.AddEventAuthorization(config, func(c inputs.DragEvent) error {
 				// 	return errors.New("no")
 				// })
-			})
-			ioc.Wrap(b, func(c ioc.Dic, s text.Service) {
-				world := ioc.GetServices[game.GameWorld](c)
-				s.FontFamily().SetEmpty(text.NewFontFamily(world.Definitions().Assets().FontAsset))
 			})
 		},
 	}
