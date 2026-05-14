@@ -53,7 +53,6 @@ func NewService(c ioc.Dic) obstruction.Service {
 func (s *service) Grid() ecs.ComponentsArray[grid.SquareGridComponent[obstruction.Obstruction]] {
 	return s.ObstructionGridService.Component()
 }
-
 func (s *service) Component() ecs.ComponentsArray[obstruction.Component]        { return s.obstruction }
 func (s *service) Deployed() ecs.ComponentsArray[obstruction.DeployedComponent] { return s.deployed }
 
