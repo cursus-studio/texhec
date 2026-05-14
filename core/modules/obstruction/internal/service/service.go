@@ -7,8 +7,6 @@ import (
 	"core/modules/tile"
 	"engine/modules/grid"
 	"engine/modules/record"
-	"engine/modules/relation"
-	"engine/modules/transform"
 	"engine/services/ecs"
 
 	"github.com/ogiusek/ioc/v2"
@@ -17,7 +15,6 @@ import (
 type service struct {
 	game.GameWorld         `inject:""`
 	ObstructionGridService grid.Service[obstruction.Obstruction] `inject:""`
-	TileTypeRelation       relation.Service[tile.ID]             `inject:""`
 
 	obstruction ecs.ComponentsArray[obstruction.Component]
 	deployed    ecs.ComponentsArray[obstruction.DeployedComponent]
@@ -41,32 +38,24 @@ func NewService(c ioc.Dic) obstruction.Service {
 
 	s.obstruction.SetEmpty(obstruction.NewObstruction(definitions.LowlandObstruction))
 
+	//
+	s.config = record.NewConfig()
+	s.dirtyEntities = ecs.NewDirtySet()
+
+	s.posGetter = record.AddToConfig[tile.PosComponent](s.config)
+	s.sizeGetter = record.AddToConfig[tile.SizeComponent](s.config)
+	s.obstructionGetter = record.AddToConfig[obstruction.Component](s.config)
+	s.deployedGetter = record.AddToConfig[obstruction.DeployedComponent](s.config)
+
 	return s
 }
 
 func (s *service) Grid() ecs.ComponentsArray[grid.SquareGridComponent[obstruction.Obstruction]] {
 	return s.ObstructionGridService.Component()
 }
-func (s *service) GetTileType(id tile.ID) (ecs.EntityID, bool) {
-	return s.TileTypeRelation.Get(id)
-}
 
-func (s *service) Component() ecs.ComponentsArray[obstruction.Component] {
-	return s.obstruction
-}
+func (s *service) Component() ecs.ComponentsArray[obstruction.Component]        { return s.obstruction }
 func (s *service) Deployed() ecs.ComponentsArray[obstruction.DeployedComponent] { return s.deployed }
-
-func (s *service) GetPos(coords grid.Coords) transform.PosComponent {
-	size := s.GetTileSize().Size
-	return transform.NewPos(
-		size.X()*(float32(coords.X)+.5),
-		size.Y()*(float32(coords.Y)+.5),
-		size.Z(),
-	)
-}
-func (s *service) GetTileSize() transform.SizeComponent {
-	return transform.NewSize(100, 100, 1)
-}
 
 func (s *service) Collisions(aabb obstruction.AABB, obstruction obstruction.Obstruction) []grid.Coords {
 	var collisions []grid.Coords

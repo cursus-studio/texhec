@@ -3,29 +3,20 @@ package service
 import (
 	"core/modules/obstruction"
 	"core/modules/tile"
-	"engine/modules/record"
 	"engine/services/ecs"
 	"errors"
 )
 
 func (s *service) Register() error {
-	s.config = record.NewConfig()
-	s.dirtyEntities = ecs.NewDirtySet()
-
-	s.posGetter = record.AddToConfig[tile.PosComponent](s.config)
-	s.sizeGetter = record.AddToConfig[tile.SizeComponent](s.config)
-	s.obstructionGetter = record.AddToConfig[obstruction.Component](s.config)
-	s.deployedGetter = record.AddToConfig[obstruction.DeployedComponent](s.config)
-
 	s.Tile().Pos().AddDirtySet(s.dirtyEntities)
 	s.Tile().Size().AddDirtySet(s.dirtyEntities)
 	s.Obstruction().Component().AddDirtySet(s.dirtyEntities)
 	s.Obstruction().Deployed().AddDirtySet(s.dirtyEntities)
-	s.Obstruction().Grid().BeforeGet(s.BeforeGet)
+	s.Obstruction().Grid().BeforeGet(s.UpdateObstructionGridBeforeGet)
 	return nil
 }
 
-func (s *service) BeforeGet() {
+func (s *service) UpdateObstructionGridBeforeGet() {
 	if len(s.dirtyEntities.Get()) == 0 {
 		return
 	}
