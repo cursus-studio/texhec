@@ -8,7 +8,7 @@ import (
 
 //
 
-type biomAsset struct {
+type biomeAsset struct {
 	images      [15][]image.Image
 	res         image.Rectangle
 	aspectRatio image.Rectangle
@@ -28,7 +28,7 @@ func greatestCommonDivisor(a, b int) int {
 // - 1010
 // - 1001
 // - 0001
-func (s *service) NewBiomAsset(srcImages [6][]image.Image) (tile.BiomAsset, error) {
+func (s *service) NewBiomeAsset(srcImages [6][]image.Image) (tile.BiomeAsset, error) {
 	var res image.Rectangle
 	for i, imgages := range srcImages {
 		for _, img := range imgages {
@@ -60,7 +60,7 @@ func (s *service) NewBiomAsset(srcImages [6][]image.Image) (tile.BiomAsset, erro
 	// - 0001 -> 0010 -> 1000 -> 0100
 
 	// this is new version of tiles
-	// it uses one more tile to define biom
+	// it uses one more tile to define biome
 	// but it maintains horizontal and vertical axis
 	dstImages := [15][]image.Image{}
 	// this code either can be organized by srcImages or dstImages
@@ -92,7 +92,7 @@ func (s *service) NewBiomAsset(srcImages [6][]image.Image) (tile.BiomAsset, erro
 		dstImages[7] = append(dstImages[7], s.Graphics().NewImage(img).FlipV().Image())
 	}
 
-	asset := &biomAsset{
+	asset := &biomeAsset{
 		images:      dstImages,
 		res:         res,
 		aspectRatio: aspectRatio,
@@ -100,7 +100,7 @@ func (s *service) NewBiomAsset(srcImages [6][]image.Image) (tile.BiomAsset, erro
 	return asset, nil
 }
 
-func (a *biomAsset) Images() [15][]image.Image    { return a.images }
-func (a *biomAsset) Res() image.Rectangle         { return a.res }
-func (a *biomAsset) AspectRatio() image.Rectangle { return a.aspectRatio }
-func (a *biomAsset) Release()                     {}
+func (a *biomeAsset) Images() [15][]image.Image    { return a.images }
+func (a *biomeAsset) Res() image.Rectangle         { return a.res }
+func (a *biomeAsset) AspectRatio() image.Rectangle { return a.aspectRatio }
+func (a *biomeAsset) Release()                     {}

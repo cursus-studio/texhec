@@ -6,6 +6,7 @@ import (
 	"core/modules/obstruction"
 	"core/modules/tile"
 	"engine/modules/grid"
+	"engine/modules/inputs"
 	"engine/modules/record"
 	"engine/services/ecs"
 
@@ -38,6 +39,8 @@ func NewService(c ioc.Dic) obstruction.Service {
 
 	s.obstruction.SetEmpty(obstruction.NewObstruction(definitions.LowlandObstruction))
 
+	s.Deployed().OnUpsert(s.OnDeployUpsert)
+
 	//
 	s.config = record.NewConfig()
 	s.dirtyEntities = ecs.NewDirtySet()
@@ -48,6 +51,10 @@ func NewService(c ioc.Dic) obstruction.Service {
 	s.deployedGetter = record.AddToConfig[obstruction.DeployedComponent](s.config)
 
 	return s
+}
+
+func (s *service) OnDeployUpsert(entity ecs.EntityID) {
+	s.Inputs().Stack().Set(entity, inputs.StackComponent{})
 }
 
 func (s *service) Grid() ecs.ComponentsArray[grid.SquareGridComponent[obstruction.Obstruction]] {

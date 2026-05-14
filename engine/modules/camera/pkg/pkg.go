@@ -15,7 +15,6 @@ import (
 	"reflect"
 
 	"github.com/go-gl/mathgl/mgl32"
-	"github.com/ogiusek/events"
 	"github.com/ogiusek/ioc/v2"
 	"github.com/veandco/go-sdl2/sdl"
 )
@@ -40,50 +39,7 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 	}
 	ioc.Register(b, func(c ioc.Dic) service.Service {
 		return service.NewService(c, ecs.NewSystemRegister(func() error {
-			w := ioc.Get[ecs.World](c)
-			eventsBuilder := ioc.Get[events.Builder](c)
 			errs := ecs.RegisterSystems(
-				ecs.NewSystemRegister(func() error {
-					cameraArray := ecs.GetComponentsArray[camera.Component](w)
-					orthoArray := ecs.GetComponentsArray[camera.OrthoComponent](w)
-					perspectiveArray := ecs.GetComponentsArray[camera.PerspectiveComponent](w)
-
-					cameraArray.AddDependency(orthoArray)
-					cameraArray.AddDependency(perspectiveArray)
-
-					orthoDirtySet := ecs.NewDirtySet()
-					orthoArray.AddDirtySet(orthoDirtySet)
-
-					cameraArray.BeforeGet(func() {
-						entities := orthoDirtySet.Get()
-						for _, entity := range entities {
-							if !w.EntityExists(entity) {
-								continue
-							}
-							cameraArray.Set(entity, camera.NewCamera[camera.OrthoComponent]())
-						}
-					})
-
-					perspectiveDirtySet := ecs.NewDirtySet()
-					perspectiveArray.AddDirtySet(perspectiveDirtySet)
-
-					cameraArray.BeforeGet(func() {
-						entities := perspectiveDirtySet.Get()
-						for _, entity := range entities {
-							if !w.EntityExists(entity) {
-								continue
-							}
-							cameraArray.Set(entity, camera.NewCamera[camera.PerspectiveComponent]())
-						}
-					})
-
-					events.Listen(eventsBuilder, func(e sdl.WindowEvent) {
-						if e.Event == sdl.WINDOWEVENT_RESIZED {
-							events.Emit(eventsBuilder.Events(), camera.NewUpdateProjectionsEvent())
-						}
-					})
-					return nil
-				}),
 				// todo change this to change ortho and size according to viewport
 				projectionsys.NewUpdateProjectionsSystem(c),
 				mobilecamerasys.NewScrollSystem(c),

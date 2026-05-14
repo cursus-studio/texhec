@@ -20,6 +20,8 @@ type TaskFactory interface {
 type Task interface {
 	Step()
 	Progress() float32
+
+	Perform()
 }
 
 type Service interface {

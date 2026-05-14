@@ -4,7 +4,6 @@ import (
 	"core/game"
 	"core/modules/tile"
 	"core/modules/ui"
-	"engine/modules/inputs"
 	"engine/modules/transform"
 	"engine/services/ecs"
 	"fmt"
@@ -35,8 +34,6 @@ func NewSystem(c ioc.Dic) ecs.SystemRegister {
 		s.Tile().Size().OnUpsert(s.OnTilePosSizeRotUpsert)
 		s.Tile().Rot().OnUpsert(s.OnTilePosSizeRotUpsert)
 
-		s.Obstruction().Deployed().OnUpsert(s.OnDeployUpsert)
-
 		//
 
 		events.Listen(s.EventsBuilder(), s.OnUnselect)
@@ -49,10 +46,6 @@ func NewSystem(c ioc.Dic) ecs.SystemRegister {
 func (s *system) OnTilePosRemove(entity ecs.EntityID) {
 	s.Transform().Size().Remove(entity)
 	s.Inputs().Stack().Remove(entity)
-}
-
-func (s *system) OnDeployUpsert(entity ecs.EntityID) {
-	s.Inputs().Stack().Set(entity, inputs.StackComponent{})
 }
 
 func (s *system) OnTilePosSizeRotUpsert(entity ecs.EntityID) {

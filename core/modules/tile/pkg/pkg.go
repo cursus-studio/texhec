@@ -98,9 +98,9 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 
 	ioc.Wrap(b, func(c ioc.Dic, b assets.Service) {
 		world := ioc.GetServices[game.GameWorld](c)
-		b.Register("biom", func(path assets.PathComponent) (assets.Asset, error) {
+		b.Register("biome", func(path assets.PathComponent) (assets.Asset, error) {
 			images := [6][]image.Image{}
-			directory, _ := strings.CutSuffix(path.Path, ".biom")
+			directory, _ := strings.CutSuffix(path.Path, ".biome")
 
 			for i := range 6 {
 				tileDir := fmt.Sprintf("%v/%v", directory, i+1)
@@ -134,7 +134,7 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 				}
 			}
 
-			return world.Tile().NewBiomAsset(images)
+			return world.Tile().NewBiomeAsset(images)
 		})
 	})
 
