@@ -1,9 +1,13 @@
 package pathfind
 
 import (
+	"core/modules/obstruction"
+	"core/modules/tile"
 	"engine/modules/grid"
 	"engine/services/ecs"
 	"errors"
+
+	"golang.org/x/exp/constraints"
 )
 
 var (
@@ -21,14 +25,40 @@ func NewTarget(coords grid.Coords) TargetComponent {
 
 //
 
+type SpeedComponent struct {
+	InvSpeed int8 // ticks to move one tile
+}
+
+func NewSpeed[Number constraints.Integer](invSpeed Number) SpeedComponent {
+	return SpeedComponent{int8(invSpeed)}
+}
+
+//
+
+// Step coords should be +/- 1 x or y from current target position.
+// Otherwise step will be removed and warning will be logged.
+type StepComponent struct{ grid.Coords }
+
+func NewStep(x, y grid.Coord) StepComponent { return StepComponent{grid.NewCoords(x, y)} }
+
+//
+
 type Service interface {
 	ecs.SystemRegister
-
 	Target() ecs.ComponentsArray[TargetComponent]
+	Speed() ecs.ComponentsArray[SpeedComponent]
+	Step() ecs.ComponentsArray[StepComponent]
 
 	Select(SelectEvent)
 	PreviewPath(PreviewPathEvent)
 	FindPath(FindPathEvent)
+
+	CanStep(
+		grid.Coords,
+		tile.SizeComponent,
+		obstruction.Component,
+		StepComponent,
+	) bool
 }
 
 // TODO:

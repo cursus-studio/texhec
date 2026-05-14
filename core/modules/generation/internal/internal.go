@@ -3,6 +3,7 @@ package internal
 import (
 	"core/game"
 	"core/modules/generation"
+	"core/modules/obstruction"
 	"core/modules/tile"
 	"engine/modules/batcher"
 	"engine/modules/collider"
@@ -60,7 +61,7 @@ func (s *service) Chances() (*Config, []tile.ID) {
 	types := []tile.ID{}
 
 	for _, chance := range config.chances {
-		tileComp, ok := s.Tile().TileType().Get(chance.tileType)
+		tileComp, ok := s.Tile().Component().Get(chance.tileType)
 		if !ok {
 			s.Logger().Log(fmt.Errorf("\"%v\" isn't a tile tile and therefor cannot be used in generation", chance.tileType))
 			continue
@@ -72,10 +73,10 @@ func (s *service) Chances() (*Config, []tile.ID) {
 
 func (s *service) Generate(c generation.Config) batcher.Task {
 	config, tileTypes := s.Chances()
-	gridStateComponent := tile.NewTileGrid(c.Size.Coords())
-	gridModifiedComponent := tile.NewTileGrid(c.Size.Coords())
+	gridStateComponent := tile.NewGrid(c.Size.Coords())
+	gridModifiedComponent := tile.NewGrid(c.Size.Coords())
 
-	obstructGridComponent := tile.NewObstructGrid(c.Size.Coords())
+	obstructGridComponent := obstruction.NewGrid(c.Size.Coords())
 
 	jobs := int(gridStateComponent.GetLastIndex()) / config.tilesPerJob
 
@@ -179,11 +180,11 @@ func (s *service) Generate(c generation.Config) batcher.Task {
 		for j := range config.tilesPerJob {
 			gridI := grid.Index(i*config.tilesPerJob + j)
 			tileType := gridStateComponent.GetTile(gridI)
-			entity, ok := s.Tile().GetTileType(tileType)
+			entity, ok := s.Tile().GetTile(tileType)
 			if !ok {
 				continue
 			}
-			obstruction, _ := s.Tile().Obstruction().Get(entity)
+			obstruction, _ := s.Obstruction().Component().Get(entity)
 			obstructGridComponent.SetTile(gridI, obstruction.Obstruction)
 		}
 	})
@@ -199,8 +200,8 @@ func (s *service) Generate(c generation.Config) batcher.Task {
 
 		s.Collider().Component().Set(c.Entity, collider.NewCollider(s.Definitions().Assets().SquareCollider))
 		s.Inputs().Stack().Set(c.Entity, inputs.StackComponent{})
-		s.Tile().TileGrid().Set(c.Entity, gridStateComponent)
-		s.Tile().ObstructionGrid().Set(c.Entity, obstructGridComponent)
+		s.Tile().Grid().Set(c.Entity, gridStateComponent)
+		s.Obstruction().Grid().Set(c.Entity, obstructGridComponent)
 
 		playerEntity := s.World().NewEntity()
 		s.Hierarchy().SetParent(playerEntity, c.Entity)

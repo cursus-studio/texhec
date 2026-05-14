@@ -1,6 +1,7 @@
 package definitions
 
 import (
+	"core/modules/obstruction"
 	"core/modules/tile"
 	"engine/modules/audio"
 	"engine/modules/groups"
@@ -48,9 +49,9 @@ const (
 )
 
 const (
-	AirspaceObstruction tile.Obstruction = 1 << iota // obstructed by mountains and planes
-	WaterObstruction                                 // obstructed by non-water tiles and ships
-	LowlandObstruction                               // obstructed by buildings and tanks
+	AirspaceObstruction obstruction.Obstruction = 1 << iota // obstructed by mountains and planes
+	WaterObstruction                                        // obstructed by non-water tiles and ships
+	LowlandObstruction                                      // obstructed by buildings and tanks
 )
 
 // In DI container
