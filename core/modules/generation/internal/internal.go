@@ -203,8 +203,10 @@ func (s *service) Generate(c generation.Config) batcher.Task {
 		s.Tile().ObstructionGrid().Set(c.Entity, obstructGridComponent)
 
 		playerEntity := s.World().NewEntity()
+		s.Hierarchy().SetParent(playerEntity, c.Entity)
 		s.Metadata().Name().Set(playerEntity, metadata.NewName("john"))
 		player2Entity := s.World().NewEntity()
+		s.Hierarchy().SetParent(player2Entity, c.Entity)
 		s.Metadata().Name().Set(player2Entity, metadata.NewName("anna"))
 
 		// generates objects
