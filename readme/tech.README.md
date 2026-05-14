@@ -84,9 +84,6 @@ How module is built and general flow of data and why this way in case of controv
 ## Usage examples
 Code snippets of `Service` and of how to use it.
 ...
-
-## Dependencies
-- [module](/engine/modules/module_name/readme/README.md)
 ```
 
 ### Implicit dependency graph
@@ -158,6 +155,7 @@ Forbidding functionalities in code BECAUSE, with no technical reason is a bad pr
 ### Modules
 **Currently only cherry picked readmes are written**
 Cherry picked readmes to show project complexity:
+- [tile](/core/modules/tile/readme/README.md)
 - [ecs](/engine/services/ecs/readme/README.md)
 - [assets](/engine/modules/assets/readme/README.md)
 - [hierarchy](/engine/modules/hierarchy/readme/README.md)
@@ -176,7 +174,7 @@ Core modules:
 - [pathfind (readme placeholder)](/core/modules/pathfind/readme/README.md)
 - [player (readme placeholder)](/core/modules/player/readme/README.md)
 - [settings (readme placeholder)](/core/modules/settings/readme/README.md)
-- [tile (readme placeholder)](/core/modules/tile/readme/README.md)
+- [tile](/core/modules/tile/readme/README.md)
 - [ui (readme placeholder)](/core/modules/ui/readme/README.md)
 
 #### Engine
