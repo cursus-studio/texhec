@@ -66,17 +66,9 @@ func NewDeployed() DeployedComponent {
 
 type Service interface {
 	ecs.SystemRegister
-
 	Grid() ecs.ComponentsArray[grid.SquareGridComponent[Obstruction]]
-
 	Component() ecs.ComponentsArray[Component]
 	Deployed() ecs.ComponentsArray[DeployedComponent]
 
 	Collisions(AABB, Obstruction) []grid.Coords
-	CanStep(
-		grid.Coords,
-		tile.SizeComponent,
-		Component,
-		tile.StepComponent,
-	) bool
 }

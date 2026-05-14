@@ -20,15 +20,12 @@ type service struct {
 	ecs.SystemRegister
 	renderer ecs.SystemRegister
 
-	tile ecs.ComponentsArray[tile.TypeComponent]
+	tile ecs.ComponentsArray[tile.Component]
 
 	pos   ecs.ComponentsArray[tile.PosComponent]
 	size  ecs.ComponentsArray[tile.SizeComponent]
 	rot   ecs.ComponentsArray[tile.RotComponent]
 	layer ecs.ComponentsArray[tile.LayerComponent]
-
-	speed ecs.ComponentsArray[tile.SpeedComponent]
-	step  ecs.ComponentsArray[tile.StepComponent]
 }
 
 func NewService(c ioc.Dic, system, renderer ecs.SystemRegister) tile.Service {
@@ -36,15 +33,12 @@ func NewService(c ioc.Dic, system, renderer ecs.SystemRegister) tile.Service {
 	s.SystemRegister = system
 	s.renderer = renderer
 
-	s.tile = ecs.GetComponentsArray[tile.TypeComponent](s.World())
+	s.tile = ecs.GetComponentsArray[tile.Component](s.World())
 
 	s.pos = ecs.GetComponentsArray[tile.PosComponent](s.World())
 	s.size = ecs.GetComponentsArray[tile.SizeComponent](s.World())
 	s.rot = ecs.GetComponentsArray[tile.RotComponent](s.World())
 	s.layer = ecs.GetComponentsArray[tile.LayerComponent](s.World())
-
-	s.speed = ecs.GetComponentsArray[tile.SpeedComponent](s.World())
-	s.step = ecs.GetComponentsArray[tile.StepComponent](s.World())
 
 	s.size.SetEmpty(tile.NewSize(1, 1))
 	s.layer.SetEmpty(tile.NewLayer(definitions.TileLayer))
@@ -54,13 +48,13 @@ func NewService(c ioc.Dic, system, renderer ecs.SystemRegister) tile.Service {
 
 func (s *service) Renderer() ecs.SystemRegister { return s.renderer }
 
-func (s *service) TileType() ecs.ComponentsArray[tile.TypeComponent] {
+func (s *service) Component() ecs.ComponentsArray[tile.Component] {
 	return s.tile
 }
 func (s *service) Grid() ecs.ComponentsArray[grid.SquareGridComponent[tile.ID]] {
 	return s.TileGridService.Component()
 }
-func (s *service) GetTileType(id tile.ID) (ecs.EntityID, bool) {
+func (s *service) GetTile(id tile.ID) (ecs.EntityID, bool) {
 	return s.TileTypeRelation.Get(id)
 }
 
@@ -68,9 +62,6 @@ func (s *service) Pos() ecs.ComponentsArray[tile.PosComponent]     { return s.po
 func (s *service) Size() ecs.ComponentsArray[tile.SizeComponent]   { return s.size }
 func (s *service) Rot() ecs.ComponentsArray[tile.RotComponent]     { return s.rot }
 func (s *service) Layer() ecs.ComponentsArray[tile.LayerComponent] { return s.layer }
-
-func (s *service) Speed() ecs.ComponentsArray[tile.SpeedComponent] { return s.speed }
-func (s *service) Step() ecs.ComponentsArray[tile.StepComponent]   { return s.step }
 
 // NewBiomAsset in other file
 

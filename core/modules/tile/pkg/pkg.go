@@ -36,11 +36,11 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 		relationpkg.SpatialRelationPkg(
 			func(w ecs.World) ecs.DirtySet {
 				dirtySet := ecs.NewDirtySet()
-				ecs.GetComponentsArray[tile.TypeComponent](w).AddDirtySet(dirtySet)
+				ecs.GetComponentsArray[tile.Component](w).AddDirtySet(dirtySet)
 				return dirtySet
 			},
 			func(w ecs.World) func(entity ecs.EntityID) (tile.ID, bool) {
-				componentArray := ecs.GetComponentsArray[tile.TypeComponent](w)
+				componentArray := ecs.GetComponentsArray[tile.Component](w)
 				return func(entity ecs.EntityID) (tile.ID, bool) {
 					comp, ok := componentArray.Get(entity)
 					return comp.ID, ok
@@ -50,12 +50,11 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 		),
 		typeregistrypkg.PkgT[tile.HoverEvent],
 
-		typeregistrypkg.PkgT[tile.TypeComponent],
+		typeregistrypkg.PkgT[tile.Component],
 		typeregistrypkg.PkgT[tile.PosComponent],
 		typeregistrypkg.PkgT[tile.SizeComponent],
 		typeregistrypkg.PkgT[tile.RotComponent],
 		typeregistrypkg.PkgT[tile.LayerComponent],
-		typeregistrypkg.PkgT[tile.SpeedComponent],
 	}
 	for _, pkg := range pkgs {
 		pkg(b)
@@ -121,12 +120,6 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 				}()
 
 				for _, file := range files {
-					// filePath := fmt.Sprintf("%v/%v", tileDir, file.Name())
-					// source, err := os.ReadFile(filePath)
-					// if err != nil {
-					// 	return nil, err
-					// }
-
 					source, err := root.ReadFile(file.Name())
 					if err != nil {
 						return nil, err
@@ -168,7 +161,7 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 		})
 		b.Register("tile", func(entity ecs.EntityID, structTagValue string) {
 			counter++
-			world.Tile().TileType().Set(entity, tile.NewTileType(counter))
+			world.Tile().Component().Set(entity, tile.NewTile(counter))
 		})
 		b.Register("size", func(entity ecs.EntityID, structTagValue string) {
 			errInvalidFormat := fmt.Errorf("size should be in format \"1x1\" where first number is width and second is height")
@@ -188,19 +181,6 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 				return
 			}
 			world.Tile().Size().Set(entity, tile.NewSize(x, y))
-		})
-		b.Register("speed", func(entity ecs.EntityID, structTagValue string) {
-			v, err := strconv.Atoi(structTagValue)
-			if err != nil {
-				world.Logger().Log(err)
-				return
-			}
-			speed := tile.NewSpeed(v)
-			if int(speed.InvSpeed) != v {
-				world.Logger().Log(fmt.Errorf("speed has to be clamped between 0 and 255"))
-				return
-			}
-			world.Tile().Speed().Set(entity, speed)
 		})
 	})
 })

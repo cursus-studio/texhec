@@ -118,7 +118,7 @@ func NewSystem(c ioc.Dic) error {
 	s.textures = datastructures.NewSparseArray[uint32, image.Image]()
 
 	s.tilesDirtySet = ecs.NewDirtySet()
-	s.Tile().TileType().AddDirtySet(s.tilesDirtySet)
+	s.Tile().Component().AddDirtySet(s.tilesDirtySet)
 
 	s.gridDirtySet = ecs.NewDirtySet()
 	s.Tile().Grid().AddDirtySet(s.gridDirtySet)
@@ -133,7 +133,7 @@ func (s *system) ListenRender(render render.RenderEvent) {
 	{ // rare reload. it reloads definitions, buffers, texture arrays (not optimal because currently its used once)
 		dirtyTiles := s.tilesDirtySet.Get()
 		for _, entity := range dirtyTiles {
-			tileComp, ok := s.Tile().TileType().Get(entity)
+			tileComp, ok := s.Tile().Component().Get(entity)
 			if !ok {
 				continue
 			}

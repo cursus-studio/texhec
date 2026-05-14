@@ -83,7 +83,7 @@ func (s *system) OnClickEntity(e tile.ClickEntityEvent) {
 		btns = append(btns, btn)
 	}
 skipDeploy:
-	if _, ok := s.Tile().Speed().Get(e.Entity); ok {
+	if _, ok := s.Pathfind().Speed().Get(e.Entity); ok {
 		btns = append(btns, Button{"Move", pathfind.NewSelectEvent(e.Entity)})
 	}
 

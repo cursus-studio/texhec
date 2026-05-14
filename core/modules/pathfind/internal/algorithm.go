@@ -3,6 +3,7 @@ package internal
 import (
 	"container/heap"
 	"core/modules/obstruction"
+	"core/modules/pathfind"
 	"core/modules/tile"
 	"engine/modules/grid"
 	"engine/services/datastructures"
@@ -99,8 +100,8 @@ func (s *service) findPath(
 				continue
 			}
 
-			step := tile.NewStep(neighborCoords.X, neighborCoords.Y)
-			if !s.Obstruction().CanStep(current.coords, size, obstruction, step) {
+			step := pathfind.NewStep(neighborCoords.X, neighborCoords.Y)
+			if !s.Pathfind().CanStep(current.coords, size, obstruction, step) {
 				continue
 			}
 

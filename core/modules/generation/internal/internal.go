@@ -61,7 +61,7 @@ func (s *service) Chances() (*Config, []tile.ID) {
 	types := []tile.ID{}
 
 	for _, chance := range config.chances {
-		tileComp, ok := s.Tile().TileType().Get(chance.tileType)
+		tileComp, ok := s.Tile().Component().Get(chance.tileType)
 		if !ok {
 			s.Logger().Log(fmt.Errorf("\"%v\" isn't a tile tile and therefor cannot be used in generation", chance.tileType))
 			continue
@@ -180,7 +180,7 @@ func (s *service) Generate(c generation.Config) batcher.Task {
 		for j := range config.tilesPerJob {
 			gridI := grid.Index(i*config.tilesPerJob + j)
 			tileType := gridStateComponent.GetTile(gridI)
-			entity, ok := s.Tile().GetTileType(tileType)
+			entity, ok := s.Tile().GetTile(tileType)
 			if !ok {
 				continue
 			}
