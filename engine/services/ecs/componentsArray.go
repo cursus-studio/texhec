@@ -29,6 +29,8 @@ type AnyComponentArray interface {
 
 	OnUpsert(OnMod)
 	OnRemove(OnMod)
+	// is called OnUpsert and OnRemove
+	OnMod(OnMod)
 }
 
 type ComponentsArray[Component any] interface {
@@ -195,4 +197,9 @@ func (c *componentsArray[Component]) OnUpsert(onUpsert OnMod) {
 
 func (c *componentsArray[Component]) OnRemove(onRemove OnMod) {
 	c.onRemove = append(c.onRemove, onRemove)
+}
+
+func (c *componentsArray[Component]) OnMod(onMod OnMod) {
+	c.OnUpsert(onMod)
+	c.OnRemove(onMod)
 }

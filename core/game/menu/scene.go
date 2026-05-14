@@ -75,6 +75,9 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 				world.Inputs().LeftClick().Set(btn, inputs.NewLeftClick(button.OnClick))
 				world.Text().Content().Set(btn, text.NewText(strings.ToUpper(button.Text)))
 			}
+
+			input := world.Prototype().Clone(world.Definitions().Hud().Input)
+			world.Hierarchy().SetParent(input, buttonArea)
 		}
 	})
 })

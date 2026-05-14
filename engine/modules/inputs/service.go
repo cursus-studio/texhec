@@ -8,6 +8,14 @@ import (
 type Service interface {
 	ecs.SystemRegister
 
+	// checks is entity event captured
+	// if it is then it shouldn't listen to keyboard events
+	IsCaptured(ecs.EntityID) bool
+	DefaultFocused() ecs.ComponentsArray[DefaultFocusedComponent]
+	Focused() ecs.ComponentsArray[FocusedComponent]
+	CaptureKeyboard() ecs.ComponentsArray[CaptureKeyboardComponent]
+	TextInput() ecs.ComponentsArray[TextInputComponent]
+
 	Hovered() ecs.ComponentsArray[HoveredComponent]
 	Dragged() ecs.ComponentsArray[DraggedComponent]
 	Stacked() ecs.ComponentsArray[StackedComponent]

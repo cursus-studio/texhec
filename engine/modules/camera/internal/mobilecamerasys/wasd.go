@@ -57,6 +57,9 @@ func (s *wasdMoveSystem) Listen(event loop.FrameEvent) {
 		if !ok {
 			continue
 		}
+		if s.Inputs().IsCaptured(camera) {
+			continue
+		}
 
 		pos.Pos = mgl32.Vec3{
 			pos.Pos.X() + moveHorizontaly/ortho.Zoom,

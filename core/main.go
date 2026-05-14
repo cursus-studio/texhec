@@ -3,7 +3,7 @@ package main
 import (
 	"core/game"
 	"core/modules/definitions"
-	"engine/modules/logger"
+	"engine/modules/inputs"
 	"engine/modules/loop"
 	"engine/modules/scene"
 	"engine/services/ecs"
@@ -41,26 +41,23 @@ func main() {
 	c := getDic()
 	world := ioc.GetServices[game.GameWorld](c)
 
-	// load world before starting timer
-	events.Emit(world.Events(), scene.NewChangeSceneEvent(definitions.GameID))
-
 	// before start
 	events.GlobalErrHandler(world.EventsBuilder(), func(err error) {
 		world.Logger().Log(err)
 	})
 
 	temporaryInlineSystems := ecs.NewSystemRegister(func() error {
-		events.Listen(world.EventsBuilder(), func(e sdl.KeyboardEvent) {
+		events.Listen(world.EventsBuilder(), func(e inputs.KeyboardEvent) {
 			if e.Keysym.Sym == sdl.K_q {
-				world.Logger().Log(errors.Join(logger.ErrInfo, errors.New("quiting program due to pressing 'Q'")))
+				world.Logger().Info(errors.New("quiting program due to pressing 'Q'"))
 				events.Emit(world.Events(), loop.NewStopEvent())
 			}
 			if e.Keysym.Sym == sdl.K_ESCAPE {
-				world.Logger().Log(errors.Join(logger.ErrInfo, errors.New("quiting program due to pressing 'ESC'")))
+				world.Logger().Info(errors.New("quiting program due to pressing 'ESC'"))
 				events.Emit(world.Events(), loop.NewStopEvent())
 			}
 			if e.State == sdl.PRESSED && e.Keysym.Sym == sdl.K_f {
-				world.Logger().Log(errors.Join(logger.ErrInfo, errors.New("toggling screen size due to pressing 'F'")))
+				world.Logger().Info(errors.New("toggling screen size due to pressing 'F'"))
 				flags := world.Window().Window().GetFlags()
 				if flags&sdl.WINDOW_FULLSCREEN_DESKTOP == sdl.WINDOW_FULLSCREEN_DESKTOP {
 					_ = world.Window().Window().SetFullscreen(0)
@@ -113,7 +110,9 @@ func main() {
 		world.Logger().Log(err)
 	}
 
-	world.Logger().Log(errors.Join(logger.ErrInfo, errors.New("initialized engine")))
+	events.Emit(world.Events(), scene.NewChangeSceneEvent(definitions.MenuID))
+
+	world.Logger().Info(errors.New("initialized engine"))
 	runtime.LockOSThread()
 	world.Loop().Run(loop.NewConfigureEvent(60, 1))
 }

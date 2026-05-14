@@ -17,4 +17,8 @@ type Service interface {
 	// - multiple meta tags which can contain audience or severity (optional)
 	// - error message
 	Log(error)
+
+	Info(error)
+	Warn(error)
+	Fatal(error)
 }

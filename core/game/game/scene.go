@@ -21,11 +21,7 @@ import (
 	"github.com/ogiusek/ioc/v2"
 )
 
-func addScene(
-	world game.GameWorld,
-	sceneParent ecs.EntityID,
-	isServer bool,
-) {
+func addScene(world game.GameWorld, sceneParent ecs.EntityID) {
 	// biggest maps on mods in rusted warfare 2560x1440
 	// - all tiles are rendered at once
 	// - strategic map is used at some point
@@ -88,31 +84,25 @@ func addScene(
 		},
 	))
 
-	if isServer {
-		gridEntity := world.World().NewEntity()
+	gridEntity := world.World().NewEntity()
 
-		world.Hierarchy().SetParent(gridEntity, sceneParent)
-		world.Groups().Component().Set(gridEntity, groups.EmptyGroups().Ptr().Enable(definitions.GameGroup).Val())
+	world.Hierarchy().SetParent(gridEntity, sceneParent)
+	world.Groups().Component().Set(gridEntity, groups.EmptyGroups().Ptr().Enable(definitions.GameGroup).Val())
 
-		task := world.Generation().Generate(generation.NewConfig(
-			gridEntity,
-			// seed.New(world.Clock.Now().Unix()),
-			seed.New(21377137),
-			grid.NewCoords(cols, rows),
-		))
-		world.Batcher().Queue(task)
-	}
+	task := world.Generation().Generate(generation.NewConfig(
+		gridEntity,
+		// seed.New(world.Clock.Now().Unix()),
+		seed.New(21377137),
+		grid.NewCoords(cols, rows),
+	))
+	world.Batcher().Queue(task)
 }
 
 var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 	ioc.Register(b, func(c ioc.Dic) game.GameBuilder {
 		return func(sceneParent ecs.EntityID) {
 			world := ioc.GetServices[game.GameWorld](c)
-			addScene(
-				world,
-				sceneParent,
-				true, // is server
-			)
+			addScene(world, sceneParent)
 		}
 	})
 })

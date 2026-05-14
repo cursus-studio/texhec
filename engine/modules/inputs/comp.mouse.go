@@ -1,6 +1,9 @@
 package inputs
 
-import "engine/services/ecs"
+import (
+	"engine/modules/window"
+	"engine/services/ecs"
+)
 
 // many elements can be hovered at once
 type HoveredComponent struct {
@@ -61,3 +64,25 @@ func NewMouseLeaveComponent(event any) MouseLeaveComponent { return MouseLeaveCo
 
 func NewHoverComponent(event any) HoverComponent { return HoverComponent{event} }
 func NewDragComponent(event any) DragComponent   { return DragComponent{event} }
+
+//
+
+// this event is called when nothing is dragged
+type DragEvent struct {
+	Camera   ecs.EntityID
+	From, To window.MousePos // from and to is normalized
+}
+
+// interfaces which can be implemented by events {
+type ApplyDragEvent interface {
+	ApplyDrag(DragEvent) (event any)
+}
+type ApplyEntityEvent interface {
+	ApplyEntity(entityEmitting ecs.EntityID) (event any)
+}
+
+type SynchronizePositionEvent DragEvent
+
+func (SynchronizePositionEvent) ApplyDrag(dragEvent DragEvent) any {
+	return SynchronizePositionEvent(dragEvent)
+}

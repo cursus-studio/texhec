@@ -8,6 +8,7 @@ import (
 	"engine/modules/inputs/internal/systems"
 	"engine/modules/loop"
 	"engine/services/ecs"
+	"fmt"
 
 	"github.com/ogiusek/events"
 	"github.com/ogiusek/ioc/v2"
@@ -17,6 +18,11 @@ import (
 type service struct {
 	engine.EngineWorld `inject:""`
 	c                  ioc.Dic
+
+	defaultFocused  ecs.ComponentsArray[inputs.DefaultFocusedComponent]
+	focused         ecs.ComponentsArray[inputs.FocusedComponent]
+	captureKeyboard ecs.ComponentsArray[inputs.CaptureKeyboardComponent]
+	textInput       ecs.ComponentsArray[inputs.TextInputComponent]
 
 	hovered ecs.ComponentsArray[inputs.HoveredComponent]
 	dragged ecs.ComponentsArray[inputs.DraggedComponent]
@@ -42,33 +48,38 @@ type service struct {
 }
 
 func NewService(c ioc.Dic) inputs.Service {
-	t := ioc.GetServices[*service](c)
-	t.c = c
-	t.hovered = ecs.GetComponentsArray[inputs.HoveredComponent](t.World())
-	t.dragged = ecs.GetComponentsArray[inputs.DraggedComponent](t.World())
-	t.stacked = ecs.GetComponentsArray[inputs.StackedComponent](t.World())
+	s := ioc.GetServices[*service](c)
+	s.c = c
+	s.defaultFocused = ecs.GetComponentsArray[inputs.DefaultFocusedComponent](s.World())
+	s.focused = ecs.GetComponentsArray[inputs.FocusedComponent](s.World())
+	s.captureKeyboard = ecs.GetComponentsArray[inputs.CaptureKeyboardComponent](s.World())
+	s.textInput = ecs.GetComponentsArray[inputs.TextInputComponent](s.World())
 
-	t.keepSelected = ecs.GetComponentsArray[inputs.KeepSelectedComponent](t.World())
+	s.hovered = ecs.GetComponentsArray[inputs.HoveredComponent](s.World())
+	s.dragged = ecs.GetComponentsArray[inputs.DraggedComponent](s.World())
+	s.stacked = ecs.GetComponentsArray[inputs.StackedComponent](s.World())
 
-	t.leftClick = ecs.GetComponentsArray[inputs.LeftClickComponent](t.World())
-	t.doubleLeftClick = ecs.GetComponentsArray[inputs.DoubleLeftClickComponent](t.World())
+	s.keepSelected = ecs.GetComponentsArray[inputs.KeepSelectedComponent](s.World())
 
-	t.rightClick = ecs.GetComponentsArray[inputs.RightClickComponent](t.World())
-	t.doubleRightClick = ecs.GetComponentsArray[inputs.DoubleRightClickComponent](t.World())
+	s.leftClick = ecs.GetComponentsArray[inputs.LeftClickComponent](s.World())
+	s.doubleLeftClick = ecs.GetComponentsArray[inputs.DoubleLeftClickComponent](s.World())
 
-	t.mouseEnter = ecs.GetComponentsArray[inputs.MouseEnterComponent](t.World())
-	t.mouseLeave = ecs.GetComponentsArray[inputs.MouseLeaveComponent](t.World())
+	s.rightClick = ecs.GetComponentsArray[inputs.RightClickComponent](s.World())
+	s.doubleRightClick = ecs.GetComponentsArray[inputs.DoubleRightClickComponent](s.World())
 
-	t.mouseHover = ecs.GetComponentsArray[inputs.HoverComponent](t.World())
-	t.mouseDrag = ecs.GetComponentsArray[inputs.DragComponent](t.World())
+	s.mouseEnter = ecs.GetComponentsArray[inputs.MouseEnterComponent](s.World())
+	s.mouseLeave = ecs.GetComponentsArray[inputs.MouseLeaveComponent](s.World())
 
-	t.stack = ecs.GetComponentsArray[inputs.StackComponent](t.World())
+	s.mouseHover = ecs.GetComponentsArray[inputs.HoverComponent](s.World())
+	s.mouseDrag = ecs.GetComponentsArray[inputs.DragComponent](s.World())
 
-	ecs.GetComponentsArray[inputs.StackComponent](t.World())
+	s.stack = ecs.GetComponentsArray[inputs.StackComponent](s.World())
+
+	ecs.GetComponentsArray[inputs.StackComponent](s.World())
 
 	stack := []inputs.Target{}
-	t.stackData = &stack
-	return t
+	s.stackData = &stack
+	return s
 }
 
 func (s *service) Register() error {
@@ -89,6 +100,51 @@ func (s *service) Register() error {
 		mouse.NewClickSystem(s.c),
 	)
 	return nil
+}
+
+func (s *service) IsCaptured(entity ecs.EntityID) bool {
+	focusedEntities := s.Inputs().Focused().GetEntities()
+	if len(focusedEntities) > 1 {
+		s.Logger().Log(fmt.Errorf("expected most one focused element"))
+		for _, focusedEntity := range focusedEntities {
+			s.Inputs().Focused().Remove(focusedEntity)
+		}
+	}
+
+	if len(focusedEntities) == 0 {
+		focusedEntities = s.defaultFocused.GetEntities()
+	}
+
+	if len(focusedEntities) == 0 {
+		return false
+	}
+
+	focusedEntity := focusedEntities[0]
+	parents := append([]ecs.EntityID{focusedEntity}, s.Hierarchy().GetOrderedParents(focusedEntity)...)
+
+	for _, capturingEntity := range parents {
+		if capturingEntity == entity {
+			return false
+		}
+		comp, ok := s.Inputs().CaptureKeyboard().Get(capturingEntity)
+		if ok && !comp.Fallthrough() {
+			return true
+		}
+	}
+	return false
+}
+
+func (s *service) DefaultFocused() ecs.ComponentsArray[inputs.DefaultFocusedComponent] {
+	return s.defaultFocused
+}
+func (s *service) Focused() ecs.ComponentsArray[inputs.FocusedComponent] {
+	return s.focused
+}
+func (s *service) CaptureKeyboard() ecs.ComponentsArray[inputs.CaptureKeyboardComponent] {
+	return s.captureKeyboard
+}
+func (s *service) TextInput() ecs.ComponentsArray[inputs.TextInputComponent] {
+	return s.textInput
 }
 
 func (s *service) Hovered() ecs.ComponentsArray[inputs.HoveredComponent] { return s.hovered }
