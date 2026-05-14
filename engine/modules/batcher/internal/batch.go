@@ -59,13 +59,11 @@ func (b *concurrentBatch) Step() (finished bool) {
 
 	// initialize workers
 	for range b.concurrentRoutinesUsed {
-		b.wg.Add(1)
-		go func() {
-			defer b.wg.Done()
+		b.wg.Go(func() {
 			for i := range b.todo {
 				b.blueprint.Handler(i)
 			}
-		}()
+		})
 	}
 	return false
 }
