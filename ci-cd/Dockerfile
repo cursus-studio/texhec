@@ -13,6 +13,7 @@ COPY --from=trivy /usr/local/bin/trivy /usr/bin/trivy
 ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
+    xvfb \
     # SDL2 dependencies
     libsdl2-dev \
     libsdl2-image-dev \
