@@ -12,6 +12,7 @@ import (
 	"runtime"
 	"testing"
 
+	"github.com/go-gl/gl/v4.5-core/gl"
 	"github.com/jaypipes/ghw"
 	"github.com/ogiusek/events"
 )
@@ -72,4 +73,5 @@ func BenchmarkRendering1MTilesMap(b *testing.B) {
 	for b.Loop() {
 		events.Emit(s.Events(), loop.FrameEvent{})
 	}
+	gl.Finish()
 }
