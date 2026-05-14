@@ -1,9 +1,13 @@
 package test
 
 import (
+	"core/game"
+	corepkg "core/pkg"
 	"image"
 	"image/color"
 	"testing"
+
+	"github.com/ogiusek/ioc/v2"
 )
 
 func newImage(v uint8) image.Image {
@@ -24,7 +28,7 @@ func newImage(v uint8) image.Image {
 }
 
 func TestNewAsset(t *testing.T) {
-	setup := NewSetup()
+	world := ioc.GetServices[game.GameWorld](ioc.NewContainer(corepkg.Pkg))
 	srcImages := [6][]image.Image{
 		{newImage(0b0011)},
 		{newImage(0b1111)},
@@ -34,7 +38,7 @@ func TestNewAsset(t *testing.T) {
 		{newImage(0b0001)},
 	}
 
-	biome, err := setup.Tile().NewBiomeAsset(srcImages)
+	biome, err := world.Tile().NewBiomeAsset(srcImages)
 	if err != nil {
 		t.Error(err)
 	}
