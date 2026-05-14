@@ -20,7 +20,7 @@ type service struct {
 	ObstructionGridService grid.Service[obstruction.Obstruction] `inject:""`
 	TileTypeRelation       relation.Service[tile.ID]             `inject:""`
 
-	obstruction ecs.ComponentsArray[obstruction.ObstructionComponent]
+	obstruction ecs.ComponentsArray[obstruction.Component]
 	deployed    ecs.ComponentsArray[obstruction.DeployedComponent]
 
 	// system
@@ -30,14 +30,14 @@ type service struct {
 
 	posGetter         record.ComponentGetter[tile.PosComponent]
 	sizeGetter        record.ComponentGetter[tile.SizeComponent]
-	obstructionGetter record.ComponentGetter[obstruction.ObstructionComponent]
+	obstructionGetter record.ComponentGetter[obstruction.Component]
 	deployedGetter    record.ComponentGetter[obstruction.DeployedComponent]
 }
 
 func NewService(c ioc.Dic) obstruction.Service {
 	s := ioc.GetServices[*service](c)
 
-	s.obstruction = ecs.GetComponentsArray[obstruction.ObstructionComponent](s.World())
+	s.obstruction = ecs.GetComponentsArray[obstruction.Component](s.World())
 	s.deployed = ecs.GetComponentsArray[obstruction.DeployedComponent](s.World())
 
 	s.obstruction.SetEmpty(obstruction.NewObstruction(definitions.LowlandObstruction))
@@ -45,14 +45,14 @@ func NewService(c ioc.Dic) obstruction.Service {
 	return s
 }
 
-func (s *service) ObstructionGrid() ecs.ComponentsArray[grid.SquareGridComponent[obstruction.Obstruction]] {
+func (s *service) Grid() ecs.ComponentsArray[grid.SquareGridComponent[obstruction.Obstruction]] {
 	return s.ObstructionGridService.Component()
 }
 func (s *service) GetTileType(id tile.ID) (ecs.EntityID, bool) {
 	return s.TileTypeRelation.Get(id)
 }
 
-func (s *service) Component() ecs.ComponentsArray[obstruction.ObstructionComponent] {
+func (s *service) Component() ecs.ComponentsArray[obstruction.Component] {
 	return s.obstruction
 }
 func (s *service) Deployed() ecs.ComponentsArray[obstruction.DeployedComponent] { return s.deployed }
@@ -71,8 +71,8 @@ func (s *service) GetTileSize() transform.SizeComponent {
 
 func (s *service) Collisions(aabb obstruction.AABB, obstruction obstruction.Obstruction) []grid.Coords {
 	var collisions []grid.Coords
-	obstructionGridEntity := s.ObstructionGrid().GetEntities()[0]
-	obstructed, ok := s.ObstructionGrid().Get(obstructionGridEntity)
+	obstructionGridEntity := s.Grid().GetEntities()[0]
+	obstructed, ok := s.Grid().Get(obstructionGridEntity)
 	if !ok {
 		collisions = append(collisions, aabb.Tiles...)
 		return collisions
@@ -92,7 +92,7 @@ func abs[Number constraints.Float | constraints.Integer](n Number) Number { retu
 func (s *service) CanStep(
 	pos grid.Coords,
 	size tile.SizeComponent,
-	obstructionComp obstruction.ObstructionComponent,
+	obstructionComp obstruction.Component,
 	step tile.StepComponent,
 ) bool {
 	isValidStep := abs(step.X-pos.X)+abs(step.Y-pos.Y) == 1

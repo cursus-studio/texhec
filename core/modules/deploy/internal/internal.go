@@ -144,8 +144,8 @@ func (s *service) Execute(e deploy.ExecuteEvent) {
 	size, _ := s.Tile().Size().Get(e.Blueprint)
 	blueprintObstruction, _ := s.Obstruction().Component().Get(e.Blueprint)
 
-	obstructionGridEntity := s.Obstruction().ObstructionGrid().GetEntities()[0]
-	obstructed, ok := s.Obstruction().ObstructionGrid().Get(obstructionGridEntity)
+	obstructionGridEntity := s.Obstruction().Grid().GetEntities()[0]
+	obstructed, ok := s.Obstruction().Grid().Get(obstructionGridEntity)
 	if !ok {
 		s.Logger().Log(tile.ErrPositionIsOccupied)
 		return

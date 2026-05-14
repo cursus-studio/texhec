@@ -164,9 +164,8 @@ type Service interface {
 	// - 0001
 	NewBiomAsset(srcImages [6][]image.Image) (BiomAsset, error)
 
-	//
-
-	// 1x1 tile size to transform
+	// transform 1x1 tile size.
+	// can be used for graphics or collisions.
 	GetTileSize() transform.SizeComponent
 }
 

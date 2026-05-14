@@ -14,14 +14,14 @@ func (s *service) Register() error {
 
 	s.posGetter = record.AddToConfig[tile.PosComponent](s.config)
 	s.sizeGetter = record.AddToConfig[tile.SizeComponent](s.config)
-	s.obstructionGetter = record.AddToConfig[obstruction.ObstructionComponent](s.config)
+	s.obstructionGetter = record.AddToConfig[obstruction.Component](s.config)
 	s.deployedGetter = record.AddToConfig[obstruction.DeployedComponent](s.config)
 
 	s.Tile().Pos().AddDirtySet(s.dirtyEntities)
 	s.Tile().Size().AddDirtySet(s.dirtyEntities)
 	s.Obstruction().Component().AddDirtySet(s.dirtyEntities)
 	s.Obstruction().Deployed().AddDirtySet(s.dirtyEntities)
-	s.Obstruction().ObstructionGrid().BeforeGet(s.BeforeGet)
+	s.Obstruction().Grid().BeforeGet(s.BeforeGet)
 	return nil
 }
 
@@ -29,11 +29,11 @@ func (s *service) BeforeGet() {
 	if len(s.dirtyEntities.Get()) == 0 {
 		return
 	}
-	if len(s.Obstruction().ObstructionGrid().GetEntities()) == 0 {
+	if len(s.Obstruction().Grid().GetEntities()) == 0 {
 		return
 	}
-	obstructionGridEntity := s.Obstruction().ObstructionGrid().GetEntities()[0]
-	obstructionGrid, ok := s.Obstruction().ObstructionGrid().Get(obstructionGridEntity)
+	obstructionGridEntity := s.Obstruction().Grid().GetEntities()[0]
+	obstructionGrid, ok := s.Obstruction().Grid().Get(obstructionGridEntity)
 	if !ok {
 		s.Logger().Log(errors.New("didn't found obstruction grid"))
 		return
@@ -109,5 +109,5 @@ entityLoop:
 	}
 
 	s.recordingID = s.Record().Entity().StartBackwardsRecording(s.config)
-	s.Obstruction().ObstructionGrid().Set(obstructionGridEntity, obstructionGrid)
+	s.Obstruction().Grid().Set(obstructionGridEntity, obstructionGrid)
 }

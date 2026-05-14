@@ -43,10 +43,10 @@ func heuristic(a, b grid.Coords) int {
 func (s *service) findPath(
 	from, to grid.Coords,
 	size tile.SizeComponent,
-	obstruction obstruction.ObstructionComponent,
+	obstruction obstruction.Component,
 ) (path []tile.PosComponent, ok bool) {
-	obstructionGridEntity := s.Obstruction().ObstructionGrid().GetEntities()[0]
-	obstructed, ok := s.Obstruction().ObstructionGrid().Get(obstructionGridEntity)
+	obstructionGridEntity := s.Obstruction().Grid().GetEntities()[0]
+	obstructed, ok := s.Obstruction().Grid().Get(obstructionGridEntity)
 	if !ok {
 		return nil, false
 	}

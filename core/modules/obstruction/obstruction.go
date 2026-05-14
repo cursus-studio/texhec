@@ -14,18 +14,18 @@ var (
 // mask of ways in which tile is obstructed
 type Obstruction uint8
 
-func NewObstructGrid(w, h grid.Coord) grid.SquareGridComponent[Obstruction] {
+func NewGrid(w, h grid.Coord) grid.SquareGridComponent[Obstruction] {
 	return grid.NewSquareGrid[Obstruction](w, h)
 }
 
 // Defines how entity or tile obstruct
 // On obstruction collision new entity is removed and warning is logged
-type ObstructionComponent struct {
+type Component struct {
 	Obstruction Obstruction
 }
 
-func NewObstruction(obstruction Obstruction) ObstructionComponent {
-	return ObstructionComponent{obstruction}
+func NewObstruction(obstruction Obstruction) Component {
+	return Component{obstruction}
 }
 
 //
@@ -67,16 +67,16 @@ func NewDeployed() DeployedComponent {
 type Service interface {
 	ecs.SystemRegister
 
-	ObstructionGrid() ecs.ComponentsArray[grid.SquareGridComponent[Obstruction]]
+	Grid() ecs.ComponentsArray[grid.SquareGridComponent[Obstruction]]
 
-	Component() ecs.ComponentsArray[ObstructionComponent]
+	Component() ecs.ComponentsArray[Component]
 	Deployed() ecs.ComponentsArray[DeployedComponent]
 
 	Collisions(AABB, Obstruction) []grid.Coords
 	CanStep(
 		grid.Coords,
 		tile.SizeComponent,
-		ObstructionComponent,
+		Component,
 		tile.StepComponent,
 	) bool
 }

@@ -17,7 +17,8 @@ import (
 var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 	pkgs := []ioc.Pkg{
 		gridpkg.PkgT(gridpkg.NewConfig[obstruction.Obstruction](nil)),
-		typeregistrypkg.PkgT[obstruction.ObstructionComponent],
+
+		typeregistrypkg.PkgT[obstruction.Component],
 	}
 	for _, pkg := range pkgs {
 		pkg(b)

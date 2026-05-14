@@ -76,7 +76,7 @@ func (s *service) Generate(c generation.Config) batcher.Task {
 	gridStateComponent := tile.NewTileGrid(c.Size.Coords())
 	gridModifiedComponent := tile.NewTileGrid(c.Size.Coords())
 
-	obstructGridComponent := obstruction.NewObstructGrid(c.Size.Coords())
+	obstructGridComponent := obstruction.NewGrid(c.Size.Coords())
 
 	jobs := int(gridStateComponent.GetLastIndex()) / config.tilesPerJob
 
@@ -201,7 +201,7 @@ func (s *service) Generate(c generation.Config) batcher.Task {
 		s.Collider().Component().Set(c.Entity, collider.NewCollider(s.Definitions().Assets().SquareCollider))
 		s.Inputs().Stack().Set(c.Entity, inputs.StackComponent{})
 		s.Tile().TileGrid().Set(c.Entity, gridStateComponent)
-		s.Obstruction().ObstructionGrid().Set(c.Entity, obstructGridComponent)
+		s.Obstruction().Grid().Set(c.Entity, obstructGridComponent)
 
 		playerEntity := s.World().NewEntity()
 		s.Hierarchy().SetParent(playerEntity, c.Entity)
