@@ -55,7 +55,7 @@ Example [biome file structure](grass/).
 
 ### How to import a biome
 One line using `entityregistry` is enough in codebase:
-```
+```go
 type Tiles struct {
 	BiomName    ecs.EntityID `path:"tiles/biom_directory.biom"`
 }
