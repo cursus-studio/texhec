@@ -14,7 +14,7 @@ which will allow basic optimizations and the ability to store chunks on disk whi
 Integration with `entityregistry` allows us to define biome assets in a **single** `struct tag`.
 ```go
 type Tiles struct {
-	BiomName    ecs.EntityID `path:"tiles/biome_directory.biome"`
+	BiomeName    ecs.EntityID `path:"tiles/biome_directory.biome"`
 }
 ```
 The snippet trims suffix (`.biome`) and expects a path without suffix (`tiles/biome_directory`)
@@ -57,7 +57,7 @@ Example [biome file structure](grass/).
 One line using `entityregistry` is enough in codebase:
 ```go
 type Tiles struct {
-	BiomName    ecs.EntityID `path:"tiles/biome_directory.biome"`
+	BiomeName    ecs.EntityID `path:"tiles/biome_directory.biome"`
 }
 ```
 and biome file structure like [example file structure presented](#biome-extension).
@@ -65,7 +65,7 @@ and biome file structure like [example file structure presented](#biome-extensio
 ### Under the hood
 `.biome` extension is translated to:
 ```go
-type BiomAsset interface {
+type BiomeAsset interface {
 	Images() [15][]image.Image
 	Res() image.Rectangle
 	AspectRatio() image.Rectangle
@@ -108,7 +108,7 @@ type Service interface {
 	// - 1010
 	// - 1001
 	// - 0001
-	NewBiomAsset(srcImages [6][]image.Image) (BiomAsset, error)
+	NewBiomeAsset(srcImages [6][]image.Image) (BiomeAsset, error)
 
 	GetPos(coords grid.Coords) transform.PosComponent
 	// transform 1x1 tile size.
@@ -138,7 +138,7 @@ Entities with this are rotated in 2D on grid axis
 ### `Layer`
 Entities with this have specific `z`.
 
-### `NewBiomAsset`
+### `NewBiomeAsset`
 Parses [biome file structure](#biome-extension) into underlying [data structure](#under-the-hood) used for biomes
 
 ### `GetPos`
