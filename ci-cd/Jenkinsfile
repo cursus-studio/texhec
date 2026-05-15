@@ -50,7 +50,7 @@ pipeline {
             steps { runModuleStep('Lint', 'golangci-lint run', false) }
         }
         stage('Test') {
-            steps { runModuleStep('Test', 'go test ./...') }
+            steps { runModuleStep('Test', 'go test ./... -benchtime=1x') }
         }
     }
     post {
