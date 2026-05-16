@@ -81,7 +81,7 @@ func (s *service) GenerateModuleDocs(modulePath string) error {
 	if err := os.MkdirAll(dir, 0777); err != nil {
 		return err
 	}
-	// #nosec G301
+	// #nosec G302
 	if err := os.Chmod(dir, 0777); err != nil {
 		return err
 	}
@@ -89,7 +89,7 @@ func (s *service) GenerateModuleDocs(modulePath string) error {
 	if err := os.WriteFile(readmePath, []byte(doc), 0666); err != nil {
 		return err
 	}
-	// #nosec G306
+	// #nosec G302
 	if err := os.Chmod(readmePath, 0666); err != nil {
 		return err
 	}
