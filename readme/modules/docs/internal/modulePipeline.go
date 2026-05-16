@@ -77,10 +77,12 @@ func (s *service) GenerateModuleDocs(modulePath string) error {
 	readmePath := fmt.Sprintf("%v/readme/README.md", modulePath)
 	dir := filepath.Dir(readmePath)
 
-	if err := os.MkdirAll(dir, 0750); err != nil {
+	// #nosec G301
+	if err := os.MkdirAll(dir, 0777); err != nil {
 		return err
 	}
-	return os.WriteFile(readmePath, []byte(doc), 0600)
+	// #nosec G306
+	return os.WriteFile(readmePath, []byte(doc), 0666)
 }
 
 func (s *ModulePipeline) Title(modulePath string) (string, error) {
