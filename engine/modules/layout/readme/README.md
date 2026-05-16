@@ -75,7 +75,7 @@ Type: `func(x float32) engine/modules/layout.GapComponent`
 ```
 $ go test ./... -bench=.
 PASS
-ok  	engine/modules/layout/test	0.009s
+ok  	engine/modules/layout/test	0.010s
 ```
 ## Dependencies
 `engine`:

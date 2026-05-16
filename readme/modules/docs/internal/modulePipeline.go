@@ -81,8 +81,19 @@ func (s *service) GenerateModuleDocs(modulePath string) error {
 	if err := os.MkdirAll(dir, 0777); err != nil {
 		return err
 	}
+	// #nosec G301
+	if err := os.Chmod(dir, 0777); err != nil {
+		return err
+	}
 	// #nosec G306
-	return os.WriteFile(readmePath, []byte(doc), 0666)
+	if err := os.WriteFile(readmePath, []byte(doc), 0666); err != nil {
+		return err
+	}
+	// #nosec G306
+	if err := os.Chmod(readmePath, 0666); err != nil {
+		return err
+	}
+	return nil
 }
 
 func (s *ModulePipeline) Title(modulePath string) (string, error) {

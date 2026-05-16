@@ -26,7 +26,7 @@ Type: `error`
 ```
 $ go test ./... -bench=.
 PASS
-ok  	engine/modules/codec/test	0.007s
+ok  	engine/modules/codec/test	0.008s
 ```
 ## Dependencies
 `engine`:

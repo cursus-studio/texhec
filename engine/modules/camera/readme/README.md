@@ -230,6 +230,9 @@ Type: `func(fovY float32, near float32, far float32) engine/modules/camera.Dynam
 Type: `func() engine/modules/camera.ChangedResolutionEvent`
 
 
+## TODO
+- clean up pkg
+
 ## Dependencies
 `engine`:
   - `engine.Camera`
