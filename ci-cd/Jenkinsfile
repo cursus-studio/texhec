@@ -1,6 +1,5 @@
 pipeline {
-    // 1. Tell Jenkins not to allocate a global agent
-    agent none
+    agent any
 
     triggers {
         githubPush()
@@ -17,7 +16,6 @@ pipeline {
 
     stages {
         stage('Setup') {
-            agent any
             steps {
                 updateGitHubStatus('pending', 'Started...')
                 checkout scm
