@@ -1,4 +1,4 @@
-// this module finds modified modules since last commit
+// finds modified modules since last commit
 package diff
 
 type Service interface {
