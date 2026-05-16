@@ -63,7 +63,7 @@ Type: `func(conn engine/modules/connection.Conn) engine/modules/connection.Conne
 ```
 $ go test ./... -bench=.
 PASS
-ok  	engine/modules/connection/test	0.053s
+ok  	engine/modules/connection/test	0.054s
 ```
 ## Dependencies
 `engine`:

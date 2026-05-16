@@ -22,13 +22,13 @@ func main() {
 
 	switch command {
 	case "all":
-		if errors := docs.GenerateModulesDocs("modules"); errors != nil {
+		if errors := docs.GenerateModulesDocs("readme/modules"); errors != nil {
 			errs = append(errs, errors...)
 		}
-		if errors := docs.GenerateModulesDocs("../engine/modules"); errors != nil {
+		if errors := docs.GenerateModulesDocs("engine/modules"); errors != nil {
 			errs = append(errs, errors...)
 		}
-		if errors := docs.GenerateModulesDocs("../core/modules"); errors != nil {
+		if errors := docs.GenerateModulesDocs("core/modules"); errors != nil {
 			errs = append(errs, errors...)
 		}
 	case "diff":

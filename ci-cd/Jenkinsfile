@@ -73,7 +73,7 @@ pipeline {
         stage('Generated Markdown Lint') {
             steps { runGeneralStep('Generated Markdown Lint', 'lychee --root-dir . "**/*.md"') }
         }
-    // } generation verification
+        // } generation verification
     }
     post {
         success {
