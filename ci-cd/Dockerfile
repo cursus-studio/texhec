@@ -1,5 +1,6 @@
 FROM golangci/golangci-lint:v2.12.1 AS linter
 FROM aquasec/trivy:0.70.0 AS trivy
+FROM lycheeverse/lychee:sha-b990100-alpine AS lychee
 
 FROM golang:1.25-bookworm
 
@@ -9,6 +10,7 @@ ENV PATH="/go/bin:${PATH}"
 COPY --from=linter /usr/bin/golangci-lint /usr/bin/golangci-lint
 RUN go install github.com/securego/gosec/v2/cmd/gosec@v2.24.6
 COPY --from=trivy /usr/local/bin/trivy /usr/bin/trivy
+COPY --from=lychee /usr/local/bin/lychee /usr/bin/lychee
 
 ENV DEBIAN_FRONTEND=noninteractive
 

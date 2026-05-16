@@ -30,12 +30,11 @@ Type: `error`
 Type: `func[Registry any](s engine/modules/entityregistry.Service) (Registry, error)`
 
 
-# Benchmarks
+## Benchmarks
 ```
 $ go test ./... -bench=.
 PASS
-ok  	engine/modules/entityregistry/test	0.011s
-
+ok  	engine/modules/entityregistry/test	0.010s
 ```
 ## Dependencies
 `engine`:

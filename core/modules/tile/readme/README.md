@@ -266,7 +266,7 @@ Type: `func(grid engine/services/ecs.EntityID, tile engine/modules/grid.Index) a
 Type: `func() core/modules/tile.ClickEntityEvent`
 
 
-# Benchmarks
+## Benchmarks
 ```sh
 $ go test . -bench=. -benchtime=10s
 Failed to load plugin 'libdecor-gtk.so': failed to init

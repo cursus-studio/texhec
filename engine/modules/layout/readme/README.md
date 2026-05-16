@@ -71,12 +71,11 @@ Type: `func(order engine/modules/layout.Order) engine/modules/layout.OrderCompon
 Type: `func(x float32) engine/modules/layout.GapComponent`
 
 
-# Benchmarks
+## Benchmarks
 ```
 $ go test ./... -bench=.
 PASS
-ok  	engine/modules/layout/test	0.011s
-
+ok  	engine/modules/layout/test	0.009s
 ```
 ## Dependencies
 `engine`:

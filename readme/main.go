@@ -3,20 +3,48 @@ package main
 import (
 	"fmt"
 	"os"
-	docspkg "readme/docs/pkg"
+	diffpkg "readme/modules/diff/pkg"
+	docspkg "readme/modules/docs/pkg"
 )
 
+// lychee
 func main() {
-	s := docspkg.NewService()
+	// initialize
+	docs := docspkg.NewService()
+	diff := diffpkg.NewService()
 	errs := []error{}
-	if err := s.GenerateModuleDocs("docs/"); err != nil {
-		errs = append(errs, err)
+
+	// run command
+	var command string
+	if len(os.Args) >= 2 {
+		command = os.Args[1]
 	}
-	if errors := s.GenerateModulesDocs("../engine/modules"); errors != nil {
-		errs = append(errs, errors...)
-	}
-	if errors := s.GenerateModulesDocs("../core/modules"); errors != nil {
-		errs = append(errs, errors...)
+
+	switch command {
+	case "all":
+		if errors := docs.GenerateModulesDocs("modules"); errors != nil {
+			errs = append(errs, errors...)
+		}
+		if errors := docs.GenerateModulesDocs("../engine/modules"); errors != nil {
+			errs = append(errs, errors...)
+		}
+		if errors := docs.GenerateModulesDocs("../core/modules"); errors != nil {
+			errs = append(errs, errors...)
+		}
+	case "diff":
+		modules, err := diff.GetModifiedModules()
+		if err != nil {
+			errs = append(errs, err)
+		}
+		for _, module := range modules {
+			if err := docs.GenerateModuleDocs(module); err != nil {
+				errs = append(errs, err)
+			}
+		}
+	case "":
+		errs = append(errs, fmt.Errorf("missing command"))
+	default:
+		errs = append(errs, fmt.Errorf("uknown command \"%v\"", command))
 	}
 
 	if len(errs) == 0 {

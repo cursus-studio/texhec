@@ -4,7 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"os"
-	"readme/docs"
+	"readme/modules/docs"
 )
 
 type Service interface {

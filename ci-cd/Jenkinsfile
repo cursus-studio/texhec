@@ -27,10 +27,18 @@ pipeline {
             steps {
                 updateGitHubStatus('pending', 'Started...')
                 checkout scm
+                script {
+                    if (shouldSkipBuild()) {
+                        echo "Commit message matches skip criteria. Stopping pipeline execution early."
+                        currentBuild.result = 'SUCCESS'
+                        error("Skipping build based on commit message.")
+                    }
+                }
                 sh 'go version'
                 sh 'golangci-lint --version'
             }
         }
+        // verification {
         stage('Deps') {
             steps { runModuleStep('Deps', 'go mod download && go mod tidy -diff && go mod verify') }
         }
@@ -49,16 +57,35 @@ pipeline {
         stage('Lint') {
             steps { runModuleStep('Lint', 'golangci-lint run', false) }
         }
+        stage('Markdown Lint') {
+          steps { runGeneralStep('Markdown Lint', 'lychee --root-dir . "**/*.md"') }
+        }
         stage('Test') {
             steps { runModuleStep('Test', 'go test ./... -benchtime=1x') }
         }
+        // } verification
+        // generation {
+        stage('Generate Docs') {
+          steps { runGeneralStep('Generate Docs', 'go run readme diff') }
+        }
+        // } generation
+        // generation verification {
+        stage('Generated Markdown Lint') {
+          steps { runGeneralStep('Generated Markdown Lint', 'lychee --root-dir . "**/*.md"') }
+        }
+        // } generation verification
     }
     post {
         success {
+            commitChanges()
             updateGitHubStatus('success', 'Success!')
         }
         failure {
-            updateGitHubStatus('failure', "Build failed at stage: \\\"${env.LAST_STATUS_DESC}\\\"")
+            if (currentBuild.result == 'SUCCESS') {
+                updateGitHubStatus('success', 'Skipped via commit name.')
+            } else {
+                updateGitHubStatus('failure', "Build failed at stage: \\\"${env.LAST_STATUS_DESC}\\\"")
+            }
         }
         aborted {
             updateGitHubStatus('error', 'Build was aborted.')
@@ -66,11 +93,16 @@ pipeline {
     }
 }
 
+def shouldSkipBuild() {
+    def commitMsg = sh(script: "git log -1 --pretty=%B", returnStdout: true).trim()
+    return commitMsg.contains("[skip ci]")
+}
+
 def runModuleStep(String statusMsg, String command, boolean isParallel = true) {
     script {
-        def modules = ['engine', 'core']
-
         updateGitHubStatus('pending', "${statusMsg}...")
+
+        def modules = ['engine', 'core', 'readme']
         def tasks = [:]
 
         modules.each { mod ->
@@ -89,6 +121,37 @@ def runModuleStep(String statusMsg, String command, boolean isParallel = true) {
                 task()
             }
         }
+    }
+}
+
+def runGeneralStep(String statusMsg, String command, boolean isParallel = true) {
+    script {
+        updateGitHubStatus('pending', "${statusMsg}...")
+        sh command
+    }
+}
+
+def commitChanges() {
+    sh 'git config --global user.email "jenkins@cursus-studio.com"'
+    sh 'git config --global user.name "Jenkins CI"'
+
+    def hasChanges = sh(script: 'git status --porcelain', returnStdout: true).trim()
+
+    if (!hasChanges) {
+        echo "No changes detected. Skipping commit."
+        return
+    }
+    echo "Changes detected. Committing and pushing..."
+
+    withCredentials([usernamePassword(credentialsId: 'texhec-app', passwordVariable: 'TOKEN', usernameVariable: 'USER')]) {
+        sh '''
+            git add .
+            git commit -m "[skip ci] Automatic update from Jenkins"
+
+            git remote set-url origin https://${USER}:${TOKEN}@github.com/${OWNER}/${REPO}.git
+
+            git push origin HEAD:${GIT_BRANCH}
+        '''
     }
 }
 

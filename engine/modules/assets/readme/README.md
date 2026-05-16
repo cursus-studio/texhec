@@ -65,12 +65,11 @@ Type: `func(cache engine/modules/assets.Asset) engine/modules/assets.CacheCompon
 Type: `func[Asset any](assets engine/modules/assets.Service, assetID engine/services/ecs.EntityID) (Asset, error)`
 
 
-# Benchmarks
+## Benchmarks
 ```
 $ go test ./... -bench=.
 PASS
 ok  	engine/modules/assets/test	0.007s
-
 ```
 ## Dependencies
 `engine`:

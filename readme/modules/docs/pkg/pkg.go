@@ -1,8 +1,8 @@
 package docspkg
 
 import (
-	"readme/docs"
-	"readme/docs/internal"
+	"readme/modules/docs"
+	"readme/modules/docs/internal"
 )
 
 func NewService() docs.Service {

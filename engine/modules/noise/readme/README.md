@@ -48,12 +48,11 @@ Type: `func(fn func(github.com/go-gl/mathgl/mgl64.Vec2) float64) engine/modules/
 Type: `func(cellSize float64, weight float64) engine/modules/noise.LayerConfig`
 
 
-# Benchmarks
+## Benchmarks
 ```
 $ go test ./... -bench=.
 PASS
-ok  	engine/modules/noise/test	0.974s
-
+ok  	engine/modules/noise/test	1.318s
 ```
 ## Dependencies
 `engine`:

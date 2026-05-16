@@ -68,12 +68,11 @@ Type: `func(coords core/modules/tile.PosComponent, size core/modules/tile.SizeCo
 Type: `func() core/modules/obstruction.DeployedComponent`
 
 
-# Benchmarks
+## Benchmarks
 ```
 $ go test ./... -bench=.
 PASS
 ok  	core/modules/obstruction/test	0.005s
-
 ```
 ## Dependencies
 `core/game`:

@@ -28,20 +28,19 @@ Type: `engine/services/ecs.EntityID`
 Type: `func(cloned engine/services/ecs.EntityID, clone engine/services/ecs.EntityID) engine/modules/prototype.CloneEvent`
 
 
-# Benchmarks
+## Benchmarks
 ```
 $ go test ./... -bench=.
 goos: linux
 goarch: amd64
 pkg: engine/modules/prototype/test
 cpu: Intel(R) Core(TM) i5-8350U CPU @ 1.70GHz
-BenchmarkClone1-8         	  574873	      2001 ns/op
-BenchmarkClone2-8         	  548668	      2112 ns/op
-BenchmarkManual1Clone-8   	44239728	        24.46 ns/op
-BenchmarkManual2Clone-8   	33848702	        30.36 ns/op
+BenchmarkClone1-8         	  591925	      2015 ns/op
+BenchmarkClone2-8         	  541850	      2091 ns/op
+BenchmarkManual1Clone-8   	47996250	        26.91 ns/op
+BenchmarkManual2Clone-8   	35904165	        31.57 ns/op
 PASS
-ok  	engine/modules/prototype/test	4.440s
-
+ok  	engine/modules/prototype/test	4.807s
 ```
 ## Dependencies
 `engine`:

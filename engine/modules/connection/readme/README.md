@@ -59,12 +59,11 @@ Type: `func(listener net.Listener) engine/modules/connection.ListenerComponent`
 Type: `func(conn engine/modules/connection.Conn) engine/modules/connection.ConnectionComponent`
 
 
-# Benchmarks
+## Benchmarks
 ```
 $ go test ./... -bench=.
 PASS
-ok  	engine/modules/connection/test	0.061s
-
+ok  	engine/modules/connection/test	0.053s
 ```
 ## Dependencies
 `engine`:

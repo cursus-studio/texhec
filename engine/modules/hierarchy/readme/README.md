@@ -57,26 +57,25 @@ Type: `error`
 Type: `func(parent engine/services/ecs.EntityID) engine/modules/hierarchy.Component`
 
 
-# Benchmarks
+## Benchmarks
 ```
 $ go test ./... -bench=.
 goos: linux
 goarch: amd64
 pkg: engine/modules/hierarchy/test
 cpu: Intel(R) Core(TM) i5-8350U CPU @ 1.70GHz
-BenchmarkChildren_1-8                          	213577198	         5.515 ns/op
-BenchmarkChildren_10-8                         	217053524	         5.506 ns/op
-BenchmarkChildren_100-8                        	213934467	         5.575 ns/op
-BenchmarkFlatChildren_1_1-8                    	170442414	         6.911 ns/op
-BenchmarkFlatChildren_10_10-8                  	172940126	         6.811 ns/op
-BenchmarkAddChildToParentWithGrandParent-8     	 5923284	       187.0 ns/op
-BenchmarkAddChildToParentWith5GrandParents-8   	 6265734	       179.9 ns/op
-BenchmarkRemoveChild-8                         	 1579887	       778.5 ns/op
-BenchmarkRemoveParentWith1Children-8           	   75571	     14939 ns/op
-BenchmarkRemoveParentWith100Children-8         	   10000	    106204 ns/op
+BenchmarkChildren_1-8                          	222958778	         5.716 ns/op
+BenchmarkChildren_10-8                         	194586469	         6.717 ns/op
+BenchmarkChildren_100-8                        	205740602	         5.762 ns/op
+BenchmarkFlatChildren_1_1-8                    	168597147	         7.491 ns/op
+BenchmarkFlatChildren_10_10-8                  	170461026	         7.020 ns/op
+BenchmarkAddChildToParentWithGrandParent-8     	 6275283	       194.5 ns/op
+BenchmarkAddChildToParentWith5GrandParents-8   	 6555783	       198.5 ns/op
+BenchmarkRemoveChild-8                         	 1425162	      1059 ns/op
+BenchmarkRemoveParentWith1Children-8           	   62394	     19026 ns/op
+BenchmarkRemoveParentWith100Children-8         	   10000	    148770 ns/op
 PASS
-ok  	engine/modules/hierarchy/test	15.373s
-
+ok  	engine/modules/hierarchy/test	16.994s
 ```
 ## Dependencies
 `engine`:

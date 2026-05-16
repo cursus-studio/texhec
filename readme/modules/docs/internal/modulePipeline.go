@@ -3,12 +3,13 @@ package internal
 import (
 	"bytes"
 	"fmt"
+	"log"
 	"os"
 	"os/exec"
 	"path/filepath"
-	"readme/docs"
-	"readme/docs/internal/deps"
-	"readme/docs/internal/types"
+	"readme/modules/docs"
+	"readme/modules/docs/internal/deps"
+	"readme/modules/docs/internal/types"
 	"strings"
 
 	"golang.org/x/tools/go/packages"
@@ -40,6 +41,7 @@ type ModulePipeline struct{}
 //   - `Dependencies` section: performs AST on module `*/***.go` files and uses
 //     import blocks and external method calls to deduce dependencies
 func (s *service) GenerateModuleDocs(modulePath string) error {
+	log.Printf("Generating \"%v\" docs...\n", modulePath)
 	sections := []string{}
 	if section, err := s.Title(modulePath); err == nil && section != "" {
 		sections = append(sections, string(section))

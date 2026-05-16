@@ -259,20 +259,19 @@ Type: `func(mask engine/modules/transform.ParentFlag) engine/modules/transform.P
 Type: `func(x float32, y float32, z float32) engine/modules/transform.ParentPivotPointComponent`
 
 
-# Benchmarks
+## Benchmarks
 ```
 $ go test ./... -bench=.
 goos: linux
 goarch: amd64
 pkg: engine/modules/transform/test
 cpu: Intel(R) Core(TM) i5-8350U CPU @ 1.70GHz
-BenchmarkGetPos-8                 	38223330	        27.77 ns/op
-BenchmarkRawGetPos-8              	100000000	        11.27 ns/op
-BenchmarkSetAbsolutePos-8         	 1779408	       722.2 ns/op
-BenchmarkSetAndGetAbsolutePos-8   	 1671758	       773.5 ns/op
+BenchmarkGetPos-8                 	39283652	        26.94 ns/op
+BenchmarkRawGetPos-8              	100000000	        11.10 ns/op
+BenchmarkSetAbsolutePos-8         	 1924198	       694.7 ns/op
+BenchmarkSetAndGetAbsolutePos-8   	 1709379	       715.9 ns/op
 PASS
-ok  	engine/modules/transform/test	6.264s
-
+ok  	engine/modules/transform/test	6.156s
 ```
 ## Dependencies
 `engine`:

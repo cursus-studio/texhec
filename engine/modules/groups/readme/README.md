@@ -59,12 +59,11 @@ Type: `func() engine/modules/groups.GroupsComponent`
 Type: `func() engine/modules/groups.GroupsComponent`
 
 
-# Benchmarks
+## Benchmarks
 ```
 $ go test ./... -bench=.
 PASS
 ok  	engine/modules/groups/test	0.007s
-
 ```
 ## Dependencies
 `engine`:
