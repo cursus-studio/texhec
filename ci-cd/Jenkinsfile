@@ -31,7 +31,10 @@ pipeline {
                     if (shouldSkipBuild()) {
                         echo 'Commit message matches skip criteria. Stopping pipeline execution early.'
                         currentBuild.result = 'SUCCESS'
-                        error('Skipping build based on commit message.')
+                        env.SKIP_REMAINING_STAGES = 'true'
+                        return
+                    } else {
+                        env.SKIP_REMAINING_STAGES = 'false'
                     }
                 }
                 sh 'go version'
@@ -40,37 +43,46 @@ pipeline {
         }
         // verification {
         stage('Deps') {
+            when { environment name: 'SKIP_REMAINING_STAGES', value: 'false' }
             steps { runModuleStep('Deps', 'go mod download && go mod tidy -diff && go mod verify') }
         }
         stage('Build') {
+            when { environment name: 'SKIP_REMAINING_STAGES', value: 'false' }
             steps { runModuleStep('Build', 'go build -o /dev/null') }
         }
         stage('Security') {
+            when { environment name: 'SKIP_REMAINING_STAGES', value: 'false' }
             steps { runModuleStep('Security', 'gosec -quiet ./...') }
         }
         stage('Pipeline Security') {
+            when { environment name: 'SKIP_REMAINING_STAGES', value: 'false' }
             steps {
                 updateGitHubStatus('pending', 'Pipeline Security')
                 sh 'trivy config --exit-code 1 --quiet --severity HIGH,CRITICAL .'
             }
         }
         stage('Lint') {
+            when { environment name: 'SKIP_REMAINING_STAGES', value: 'false' }
             steps { runModuleStep('Lint', 'golangci-lint run', false) }
         }
         stage('Markdown Lint') {
+            when { environment name: 'SKIP_REMAINING_STAGES', value: 'false' }
             steps { runGeneralStep('Markdown Lint', 'lychee --root-dir . "**/*.md"') }
         }
         stage('Test') {
+            when { environment name: 'SKIP_REMAINING_STAGES', value: 'false' }
             steps { runModuleStep('Test', 'go test ./... -benchtime=1x') }
         }
         // } verification
         // generation {
         stage('Generate Docs') {
+            when { environment name: 'SKIP_REMAINING_STAGES', value: 'false' }
             steps { runGeneralStep('Generate Docs', 'go run readme diff') }
         }
         // } generation
         // generation verification {
         stage('Generated Markdown Lint') {
+            when { environment name: 'SKIP_REMAINING_STAGES', value: 'false' }
             steps { runGeneralStep('Generated Markdown Lint', 'lychee --root-dir . "**/*.md"') }
         }
         // } generation verification
