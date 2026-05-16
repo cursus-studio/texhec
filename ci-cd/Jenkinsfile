@@ -135,21 +135,11 @@ def commitChanges() {
     sh 'git config --global user.email "jenkins@cursus-studio.com"'
     sh 'git config --global user.name "Jenkins CI"'
 
-    def hasChanges = sh(script: 'git status --porcelain', returnStdout: true).trim()
-
-    if (!hasChanges) {
-        echo 'No changes detected. Skipping commit.'
-        return
-    }
-    echo 'Changes detected. Committing and pushing...'
-
     withCredentials([usernamePassword(credentialsId: 'texhec-app', passwordVariable: 'TOKEN', usernameVariable: 'USER')]) {
         sh '''
             git add .
             git commit -m "[skip ci] Automatic update from Jenkins"
-
             git remote set-url origin https://${USER}:${TOKEN}@github.com/${OWNER}/${REPO}.git
-
             git push origin HEAD:${GIT_BRANCH}
         '''
     }
