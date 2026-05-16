@@ -1,3 +1,4 @@
+// contains all game specific objects
 package definitions
 
 import (

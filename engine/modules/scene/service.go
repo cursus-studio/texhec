@@ -1,3 +1,4 @@
+// defines scenes and decouples scene constructor from its id
 package scene
 
 import (

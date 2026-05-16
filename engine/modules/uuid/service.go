@@ -1,3 +1,6 @@
+// integrates uuid
+//
+// uuid allows us to create universaly unique entity
 package uuid
 
 import (

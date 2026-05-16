@@ -1,3 +1,5 @@
+// this module allows us to check collision between objects and rays
+// current algorithm used under the hood is spatial algorithm.
 package collider
 
 import (

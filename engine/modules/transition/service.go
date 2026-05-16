@@ -1,3 +1,4 @@
+// changes components from stateA to stateB across many frames
 package transition
 
 import (

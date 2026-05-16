@@ -1,3 +1,4 @@
+// positions and re-size children
 package layout
 
 import (

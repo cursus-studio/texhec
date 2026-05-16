@@ -1,3 +1,4 @@
+// this module allows us to write tasks and to progress them across frames without stuterring
 package batcher
 
 import "engine/services/ecs"

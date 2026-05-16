@@ -1,3 +1,4 @@
+// this module defines text and renderers it
 package text
 
 import (

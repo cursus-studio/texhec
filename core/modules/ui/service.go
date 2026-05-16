@@ -1,3 +1,4 @@
+// this module is responsible for create foundations for creating in game GUI
 package ui
 
 import (

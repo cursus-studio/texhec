@@ -1,3 +1,4 @@
+// allows us to drag objects and/or camera
 package drag
 
 import (

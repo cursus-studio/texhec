@@ -1,3 +1,4 @@
+// allowes objects to be owned
 package player
 
 import "engine/services/ecs"

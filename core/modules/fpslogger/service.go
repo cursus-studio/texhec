@@ -1,3 +1,4 @@
+// logs frames per second
 package fpslogger
 
 import "engine/services/ecs"

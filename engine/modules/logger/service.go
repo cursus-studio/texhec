@@ -1,3 +1,4 @@
+// defines loging abstraction which can be easily expanded to log information in GUI or sent to developer
 package logger
 
 import "errors"
@@ -18,7 +19,10 @@ type Service interface {
 	// - error message
 	Log(error)
 
+	// wrapper around Log(errors.Join(ErrInfo, err))
 	Info(error)
+	// wrapper around Log(err)
 	Warn(error)
+	// wrapper around Log(errors.Join(ErrFatal, err))
 	Fatal(error)
 }

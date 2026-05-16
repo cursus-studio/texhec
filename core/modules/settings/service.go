@@ -1,3 +1,4 @@
+// renders settings GUI
 package settings
 
 import (

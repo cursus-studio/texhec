@@ -1,4 +1,4 @@
-# Record
+# record
 ## Architecture
 This module splits into two separate parts.\
 One to record by `EntityID` which should be used to perform things localy.\
@@ -10,148 +10,191 @@ Backwards recording can be used to record state before to smoothen changes.
 Forwards recording returns state on recording end.\
 Forwards recording can be used to record changes to send them somewhere else to replicate them.
 
-## Benchmarks
+## Types
+### type Service
+Type: `engine/modules/record.Service`
 
-```bash
-$ go test . -bench=. -benchmem
-goos: linux
-goarch: amd64
-pkg: engine/modules/record/test
-cpu: Intel(R) Core(TM) i5-8350U CPU @ 1.70GHz
-BenchmarkEntityCodecEncode-8                	  155301	      7093 ns/op	    3281 B/op	      37 allocs/op
-BenchmarkEntityCodecDecode-8                	   47541	     24805 ns/op	   10768 B/op	     245 allocs/op
-BenchmarkUUIDCodecEncode-8                  	  209726	      5588 ns/op	    2505 B/op	      35 allocs/op
-BenchmarkUUIDCodecDecode-8                  	   60512	     20209 ns/op	    9600 B/op	     214 allocs/op
-BenchmarkEntityRecording-8                  	  974848	      1270 ns/op	     746 B/op	      13 allocs/op
-BenchmarkCreateNEntitiesEntityRecording-8   	10272049	       120.9 ns/op	     219 B/op	       1 allocs/op
-BenchmarkEntityApply1Entities-8             	 6980020	       143.6 ns/op	      80 B/op	       2 allocs/op
-BenchmarkEntityApply10Entities-8            	 3908955	       310.5 ns/op	      80 B/op	       2 allocs/op
-BenchmarkUUIDRecording-8                    	  956442	      1332 ns/op	     714 B/op	      13 allocs/op
-BenchmarkCreateNEntitiesUUIDRecording-8     	 2665312	       478.9 ns/op	     270 B/op	       3 allocs/op
-BenchmarkUUIDApply-8                        	 5510028	       202.3 ns/op	      72 B/op	       2 allocs/op
-BenchmarkUUIDApply10Entities-8              	 1794826	       659.4 ns/op	      72 B/op	       2 allocs/op
-```
+#### method Service Entity
+Type: `func() engine/modules/record.EntityKeyedRecorder`
 
-## Usage examples
-```go
-type Service interface {
-	Entity() EntityKeyedRecorder
-	UUID() UUIDKeyedRecorder
-}
+#### method Service UUID
+Type: `func() engine/modules/record.UUIDKeyedRecorder`
 
-type EntityKeyedRecorder interface {
-	// gets state as finished recording
-	GetState(Config) Recording
+### type EntityKeyedRecorder
+Type: `engine/modules/record.EntityKeyedRecorder`
 
-	// starts opened recording (opened recording is recorded until stopped)
-	// applying it on previous state will create current state
-	StartRecording(Config) RecordingID
-	// starts opened recording (opened recording is recorded until stopped)
-	// applying it rewinds state.
-	StartBackwardsRecording(Config) RecordingID
-	// finishes recording if open (false is returned if recording isn't started)
-	Stop(RecordingID) (r Recording, ok bool)
+#### method EntityKeyedRecorder Apply
+Type: `func(engine/modules/record.Config, ...engine/modules/record.Recording)`
 
-	Apply(Config, ...Recording)
-}
+#### method EntityKeyedRecorder GetState
+Type: `func(engine/modules/record.Config) engine/modules/record.Recording`
+gets state as finished recording
 
+#### method EntityKeyedRecorder StartBackwardsRecording
+Type: `func(engine/modules/record.Config) engine/modules/record.RecordingID`
+starts opened recording (opened recording is recorded until stopped)
+applying it rewinds state.
 
-type Recording struct {
-	// [componentArrayLayoutID]any component
-	// nil for removed entity
-	Entities datastructures.SparseArray[ecs.EntityID, []any]
-}
+#### method EntityKeyedRecorder StartRecording
+Type: `func(engine/modules/record.Config) engine/modules/record.RecordingID`
+starts opened recording (opened recording is recorded until stopped)
+applying it on previous state will create current state
 
-type UUIDKeyedRecorder interface {
-	// gets state as finished recording
-	GetState(Config) UUIDRecording
+#### method EntityKeyedRecorder Stop
+Type: `func(engine/modules/record.RecordingID) (r engine/modules/record.Recording, ok bool)`
+finishes recording if open (false is returned if recording isn't started)
 
-	// starts opened recording (opened recording is recorded until stopped)
-	// applying it on previous state will create current state
-	StartRecording(Config) UUIDRecordingID
-	// starts opened recording (opened recording is recorded until stopped)
-	// applying it rewinds state.
-	StartBackwardsRecording(Config) UUIDRecordingID
-	// finishes recording if open (false is returned if recording isn't started)
-	Stop(UUIDRecordingID) (r UUIDRecording, ok bool)
+### type UUIDKeyedRecorder
+Type: `engine/modules/record.UUIDKeyedRecorder`
 
-	Apply(Config, ...UUIDRecording)
-}
+#### method UUIDKeyedRecorder Apply
+Type: `func(engine/modules/record.Config, ...engine/modules/record.UUIDRecording)`
 
-type UUIDRecording struct {
-	// map[componentUUID][componentArrayLayoutID]any component
-	// map[componentUUID]nil is when entity is removed
-	Entities map[uuid.UUID][]any
-}
-```
+#### method UUIDKeyedRecorder GetState
+Type: `func(engine/modules/record.Config) engine/modules/record.UUIDRecording`
+gets state as finished recording
 
-### Entity recording
-```go
-func _(r record.Service) {
-    config := record.NewConfig()
-    record.AddToConfig[MyComponent](config)
+#### method UUIDKeyedRecorder StartBackwardsRecording
+Type: `func(engine/modules/record.Config) engine/modules/record.UUIDRecordingID`
+starts opened recording (opened recording is recorded until stopped)
+applying it rewinds state.
 
-    recordingID := r.Entity().StartRecording(config)
-    // do something
-    recording, ok := r.Entity().Stop(recordingID)
+#### method UUIDKeyedRecorder StartRecording
+Type: `func(engine/modules/record.Config) engine/modules/record.UUIDRecordingID`
+starts opened recording (opened recording is recorded until stopped)
+applying it on previous state will create current state
 
-    // now we can browse entities.
-    // nil for a whole array means that entity doesn't exist
-    // nil for a component means that component doesn't exists
-}
-```
+#### method UUIDKeyedRecorder Stop
+Type: `func(engine/modules/record.UUIDRecordingID) (r engine/modules/record.UUIDRecording, ok bool)`
+finishes recording if open (false is returned if recording isn't started)
 
-### Entity backwards recording
-```go
-func _(r record.Service) {
-    config := record.NewConfig()
-    record.AddToConfig[MyComponent](config)
+### type Config
+Type: `engine/modules/record.Config`
 
-    recordingID := r.Entity().StartBackwardsRecording(config)
-    // do something
-    recording, ok := r.Entity().Stop(recordingID)
+#### property Config ComponentsOrder
+Type: `*[]reflect.Type`
 
-    // now we can browse entities.
-    // nil for a whole array means that entity didn't exist
-    // nil for a component means that component didn't exists
-}
-```
+#### property Config ComponentsIndices
+Type: `map[reflect.Type]int`
 
-### UUID recording
-```go
-func _(r record.Service) {
-    config := record.NewConfig()
-    record.AddToConfig[MyComponent](config)
+#### property Config RecordedComponents
+Type: `map[reflect.Type]func(engine/services/ecs.World) engine/services/ecs.AnyComponentArray`
 
-    recordingID := r.UUID().StartRecording(config)
-    // do something
-    recording, ok := r.UUID().Stop(recordingID)
+#### property Config InheritZero
+Type: `map[reflect.Type]func(engine/services/ecs.World)`
 
-    // now we can browse entities.
-    // nil for a whole array means that entity doesn't exist
-    // nil for a component means that component doesn't exists
-}
-```
+### type ComponentGetter
+Type: `engine/modules/record.ComponentGetter[Component any]`
 
-### UUID backwards recording
-```go
-func _(r record.Service) {
-    config := record.NewConfig()
-    record.AddToConfig[MyComponent](config)
+### type RecordingID
+Type: `engine/modules/record.RecordingID`
 
-    recordingID := r.UUID().StartBackwardsRecording(config)
-    // do something
-    recording, ok := r.UUID().Stop(recordingID)
+### type Recording
+Type: `engine/modules/record.Recording`
+recording cannot be encoded
 
-    // now we can browse entities.
-    // nil for a whole array means that entity didn't exist
-    // nil for a component means that component didn't exists
-}
-```
+#### property Recording Entities
+Type: `engine/services/datastructures.SparseArray[engine/services/ecs.EntityID, []any]`
+map[componentUUID][componentArrayLayoutID]any component
+map[componentUUID]nil is when entity is removed
+
+### type UUIDRecordingID
+Type: `engine/modules/record.UUIDRecordingID`
+
+### type UUIDRecording
+Type: `engine/modules/record.UUIDRecording`
+
+#### property UUIDRecording Entities
+Type: `map[engine/modules/uuid.UUID][]any`
+map[componentUUID][componentArrayLayoutID]any component
+map[componentUUID]nil is when entity is removed
+
+## Functions
+### func NewConfig
+Type: `func() engine/modules/record.Config`
+
+### func AddToConfig
+Type: `func[Component any](config engine/modules/record.Config) engine/modules/record.ComponentGetter[Component]`
+
 
 ## Dependencies
-- [codec](/engine/modules/codec/readme/README.md)
-- [datastructures](/engine/modules/datastructures/readme/README.md)
-- [ecs](/engine/modules/ecs/readme/README.md)
-- [logger](/engine/modules/logger/readme/README.md)
-- [uuid](/engine/modules/uuid/readme/README.md)
+`engine`:
+  - `engine.EngineWorld`
+  - `engine.Logger`
+  - `engine.UUID`
+  - `engine.World`
+
+`engine/modules/codec`:
+  - `engine/modules/codec.Service`
+
+`engine/modules/record`:
+  - `engine/modules/record.AddToConfig`
+  - `engine/modules/record.ComponentsOrder`
+  - `engine/modules/record.Config`
+  - `engine/modules/record.Entities`
+  - `engine/modules/record.EntityKeyedRecorder`
+  - `engine/modules/record.InheritZero`
+  - `engine/modules/record.NewConfig`
+  - `engine/modules/record.RecordedComponents`
+  - `engine/modules/record.Recording`
+  - `engine/modules/record.RecordingID`
+  - `engine/modules/record.Service`
+  - `engine/modules/record.UUIDKeyedRecorder`
+  - `engine/modules/record.UUIDRecording`
+  - `engine/modules/record.UUIDRecordingID`
+
+`engine/modules/typeregistry/pkg`:
+  - `engine/modules/typeregistry/pkg.PkgT`
+
+`engine/modules/uuid`:
+  - `engine/modules/uuid.Component`
+  - `engine/modules/uuid.Entity`
+  - `engine/modules/uuid.ID`
+  - `engine/modules/uuid.New`
+  - `engine/modules/uuid.NewUUID`
+  - `engine/modules/uuid.Service`
+  - `engine/modules/uuid.UUID`
+
+`engine/pkg`:
+  - `engine/pkg.Pkg`
+
+`engine/services/datastructures`:
+  - `engine/services/datastructures.Add`
+  - `engine/services/datastructures.Get`
+  - `engine/services/datastructures.GetIndices`
+  - `engine/services/datastructures.GetValues`
+  - `engine/services/datastructures.NewSet`
+  - `engine/services/datastructures.NewSparseArray`
+  - `engine/services/datastructures.NewSparseSet`
+  - `engine/services/datastructures.Remove`
+  - `engine/services/datastructures.RemoveElements`
+  - `engine/services/datastructures.Set`
+  - `engine/services/datastructures.SparseArray`
+  - `engine/services/datastructures.SparseSet`
+
+`engine/services/ecs`:
+  - `engine/services/ecs.AddDirtySet`
+  - `engine/services/ecs.AnyComponentArray`
+  - `engine/services/ecs.Clear`
+  - `engine/services/ecs.ComponentsArray`
+  - `engine/services/ecs.DirtySet`
+  - `engine/services/ecs.EnsureExists`
+  - `engine/services/ecs.EntityExists`
+  - `engine/services/ecs.EntityID`
+  - `engine/services/ecs.Get`
+  - `engine/services/ecs.GetAny`
+  - `engine/services/ecs.GetComponentsArray`
+  - `engine/services/ecs.GetEmpty`
+  - `engine/services/ecs.GetEntities`
+  - `engine/services/ecs.NewDirtySet`
+  - `engine/services/ecs.NewEntity`
+  - `engine/services/ecs.NewWorld`
+  - `engine/services/ecs.Release`
+  - `engine/services/ecs.Remove`
+  - `engine/services/ecs.RemoveEntity`
+  - `engine/services/ecs.Set`
+  - `engine/services/ecs.SetAny`
+  - `engine/services/ecs.World`
+
+### Third Party
+`github.com/ogiusek/ioc/v2`

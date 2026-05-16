@@ -1,3 +1,4 @@
+// defines GUI for deploying objects
 package deploy
 
 import (

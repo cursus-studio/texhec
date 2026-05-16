@@ -1,3 +1,12 @@
+// `entityregistry` allows us to define entities and components using struct tags
+// example:
+// ```go
+//
+//	type OurEntities struct {
+//	  OurEntity ecs.EntityID `registered_component:"its_value"`
+//	}
+//
+// ```
 package entityregistry
 
 import (

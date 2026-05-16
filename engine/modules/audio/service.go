@@ -1,3 +1,4 @@
+// this module is reponsible for integrating audio via events
 package audio
 
 import (

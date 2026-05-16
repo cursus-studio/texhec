@@ -1,3 +1,6 @@
+// This module contains many components which allow us to define relative position
+// and this module transforms these relative components to absolute position which
+// is used in collisions and rendering
 package transform
 
 import (

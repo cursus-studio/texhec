@@ -1,3 +1,8 @@
+// defines child-parent relationship.
+// this is one of core modules on which relies most of the engine.
+//
+// service stores separate relation cache and updates it on changes to the hierarchy.
+// this allows us to have O(1) access time to children and parents
 package hierarchy
 
 import (

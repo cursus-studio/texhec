@@ -1,3 +1,4 @@
+// synchronizes client and server worlds while accounting for permissions
 package netsync
 
 import (

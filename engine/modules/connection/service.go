@@ -1,3 +1,4 @@
+// defines connection and stores it in component
 package connection
 
 import (

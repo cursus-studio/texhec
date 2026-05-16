@@ -1,3 +1,4 @@
+// finds path on a grid and moves objects to their target according to their speed
 package pathfind
 
 import (

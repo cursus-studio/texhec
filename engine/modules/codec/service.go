@@ -1,3 +1,4 @@
+// this module allows us to encode and decode golang objects.
 package codec
 
 import "errors"

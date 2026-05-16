@@ -1,20 +1,4 @@
 # TEXHEC
-## Table of contents
-- [What is TEXHEC ?](#what-is-texhec-)
-- [Why golang](#why-golang)
-- [Dependencies](#dependencies)
-- [Module vs Service](#module-vs-service)
-- [Module structure](#module-structure)
-- [Module readme schema](#module-readme-schema)
-- [Implicit dependency graph](#implicit-dependency-graph)
-- [Modules](#modules)
-- [Technical challenges](#technical-challenges)
-- [CI/CD](#cicd)
-- [Graphics](#graphics)
-- [How to run ?](#how-to-run-)
-- [Contribution](#contribution)
-- [License](#license)
-
 ## What is TEXHEC ?
 TEXHEC is a **HIGH-Performance** project where natural map size is **1.000.000** tiles with\
 hundreds or thousands buildings and units **all** being **simulated** in real time on\
@@ -44,6 +28,7 @@ Dependencies are only added if necessary.
 - `sdl2`
 - `opengl`
 - `opengl math`
+- `ghw` - to read gpu name for benchmarks
 - `golang constraints`
 - `golang images and text (used only to generate image per letter)`
 - `google uuid`
@@ -166,60 +151,60 @@ Cherry picked readmes to show project complexity:
 Core is game source code.\
 It defines game specific objects like `tiles`, `units`, map `generation` or `pathfinding`.\
 Core modules:
-- [definitions (readme placeholder)](/core/modules/definitions/readme/README.md)
-- [deploy (readme placeholder)](/core/modules/deploy/readme/README.md)
-- [fpslogger (readme placeholder)](/core/modules/fpslogger/readme/README.md)
-- [generation (readme placeholder)](/core/modules/generation/readme/README.md)
-- [loading (readme placeholder)](/core/modules/loading/readme/README.md)
-- [pathfind (readme placeholder)](/core/modules/pathfind/readme/README.md)
-- [player (readme placeholder)](/core/modules/player/readme/README.md)
-- [settings (readme placeholder)](/core/modules/settings/readme/README.md)
+- [definitions](/core/modules/definitions/readme/README.md)
+- [deploy](/core/modules/deploy/readme/README.md)
+- [fpslogger](/core/modules/fpslogger/readme/README.md)
+- [generation](/core/modules/generation/readme/README.md)
+- [loading](/core/modules/loading/readme/README.md)
+- [pathfind](/core/modules/pathfind/readme/README.md)
+- [player](/core/modules/player/readme/README.md)
+- [settings](/core/modules/settings/readme/README.md)
 - [tile](/core/modules/tile/readme/README.md)
-- [ui (readme placeholder)](/core/modules/ui/readme/README.md)
+- [ui](/core/modules/ui/readme/README.md)
 
 #### Engine
 Engine is reusable in other projects.\
 It defines ecs framework and basic engine modules like `transform` or `hierarchy`.\
 Engine modules:
 - [assets](/engine/modules/assets/readme/README.md)
-- [audio (readme placeholder)](/engine/modules/audio/readme/README.md)
-- [batcher (readme placeholder)](/engine/modules/batcher/readme/README.md)
-- [camera (readme placeholder)](/engine/modules/camera/readme/README.md)
-- [codec (readme placeholder)](/engine/modules/codec/readme/README.md)
-- [collider (readme placeholder)](/engine/modules/collider/readme/README.md)
-- [connection (readme placeholder)](/engine/modules/connection/readme/README.md)
-- [drag (readme placeholder)](/engine/modules/drag/readme/README.md)
-- [entityregistry (readme placeholder)](/engine/modules/entityregistry/readme/README.md)
-- [graphics (readme placeholder)](/engine/modules/graphics/readme/README.md)
-- [grid (readme placeholder)](/engine/modules/grid/readme/README.md)
-- [groups (readme placeholder)](/engine/modules/groups/readme/README.md)
+- [audio](/engine/modules/audio/readme/README.md)
+- [batcher](/engine/modules/batcher/readme/README.md)
+- [camera](/engine/modules/camera/readme/README.md)
+- [codec](/engine/modules/codec/readme/README.md)
+- [collider](/engine/modules/collider/readme/README.md)
+- [connection](/engine/modules/connection/readme/README.md)
+- [drag](/engine/modules/drag/readme/README.md)
+- [entityregistry](/engine/modules/entityregistry/readme/README.md)
+- [graphics](/engine/modules/graphics/readme/README.md)
+- [grid](/engine/modules/grid/readme/README.md)
+- [groups](/engine/modules/groups/readme/README.md)
 - [hierarchy](/engine/modules/hierarchy/readme/README.md)
-- [inputs (readme placeholder)](/engine/modules/inputs/readme/README.md)
-- [layout (readme placeholder)](/engine/modules/layout/readme/README.md)
-- [logger (readme placeholder)](/engine/modules/logger/readme/README.md)
-- [loop (readme placeholder)](/engine/modules/loop/readme/README.md)
-- [metadata (readme placeholder)](/engine/modules/metadata/readme/README.md)
-- [netsync (readme placeholder)](/engine/modules/netsync/readme/README.md)
-- [noise (readme placeholder)](/engine/modules/noise/readme/README.md)
-- [prototype (readme placeholder)](/engine/modules/prototype/readme/README.md)
+- [inputs](/engine/modules/inputs/readme/README.md)
+- [layout](/engine/modules/layout/readme/README.md)
+- [logger](/engine/modules/logger/readme/README.md)
+- [loop](/engine/modules/loop/readme/README.md)
+- [metadata](/engine/modules/metadata/readme/README.md)
+- [netsync](/engine/modules/netsync/readme/README.md)
+- [noise](/engine/modules/noise/readme/README.md)
+- [prototype](/engine/modules/prototype/readme/README.md)
 - [record](/engine/modules/record/readme/README.md)
-- [relation (readme placeholder)](/engine/modules/relation/readme/README.md)
-- [render (readme placeholder)](/engine/modules/render/readme/README.md)
-- [scene (readme placeholder)](/engine/modules/scene/readme/README.md)
-- [seed (readme placeholder)](/engine/modules/seed/readme/README.md)
-- [smooth (readme placeholder)](/engine/modules/smooth/readme/README.md)
-- [text (readme placeholder)](/engine/modules/text/readme/README.md)
+- [relation](/engine/modules/relation/readme/README.md)
+- [render](/engine/modules/render/readme/README.md)
+- [scene](/engine/modules/scene/readme/README.md)
+- [seed](/engine/modules/seed/readme/README.md)
+- [smooth](/engine/modules/smooth/readme/README.md)
+- [text](/engine/modules/text/readme/README.md)
 - [transform](/engine/modules/transform/readme/README.md)
-- [transition (readme placeholder)](/engine/modules/transition/readme/README.md)
-- [typeregistry (readme placeholder)](/engine/modules/typeregistry/readme/README.md)
-- [uuid (readme placeholder)](/engine/modules/uuid/readme/README.md)
-- [warmup (readme placeholder)](/engine/modules/warmup/readme/README.md)
-- [window (readme placeholder)](/engine/modules/window/readme/README.md)
+- [transition](/engine/modules/transition/readme/README.md)
+- [typeregistry](/engine/modules/typeregistry/readme/README.md)
+- [uuid](/engine/modules/uuid/readme/README.md)
+- [warmup](/engine/modules/warmup/readme/README.md)
+- [window](/engine/modules/window/readme/README.md)
 
 Engine services:
-- [clock (readme placeholder)](/engine/services/clock/readme/README.md)
-- [console (readme placeholder)](/engine/services/console/readme/README.md)
-- [datastructures (readme placeholder)](/engine/services/datastructures/readme/README.md)
+- [clock](/engine/services/clock/readme/README.md)
+- [console](/engine/services/console/readme/README.md)
+- [datastructures](/engine/services/datastructures/readme/README.md)
 - [ecs](/engine/services/ecs/readme/README.md)
 
 ### Technical challenges
@@ -245,9 +230,9 @@ Current design leaves space to add in the future stages for **CD**.
 
 Example map generated in a matter of seconds and rendered in less than 6ms\
 using 5 years old Intel® Core™ i5-8350U × 8 Intel® and UHD Graphics 620 (KBL GT2):
-![Map scroll](/readme/map_scroll.gif)
-![Whole map](/readme/whole_map.png)
-![Bottom right map corner](/readme/bottom_right.png)
+![Map scroll](map_scroll.gif)
+![Whole map](whole_map.png)
+![Bottom right map corner](bottom_right.png)
 
 ## How to run ?
 ### Install dependencies

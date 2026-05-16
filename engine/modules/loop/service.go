@@ -1,3 +1,4 @@
+// defines game loop
 package loop
 
 import (

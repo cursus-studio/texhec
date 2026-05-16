@@ -1,3 +1,12 @@
+// This module splits into two separate parts.\
+// One to record by `EntityID` which should be used to perform things localy.\
+// Second to record by `UUID` which should be used to record things for external machines.
+//
+// Backwards recording returns state on recording start.\
+// Backwards recording can be used to record state before to smoothen changes.
+//
+// Forwards recording returns state on recording end.\
+// Forwards recording can be used to record changes to send them somewhere else to replicate them.
 package record
 
 import (

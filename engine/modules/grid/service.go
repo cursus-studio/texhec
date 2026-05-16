@@ -1,3 +1,4 @@
+// defines generic slice based data structure to store grids
 package grid
 
 import "engine/services/ecs"

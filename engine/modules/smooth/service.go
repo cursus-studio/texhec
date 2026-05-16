@@ -1,3 +1,4 @@
+// catches changes on tick and applies them smoothly between ticks
 package smooth
 
 import (

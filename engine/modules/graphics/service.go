@@ -1,3 +1,4 @@
+// integrates opengl into the engine
 package graphics
 
 import (

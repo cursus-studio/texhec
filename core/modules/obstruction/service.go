@@ -1,3 +1,4 @@
+// defines how obstruction map is stored and accessed
 package obstruction
 
 import (

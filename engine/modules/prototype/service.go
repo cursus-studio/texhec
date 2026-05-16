@@ -1,3 +1,6 @@
+// allows us to copy entity with copyable components
+//
+// its to create copies of entities. its equivalent of unity prefabs (unity semantics)
 package prototype
 
 import "engine/services/ecs"

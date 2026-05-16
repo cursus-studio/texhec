@@ -1,3 +1,4 @@
+// defines seed data structure used for generating pseudo random numbers
 package seed
 
 import (

@@ -1,3 +1,5 @@
+// allows to store data about objects.
+// its extremely useful when having in game documentation of objects
 package metadata
 
 import "engine/services/ecs"

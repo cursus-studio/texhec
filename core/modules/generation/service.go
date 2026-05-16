@@ -1,3 +1,4 @@
+// generates map using noise functions
 package generation
 
 import (
