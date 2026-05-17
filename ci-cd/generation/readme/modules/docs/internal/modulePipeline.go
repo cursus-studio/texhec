@@ -134,8 +134,7 @@ func (s *service) GenerateModuleDocs(modulePath string) error {
 
 func (s *service) DiffModuleDocs(modulePath string) error {
 	log.Printf("Comparing \"%v\" docs...\n", modulePath)
-	readmePath := fmt.Sprintf("%v/readme/README.md", modulePath)
-
+	readmePath := filepath.Join(filepath.Clean(modulePath), "readme", "README.md")
 	file, err := os.ReadFile(readmePath)
 	if err != nil {
 		return err

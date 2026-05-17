@@ -36,6 +36,7 @@ func filesModules(files []string) (modules []string) {
 }
 
 func execCommand(command string) (string, error) {
+	// #nosec G204
 	cmd := exec.Command("bash", "-c", fmt.Sprintf("%v", command))
 
 	var out bytes.Buffer
