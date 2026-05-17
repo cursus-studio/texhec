@@ -16,8 +16,6 @@ import (
 	"golang.org/x/tools/go/packages"
 )
 
-type ModulePipeline struct{}
-
 // Pipeline.
 //
 // Legend:
@@ -156,7 +154,7 @@ func (s *service) DiffModuleDocs(modulePath string) error {
 //
 //
 
-func (s *ModulePipeline) Title(modulePath string) (string, error) {
+func (s *service) Title(modulePath string) (string, error) {
 	cfg := &packages.Config{
 		Mode: packages.NeedName,
 		Dir:  modulePath,
@@ -169,7 +167,7 @@ func (s *ModulePipeline) Title(modulePath string) (string, error) {
 	return doc, nil
 }
 
-func (s *ModulePipeline) Architecture(modulePath string) (string, error) {
+func (s *service) Architecture(modulePath string) (string, error) {
 	cfg := &packages.Config{
 		Mode: packages.NeedName | packages.NeedSyntax | packages.NeedTypesInfo,
 		Dir:  modulePath,
@@ -202,7 +200,7 @@ func (s *ModulePipeline) Architecture(modulePath string) (string, error) {
 	return doc, nil
 }
 
-func (s *ModulePipeline) Types(modulePath string) (string, error) {
+func (s *service) Types(modulePath string) (string, error) {
 	meta, err := types.NewAST(modulePath)
 	if err != nil {
 		return "", err
@@ -210,7 +208,7 @@ func (s *ModulePipeline) Types(modulePath string) (string, error) {
 	return meta.String(), nil
 }
 
-func (s *ModulePipeline) Bench(modulePath string) (string, error) {
+func (s *service) Bench(modulePath string) (string, error) {
 	if data, err := os.ReadFile(fmt.Sprintf("%v/readme/BENCH.md", modulePath)); err == nil {
 		doc := fmt.Sprintf("## Benchmarks\n%v", string(data))
 		return doc, nil
@@ -240,7 +238,7 @@ func (s *ModulePipeline) Bench(modulePath string) (string, error) {
 	return doc, nil
 }
 
-func (s *ModulePipeline) Challenges(modulePath string) (string, error) {
+func (s *service) Challenges(modulePath string) (string, error) {
 	data, err := os.ReadFile(fmt.Sprintf("%v/readme/CHALLENGES.md", modulePath))
 	if err != nil {
 		return "", nil
@@ -249,7 +247,7 @@ func (s *ModulePipeline) Challenges(modulePath string) (string, error) {
 	return doc, nil
 }
 
-func (s *ModulePipeline) Todo(modulePath string) (string, error) {
+func (s *service) Todo(modulePath string) (string, error) {
 	data, err := os.ReadFile(fmt.Sprintf("%v/readme/TODO.md", modulePath))
 	if err != nil {
 		return "", nil
@@ -258,7 +256,7 @@ func (s *ModulePipeline) Todo(modulePath string) (string, error) {
 	return doc, nil
 }
 
-func (s *ModulePipeline) Dependencies(modulePath string) (string, error) {
+func (s *service) Dependencies(modulePath string) (string, error) {
 	deps, err := deps.NewAST(modulePath)
 	if err != nil {
 		return "", err

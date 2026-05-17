@@ -2,18 +2,23 @@ package internal
 
 import (
 	"bytes"
-	"cicd/modules/diff"
+	"cicd/modules/git"
+	"cicd/world"
 	"engine/services/datastructures"
 	"fmt"
 	"os"
 	"os/exec"
 	"strings"
+
+	"github.com/ogiusek/ioc/v2"
 )
 
-type service struct{}
+type service struct {
+	world.CICDWorld `inject:""`
+}
 
-func NewService() diff.Service {
-	return &service{}
+func NewService(c ioc.Dic) git.Service {
+	return ioc.GetServices[*service](c)
 }
 
 func extractPathModule(input string) (string, bool) {
@@ -77,4 +82,15 @@ func (s *service) DiffCommited() ([]string, error) {
 	}
 	paths := filesModules(strings.Split(outputStr, "\n"))
 	return paths, nil
+}
+
+func (s *service) Stage(directories ...string) error {
+	if len(directories) == 0 {
+		return nil
+	}
+	cmdStr := fmt.Sprintf("git add %s", strings.Join(directories, " "))
+	if _, err := execCommand(cmdStr); err != nil {
+		return fmt.Errorf("failed to stage directories: %w", err)
+	}
+	return nil
 }

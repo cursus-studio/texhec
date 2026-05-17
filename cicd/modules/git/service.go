@@ -1,5 +1,5 @@
-// lists modified modules
-package diff
+// responsible for git integration
+package git
 
 // each method returns modules
 type Service interface {
@@ -8,4 +8,6 @@ type Service interface {
 
 	// lists changed modules in previous commit
 	DiffCommited() ([]string, error)
+
+	Stage(...string) error
 }

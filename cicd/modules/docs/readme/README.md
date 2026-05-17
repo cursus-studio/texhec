@@ -58,5 +58,9 @@ Extension to preview:
   - `cicd/modules/docs.ErrMissingPackageComments`
   - `cicd/modules/docs.Service`
 
+`cicd/world`:
+  - `cicd/world.CICDWorld`
+
 ### Third Party
+- `github.com/ogiusek/ioc/v2`
 - `golang.org/x/tools/go/packages`

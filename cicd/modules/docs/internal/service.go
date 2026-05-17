@@ -2,17 +2,20 @@ package internal
 
 import (
 	"cicd/modules/docs"
+	"cicd/world"
 	"errors"
 	"fmt"
 	"os"
+
+	"github.com/ogiusek/ioc/v2"
 )
 
 type service struct {
-	ModulePipeline
+	world.CICDWorld `inject:""`
 }
 
-func NewService() docs.Service {
-	return &service{}
+func NewService(c ioc.Dic) docs.Service {
+	return ioc.GetServices[*service](c)
 }
 
 func (s *service) modules(modulesPath string) ([]string, error) {
