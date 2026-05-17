@@ -64,24 +64,20 @@ pipeline {
                 stage('Lint') {
                     steps { runModuleStep('Lint', 'golangci-lint run', false) }
                 }
+                stage('Diff Docs') {
+                    steps { runGeneralStep('Diff Docs', 'go run ./ci-cd/generation/readme verify-commit') }
+                }
                 stage('Markdown Lint') {
                     steps { runGeneralStep('Markdown Lint', 'lychee --root-dir . "**/*.md"') }
                 }
                 stage('Test') {
                     steps { runModuleStep('Test', 'go test ./... -benchtime=1x') }
                 }
-                stage('Generate Docs') {
-                    steps { runGeneralStep('Generate Docs', 'go run readme diff') }
-                }
-                stage('Generated Markdown Lint') {
-                    steps { runGeneralStep('Generated Markdown Lint', 'lychee --root-dir . "**/*.md"') }
-                }
             }
         }
     }
     post {
         success {
-            commitChanges()
             updateGitHubStatus('success', 'Success!')
         }
         failure {
@@ -102,7 +98,7 @@ def runModuleStep(String statusMsg, String command, boolean isParallel = true) {
     script {
         updateGitHubStatus('pending', "${statusMsg}...")
 
-        def modules = ['engine', 'core', 'readme']
+        def modules = ['engine', 'core', 'ci-cd/generation/readme']
         def tasks = [:]
 
         modules.each { mod ->
@@ -128,20 +124,6 @@ def runGeneralStep(String statusMsg, String command, boolean isParallel = true) 
     script {
         updateGitHubStatus('pending', "${statusMsg}...")
         sh command
-    }
-}
-
-def commitChanges() {
-    sh 'git config --global user.email "jenkins@cursus-studio.com"'
-    sh 'git config --global user.name "Jenkins CI"'
-
-    withCredentials([usernamePassword(credentialsId: 'texhec-app', passwordVariable: 'TOKEN', usernameVariable: 'USER')]) {
-        sh '''
-            git add .
-            git commit -m "[skip ci] Automatic update from Jenkins"
-            git remote set-url origin https://${USER}:${TOKEN}@github.com/${OWNER}/${REPO}.git
-            git push origin HEAD:${GIT_BRANCH}
-        '''
     }
 }
 

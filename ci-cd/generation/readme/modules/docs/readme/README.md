@@ -20,6 +20,12 @@ Where and how to write comments:
 ### type Service
 Type: `readme/modules/docs.Service`
 
+#### method Service DiffModuleDocs
+Type: `func(modulePath string) error`
+
+#### method Service DiffModulesDocs
+Type: `func(modulesPath string) []error`
+
 #### method Service GenerateModuleDocs
 Type: `func(modulePath string) error`
 Generates module documentation in `$modulePath/readme/README.md`

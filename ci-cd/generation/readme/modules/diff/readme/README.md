@@ -1,13 +1,19 @@
 # diff
 ## Architecture
-this module finds modified modules since last commit
+lists modified modules
 
 ## Types
 ### type Service
 Type: `readme/modules/diff.Service`
+each method returns modules
 
-#### method Service GetModifiedModules
+#### method Service DiffCommited
 Type: `func() ([]string, error)`
+lists changed modules in previous commit
+
+#### method Service DiffUncommited
+Type: `func() ([]string, error)`
+lists uncommited changed modules
 
 
 ## Dependencies

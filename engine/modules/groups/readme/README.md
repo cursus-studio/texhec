@@ -63,7 +63,7 @@ Type: `func() engine/modules/groups.GroupsComponent`
 ```
 $ go test ./... -bench=.
 PASS
-ok  	engine/modules/groups/test	0.007s
+ok  	engine/modules/groups/test	0.010s
 ```
 ## Dependencies
 `engine`:
