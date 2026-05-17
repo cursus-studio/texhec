@@ -88,5 +88,5 @@ Type: `func(steps int, handler func(int)) engine/modules/batcher.Batch`
   - `engine/services/ecs.SystemRegister`
 
 ### Third Party
-`github.com/ogiusek/events`
-`github.com/ogiusek/ioc/v2`
+- `github.com/ogiusek/events`
+- `github.com/ogiusek/ioc/v2`

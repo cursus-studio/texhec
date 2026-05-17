@@ -318,5 +318,5 @@ Type: `core/modules/obstruction.Obstruction`
   - `engine/services/ecs.Set`
 
 ### Third Party
-`github.com/go-gl/mathgl/mgl32`
-`github.com/ogiusek/ioc/v2`
+- `github.com/go-gl/mathgl/mgl32`
+- `github.com/ogiusek/ioc/v2`

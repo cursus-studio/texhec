@@ -1,10 +1,10 @@
 package internal
 
 import (
+	"cicd/modules/docs"
 	"errors"
 	"fmt"
 	"os"
-	"readme/modules/docs"
 )
 
 type service struct {

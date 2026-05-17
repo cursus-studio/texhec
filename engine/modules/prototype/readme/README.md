@@ -35,12 +35,12 @@ goos: linux
 goarch: amd64
 pkg: engine/modules/prototype/test
 cpu: Intel(R) Core(TM) i5-8350U CPU @ 1.70GHz
-BenchmarkClone1-8         	  482223	      2260 ns/op
-BenchmarkClone2-8         	  514256	      2331 ns/op
-BenchmarkManual1Clone-8   	36900560	        29.48 ns/op
-BenchmarkManual2Clone-8   	33943478	        31.63 ns/op
+BenchmarkClone1-8         	  593815	      1984 ns/op
+BenchmarkClone2-8         	  531854	      2059 ns/op
+BenchmarkManual1Clone-8   	57392217	        21.02 ns/op
+BenchmarkManual2Clone-8   	45515582	        26.31 ns/op
 PASS
-ok  	engine/modules/prototype/test	4.514s
+ok  	engine/modules/prototype/test	4.700s
 ```
 ## Dependencies
 `engine`:
@@ -69,5 +69,5 @@ ok  	engine/modules/prototype/test	4.514s
   - `engine/services/ecs.World`
 
 ### Third Party
-`github.com/ogiusek/events`
-`github.com/ogiusek/ioc/v2`
+- `github.com/ogiusek/events`
+- `github.com/ogiusek/ioc/v2`

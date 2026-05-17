@@ -34,7 +34,7 @@ Type: `func[Registry any](s engine/modules/entityregistry.Service) (Registry, er
 ```
 $ go test ./... -bench=.
 PASS
-ok  	engine/modules/entityregistry/test	0.010s
+ok  	engine/modules/entityregistry/test	0.012s
 ```
 ## Dependencies
 `engine`:
@@ -64,4 +64,4 @@ ok  	engine/modules/entityregistry/test	0.010s
   - `engine/services/ecs.World`
 
 ### Third Party
-`github.com/ogiusek/ioc/v2`
+- `github.com/ogiusek/ioc/v2`

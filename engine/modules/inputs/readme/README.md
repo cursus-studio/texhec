@@ -477,7 +477,7 @@ Type: `func(event any) engine/modules/inputs.DragComponent`
   - `engine/services/ecs.SystemRegister`
 
 ### Third Party
-`github.com/go-gl/mathgl/mgl32`
-`github.com/ogiusek/events`
-`github.com/ogiusek/ioc/v2`
-`github.com/veandco/go-sdl2/sdl`
+- `github.com/go-gl/mathgl/mgl32`
+- `github.com/ogiusek/events`
+- `github.com/ogiusek/ioc/v2`
+- `github.com/veandco/go-sdl2/sdl`

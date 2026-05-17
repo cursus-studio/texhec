@@ -22,7 +22,7 @@ type ASTMeta struct {
 
 func (m *Meta) String() string {
 	if len(m.CalledFuncs) == 0 {
-		return fmt.Sprintf("`%s`\n", m.ImportPath)
+		return fmt.Sprintf("- `%s`\n", m.ImportPath)
 	}
 	res := &strings.Builder{}
 	fmt.Fprintf(res, "`%s`:\n", m.ImportPath)

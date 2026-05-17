@@ -144,6 +144,6 @@ Type: `func(easingFunction func(t engine/modules/transition.Progress) engine/mod
   - `engine/services/ecs.SystemRegister`
 
 ### Third Party
-`github.com/ogiusek/events`
-`github.com/ogiusek/ioc/v2`
-`golang.org/x/exp/constraints`
+- `github.com/ogiusek/events`
+- `github.com/ogiusek/ioc/v2`
+- `golang.org/x/exp/constraints`

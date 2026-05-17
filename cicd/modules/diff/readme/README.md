@@ -4,7 +4,7 @@ lists modified modules
 
 ## Types
 ### type Service
-Type: `readme/modules/diff.Service`
+Type: `cicd/modules/diff.Service`
 each method returns modules
 
 #### method Service DiffCommited
@@ -17,10 +17,10 @@ lists uncommited changed modules
 
 
 ## Dependencies
+`cicd/modules/diff`:
+  - `cicd/modules/diff.Service`
+
 `engine/services/datastructures`:
   - `engine/services/datastructures.Add`
   - `engine/services/datastructures.Get`
   - `engine/services/datastructures.NewSet`
-
-`readme/modules/diff`:
-  - `readme/modules/diff.Service`

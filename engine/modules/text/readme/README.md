@@ -239,10 +239,10 @@ Type: `func(b uint8) engine/modules/text.BreakComponent`
   - `engine/services/ecs.SystemRegister`
 
 ### Third Party
-`github.com/go-gl/gl/v4.5-core/gl`
-`github.com/go-gl/mathgl/mgl32`
-`github.com/ogiusek/events`
-`github.com/ogiusek/ioc/v2`
-`golang.org/x/image/font`
-`golang.org/x/image/font/opentype`
-`golang.org/x/image/math/fixed`
+- `github.com/go-gl/gl/v4.5-core/gl`
+- `github.com/go-gl/mathgl/mgl32`
+- `github.com/ogiusek/events`
+- `github.com/ogiusek/ioc/v2`
+- `golang.org/x/image/font`
+- `golang.org/x/image/font/opentype`
+- `golang.org/x/image/math/fixed`

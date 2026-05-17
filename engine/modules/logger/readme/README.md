@@ -44,4 +44,4 @@ Type: `func(meta error) bool`
   - `engine/modules/logger.Service`
 
 ### Third Party
-`github.com/ogiusek/ioc/v2`
+- `github.com/ogiusek/ioc/v2`

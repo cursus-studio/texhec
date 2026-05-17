@@ -184,6 +184,6 @@ Type: `func(channel engine/modules/audio.Channel, volume engine/modules/audio.Vo
   - `engine/services/ecs.SystemRegister`
 
 ### Third Party
-`github.com/ogiusek/events`
-`github.com/ogiusek/ioc/v2`
-`github.com/veandco/go-sdl2/mix`
+- `github.com/ogiusek/events`
+- `github.com/ogiusek/ioc/v2`
+- `github.com/veandco/go-sdl2/mix`

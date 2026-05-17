@@ -251,7 +251,7 @@ Type: `func(entity engine/services/ecs.EntityID) core/modules/pathfind.FindPathE
   - `engine/services/ecs.SystemRegister`
 
 ### Third Party
-`github.com/go-gl/mathgl/mgl32`
-`github.com/ogiusek/events`
-`github.com/ogiusek/ioc/v2`
-`golang.org/x/exp/constraints`
+- `github.com/go-gl/mathgl/mgl32`
+- `github.com/ogiusek/events`
+- `github.com/ogiusek/ioc/v2`
+- `golang.org/x/exp/constraints`

@@ -1,10 +1,10 @@
 package main
 
 import (
+	diffpkg "cicd/modules/diff/pkg"
+	docspkg "cicd/modules/docs/pkg"
 	"fmt"
 	"os"
-	diffpkg "readme/modules/diff/pkg"
-	docspkg "readme/modules/docs/pkg"
 )
 
 func main() {
@@ -19,7 +19,7 @@ func main() {
 		command = os.Args[1]
 	}
 
-	modules := []string{"ci-cd/generation/readme/modules", "engine/modules", "core/modules"}
+	modules := []string{"cicd/modules", "engine/modules", "core/modules"}
 
 	switch command {
 	case "generate-all":

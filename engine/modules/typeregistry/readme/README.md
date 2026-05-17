@@ -22,4 +22,4 @@ groups many generic modules into one
   - `engine/modules/transition/pkg.PkgT`
 
 ### Third Party
-`github.com/ogiusek/ioc/v2`
+- `github.com/ogiusek/ioc/v2`

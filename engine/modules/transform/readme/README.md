@@ -266,12 +266,12 @@ goos: linux
 goarch: amd64
 pkg: engine/modules/transform/test
 cpu: Intel(R) Core(TM) i5-8350U CPU @ 1.70GHz
-BenchmarkGetPos-8                 	38063211	        26.79 ns/op
-BenchmarkRawGetPos-8              	91705616	        10.93 ns/op
-BenchmarkSetAbsolutePos-8         	 1921393	       625.5 ns/op
-BenchmarkSetAndGetAbsolutePos-8   	 1967026	       596.5 ns/op
+BenchmarkGetPos-8                 	41806236	        27.30 ns/op
+BenchmarkRawGetPos-8              	100000000	        11.23 ns/op
+BenchmarkSetAbsolutePos-8         	 1783621	       644.6 ns/op
+BenchmarkSetAndGetAbsolutePos-8   	 2002534	       598.7 ns/op
 PASS
-ok  	engine/modules/transform/test	5.738s
+ok  	engine/modules/transform/test	5.982s
 ```
 ## Dependencies
 `engine`:
@@ -351,5 +351,5 @@ ok  	engine/modules/transform/test	5.738s
   - `engine/services/ecs.World`
 
 ### Third Party
-`github.com/go-gl/mathgl/mgl32`
-`github.com/ogiusek/ioc/v2`
+- `github.com/go-gl/mathgl/mgl32`
+- `github.com/ogiusek/ioc/v2`

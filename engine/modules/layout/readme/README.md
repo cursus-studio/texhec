@@ -75,7 +75,7 @@ Type: `func(x float32) engine/modules/layout.GapComponent`
 ```
 $ go test ./... -bench=.
 PASS
-ok  	engine/modules/layout/test	0.010s
+ok  	engine/modules/layout/test	0.008s
 ```
 ## Dependencies
 `engine`:
@@ -134,5 +134,5 @@ ok  	engine/modules/layout/test	0.010s
   - `engine/services/ecs.SetEmpty`
 
 ### Third Party
-`github.com/go-gl/mathgl/mgl32`
-`github.com/ogiusek/ioc/v2`
+- `github.com/go-gl/mathgl/mgl32`
+- `github.com/ogiusek/ioc/v2`

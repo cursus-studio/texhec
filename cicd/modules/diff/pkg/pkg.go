@@ -1,8 +1,8 @@
 package diffpkg
 
 import (
-	"readme/modules/diff"
-	"readme/modules/diff/internal"
+	"cicd/modules/diff"
+	"cicd/modules/diff/internal"
 )
 
 func NewService() diff.Service {

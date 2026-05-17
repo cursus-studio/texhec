@@ -2,11 +2,11 @@ package internal
 
 import (
 	"bytes"
+	"cicd/modules/diff"
 	"engine/services/datastructures"
 	"fmt"
 	"os"
 	"os/exec"
-	"readme/modules/diff"
 	"strings"
 )
 
@@ -55,7 +55,7 @@ func execCommand(command string) (string, error) {
 }
 
 func (s *service) DiffUncommited() ([]string, error) {
-	outputStr, err := execCommand("git diff --name-only | tr '\n' '\n'")
+	outputStr, err := execCommand("git status --porcelain -uall | awk '{print $2}'")
 	if err != nil || outputStr == "" {
 		return nil, err
 	}

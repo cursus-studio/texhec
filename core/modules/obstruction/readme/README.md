@@ -166,4 +166,4 @@ ok  	core/modules/obstruction/test	0.004s
   - `engine/services/ecs.SystemRegister`
 
 ### Third Party
-`github.com/ogiusek/ioc/v2`
+- `github.com/ogiusek/ioc/v2`

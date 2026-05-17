@@ -184,6 +184,6 @@ Type: `func(by engine/services/ecs.EntityID, blueprint engine/services/ecs.Entit
   - `engine/services/ecs.Set`
 
 ### Third Party
-`github.com/go-gl/mathgl/mgl32`
-`github.com/ogiusek/events`
-`github.com/ogiusek/ioc/v2`
+- `github.com/go-gl/mathgl/mgl32`
+- `github.com/ogiusek/events`
+- `github.com/ogiusek/ioc/v2`

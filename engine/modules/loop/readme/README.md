@@ -84,5 +84,5 @@ Type: `func(fps int, tps int) engine/modules/loop.ConfigureEvent`
   - `engine/modules/loop.TickEvent`
 
 ### Third Party
-`github.com/ogiusek/events`
-`github.com/ogiusek/ioc/v2`
+- `github.com/ogiusek/events`
+- `github.com/ogiusek/ioc/v2`

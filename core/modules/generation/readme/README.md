@@ -123,5 +123,5 @@ Type: `func(entity engine/services/ecs.EntityID, seed engine/modules/seed.Seed, 
   - `engine/services/ecs.Set`
 
 ### Third Party
-`github.com/go-gl/mathgl/mgl64`
-`github.com/ogiusek/ioc/v2`
+- `github.com/go-gl/mathgl/mgl64`
+- `github.com/ogiusek/ioc/v2`

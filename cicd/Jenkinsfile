@@ -9,7 +9,7 @@ pipeline {
         preserveStashes(buildCount: 5)
     }
     environment {
-        CONTEXT = 'jenkins/ci-cd'
+        CONTEXT = 'jenkins/cicd'
         OWNER = 'cursus-studio'
         REPO = 'texhec'
     }
@@ -35,7 +35,7 @@ pipeline {
             agent {
                 dockerfile {
                     filename 'Dockerfile'
-                    dir 'ci-cd'
+                    dir 'cicd'
                     args '-v /home/jenkins/go-cache:/root/.cache/go-build -v /home/jenkins/golangci-lint:/root/.cache/golangci-lint'
                     additionalBuildArgs '--build-arg CACHE_VERSION=1.0.0'
                 }
@@ -65,7 +65,7 @@ pipeline {
                     steps { runModuleStep('Lint', 'golangci-lint run', false) }
                 }
                 stage('Diff Docs') {
-                    steps { runGeneralStep('Diff Docs', 'go run ./ci-cd/generation/readme verify-commit') }
+                    steps { runGeneralStep('Diff Docs', 'go run cicd verify-commit') }
                 }
                 stage('Markdown Lint') {
                     steps { runGeneralStep('Markdown Lint', 'lychee --root-dir . "**/*.md"') }
@@ -98,7 +98,7 @@ def runModuleStep(String statusMsg, String command, boolean isParallel = true) {
     script {
         updateGitHubStatus('pending', "${statusMsg}...")
 
-        def modules = ['engine', 'core', 'ci-cd/generation/readme']
+        def modules = ['engine', 'core', 'cicd']
         def tasks = [:]
 
         modules.each { mod ->

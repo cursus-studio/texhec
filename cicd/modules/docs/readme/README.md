@@ -18,7 +18,7 @@ Where and how to write comments:
 
 ## Types
 ### type Service
-Type: `readme/modules/docs.Service`
+Type: `cicd/modules/docs.Service`
 
 #### method Service DiffModuleDocs
 Type: `func(modulePath string) error`
@@ -52,11 +52,11 @@ Extension to preview:
 - ".adoc"
 
 ## Dependencies
-`readme/modules/docs`:
-  - `readme/modules/docs.ErrInconsistentPackageComments`
-  - `readme/modules/docs.ErrMissingPackage`
-  - `readme/modules/docs.ErrMissingPackageComments`
-  - `readme/modules/docs.Service`
+`cicd/modules/docs`:
+  - `cicd/modules/docs.ErrInconsistentPackageComments`
+  - `cicd/modules/docs.ErrMissingPackage`
+  - `cicd/modules/docs.ErrMissingPackageComments`
+  - `cicd/modules/docs.Service`
 
 ### Third Party
-`golang.org/x/tools/go/packages`
+- `golang.org/x/tools/go/packages`

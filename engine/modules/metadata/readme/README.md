@@ -76,4 +76,4 @@ Type: `func(entity engine/services/ecs.EntityID) engine/modules/metadata.LinkCom
   - `engine/services/ecs.Set`
 
 ### Third Party
-`github.com/ogiusek/ioc/v2`
+- `github.com/ogiusek/ioc/v2`

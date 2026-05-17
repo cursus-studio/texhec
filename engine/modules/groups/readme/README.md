@@ -63,7 +63,7 @@ Type: `func() engine/modules/groups.GroupsComponent`
 ```
 $ go test ./... -bench=.
 PASS
-ok  	engine/modules/groups/test	0.010s
+ok  	engine/modules/groups/test	0.007s
 ```
 ## Dependencies
 `engine`:
@@ -105,4 +105,4 @@ ok  	engine/modules/groups/test	0.010s
   - `engine/services/ecs.World`
 
 ### Third Party
-`github.com/ogiusek/ioc/v2`
+- `github.com/ogiusek/ioc/v2`

@@ -114,4 +114,4 @@ ok  	engine/modules/assets/test	0.007s
   - `engine/services/ecs.Set`
 
 ### Third Party
-`github.com/ogiusek/ioc/v2`
+- `github.com/ogiusek/ioc/v2`

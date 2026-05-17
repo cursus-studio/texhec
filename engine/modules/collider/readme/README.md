@@ -274,5 +274,5 @@ Type: `func(ray engine/modules/collider.Ray, normal github.com/go-gl/mathgl/mgl3
   - `engine/services/ecs.NewDirtySet`
 
 ### Third Party
-`github.com/go-gl/mathgl/mgl32`
-`github.com/ogiusek/ioc/v2`
+- `github.com/go-gl/mathgl/mgl32`
+- `github.com/ogiusek/ioc/v2`

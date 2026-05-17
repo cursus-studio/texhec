@@ -507,8 +507,8 @@ Rendering 1 million tiles on `UHD Graphics 620` in less than **5.1ms**.
   - `engine/services/ecs.World`
 
 ### Third Party
-`github.com/go-gl/gl/v4.5-core/gl`
-`github.com/go-gl/mathgl/mgl32`
-`github.com/ogiusek/events`
-`github.com/ogiusek/ioc/v2`
-`golang.org/x/exp/constraints`
+- `github.com/go-gl/gl/v4.5-core/gl`
+- `github.com/go-gl/mathgl/mgl32`
+- `github.com/ogiusek/events`
+- `github.com/ogiusek/ioc/v2`
+- `golang.org/x/exp/constraints`

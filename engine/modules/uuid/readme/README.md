@@ -76,5 +76,5 @@ Type: `func(id engine/modules/uuid.UUID) engine/modules/uuid.Component`
   - `engine/services/ecs.World`
 
 ### Third Party
-`github.com/google/uuid`
-`github.com/ogiusek/ioc/v2`
+- `github.com/google/uuid`
+- `github.com/ogiusek/ioc/v2`

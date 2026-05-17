@@ -64,18 +64,18 @@ goos: linux
 goarch: amd64
 pkg: engine/modules/hierarchy/test
 cpu: Intel(R) Core(TM) i5-8350U CPU @ 1.70GHz
-BenchmarkChildren_1-8                          	220419864	         5.471 ns/op
-BenchmarkChildren_10-8                         	219260025	         5.546 ns/op
-BenchmarkChildren_100-8                        	201499240	         5.723 ns/op
-BenchmarkFlatChildren_1_1-8                    	177710098	         6.725 ns/op
-BenchmarkFlatChildren_10_10-8                  	161414077	         7.282 ns/op
-BenchmarkAddChildToParentWithGrandParent-8     	 5797731	       215.0 ns/op
-BenchmarkAddChildToParentWith5GrandParents-8   	 5897550	       209.7 ns/op
-BenchmarkRemoveChild-8                         	  860259	      1232 ns/op
-BenchmarkRemoveParentWith1Children-8           	   73681	     16710 ns/op
-BenchmarkRemoveParentWith100Children-8         	    8539	    138755 ns/op
+BenchmarkChildren_1-8                          	223965856	         5.393 ns/op
+BenchmarkChildren_10-8                         	223852948	         5.367 ns/op
+BenchmarkChildren_100-8                        	223520518	         5.365 ns/op
+BenchmarkFlatChildren_1_1-8                    	177743899	         6.728 ns/op
+BenchmarkFlatChildren_10_10-8                  	180656132	         6.638 ns/op
+BenchmarkAddChildToParentWithGrandParent-8     	 7006380	       167.4 ns/op
+BenchmarkAddChildToParentWith5GrandParents-8   	 7265545	       161.8 ns/op
+BenchmarkRemoveChild-8                         	 1622714	       763.5 ns/op
+BenchmarkRemoveParentWith1Children-8           	   77668	     14989 ns/op
+BenchmarkRemoveParentWith100Children-8         	   10000	    103984 ns/op
 PASS
-ok  	engine/modules/hierarchy/test	14.570s
+ok  	engine/modules/hierarchy/test	15.564s
 ```
 ## Dependencies
 `engine`:
@@ -119,4 +119,4 @@ ok  	engine/modules/hierarchy/test	14.570s
   - `engine/services/ecs.World`
 
 ### Third Party
-`github.com/ogiusek/ioc/v2`
+- `github.com/ogiusek/ioc/v2`

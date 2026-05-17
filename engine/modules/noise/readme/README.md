@@ -52,7 +52,7 @@ Type: `func(cellSize float64, weight float64) engine/modules/noise.LayerConfig`
 ```
 $ go test ./... -bench=.
 PASS
-ok  	engine/modules/noise/test	0.949s
+ok  	engine/modules/noise/test	0.957s
 ```
 ## Dependencies
 `engine`:
@@ -81,5 +81,5 @@ ok  	engine/modules/noise/test	0.949s
   - `engine/pkg.Pkg`
 
 ### Third Party
-`github.com/go-gl/mathgl/mgl64`
-`github.com/ogiusek/ioc/v2`
+- `github.com/go-gl/mathgl/mgl64`
+- `github.com/ogiusek/ioc/v2`

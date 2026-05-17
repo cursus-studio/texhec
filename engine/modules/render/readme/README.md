@@ -255,7 +255,7 @@ Type: `func(images ...image.Image) (engine/modules/render.TextureAsset, error)`
   - `engine/services/ecs.SystemRegister`
 
 ### Third Party
-`github.com/go-gl/gl/v4.5-core/gl`
-`github.com/go-gl/mathgl/mgl32`
-`github.com/ogiusek/events`
-`github.com/ogiusek/ioc/v2`
+- `github.com/go-gl/gl/v4.5-core/gl`
+- `github.com/go-gl/mathgl/mgl32`
+- `github.com/ogiusek/events`
+- `github.com/ogiusek/ioc/v2`

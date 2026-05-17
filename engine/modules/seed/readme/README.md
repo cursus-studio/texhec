@@ -22,4 +22,4 @@ Type: `func[Number golang.org/x/exp/constraints.Integer](s Number) engine/module
 
 ## Dependencies
 ### Third Party
-`golang.org/x/exp/constraints`
+- `golang.org/x/exp/constraints`

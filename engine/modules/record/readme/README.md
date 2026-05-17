@@ -197,4 +197,4 @@ Type: `func[Component any](config engine/modules/record.Config) engine/modules/r
   - `engine/services/ecs.World`
 
 ### Third Party
-`github.com/ogiusek/ioc/v2`
+- `github.com/ogiusek/ioc/v2`

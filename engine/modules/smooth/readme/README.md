@@ -66,5 +66,5 @@ this method is a tag that component is smooothed
   - `engine/services/ecs.SystemRegister`
 
 ### Third Party
-`github.com/ogiusek/events`
-`github.com/ogiusek/ioc/v2`
+- `github.com/ogiusek/events`
+- `github.com/ogiusek/ioc/v2`

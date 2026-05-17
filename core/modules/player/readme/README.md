@@ -37,4 +37,4 @@ Type: `func(owner engine/services/ecs.EntityID) core/modules/player.OwnerCompone
   - `engine/services/ecs.GetComponentsArray`
 
 ### Third Party
-`github.com/ogiusek/ioc/v2`
+- `github.com/ogiusek/ioc/v2`

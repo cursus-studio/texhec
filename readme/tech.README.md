@@ -224,7 +224,7 @@ Current pipeline **CI** flow:
 Using **GitHub Status API** integrates notifications into developer worflow.\
 Current design leaves space to add in the future stages for **CD**.
 
-[CI/CD directory](/ci-cd)
+[CI/CD directory](/cicd)
 
 ## Graphics
 

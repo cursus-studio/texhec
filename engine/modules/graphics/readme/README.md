@@ -316,6 +316,6 @@ Type: `func[Locations any](p engine/modules/graphics.Program) (Locations, error)
   - `engine/services/datastructures.TrackingArray`
 
 ### Third Party
-`github.com/go-gl/gl/v4.5-core/gl`
-`github.com/ogiusek/ioc/v2`
-`golang.org/x/image/draw`
+- `github.com/go-gl/gl/v4.5-core/gl`
+- `github.com/ogiusek/ioc/v2`
+- `golang.org/x/image/draw`

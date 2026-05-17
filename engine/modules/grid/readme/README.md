@@ -121,6 +121,6 @@ Type: `func[Tile engine/modules/grid.TileConstraint](w engine/modules/grid.Coord
   - `engine/services/ecs.Set`
 
 ### Third Party
-`github.com/ogiusek/events`
-`github.com/ogiusek/ioc/v2`
-`golang.org/x/exp/constraints`
+- `github.com/ogiusek/events`
+- `github.com/ogiusek/ioc/v2`
+- `golang.org/x/exp/constraints`

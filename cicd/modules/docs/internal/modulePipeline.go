@@ -2,14 +2,14 @@ package internal
 
 import (
 	"bytes"
+	"cicd/modules/docs"
+	"cicd/modules/docs/internal/deps"
+	"cicd/modules/docs/internal/types"
 	"fmt"
 	"log"
 	"os"
 	"os/exec"
 	"path/filepath"
-	"readme/modules/docs"
-	"readme/modules/docs/internal/deps"
-	"readme/modules/docs/internal/types"
 	"regexp"
 	"strings"
 

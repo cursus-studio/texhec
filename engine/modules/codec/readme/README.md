@@ -26,7 +26,7 @@ Type: `error`
 ```
 $ go test ./... -bench=.
 PASS
-ok  	engine/modules/codec/test	0.007s
+ok  	engine/modules/codec/test	0.006s
 ```
 ## Dependencies
 `engine`:
@@ -38,4 +38,4 @@ ok  	engine/modules/codec/test	0.007s
   - `engine/modules/codec.Service`
 
 ### Third Party
-`github.com/ogiusek/ioc/v2`
+- `github.com/ogiusek/ioc/v2`

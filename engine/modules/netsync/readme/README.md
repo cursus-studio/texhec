@@ -106,5 +106,5 @@ entity with this component and connection will get notifications about changes
   - `engine/services/ecs.SystemRegister`
 
 ### Third Party
-`github.com/ogiusek/events`
-`github.com/ogiusek/ioc/v2`
+- `github.com/ogiusek/events`
+- `github.com/ogiusek/ioc/v2`
