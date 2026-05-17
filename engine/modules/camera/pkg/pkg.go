@@ -65,7 +65,7 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 	ioc.Register(b, func(c ioc.Dic) camera.CameraForward { return camera.CameraForward(mgl32.Vec3{0, 0, -1}) })
 
 	ioc.Wrap(b, func(c ioc.Dic, s service.Service) {
-		world := ioc.GetServices[engine.EngineWorld](c)
+		world := ioc.Get[engine.EngineWorld](c)
 		cameraService := s
 		// transform := ioc.Get[transform.Service](c)
 		if err := s.RegisterProjection(reflect.TypeFor[camera.OrthoComponent](), func() service.ProjectionData {

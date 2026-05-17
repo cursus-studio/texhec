@@ -18,7 +18,7 @@ import (
 var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 	ioc.Register(b, func(c ioc.Dic) game.SettingsBuilder {
 		return func(sceneParent ecs.EntityID) {
-			world := ioc.GetServices[game.GameWorld](c)
+			world := ioc.Get[game.GameWorld](c)
 			cameraEntity := world.World().NewEntity()
 			world.Hierarchy().SetParent(cameraEntity, sceneParent)
 			world.Groups().Component().Set(cameraEntity, groups.DefaultGroups())

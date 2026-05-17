@@ -43,6 +43,11 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 		gamescene.Pkg,
 		menuscene.Pkg,
 		settingsscene.Pkg,
+		func(b ioc.Builder) {
+			ioc.Register(b, func(c ioc.Dic) game.GameWorld {
+				return ioc.GetServices[game.GameWorld](c)
+			})
+		},
 	}
 	for _, pkg := range pkgs {
 		pkg(b)

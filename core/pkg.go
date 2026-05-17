@@ -71,11 +71,11 @@ func getDic() ioc.Dic {
 				}
 			})
 			ioc.Wrap(b, func(c ioc.Dic, s text.Service) {
-				world := ioc.GetServices[game.GameWorld](c)
+				world := ioc.Get[game.GameWorld](c)
 				s.FontFamily().SetEmpty(text.NewFontFamily(world.Definitions().Assets().FontAsset))
 			})
 			ioc.Wrap(b, func(c ioc.Dic, config loggerpkg.Config) {
-				world := ioc.GetServices[game.GameWorld](c)
+				world := ioc.Get[game.GameWorld](c)
 				config.AddFormatHandler(func(meta, msg error) error {
 					typeMsg, color := "LOG", "37"
 					if errors.Is(meta, logger.ErrInfo) {

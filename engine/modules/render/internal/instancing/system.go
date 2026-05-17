@@ -43,7 +43,7 @@ type system struct {
 }
 
 func NewSystem(c ioc.Dic) ecs.SystemRegister {
-	world := ioc.GetServices[engine.EngineWorld](c)
+	world := ioc.Get[engine.EngineWorld](c)
 	return ecs.NewSystemRegister(func() error {
 		vert, err := world.Graphics().NewShader(vertSource, graphics.VertexShader)
 		if err != nil {

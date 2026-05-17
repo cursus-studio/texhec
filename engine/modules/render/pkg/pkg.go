@@ -51,7 +51,7 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 	})
 
 	ioc.Wrap(b, func(c ioc.Dic, b assets.Service) {
-		world := ioc.GetServices[engine.EngineWorld](c)
+		world := ioc.Get[engine.EngineWorld](c)
 		imageHandler := func(id assets.PathComponent) (assets.Asset, error) {
 			source, err := os.ReadFile(id.Path)
 			if err != nil {

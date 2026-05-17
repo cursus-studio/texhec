@@ -101,7 +101,7 @@ func addScene(world game.GameWorld, sceneParent ecs.EntityID) {
 var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 	ioc.Register(b, func(c ioc.Dic) game.GameBuilder {
 		return func(sceneParent ecs.EntityID) {
-			world := ioc.GetServices[game.GameWorld](c)
+			world := ioc.Get[game.GameWorld](c)
 			addScene(world, sceneParent)
 		}
 	})
