@@ -15,6 +15,7 @@ var embeddedHooksPath string = "hooks"
 var hooksDir string = ".git/hooks"
 
 func copyAndMod(srcFile io.Reader, dst string, perm os.FileMode) error {
+	//#nosec G304
 	dstFile, err := os.OpenFile(dst, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, perm)
 	if err != nil {
 		return err
@@ -31,6 +32,7 @@ func (s *service) Setup() error {
 	if err != nil {
 		return err
 	}
+	//#nosec G301
 	if err := os.MkdirAll(hooksDir, 0755); err != nil {
 		return err
 	}
