@@ -5,7 +5,6 @@ import (
 	"cicd/modules/git"
 	"cicd/world"
 	"errors"
-	"fmt"
 	"os"
 	"os/exec"
 	"strings"
@@ -69,8 +68,8 @@ func (s *service) Stage(directories ...string) error {
 	}
 	args := []string{"add"}
 	args = append(args, directories...)
-	if err := exec.Command("git", args...).Err; err != nil {
-		return fmt.Errorf("failed to stage directories: %w", err)
+	if err := exec.Command("git", args...).Run(); err != nil {
+		return err
 	}
 	return nil
 }

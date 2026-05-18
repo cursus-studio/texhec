@@ -31,8 +31,6 @@ pipeline {
                     additionalBuildArgs '--build-arg CACHE_VERSION=1.0.0'
                 }
             }
-            when { environment name: 'SKIP_REMAINING_STAGES', value: 'false' }
-
             stages {
                 stage('Verify Env') {
                     steps {

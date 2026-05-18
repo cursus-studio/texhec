@@ -1,7 +1,6 @@
 # pipe
 ## Architecture
-pipeline:
--
+main entry point responsible for setuping pipe hooks, running pipe hooks, running cicd pipeline
 
 ## Types
 ### type Service

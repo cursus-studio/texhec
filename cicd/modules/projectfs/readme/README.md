@@ -1,6 +1,6 @@
 # projectfs
 ## Architecture
-saves results in files
+responsible for accessing project file structure and project specific directories
 
 ## Types
 ### type Service
