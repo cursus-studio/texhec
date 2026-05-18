@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"cicd/modules/git"
 	"cicd/world"
-	"engine/services/datastructures"
+	"errors"
 	"fmt"
 	"os"
 	"os/exec"
@@ -21,75 +21,55 @@ func NewService(c ioc.Dic) git.Service {
 	return ioc.GetServices[*service](c)
 }
 
-func extractPathModule(input string) (string, bool) {
-	parts := strings.SplitN(input, "/modules/", 2)
-	if len(parts) < 2 || !strings.Contains(parts[1], "/") {
-		return "", false
-	}
-	return parts[0] + "/modules/" + strings.SplitN(parts[1], "/", 2)[0], true
-}
-func filesModules(files []string) (modules []string) {
-	paths := datastructures.NewSet[string]()
-	for _, file := range files {
-		path, ok := extractPathModule(file)
-		if !ok {
-			continue
+func (s *service) FilterRemoved(allFiles []string) []string {
+	files := []string{}
+	for _, file := range allFiles {
+		if _, err := os.Stat(file); err == nil {
+			files = append(files, file)
 		}
-		paths.Add(path)
 	}
-	return paths.Get()
+	return files
 }
 
-func execCommand(command string) (string, error) {
-	// #nosec G204
-	cmd := exec.Command("bash", "-c", fmt.Sprintf("%v", command))
+func (s *service) handleListing(comparedCommit string) ([]string, error) {
+	args := []string{"--no-pager", "diff", "--name-only"}
+	if comparedCommit != "" {
+		args = append(args, comparedCommit)
+	}
+	args = append(args, "HEAD")
+	cmd := exec.Command("git", args...)
 
 	var out bytes.Buffer
 	var stderr bytes.Buffer
 	cmd.Stdout = &out
 	cmd.Stderr = &stderr
 
-	err := cmd.Run()
-	if err != nil {
-		return "", fmt.Errorf("command failed: %w (stderr: %s)", err, stderr.String())
+	if err := cmd.Run(); err != nil {
+		return nil, errors.New(stderr.String())
 	}
-
 	outputStr := out.String()
 	outputStr = strings.TrimSpace(outputStr)
-	return outputStr, nil
+	files := strings.Split(outputStr, "\n")
+
+	return files, nil
 }
-
-func (s *service) DiffUncommited() ([]string, error) {
-	outputStr, err := execCommand("git status --porcelain -uall | awk '{print $2}'")
-	if err != nil || outputStr == "" {
-		return nil, err
-	}
-	files := []string{}
-	for file := range strings.SplitSeq(outputStr, "\n") {
-		if _, err := os.Stat(file); err == nil {
-			files = append(files, file)
-		}
-
-	}
-	paths := filesModules(files)
-	return paths, nil
+func (s *service) DiffNotCommited() ([]string, error) {
+	return s.handleListing("")
 }
-
-func (s *service) DiffCommited() ([]string, error) {
-	outputStr, err := execCommand("git diff --name-only | tr '\n' '\n'")
-	if err != nil || outputStr == "" {
-		return nil, err
-	}
-	paths := filesModules(strings.Split(outputStr, "\n"))
-	return paths, nil
+func (s *service) DiffPrevCommit() ([]string, error) {
+	return s.handleListing("HEAD~1")
+}
+func (s *service) DiffCompare(commitHash string) ([]string, error) {
+	return s.handleListing(commitHash)
 }
 
 func (s *service) Stage(directories ...string) error {
 	if len(directories) == 0 {
 		return nil
 	}
-	cmdStr := fmt.Sprintf("git add %s", strings.Join(directories, " "))
-	if _, err := execCommand(cmdStr); err != nil {
+	args := []string{"add"}
+	args = append(args, directories...)
+	if err := exec.Command("git", args...).Err; err != nil {
 		return fmt.Errorf("failed to stage directories: %w", err)
 	}
 	return nil

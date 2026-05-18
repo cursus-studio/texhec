@@ -7,13 +7,15 @@ responsible for git integration
 Type: `cicd/modules/git.Service`
 each method returns modules
 
-#### method Service DiffCommited
-Type: `func() ([]string, error)`
-lists changed modules in previous commit
+#### method Service DiffCompare
+Type: `func(commitHash string) ([]string, error)`
+passing empty string will compare to not commited
 
-#### method Service DiffUncommited
+#### method Service DiffNotCommited
 Type: `func() ([]string, error)`
-lists uncommited changed modules
+
+#### method Service DiffPrevCommit
+Type: `func() ([]string, error)`
 
 #### method Service Stage
 Type: `func(...string) error`
@@ -25,11 +27,6 @@ Type: `func(...string) error`
 
 `cicd/world`:
   - `cicd/world.CICDWorld`
-
-`engine/services/datastructures`:
-  - `engine/services/datastructures.Add`
-  - `engine/services/datastructures.Get`
-  - `engine/services/datastructures.NewSet`
 
 ### Third Party
 - `github.com/ogiusek/ioc/v2`

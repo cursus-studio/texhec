@@ -3,11 +3,10 @@ package git
 
 // each method returns modules
 type Service interface {
-	// lists uncommited changed modules
-	DiffUncommited() ([]string, error)
-
-	// lists changed modules in previous commit
-	DiffCommited() ([]string, error)
+	DiffNotCommited() ([]string, error)
+	DiffPrevCommit() ([]string, error)
+	// passing empty string will compare to not commited
+	DiffCompare(commitHash string) ([]string, error)
 
 	Stage(...string) error
 }

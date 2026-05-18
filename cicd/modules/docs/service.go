@@ -27,8 +27,4 @@ type Service interface {
 	// Generates module documentation in `$modulePath/readme/README.md`
 	GenerateModuleDocs(modulePath string) error
 	DiffModuleDocs(modulePath string) error
-
-	// Generates modules documentation in `$modulesPath/$moduleName/readme/README.md`
-	GenerateModulesDocs(modulesPath string) []error
-	DiffModulesDocs(modulesPath string) []error
 }

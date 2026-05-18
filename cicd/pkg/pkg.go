@@ -3,20 +3,20 @@ package cicdpkg
 import (
 	docspkg "cicd/modules/docs/pkg"
 	gitpkg "cicd/modules/git/pkg"
-	hookspkg "cicd/modules/hooks/pkg"
+	pipepkg "cicd/modules/pipe/pkg"
+	projectfspkg "cicd/modules/projectfs/pkg"
 	"cicd/world"
-	enginepkg "engine/pkg"
 
 	"github.com/ogiusek/ioc/v2"
 )
 
 var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 	pkgs := []ioc.Pkg{
-		enginepkg.Pkg,
-
-		gitpkg.Pkg,
 		docspkg.Pkg,
-		hookspkg.Pkg,
+		gitpkg.Pkg,
+		projectfspkg.Pkg,
+		pipepkg.Pkg,
+
 		func(b ioc.Builder) {
 			ioc.Register(b, func(c ioc.Dic) world.CICDWorld {
 				return ioc.GetServices[world.CICDWorld](c)

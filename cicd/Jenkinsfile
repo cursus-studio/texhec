@@ -19,15 +19,6 @@ pipeline {
             steps {
                 updateGitHubStatus('pending', 'Started...')
                 checkout scm
-                script {
-                    if (shouldSkipBuild()) {
-                        echo 'Commit message matches skip criteria. Stopping pipeline execution early.'
-                        currentBuild.result = 'SUCCESS'
-                        env.SKIP_REMAINING_STAGES = 'true'
-                    } else {
-                        env.SKIP_REMAINING_STAGES = 'false'
-                    }
-                }
             }
         }
 
@@ -49,29 +40,12 @@ pipeline {
                         sh 'golangci-lint --version'
                     }
                 }
-                stage('Deps') {
-                    steps { runModuleStep('Deps', 'go mod download && go mod tidy -diff && go mod verify') }
-                }
-                stage('Build') {
-                    steps { runModuleStep('Build', 'go build -o /dev/null') }
-                }
-                stage('Security') {
-                    steps { runModuleStep('Security', 'gosec -quiet ./...') }
-                }
-                stage('Pipeline Security') {
-                    steps { runGeneralStep('Pipeline Security', 'trivy config --exit-code 1 --quiet --severity HIGH,CRITICAL .') }
-                }
-                stage('Lint') {
-                    steps { runModuleStep('Lint', 'golangci-lint run', false) }
-                }
-                stage('Diff Docs') {
-                    steps { runGeneralStep('Diff Docs', 'go run cicd verify-commit') }
-                }
-                stage('Markdown Lint') {
-                    steps { runGeneralStep('Markdown Lint', 'lychee --root-dir . "**/*.md"') }
-                }
-                stage('Test') {
-                    steps { runModuleStep('Test', 'go test ./... -benchtime=1x') }
+                stage('Verify') {
+                    steps {
+                      script{
+                        sh "go run cicd verify ${env.GIT_PREVIOUS_SUCCESSFUL_COMMIT}"
+                      }
+                    }
                 }
             }
         }
@@ -89,43 +63,6 @@ pipeline {
     }
 }
 
-def shouldSkipBuild() {
-    def commitMsg = sh(script: 'git log -1 --pretty=%B', returnStdout: true).trim()
-    return commitMsg.contains('[skip ci]')
-}
-
-def runModuleStep(String statusMsg, String command, boolean isParallel = true) {
-    script {
-        updateGitHubStatus('pending', "${statusMsg}...")
-
-        def modules = ['engine', 'core', 'cicd']
-        def tasks = [:]
-
-        modules.each { mod ->
-            tasks[mod] = {
-                dir(mod) {
-                    sh command
-                }
-            }
-        }
-        if (isParallel) {
-            tasks.failFast = true
-            parallel tasks
-        } else {
-            tasks.each { name, task ->
-                echo "Running task for module: ${name}"
-                task()
-            }
-        }
-    }
-}
-
-def runGeneralStep(String statusMsg, String command, boolean isParallel = true) {
-    script {
-        updateGitHubStatus('pending', "${statusMsg}...")
-        sh command
-    }
-}
 
 def updateGitHubStatus(String state, String desc) {
     env.LAST_STATUS_DESC = desc

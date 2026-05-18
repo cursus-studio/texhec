@@ -23,16 +23,9 @@ Type: `cicd/modules/docs.Service`
 #### method Service DiffModuleDocs
 Type: `func(modulePath string) error`
 
-#### method Service DiffModulesDocs
-Type: `func(modulesPath string) []error`
-
 #### method Service GenerateModuleDocs
 Type: `func(modulePath string) error`
 Generates module documentation in `$modulePath/readme/README.md`
-
-#### method Service GenerateModulesDocs
-Type: `func(modulesPath string) []error`
-Generates modules documentation in `$modulesPath/$moduleName/readme/README.md`
 
 ## Variables
 ### var ErrMissingPackage
@@ -46,10 +39,12 @@ Type: `error`
 
 
 ## TODO
-Check is there better readme extension than ".md".
+1. Check is there better readme extension than ".md".
 Extension to preview:
 - ".rst"
 - ".adoc"
+
+2. Re work module interface to take struct and output string
 
 ## Dependencies
 `cicd/modules/docs`:
