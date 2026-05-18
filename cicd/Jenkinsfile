@@ -40,9 +40,11 @@ pipeline {
                 }
                 stage('Verify') {
                     steps {
-                      script{
-                        sh "go run cicd verify ${env.GIT_PREVIOUS_SUCCESSFUL_COMMIT}"
-                      }
+                        script{
+                            withCredentials([usernamePassword(credentialsId: 'texhec-app', passwordVariable: 'TOKEN', usernameVariable: 'USER')]) {
+                                sh "go run cicd cloud ${env.GIT_PREVIOUS_SUCCESSFUL_COMMIT}"
+                            }
+                        }
                     }
                 }
             }

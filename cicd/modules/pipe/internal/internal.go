@@ -1,6 +1,7 @@
 package internal
 
 import (
+	"cicd/modules/git"
 	"cicd/modules/pipe"
 	"cicd/world"
 	"fmt"
@@ -246,7 +247,6 @@ func (s *service) Sync() error {
 	}
 
 	return nil
-
 }
 
 func (s *service) Fix() error {
@@ -282,6 +282,39 @@ func (s *service) Fix() error {
 		}
 	}
 
+	return nil
+}
+
+func (s *service) Cloud(commitHash string) error {
+	projects, err := s.ProjectFS().AllProjects()
+	if err != nil {
+		return err
+	}
+	modules, err := s.ProjectFS().AllModules()
+	if err != nil {
+		return err
+	}
+	changedFiles, err := s.Git().DiffCompare(commitHash)
+	if err != nil {
+		return err
+	}
+	changedModules := s.ProjectFS().FilesModules(changedFiles)
+
+	ctx := NewStageCtx(
+		changedModules,
+		modules,
+		projects,
+	)
+	for _, stage := range s.stages {
+		msg := fmt.Sprintf("Stage \"%v\"", stage.Name)
+		log.Print(msg)
+		if err := s.Git().SetStatus(git.Pending, msg); err != nil {
+			return err
+		}
+		if err := stage.Verify(ctx); err != nil {
+			return err
+		}
+	}
 	return nil
 }
 

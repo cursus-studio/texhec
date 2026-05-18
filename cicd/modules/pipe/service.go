@@ -9,5 +9,6 @@ type Service interface {
 
 	Sync() error
 	Fix() error
+	Cloud(commitHash string) error
 	Verify(commitHash string) error
 }

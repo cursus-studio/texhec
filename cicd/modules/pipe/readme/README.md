@@ -9,6 +9,9 @@ check dependencies, does compile, gosec, trivy, golangci-lint
 verify docs generation, lychee
 tests
 
+#### method Service Cloud
+Type: `func(commitHash string) error`
+
 #### method Service Fix
 Type: `func() error`
 
@@ -23,6 +26,13 @@ Type: `func(commitHash string) error`
 
 
 ## Dependencies
+`cicd/modules/git`:
+  - `cicd/modules/git.DiffCompare`
+  - `cicd/modules/git.DiffNotCommited`
+  - `cicd/modules/git.Pending`
+  - `cicd/modules/git.SetStatus`
+  - `cicd/modules/git.Stage`
+
 `cicd/modules/pipe`:
   - `cicd/modules/pipe.Service`
 

@@ -73,6 +73,19 @@ func main() {
 		},
 	}
 
+	var cloudCmd = &cobra.Command{
+		Use:   "cloud [arg]",
+		Short: "Run cloud",
+		Args:  cobra.MaximumNArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			var arg string
+			if len(args) > 0 {
+				arg = args[0]
+			}
+			return w.Pipe().Cloud(arg)
+		},
+	}
+
 	var verifyCmd = &cobra.Command{
 		Use:   "verify [arg]",
 		Short: "Run verify",
@@ -86,7 +99,7 @@ func main() {
 		},
 	}
 
-	rootCmd.AddCommand(setupCmd, syncCmd, fixCmd, verifyCmd)
+	rootCmd.AddCommand(setupCmd, syncCmd, fixCmd, cloudCmd, verifyCmd)
 
 	if err := rootCmd.Execute(); err != nil {
 		fmt.Printf("%v\n\nFAILED\n", err)
