@@ -69,6 +69,14 @@ func NewService(c ioc.Dic) pipe.Service {
 	s.hooksDirectory = ".git-hooks"
 
 	s.stages = []Stage{
+		NewStage("Pipeline Security", func(ctx StageCtx) error {
+			cmd := exec.Command("trivy", "config", "--exit-code", "1", "--quiet", "--severity", "HIGH,CRITICAL", ".")
+			if output, err := cmd.CombinedOutput(); err != nil {
+				return fmt.Errorf("%s", string(output))
+			}
+			return nil
+		}),
+
 		NewStage("Deps", func(ctx StageCtx) error {
 			for _, dir := range ctx.Projects {
 				cmd := exec.Command("sh", "-c", "go mod download && go mod tidy -diff && go mod verify")
@@ -109,9 +117,9 @@ func NewService(c ioc.Dic) pipe.Service {
 			return nil
 		}),
 
-		NewStage("Security", func(ctx StageCtx) error {
-			for _, proj := range ctx.Projects {
-				cmd := exec.Command("gosec", "-quiet", "./...")
+		NewStage("Lint", func(ctx StageCtx) error {
+			for _, proj := range ctx.ChangedProjects {
+				cmd := exec.Command("golangci-lint", "run")
 				cmd.Dir = proj
 				if output, err := cmd.CombinedOutput(); err != nil {
 					return fmt.Errorf("%s", string(output))
@@ -120,17 +128,9 @@ func NewService(c ioc.Dic) pipe.Service {
 			return nil
 		}),
 
-		NewStage("Pipeline Security", func(ctx StageCtx) error {
-			cmd := exec.Command("trivy", "config", "--exit-code", "1", "--quiet", "--severity", "HIGH,CRITICAL", ".")
-			if output, err := cmd.CombinedOutput(); err != nil {
-				return fmt.Errorf("%s", string(output))
-			}
-			return nil
-		}),
-
-		NewStage("Lint", func(ctx StageCtx) error {
+		NewStage("Security", func(ctx StageCtx) error {
 			for _, proj := range ctx.Projects {
-				cmd := exec.Command("golangci-lint", "run")
+				cmd := exec.Command("gosec", "-quiet", "./...")
 				cmd.Dir = proj
 				if output, err := cmd.CombinedOutput(); err != nil {
 					return fmt.Errorf("%s", string(output))
@@ -150,7 +150,7 @@ func NewService(c ioc.Dic) pipe.Service {
 			return nil
 		}),
 
-		NewStage("Generated Docs", func(ctx StageCtx) error {
+		NewStage("Docs Genaration", func(ctx StageCtx) error {
 			for _, module := range ctx.ChangedModules {
 				if err := s.Docs().DiffModuleDocs(module); err != nil {
 					return err
@@ -182,7 +182,7 @@ func NewService(c ioc.Dic) pipe.Service {
 			return nil
 		}),
 
-		NewStage("Markdown Lint", func(ctx StageCtx) error {
+		NewStage("Docs Lint", func(ctx StageCtx) error {
 			cmd := exec.Command("lychee", "--root-dir", ".", "**/*.md")
 			if output, err := cmd.CombinedOutput(); err != nil {
 				return fmt.Errorf("%s", string(output))
