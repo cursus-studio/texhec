@@ -21,26 +21,24 @@ func NewService(c ioc.Dic) docs.Service {
 	return ioc.GetServices[*service](c)
 }
 
-// Breakdown:
-// (\d+)\s+([\d.]+)\s+ns/op
-// \s+: matches any number of spaces separating the values
-// Group 1: (\d+) matches the number of operations
-// \s+: matches any number of spaces separating the values
-// Group 2: ([\d.]+) matches the floating-point timing performance
-// ns/op: ensures we only target actual benchmark measurement lines
+// Matches and eliminates platform-specific headers entirely
+var platformRegex = regexp.MustCompile(`(?m)^(goos|goarch|cpu|gpu):.*\n?`)
+
+// Matches the CPU core count suffix (e.g., -8, -4) right before the metrics start
+var coreSuffixRegex = regexp.MustCompile(`(-\d+)\s+\d+`)
+
+// Matches the metric numbers precisely without swallowing preceding newlines
+// Group 1 catches the iteration count, Group 2 catches the speed
 var benchMetricRegex = regexp.MustCompile(`\s+(\d+)\s+([\d.]+)\s+ns/op`)
 
-// Breakdown:
-// ^ok\s+        -> Starts with 'ok' followed by one or more spaces
-// \S+           -> Match package path characters (alphanumeric, slashes, dashes, etc.)
-// \s+           -> Spaces before the time duration
-// ([\d.]+s)     -> Capture group targeting the float number directly attached to 's' (e.g., 5.919s)
-// $             -> Assures it evaluates the exact format at the line's end
+// Safely targets the final execution summary duration line
 var benchDurationRegex = regexp.MustCompile(`(?m)^ok\s+\S+\s+([\d.]+)s$`)
 
 func (s *service) prepareDocToCompare(dic string) string {
 	prepared := strings.Trim(dic, " \n")
-	prepared = benchMetricRegex.ReplaceAllString(prepared, "X ns/op")
+	prepared = platformRegex.ReplaceAllString(prepared, "")
+	prepared = coreSuffixRegex.ReplaceAllString(prepared, "-X")
+	prepared = benchMetricRegex.ReplaceAllString(prepared, " X ns/op")
 	prepared = benchDurationRegex.ReplaceAllStringFunc(prepared, func(match string) string {
 		lastSpace := strings.LastIndex(match, " ")
 		if lastSpace != -1 {
@@ -48,7 +46,7 @@ func (s *service) prepareDocToCompare(dic string) string {
 		}
 		return match
 	})
-	return prepared
+	return strings.TrimSpace(prepared)
 }
 
 func (s *service) GenerateModuleDocs(modulePath string) error {
