@@ -83,7 +83,7 @@ func (s *service) DiffModuleDocs(modulePath string) error {
 	if _, err := os.Stat(modulePath); os.IsNotExist(err) {
 		return nil
 	}
-	log.Printf("Comparing \"%v\" docs...\n", modulePath)
+	log.Printf("Comparing \"%v\" module docs...\n", modulePath)
 	readmePath := filepath.Join(filepath.Clean(modulePath), "readme", "README.md")
 	file, err := os.ReadFile(readmePath)
 	if err != nil {
@@ -99,7 +99,7 @@ func (s *service) DiffModuleDocs(modulePath string) error {
 	if filePrepared == docPrepared {
 		return nil
 	}
-	return fmt.Errorf("module \"%v\" is outdated", readmePath)
+	return fmt.Errorf("module \"%v\" is outdated ```\n%v\n``` != ```\n%v\n```", readmePath, docPrepared, filePrepared)
 }
 
 func (s *service) GenerateProjectDocs(projectPath string) error {
@@ -110,7 +110,7 @@ func (s *service) GenerateProjectDocs(projectPath string) error {
 	readmePath := fmt.Sprintf("%v/readme/README.md", projectPath)
 	dir := filepath.Dir(readmePath)
 
-	doc, err := s.GetModuleDocs(projectPath)
+	doc, err := s.GetProjectDocs(projectPath)
 	if err != nil {
 		return err
 	}
@@ -133,13 +133,13 @@ func (s *service) DiffProjectDocs(projectPath string) error {
 	if _, err := os.Stat(projectPath); os.IsNotExist(err) {
 		return nil
 	}
-	log.Printf("Comparing \"%v\" docs...\n", projectPath)
+	log.Printf("Comparing \"%v\" project docs...\n", projectPath)
 	readmePath := filepath.Join(filepath.Clean(projectPath), "readme", "README.md")
 	file, err := os.ReadFile(readmePath)
 	if err != nil {
 		return err
 	}
-	doc, err := s.GetModuleDocs(projectPath)
+	doc, err := s.GetProjectDocs(projectPath)
 	if err != nil {
 		return err
 	}
@@ -149,5 +149,5 @@ func (s *service) DiffProjectDocs(projectPath string) error {
 	if filePrepared == docPrepared {
 		return nil
 	}
-	return fmt.Errorf("module \"%v\" is outdated", readmePath)
+	return fmt.Errorf("project \"%v\" is outdated ```\n%v\n``` != ```\n%v\n```", readmePath, docPrepared, filePrepared)
 }

@@ -266,12 +266,12 @@ goos: linux
 goarch: amd64
 pkg: engine/modules/transform/test
 cpu: Intel(R) Core(TM) i5-8350U CPU @ 1.70GHz
-BenchmarkGetPos-8                 	40657156	        28.92 ns/op
-BenchmarkRawGetPos-8              	96466588	        11.16 ns/op
-BenchmarkSetAbsolutePos-8         	 1897630	       627.6 ns/op
-BenchmarkSetAndGetAbsolutePos-8   	 1941088	       609.2 ns/op
+BenchmarkGetPos-8                 	40864352	        28.44 ns/op
+BenchmarkRawGetPos-8              	100000000	        11.46 ns/op
+BenchmarkSetAbsolutePos-8         	 1906791	       644.6 ns/op
+BenchmarkSetAndGetAbsolutePos-8   	 1967616	       603.1 ns/op
 PASS
-ok  	engine/modules/transform/test	5.961s
+ok  	engine/modules/transform/test	6.046s
 ```
 ## Lines of code
 ```

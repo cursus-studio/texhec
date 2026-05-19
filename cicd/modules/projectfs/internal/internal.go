@@ -111,7 +111,7 @@ func (s *service) ProjectModules(project string) []string {
 		if !entry.IsDir() {
 			continue
 		}
-		modules = append(modules, filepath.Join(project, entry.Name()))
+		modules = append(modules, filepath.Join(project, "modules", entry.Name()))
 	}
 	return modules
 }
@@ -126,7 +126,7 @@ func (s *service) ProjectServices(project string) []string {
 		if !entry.IsDir() {
 			continue
 		}
-		services = append(services, filepath.Join(project, entry.Name()))
+		services = append(services, filepath.Join(project, "services", entry.Name()))
 	}
 	return services
 }

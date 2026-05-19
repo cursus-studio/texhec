@@ -33,6 +33,12 @@ To send changes using github status api it needs ENV variables:
 
 To see implementation details of documentation or pipeline go to its module readme.
 
+## Modules
+[docs](/cicd/modules/docs)
+[git](/cicd/modules/git)
+[pipe](/cicd/modules/pipe)
+[projectfs](/cicd/modules/projectfs)
+
 ## Lines of code
 ```
 github.com/AlDanial/cloc
@@ -49,69 +55,6 @@ SUM:                            23            232            135           1660
 
 ```
 ## Dependencies
-`cicd/modules/docs`:
-  - `cicd/modules/docs.DiffModuleDocs`
-  - `cicd/modules/docs.DiffProjectDocs`
-  - `cicd/modules/docs.ErrInconsistentPackageComments`
-  - `cicd/modules/docs.ErrMissingPackage`
-  - `cicd/modules/docs.ErrMissingPackageComments`
-  - `cicd/modules/docs.GenerateModuleDocs`
-  - `cicd/modules/docs.GenerateProjectDocs`
-  - `cicd/modules/docs.Service`
-
-`cicd/modules/docs/pkg`:
-  - `cicd/modules/docs/pkg.Pkg`
-
-`cicd/modules/git`:
-  - `cicd/modules/git.DiffCompare`
-  - `cicd/modules/git.DiffNotCommited`
-  - `cicd/modules/git.Pending`
-  - `cicd/modules/git.Service`
-  - `cicd/modules/git.SetStatus`
-  - `cicd/modules/git.Stage`
-  - `cicd/modules/git.State`
-
-`cicd/modules/git/pkg`:
-  - `cicd/modules/git/pkg.Pkg`
-
-`cicd/modules/pipe`:
-  - `cicd/modules/pipe.Cloud`
-  - `cicd/modules/pipe.Fix`
-  - `cicd/modules/pipe.Service`
-  - `cicd/modules/pipe.Setup`
-  - `cicd/modules/pipe.Sync`
-  - `cicd/modules/pipe.Verify`
-
-`cicd/modules/pipe/pkg`:
-  - `cicd/modules/pipe/pkg.Pkg`
-
-`cicd/modules/projectfs`:
-  - `cicd/modules/projectfs.AllModules`
-  - `cicd/modules/projectfs.AllProjects`
-  - `cicd/modules/projectfs.FilesModules`
-  - `cicd/modules/projectfs.FilesProjects`
-  - `cicd/modules/projectfs.ProjectModules`
-  - `cicd/modules/projectfs.ProjectServices`
-  - `cicd/modules/projectfs.Service`
-
-`cicd/modules/projectfs/pkg`:
-  - `cicd/modules/projectfs/pkg.Pkg`
-
-`cicd/pkg`:
-  - `cicd/pkg.Pkg`
-
-`cicd/world`:
-  - `cicd/world.CICDWorld`
-  - `cicd/world.Docs`
-  - `cicd/world.Git`
-  - `cicd/world.Pipe`
-  - `cicd/world.ProjectFS`
-
-`engine/services/datastructures`:
-  - `engine/services/datastructures.Add`
-  - `engine/services/datastructures.Get`
-  - `engine/services/datastructures.NewSet`
-
 ### Third Party
 - `github.com/google/go-github/v60/github`
 - `github.com/ogiusek/ioc/v2`
