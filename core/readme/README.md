@@ -17,8 +17,6 @@ Map scale preview:
 [deploy](/core/modules/deploy)
 [fpslogger](/core/modules/fpslogger)
 [generation](/core/modules/generation)
-[ignore.health](/core/modules/ignore.health)
-[ignore.wallet](/core/modules/ignore.wallet)
 [loading](/core/modules/loading)
 [obstruction](/core/modules/obstruction)
 [pathfind](/core/modules/pathfind)
@@ -41,11 +39,11 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                              61            745            341           4045
+Go                              57            726            336           3945
 GLSL                             3             29              2            114
 Markdown                         6             15              0             65
 -------------------------------------------------------------------------------
-SUM:                            70            789            343           4224
+SUM:                            66            770            338           4124
 -------------------------------------------------------------------------------
 
 ```
