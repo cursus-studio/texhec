@@ -127,6 +127,19 @@ Type: `func(fontSize uint) engine/modules/text.FontSizeComponent`
 Type: `func(b uint8) engine/modules/text.BreakComponent`
 
 
+## Lines of code
+```
+github.com/AlDanial/cloc
+-------------------------------------------------------------------------------
+Language                     files          blank        comment           code
+-------------------------------------------------------------------------------
+Go                              11            157             49            776
+GLSL                             3             20              4             57
+-------------------------------------------------------------------------------
+SUM:                            14            177             53            833
+-------------------------------------------------------------------------------
+
+```
 ## Dependencies
 `engine`:
   - `engine.Assets`

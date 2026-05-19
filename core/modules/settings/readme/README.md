@@ -19,6 +19,18 @@ Type: `core/modules/settings.EnterSettingsForParentEvent`
 Type: `engine/services/ecs.EntityID`
 
 
+## Lines of code
+```
+github.com/AlDanial/cloc
+-------------------------------------------------------------------------------
+Language                     files          blank        comment           code
+-------------------------------------------------------------------------------
+Go                               3             30              8            106
+-------------------------------------------------------------------------------
+SUM:                             3             30              8            106
+-------------------------------------------------------------------------------
+
+```
 ## Dependencies
 `core/game`:
   - `core/game.Definitions`

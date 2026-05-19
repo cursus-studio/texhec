@@ -8,5 +8,8 @@ type Service interface {
 	FilesModules(files []string) []string
 	FilesProjects(files []string) []string
 
+	ProjectModules(project string) []string
+	ProjectServices(project string) []string
+
 	Save(file, content string) error
 }

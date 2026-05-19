@@ -5,7 +5,6 @@ import (
 	"cicd/modules/pipe"
 	"cicd/world"
 	"fmt"
-	"io"
 	"io/fs"
 	"log"
 	"os"
@@ -16,19 +15,22 @@ import (
 
 type StageCtx struct {
 	ChangedModules,
+	ChangedProjects,
 	Modules,
 	Projects []string
 }
 
 func NewStageCtx(
 	changedModules,
+	changedProjects,
 	modules,
 	projects []string,
 ) StageCtx {
 	return StageCtx{
-		ChangedModules: changedModules,
-		Modules:        modules,
-		Projects:       projects,
+		ChangedModules:  changedModules,
+		ChangedProjects: changedProjects,
+		Modules:         modules,
+		Projects:        projects,
 	}
 }
 
@@ -70,22 +72,18 @@ func NewService(c ioc.Dic) pipe.Service {
 		NewStage("Deps", func(ctx StageCtx) error {
 			for _, dir := range ctx.Projects {
 				cmd := exec.Command("sh", "-c", "go mod download && go mod tidy -diff && go mod verify")
-				cmd.Stdout = io.Discard
-				cmd.Stderr = os.Stderr
 				cmd.Dir = dir
-				if err := cmd.Run(); err != nil {
-					return err
+				if output, err := cmd.CombinedOutput(); err != nil {
+					return fmt.Errorf("%s", output)
 				}
 			}
 			return nil
 		}).SetFix(func(ctx StageCtx) error {
 			for _, dir := range ctx.Projects {
 				cmd := exec.Command("go", "mod", "tidy")
-				cmd.Stdout = os.Stdout
-				cmd.Stderr = os.Stderr
 				cmd.Dir = dir
-				if err := cmd.Run(); err != nil {
-					return err
+				if output, err := cmd.CombinedOutput(); err != nil {
+					return fmt.Errorf("%s", string(output))
 				}
 				if err := s.Git().Stage(
 					fmt.Sprintf("%v/go.mod", dir),
@@ -103,11 +101,9 @@ func NewService(c ioc.Dic) pipe.Service {
 		NewStage("Build", func(ctx StageCtx) error {
 			for _, dir := range ctx.Projects {
 				cmd := exec.Command("go", "build", "-o", "/dev/null")
-				cmd.Stdout = io.Discard
-				cmd.Stderr = os.Stderr
 				cmd.Dir = dir
-				if err := cmd.Run(); err != nil {
-					return err
+				if output, err := cmd.CombinedOutput(); err != nil {
+					return fmt.Errorf("%s", string(output))
 				}
 			}
 			return nil
@@ -116,11 +112,9 @@ func NewService(c ioc.Dic) pipe.Service {
 		NewStage("Security", func(ctx StageCtx) error {
 			for _, proj := range ctx.Projects {
 				cmd := exec.Command("gosec", "-quiet", "./...")
-				cmd.Stdout = os.Stdout
-				cmd.Stderr = os.Stderr
 				cmd.Dir = proj
-				if err := cmd.Run(); err != nil {
-					return err
+				if output, err := cmd.CombinedOutput(); err != nil {
+					return fmt.Errorf("%s", string(output))
 				}
 			}
 			return nil
@@ -128,10 +122,8 @@ func NewService(c ioc.Dic) pipe.Service {
 
 		NewStage("Pipeline Security", func(ctx StageCtx) error {
 			cmd := exec.Command("trivy", "config", "--exit-code", "1", "--quiet", "--severity", "HIGH,CRITICAL", ".")
-			cmd.Stdout = io.Discard
-			cmd.Stderr = os.Stderr
-			if err := cmd.Run(); err != nil {
-				return err
+			if output, err := cmd.CombinedOutput(); err != nil {
+				return fmt.Errorf("%s", string(output))
 			}
 			return nil
 		}),
@@ -139,11 +131,20 @@ func NewService(c ioc.Dic) pipe.Service {
 		NewStage("Lint", func(ctx StageCtx) error {
 			for _, proj := range ctx.Projects {
 				cmd := exec.Command("golangci-lint", "run")
-				cmd.Stdout = io.Discard
-				cmd.Stderr = os.Stderr
 				cmd.Dir = proj
-				if err := cmd.Run(); err != nil {
-					return err
+				if output, err := cmd.CombinedOutput(); err != nil {
+					return fmt.Errorf("%s", string(output))
+				}
+			}
+			return nil
+		}),
+
+		NewStage("Test", func(ctx StageCtx) error {
+			for _, proj := range ctx.Projects {
+				cmd := exec.Command("go", "test", "./...", "-benchtime=1x")
+				cmd.Dir = proj
+				if output, err := cmd.CombinedOutput(); err != nil {
+					return fmt.Errorf("%s", string(output))
 				}
 			}
 			return nil
@@ -155,38 +156,36 @@ func NewService(c ioc.Dic) pipe.Service {
 					return err
 				}
 			}
+			for _, proj := range ctx.ChangedProjects {
+				if err := s.Docs().DiffProjectDocs(proj); err != nil {
+					return err
+				}
+			}
 			return nil
 		}).SetFix(func(ctx StageCtx) error {
 			for _, module := range ctx.ChangedModules {
 				if err := s.Docs().GenerateModuleDocs(module); err != nil {
 					return err
 				}
-				if err := s.Git().Stage(fmt.Sprintf("%v/readme/README.md", module)); err != nil {
+				// if we cannot stage readme we do not stage it.
+				// if error is returned it means that we just generated additional readme.
+				_ = s.Git().Stage(fmt.Sprintf("%v/readme/README.md", module))
+			}
+			for _, project := range ctx.ChangedProjects {
+				if err := s.Docs().GenerateProjectDocs(project); err != nil {
 					return err
 				}
+				// if we cannot stage readme we do not stage it.
+				// if error is returned it means that we just generated additional readme.
+				_ = s.Git().Stage(fmt.Sprintf("%v/readme/README.md", project))
 			}
 			return nil
 		}),
 
 		NewStage("Markdown Lint", func(ctx StageCtx) error {
 			cmd := exec.Command("lychee", "--root-dir", ".", "**/*.md")
-			cmd.Stdout = io.Discard
-			cmd.Stderr = os.Stderr
-			if err := cmd.Run(); err != nil {
-				return err
-			}
-			return nil
-		}),
-
-		NewStage("Test", func(ctx StageCtx) error {
-			for _, proj := range ctx.Projects {
-				cmd := exec.Command("go", "test", "./...", "-benchtime=1x")
-				cmd.Stdout = io.Discard
-				cmd.Stderr = os.Stderr
-				cmd.Dir = proj
-				if err := cmd.Run(); err != nil {
-					return err
-				}
+			if output, err := cmd.CombinedOutput(); err != nil {
+				return fmt.Errorf("%s", string(output))
 			}
 			return nil
 		}),
@@ -212,8 +211,8 @@ func (s *service) Setup() error {
 		return err
 	}
 	//#nosec G204
-	if err := exec.Command("git", "config", "core.hooksPath", s.hooksDirectory).Run(); err != nil {
-		return err
+	if output, err := exec.Command("git", "config", "core.hooksPath", s.hooksDirectory).CombinedOutput(); err != nil {
+		return fmt.Errorf("%s", string(output))
 	}
 	return nil
 }
@@ -230,8 +229,8 @@ func (s *service) Sync() error {
 
 	ctx := NewStageCtx(
 		// sync runs on all modules (doesn't cache certain steps)
-		modules, modules,
-		projects,
+		modules, projects,
+		modules, projects,
 	)
 
 	for _, stage := range s.stages {
@@ -262,10 +261,10 @@ func (s *service) Fix() error {
 	if err != nil {
 		return err
 	}
-	changedModules := s.ProjectFS().FilesModules(changedFiles)
 
 	ctx := NewStageCtx(
-		changedModules,
+		s.ProjectFS().FilesModules(changedFiles),
+		s.ProjectFS().FilesProjects(changedFiles),
 		modules,
 		projects,
 	)
@@ -298,10 +297,10 @@ func (s *service) Cloud(commitHash string) error {
 	if err != nil {
 		return err
 	}
-	changedModules := s.ProjectFS().FilesModules(changedFiles)
 
 	ctx := NewStageCtx(
-		changedModules,
+		s.ProjectFS().FilesModules(changedFiles),
+		s.ProjectFS().FilesProjects(changedFiles),
 		modules,
 		projects,
 	)
@@ -331,10 +330,10 @@ func (s *service) Verify(commitHash string) error {
 	if err != nil {
 		return err
 	}
-	changedModules := s.ProjectFS().FilesModules(changedFiles)
 
 	ctx := NewStageCtx(
-		changedModules,
+		s.ProjectFS().FilesModules(changedFiles),
+		s.ProjectFS().FilesProjects(changedFiles),
 		modules,
 		projects,
 	)

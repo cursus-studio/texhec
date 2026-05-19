@@ -34,6 +34,18 @@ Type: `engine/modules/netsync.ClientComponent`
 entity with this component and connection will get notifications about changes
 
 
+## Lines of code
+```
+github.com/AlDanial/cloc
+-------------------------------------------------------------------------------
+Language                     files          blank        comment           code
+-------------------------------------------------------------------------------
+Go                              12            127             59            776
+-------------------------------------------------------------------------------
+SUM:                            12            127             59            776
+-------------------------------------------------------------------------------
+
+```
 ## Dependencies
 `engine`:
   - `engine.Connection`

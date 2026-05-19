@@ -64,18 +64,30 @@ goos: linux
 goarch: amd64
 pkg: engine/modules/hierarchy/test
 cpu: Intel(R) Core(TM) i5-8350U CPU @ 1.70GHz
-BenchmarkChildren_1-8                          	223965856	         5.393 ns/op
-BenchmarkChildren_10-8                         	223852948	         5.367 ns/op
-BenchmarkChildren_100-8                        	223520518	         5.365 ns/op
-BenchmarkFlatChildren_1_1-8                    	177743899	         6.728 ns/op
-BenchmarkFlatChildren_10_10-8                  	180656132	         6.638 ns/op
-BenchmarkAddChildToParentWithGrandParent-8     	 7006380	       167.4 ns/op
-BenchmarkAddChildToParentWith5GrandParents-8   	 7265545	       161.8 ns/op
-BenchmarkRemoveChild-8                         	 1622714	       763.5 ns/op
-BenchmarkRemoveParentWith1Children-8           	   77668	     14989 ns/op
-BenchmarkRemoveParentWith100Children-8         	   10000	    103984 ns/op
+BenchmarkChildren_1-8                          	222422700	         5.481 ns/op
+BenchmarkChildren_10-8                         	209616088	         5.689 ns/op
+BenchmarkChildren_100-8                        	223799379	         5.364 ns/op
+BenchmarkFlatChildren_1_1-8                    	181775478	         6.548 ns/op
+BenchmarkFlatChildren_10_10-8                  	185438871	         6.470 ns/op
+BenchmarkAddChildToParentWithGrandParent-8     	 7355553	       157.8 ns/op
+BenchmarkAddChildToParentWith5GrandParents-8   	 6840639	       161.4 ns/op
+BenchmarkRemoveChild-8                         	 1618238	       760.3 ns/op
+BenchmarkRemoveParentWith1Children-8           	  110148	     12364 ns/op
+BenchmarkRemoveParentWith100Children-8         	   10000	    111697 ns/op
 PASS
-ok  	engine/modules/hierarchy/test	15.564s
+ok  	engine/modules/hierarchy/test	16.722s
+```
+## Lines of code
+```
+github.com/AlDanial/cloc
+-------------------------------------------------------------------------------
+Language                     files          blank        comment           code
+-------------------------------------------------------------------------------
+Go                               7            103             21            483
+-------------------------------------------------------------------------------
+SUM:                             7            103             21            483
+-------------------------------------------------------------------------------
+
 ```
 ## Dependencies
 `engine`:

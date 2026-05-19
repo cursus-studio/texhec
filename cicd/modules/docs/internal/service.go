@@ -101,3 +101,53 @@ func (s *service) DiffModuleDocs(modulePath string) error {
 	}
 	return fmt.Errorf("module \"%v\" is outdated", readmePath)
 }
+
+func (s *service) GenerateProjectDocs(projectPath string) error {
+	if _, err := os.Stat(projectPath); os.IsNotExist(err) {
+		return nil
+	}
+	log.Printf("Generating \"%v\" docs...\n", projectPath)
+	readmePath := fmt.Sprintf("%v/readme/README.md", projectPath)
+	dir := filepath.Dir(readmePath)
+
+	doc, err := s.GetModuleDocs(projectPath)
+	if err != nil {
+		return err
+	}
+
+	// #nosec G301
+	if err := os.MkdirAll(dir, 0777); err != nil {
+		return err
+	}
+	// #nosec G306
+	if err := os.WriteFile(readmePath, []byte(doc), 0666); err != nil {
+		return err
+	}
+	// #nosec G302
+	if err := os.Chmod(readmePath, 0666); err != nil {
+		return err
+	}
+	return nil
+}
+func (s *service) DiffProjectDocs(projectPath string) error {
+	if _, err := os.Stat(projectPath); os.IsNotExist(err) {
+		return nil
+	}
+	log.Printf("Comparing \"%v\" docs...\n", projectPath)
+	readmePath := filepath.Join(filepath.Clean(projectPath), "readme", "README.md")
+	file, err := os.ReadFile(readmePath)
+	if err != nil {
+		return err
+	}
+	doc, err := s.GetModuleDocs(projectPath)
+	if err != nil {
+		return err
+	}
+
+	filePrepared := s.prepareDocToCompare(string(file))
+	docPrepared := s.prepareDocToCompare(doc)
+	if filePrepared == docPrepared {
+		return nil
+	}
+	return fmt.Errorf("module \"%v\" is outdated", readmePath)
+}

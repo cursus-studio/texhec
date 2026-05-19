@@ -137,6 +137,18 @@ Type: `func(volume engine/modules/audio.Volume) engine/modules/audio.SetMasterVo
 Type: `func(channel engine/modules/audio.Channel, volume engine/modules/audio.Volume) engine/modules/audio.SetChannelVolumeEvent`
 
 
+## Lines of code
+```
+github.com/AlDanial/cloc
+-------------------------------------------------------------------------------
+Language                     files          blank        comment           code
+-------------------------------------------------------------------------------
+Go                               6             51              6            260
+-------------------------------------------------------------------------------
+SUM:                             6             51              6            260
+-------------------------------------------------------------------------------
+
+```
 ## Dependencies
 `engine/modules/assets`:
   - `engine/modules/assets.Asset`

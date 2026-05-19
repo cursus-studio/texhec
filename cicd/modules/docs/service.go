@@ -10,6 +10,8 @@
 //
 // Where and how to write comments:
 // + in package comment define core know how of the module
+// - `readme/TITLE.md` is used to overwrite automatic title
+// - `readme/ARCHITECTURE.md` is used to overwrite automatic architecture
 // - `readme/BENCH.md` is used to overwrite automatic benchmarks
 // - `readme/CHALLENGES.md` is used to spark discussions
 // - `readme/TODO.md` is great for contribution and notes
@@ -23,8 +25,14 @@ var (
 	ErrInconsistentPackageComments = errors.New("inconsistent package comments")
 )
 
+type Config struct {
+}
+
 type Service interface {
 	// Generates module documentation in `$modulePath/readme/README.md`
 	GenerateModuleDocs(modulePath string) error
 	DiffModuleDocs(modulePath string) error
+
+	GenerateProjectDocs(projectPath string) error
+	DiffProjectDocs(projectPath string) error
 }

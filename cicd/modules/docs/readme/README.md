@@ -12,6 +12,8 @@ Legend:
 
 Where and how to write comments:
 + in package comment define core know how of the module
+- `readme/TITLE.md` is used to overwrite automatic title
+- `readme/ARCHITECTURE.md` is used to overwrite automatic architecture
 - `readme/BENCH.md` is used to overwrite automatic benchmarks
 - `readme/CHALLENGES.md` is used to spark discussions
 - `readme/TODO.md` is great for contribution and notes
@@ -23,9 +25,18 @@ Type: `cicd/modules/docs.Service`
 #### method Service DiffModuleDocs
 Type: `func(modulePath string) error`
 
+#### method Service DiffProjectDocs
+Type: `func(projectPath string) error`
+
 #### method Service GenerateModuleDocs
 Type: `func(modulePath string) error`
 Generates module documentation in `$modulePath/readme/README.md`
+
+#### method Service GenerateProjectDocs
+Type: `func(projectPath string) error`
+
+### type Config
+Type: `cicd/modules/docs.Config`
 
 ## Variables
 ### var ErrMissingPackage
@@ -38,6 +49,19 @@ Type: `error`
 Type: `error`
 
 
+## Lines of code
+```
+github.com/AlDanial/cloc
+-------------------------------------------------------------------------------
+Language                     files          blank        comment           code
+-------------------------------------------------------------------------------
+Go                               6            111             77            818
+Markdown                         1              1              0              5
+-------------------------------------------------------------------------------
+SUM:                             7            112             77            823
+-------------------------------------------------------------------------------
+
+```
 ## TODO
 1. Check is there better readme extension than ".md".
 Extension to preview:
@@ -55,6 +79,7 @@ Extension to preview:
 
 `cicd/world`:
   - `cicd/world.CICDWorld`
+  - `cicd/world.ProjectFS`
 
 ### Third Party
 - `github.com/ogiusek/ioc/v2`

@@ -72,8 +72,9 @@ func (s *service) Stage(directories ...string) error {
 	}
 	args := []string{"add"}
 	args = append(args, directories...)
-	if err := exec.Command("git", args...).Run(); err != nil {
-		return err
+	cmd := exec.Command("git", args...)
+	if output, err := cmd.CombinedOutput(); err != nil {
+		return fmt.Errorf("%s", string(output))
 	}
 	return nil
 }

@@ -8,7 +8,7 @@
 We are not currently seeking external contributions.\
 However, we will review individual inquiries on a case-by-case basis.\
 While we remain selective at this stage, we are open to discussion.\
-Please note that this project is not yet open-source, as it is in the early stages of development.
+Please note that this project is not yet open-source, as it is in to early stages of development.
 
 ## License
 Copyright © 2026. All rights reserved.

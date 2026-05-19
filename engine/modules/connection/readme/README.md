@@ -63,7 +63,19 @@ Type: `func(conn engine/modules/connection.Conn) engine/modules/connection.Conne
 ```
 $ go test ./... -bench=.
 PASS
-ok  	engine/modules/connection/test	0.052s
+ok  	engine/modules/connection/test	0.055s
+```
+## Lines of code
+```
+github.com/AlDanial/cloc
+-------------------------------------------------------------------------------
+Language                     files          blank        comment           code
+-------------------------------------------------------------------------------
+Go                               7             89             17            411
+-------------------------------------------------------------------------------
+SUM:                             7             89             17            411
+-------------------------------------------------------------------------------
+
 ```
 ## Dependencies
 `engine`:

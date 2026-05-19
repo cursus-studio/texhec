@@ -20,6 +20,18 @@ Type: `engine/services/ecs.EntityID`
 Type: `func(owner engine/services/ecs.EntityID) core/modules/player.OwnerComponent`
 
 
+## Lines of code
+```
+github.com/AlDanial/cloc
+-------------------------------------------------------------------------------
+Language                     files          blank        comment           code
+-------------------------------------------------------------------------------
+Go                               3             14              2             48
+-------------------------------------------------------------------------------
+SUM:                             3             14              2             48
+-------------------------------------------------------------------------------
+
+```
 ## Dependencies
 `core/game`:
   - `core/game.GameWorld`

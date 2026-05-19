@@ -63,7 +63,19 @@ Type: `func() engine/modules/groups.GroupsComponent`
 ```
 $ go test ./... -bench=.
 PASS
-ok  	engine/modules/groups/test	0.007s
+ok  	engine/modules/groups/test	0.006s
+```
+## Lines of code
+```
+github.com/AlDanial/cloc
+-------------------------------------------------------------------------------
+Language                     files          blank        comment           code
+-------------------------------------------------------------------------------
+Go                               7             52              3            214
+-------------------------------------------------------------------------------
+SUM:                             7             52              3            214
+-------------------------------------------------------------------------------
+
 ```
 ## Dependencies
 `engine`:

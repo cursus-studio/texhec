@@ -1,9 +1,18 @@
 // main entry point responsible for setuping pipe hooks, running pipe hooks, running cicd pipeline
+//
+// 1. code quality stages:
+// - dependencies
+// - compilation
+// - gosec
+// - golangci-lint
+// - tests
+// 2. pipeline quality stages:
+// - trivy
+// 3. docs quality stages:
+// - generate or verify docs using [docs](/cicd/modules/docs)
+// - lychee
 package pipe
 
-// check dependencies, does compile, gosec, trivy, golangci-lint
-// verify docs generation, lychee
-// tests
 type Service interface {
 	Setup() error
 

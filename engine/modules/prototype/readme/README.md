@@ -35,12 +35,24 @@ goos: linux
 goarch: amd64
 pkg: engine/modules/prototype/test
 cpu: Intel(R) Core(TM) i5-8350U CPU @ 1.70GHz
-BenchmarkClone1-8         	  593815	      1984 ns/op
-BenchmarkClone2-8         	  531854	      2059 ns/op
-BenchmarkManual1Clone-8   	57392217	        21.02 ns/op
-BenchmarkManual2Clone-8   	45515582	        26.31 ns/op
+BenchmarkClone1-8         	  553860	      2019 ns/op
+BenchmarkClone2-8         	  555722	      2132 ns/op
+BenchmarkManual1Clone-8   	52894573	        21.88 ns/op
+BenchmarkManual2Clone-8   	43178702	        27.26 ns/op
 PASS
-ok  	engine/modules/prototype/test	4.700s
+ok  	engine/modules/prototype/test	4.656s
+```
+## Lines of code
+```
+github.com/AlDanial/cloc
+-------------------------------------------------------------------------------
+Language                     files          blank        comment           code
+-------------------------------------------------------------------------------
+Go                               7             46              4            194
+-------------------------------------------------------------------------------
+SUM:                             7             46              4            194
+-------------------------------------------------------------------------------
+
 ```
 ## Dependencies
 `engine`:

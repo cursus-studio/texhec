@@ -355,6 +355,18 @@ Type: `func(event any) engine/modules/inputs.HoverComponent`
 Type: `func(event any) engine/modules/inputs.DragComponent`
 
 
+## Lines of code
+```
+github.com/AlDanial/cloc
+-------------------------------------------------------------------------------
+Language                     files          blank        comment           code
+-------------------------------------------------------------------------------
+Go                              13            200             39            955
+-------------------------------------------------------------------------------
+SUM:                            13            200             39            955
+-------------------------------------------------------------------------------
+
+```
 ## Dependencies
 `engine`:
   - `engine.Camera`

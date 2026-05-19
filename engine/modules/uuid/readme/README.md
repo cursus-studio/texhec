@@ -43,6 +43,18 @@ Type: `func() []byte`
 Type: `func(id engine/modules/uuid.UUID) engine/modules/uuid.Component`
 
 
+## Lines of code
+```
+github.com/AlDanial/cloc
+-------------------------------------------------------------------------------
+Language                     files          blank        comment           code
+-------------------------------------------------------------------------------
+Go                               4             25              6             96
+-------------------------------------------------------------------------------
+SUM:                             4             25              6             96
+-------------------------------------------------------------------------------
+
+```
 ## Dependencies
 `engine`:
   - `engine.EngineWorld`

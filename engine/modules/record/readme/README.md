@@ -117,6 +117,18 @@ Type: `func() engine/modules/record.Config`
 Type: `func[Component any](config engine/modules/record.Config) engine/modules/record.ComponentGetter[Component]`
 
 
+## Lines of code
+```
+github.com/AlDanial/cloc
+-------------------------------------------------------------------------------
+Language                     files          blank        comment           code
+-------------------------------------------------------------------------------
+Go                              12            204             44           1014
+-------------------------------------------------------------------------------
+SUM:                            12            204             44           1014
+-------------------------------------------------------------------------------
+
+```
 ## Dependencies
 `engine`:
   - `engine.EngineWorld`

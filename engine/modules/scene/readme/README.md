@@ -43,6 +43,18 @@ Type: `func(ID engine/modules/scene.ID) engine/modules/scene.ChangeSceneEvent`
 Type: `func(id string) engine/modules/scene.ID`
 
 
+## Lines of code
+```
+github.com/AlDanial/cloc
+-------------------------------------------------------------------------------
+Language                     files          blank        comment           code
+-------------------------------------------------------------------------------
+Go                               3             24              7             83
+-------------------------------------------------------------------------------
+SUM:                             3             24              7             83
+-------------------------------------------------------------------------------
+
+```
 ## Dependencies
 `engine`:
   - `engine.EngineWorld`

@@ -45,6 +45,18 @@ Type: `func(description string) engine/modules/metadata.DescriptionComponent`
 Type: `func(entity engine/services/ecs.EntityID) engine/modules/metadata.LinkComponent`
 
 
+## Lines of code
+```
+github.com/AlDanial/cloc
+-------------------------------------------------------------------------------
+Language                     files          blank        comment           code
+-------------------------------------------------------------------------------
+Go                               3             21              5             85
+-------------------------------------------------------------------------------
+SUM:                             3             21              5             85
+-------------------------------------------------------------------------------
+
+```
 ## Dependencies
 `engine`:
   - `engine.EngineWorld`

@@ -75,7 +75,19 @@ Type: `func(x float32) engine/modules/layout.GapComponent`
 ```
 $ go test ./... -bench=.
 PASS
-ok  	engine/modules/layout/test	0.008s
+ok  	engine/modules/layout/test	0.007s
+```
+## Lines of code
+```
+github.com/AlDanial/cloc
+-------------------------------------------------------------------------------
+Language                     files          blank        comment           code
+-------------------------------------------------------------------------------
+Go                               6             68             25            264
+-------------------------------------------------------------------------------
+SUM:                             6             68             25            264
+-------------------------------------------------------------------------------
+
 ```
 ## Dependencies
 `engine`:

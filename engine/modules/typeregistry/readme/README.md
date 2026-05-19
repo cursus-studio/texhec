@@ -2,6 +2,18 @@
 ## Architecture
 groups many generic modules into one
 
+## Lines of code
+```
+github.com/AlDanial/cloc
+-------------------------------------------------------------------------------
+Language                     files          blank        comment           code
+-------------------------------------------------------------------------------
+Go                               2              9              1             45
+-------------------------------------------------------------------------------
+SUM:                             2              9              1             45
+-------------------------------------------------------------------------------
+
+```
 ## Dependencies
 `engine/modules/codec/pkg`:
   - `engine/modules/codec/pkg.PkgT`

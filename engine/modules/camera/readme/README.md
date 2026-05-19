@@ -230,6 +230,19 @@ Type: `func(fovY float32, near float32, far float32) engine/modules/camera.Dynam
 Type: `func() engine/modules/camera.ChangedResolutionEvent`
 
 
+## Lines of code
+```
+github.com/AlDanial/cloc
+-------------------------------------------------------------------------------
+Language                     files          blank        comment           code
+-------------------------------------------------------------------------------
+Go                              11            171             32            821
+Markdown                         1              0              0              1
+-------------------------------------------------------------------------------
+SUM:                            12            171             32            822
+-------------------------------------------------------------------------------
+
+```
 ## TODO
 - clean up pkg
 

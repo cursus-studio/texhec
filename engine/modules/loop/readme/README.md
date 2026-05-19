@@ -66,6 +66,18 @@ Type: `func() engine/modules/loop.StopEvent`
 Type: `func(fps int, tps int) engine/modules/loop.ConfigureEvent`
 
 
+## Lines of code
+```
+github.com/AlDanial/cloc
+-------------------------------------------------------------------------------
+Language                     files          blank        comment           code
+-------------------------------------------------------------------------------
+Go                               3             33             14            102
+-------------------------------------------------------------------------------
+SUM:                             3             33             14            102
+-------------------------------------------------------------------------------
+
+```
 ## Dependencies
 `engine`:
   - `engine.Clock`

@@ -34,7 +34,19 @@ Type: `func[Registry any](s engine/modules/entityregistry.Service) (Registry, er
 ```
 $ go test ./... -bench=.
 PASS
-ok  	engine/modules/entityregistry/test	0.012s
+ok  	engine/modules/entityregistry/test	0.007s
+```
+## Lines of code
+```
+github.com/AlDanial/cloc
+-------------------------------------------------------------------------------
+Language                     files          blank        comment           code
+-------------------------------------------------------------------------------
+Go                               5             31             10            163
+-------------------------------------------------------------------------------
+SUM:                             5             31             10            163
+-------------------------------------------------------------------------------
+
 ```
 ## Dependencies
 `engine`:

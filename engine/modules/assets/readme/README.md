@@ -69,7 +69,19 @@ Type: `func[Asset any](assets engine/modules/assets.Service, assetID engine/serv
 ```
 $ go test ./... -bench=.
 PASS
-ok  	engine/modules/assets/test	0.007s
+ok  	engine/modules/assets/test	0.006s
+```
+## Lines of code
+```
+github.com/AlDanial/cloc
+-------------------------------------------------------------------------------
+Language                     files          blank        comment           code
+-------------------------------------------------------------------------------
+Go                               6             60             13            274
+-------------------------------------------------------------------------------
+SUM:                             6             60             13            274
+-------------------------------------------------------------------------------
+
 ```
 ## Dependencies
 `engine`:

@@ -113,6 +113,18 @@ Type: `func(entity engine/services/ecs.EntityID) core/modules/pathfind.PreviewPa
 Type: `func(entity engine/services/ecs.EntityID) core/modules/pathfind.FindPathEvent`
 
 
+## Lines of code
+```
+github.com/AlDanial/cloc
+-------------------------------------------------------------------------------
+Language                     files          blank        comment           code
+-------------------------------------------------------------------------------
+Go                               6             97             94            523
+-------------------------------------------------------------------------------
+SUM:                             6             97             94            523
+-------------------------------------------------------------------------------
+
+```
 ## Dependencies
 `core/game`:
   - `core/game.Definitions`

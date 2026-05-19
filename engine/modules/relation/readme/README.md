@@ -10,6 +10,18 @@ Type: `engine/modules/relation.Service[Key any]`
 Type: `func(Key) (engine/services/ecs.EntityID, bool)`
 
 
+## Lines of code
+```
+github.com/AlDanial/cloc
+-------------------------------------------------------------------------------
+Language                     files          blank        comment           code
+-------------------------------------------------------------------------------
+Go                               8             49              1            266
+-------------------------------------------------------------------------------
+SUM:                             8             49              1            266
+-------------------------------------------------------------------------------
+
+```
 ## Dependencies
 `engine/modules/relation`:
   - `engine/modules/relation.Get`

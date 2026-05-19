@@ -54,6 +54,24 @@ func (d *ASTMeta) String() string {
 	return res.String()
 }
 
+func (d *ASTMeta) ThirdPartyString() string {
+	res := &strings.Builder{}
+	if len(d.Deps) == 0 && len(d.ThirdPartyDeps) == 0 {
+		return ""
+	}
+
+	res.WriteString("## Dependencies\n")
+	if len(d.ThirdPartyDeps) != 0 {
+		res.WriteString("### Third Party\n")
+	}
+	for _, dep := range d.ThirdPartyDeps {
+		// do not show called funcs for 3rd party packages
+		dep.CalledFuncs = nil
+		fmt.Fprintf(res, "%v", dep.String())
+	}
+	return res.String()
+}
+
 func NewAST(path string) (ASTMeta, error) {
 	meta := ASTMeta{}
 

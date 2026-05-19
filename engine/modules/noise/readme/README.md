@@ -52,7 +52,20 @@ Type: `func(cellSize float64, weight float64) engine/modules/noise.LayerConfig`
 ```
 $ go test ./... -bench=.
 PASS
-ok  	engine/modules/noise/test	0.957s
+ok  	engine/modules/noise/test	1.313s
+```
+## Lines of code
+```
+github.com/AlDanial/cloc
+-------------------------------------------------------------------------------
+Language                     files          blank        comment           code
+-------------------------------------------------------------------------------
+Go                              11             93             70            392
+Markdown                         1              3              0             43
+-------------------------------------------------------------------------------
+SUM:                            12             96             70            435
+-------------------------------------------------------------------------------
+
 ```
 ## Dependencies
 `engine`:

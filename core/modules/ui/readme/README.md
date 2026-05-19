@@ -127,6 +127,19 @@ Type: `func[Component any](entities ...engine/services/ecs.EntityID) core/module
 Type: `func[Component any](tick engine/modules/loop.TickEvent, entities []engine/services/ecs.EntityID) core/modules/ui.SelectTickEvent[Component]`
 
 
+## Lines of code
+```
+github.com/AlDanial/cloc
+-------------------------------------------------------------------------------
+Language                     files          blank        comment           code
+-------------------------------------------------------------------------------
+Go                               7             98             16            451
+Markdown                         1              8              0             27
+-------------------------------------------------------------------------------
+SUM:                             8            106             16            478
+-------------------------------------------------------------------------------
+
+```
 ## Dependencies
 `core/game`:
   - `core/game.Definitions`

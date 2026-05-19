@@ -93,6 +93,18 @@ Type: `func(id engine/services/ecs.EntityID) engine/modules/transition.EasingCom
 Type: `func(easingFunction func(t engine/modules/transition.Progress) engine/modules/transition.Progress) engine/modules/transition.EasingFunctionComponent`
 
 
+## Lines of code
+```
+github.com/AlDanial/cloc
+-------------------------------------------------------------------------------
+Language                     files          blank        comment           code
+-------------------------------------------------------------------------------
+Go                               6             67             15            265
+-------------------------------------------------------------------------------
+SUM:                             6             67             15            265
+-------------------------------------------------------------------------------
+
+```
 ## Dependencies
 `engine`:
   - `engine.EngineWorld`

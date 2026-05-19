@@ -87,11 +87,48 @@ func (s *service) FilesProjects(files []string) []string {
 	paths := datastructures.NewSet[string]()
 	for _, file := range files {
 		parts := strings.SplitN(file, string(filepath.Separator), 2)
-		if len(parts) > 0 && parts[0] != "" {
-			paths.Add(parts[0])
+		if len(parts) == 0 || parts[0] == "" {
+			continue
 		}
+		project := parts[0]
+		goModPath := filepath.Join(project, "go.mod")
+		if _, err := os.Stat(goModPath); err != nil {
+			continue
+		}
+		paths.Add(project)
 	}
 	return paths.Get()
+}
+
+func (s *service) ProjectModules(project string) []string {
+	entries, err := os.ReadDir(filepath.Join(project, "modules"))
+	if err != nil {
+		return nil
+	}
+
+	modules := []string{}
+	for _, entry := range entries {
+		if !entry.IsDir() {
+			continue
+		}
+		modules = append(modules, filepath.Join(project, entry.Name()))
+	}
+	return modules
+}
+func (s *service) ProjectServices(project string) []string {
+	entries, err := os.ReadDir(filepath.Join(project, "services"))
+	if err != nil {
+		return nil
+	}
+
+	services := []string{}
+	for _, entry := range entries {
+		if !entry.IsDir() {
+			continue
+		}
+		services = append(services, filepath.Join(project, entry.Name()))
+	}
+	return services
 }
 
 func (s *service) Save(file, content string) error {

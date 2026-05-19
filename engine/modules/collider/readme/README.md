@@ -184,6 +184,18 @@ Type: `func(pos github.com/go-gl/mathgl/mgl32.Vec3, direction github.com/go-gl/m
 Type: `func(ray engine/modules/collider.Ray, normal github.com/go-gl/mathgl/mgl32.Vec3) engine/modules/collider.RayHit`
 
 
+## Lines of code
+```
+github.com/AlDanial/cloc
+-------------------------------------------------------------------------------
+Language                     files          blank        comment           code
+-------------------------------------------------------------------------------
+Go                              10            123             22            514
+-------------------------------------------------------------------------------
+SUM:                            10            123             22            514
+-------------------------------------------------------------------------------
+
+```
 ## Dependencies
 `engine`:
   - `engine.Assets`

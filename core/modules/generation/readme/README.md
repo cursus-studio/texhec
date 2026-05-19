@@ -28,6 +28,19 @@ will be generated <0, n)
 Type: `func(entity engine/services/ecs.EntityID, seed engine/modules/seed.Seed, size engine/modules/grid.Coords) core/modules/generation.Config`
 
 
+## Lines of code
+```
+github.com/AlDanial/cloc
+-------------------------------------------------------------------------------
+Language                     files          blank        comment           code
+-------------------------------------------------------------------------------
+Go                               3             43             11            262
+Markdown                         1              3              0             13
+-------------------------------------------------------------------------------
+SUM:                             4             46             11            275
+-------------------------------------------------------------------------------
+
+```
 ## Dependencies
 `core/game`:
   - `core/game.Definitions`

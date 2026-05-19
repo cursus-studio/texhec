@@ -280,6 +280,20 @@ BenchmarkRendering1MTilesMap-8   	    2221	   5062408 ns/op
 
 Rendering 1 million tiles on `UHD Graphics 620` in less than **5.1ms**.
 
+## Lines of code
+```
+github.com/AlDanial/cloc
+-------------------------------------------------------------------------------
+Language                     files          blank        comment           code
+-------------------------------------------------------------------------------
+Go                               9            179            134            969
+GLSL                             3             29              2            114
+Markdown                         1              1              0             11
+-------------------------------------------------------------------------------
+SUM:                            13            209            136           1094
+-------------------------------------------------------------------------------
+
+```
 ## Dependencies
 `core/game`:
   - `core/game.Definitions`
