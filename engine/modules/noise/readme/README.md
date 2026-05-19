@@ -52,7 +52,7 @@ Type: `func(cellSize float64, weight float64) engine/modules/noise.LayerConfig`
 ```
 $ go test ./... -bench=.
 PASS
-ok  	engine/modules/noise/test	1.373s
+ok  	engine/modules/noise/test	1.306s
 ```
 ## Lines of code
 ```
