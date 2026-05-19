@@ -45,15 +45,18 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                              18            213            123           1532
+Go                              18            213             98           1532
 Groovy                           1              5              1             75
-Dockerfile                       1              8              3             30
-Markdown                         3              9              0             29
+Dockerfile                       1              7              3             30
+Markdown                         4              9              0             30
 -------------------------------------------------------------------------------
-SUM:                            23            235            127           1666
+SUM:                            24            234            102           1667
 -------------------------------------------------------------------------------
 
 ```
+## TODO
+Ensure script wraps itself in `Dockerfile` if is runned on local machine
+
 ## Dependencies
 ### Third Party
 - `github.com/google/go-github/v60/github`

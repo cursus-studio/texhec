@@ -14,31 +14,6 @@ func main() {
 	c := ioc.NewContainer(cicdpkg.Pkg)
 	w := ioc.Get[world.CICDWorld](c)
 
-	// var err error
-	// switch os.Args[1] {
-	// case "setup":
-	// 	err = w.Pipe().Setup()
-	// case "sync":
-	// 	err = w.Pipe().Sync()
-	// case "fix":
-	// 	err = w.Pipe().Fix()
-	// case "verify":
-	// 	var arg string
-	// 	if len(os.Args) > 3 {
-	// 		arg = os.Args[2]
-	// 	}
-	// 	err = w.Pipe().Verify(arg)
-	// default:
-	// 	err = errors.New("uknown command")
-	// }
-	//
-	// if err != nil {
-	// 	fmt.Printf("%v\n\n", err.Error())
-	// 	fmt.Printf("FAILED\n")
-	// 	os.Exit(1)
-	// 	return
-	// }
-	// fmt.Printf("SUCCESS\n")
 	var rootCmd = &cobra.Command{
 		Use:           "cicd",
 		Short:         "CICD tool",
