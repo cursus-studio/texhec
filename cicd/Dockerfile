@@ -31,6 +31,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     pkg-config \
     curl \
     git \
+    cloc \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /go/src/app
