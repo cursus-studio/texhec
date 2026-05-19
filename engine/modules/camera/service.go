@@ -1,3 +1,8 @@
+// this module is responsible for cameras. Responsibilities:
+// - projections
+// - sets [size](/engine/modules/transform/readme/README.md#type-SizeComponent) for objects with projections
+// - shots rays
+// - parses cameras to mgl32.Mat4
 package camera
 
 import (

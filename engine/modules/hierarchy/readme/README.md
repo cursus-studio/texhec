@@ -1,131 +1,134 @@
-# Hierarchy
+# hierarchy
 ## Architecture
-How module is built and general flow of data and why this way in case of controversial choices.
+defines child-parent relationship.
+this is one of core modules on which relies most of the engine.
 
-This module is built mainly with 2 main components.\
-Public `hierarchy.Component` pointing to parent and internal `ParentComponent`.\
-Relations are stored internaly and to use them we use `hierarhy.Service`.\
-On `hierarchy.Component` modifications we modify internal state instantly.\
-We should do this instantly to ensure children are always removed on parent removal and lazy reaction could do not add child before it was removed.\
-Instant reaction complicates flow a lot and this has space for improvement.
+service stores separate relation cache and updates it on changes to the hierarchy.
+this allows us to have O(1) access time to children and parents
+
+## Types
+### type Service
+Type: `engine/modules/hierarchy.Service`
+
+#### method Service Children
+Type: `func(parent engine/services/ecs.EntityID) engine/services/datastructures.SparseSetReader[engine/services/ecs.EntityID]`
+
+#### method Service Component
+Type: `func() engine/services/ecs.ComponentsArray[engine/modules/hierarchy.Component]`
+
+#### method Service FlatChildren
+Type: `func(parent engine/services/ecs.EntityID) engine/services/datastructures.SparseSetReader[engine/services/ecs.EntityID]`
+includes children of children
+
+#### method Service GetOrderedParents
+Type: `func(child engine/services/ecs.EntityID) []engine/services/ecs.EntityID`
+
+#### method Service GetParents
+Type: `func(child engine/services/ecs.EntityID) engine/services/datastructures.SparseSetReader[engine/services/ecs.EntityID]`
+from closest to furthest
+
+#### method Service IsChildOf
+Type: `func(child engine/services/ecs.EntityID, parent engine/services/ecs.EntityID) bool`
+returns true if is child of any parent doesn't matter the depth
+
+#### method Service Parent
+Type: `func(child engine/services/ecs.EntityID) (engine/services/ecs.EntityID, bool)`
+
+#### method Service SetChildren
+Type: `func(parent engine/services/ecs.EntityID, children ...engine/services/ecs.EntityID)`
+maintains order of children and adds component to children
+even if children doesn't exist
+
+#### method Service SetParent
+Type: `func(child engine/services/ecs.EntityID, parent engine/services/ecs.EntityID)`
+
+### type Component
+Type: `engine/modules/hierarchy.Component`
+
+#### property Component Parent
+Type: `engine/services/ecs.EntityID`
+
+## Variables
+### var ErrParentCycle
+Type: `error`
+
+## Functions
+### func NewParent
+Type: `func(parent engine/services/ecs.EntityID) engine/modules/hierarchy.Component`
+
 
 ## Benchmarks
-
-```sh
-$ go test . -bench=. -benchmem
+```
+$ go test ./... -bench=.
 goos: linux
 goarch: amd64
 pkg: engine/modules/hierarchy/test
 cpu: Intel(R) Core(TM) i5-8350U CPU @ 1.70GHz
-BenchmarkChildren_1-8                          	211353626	         5.708 ns/op	       0 B/op	       0 allocs/op
-BenchmarkChildren_10-8                         	204640497	         5.825 ns/op	       0 B/op	       0 allocs/op
-BenchmarkChildren_100-8                        	211510869	         5.654 ns/op	       0 B/op	       0 allocs/op
-BenchmarkFlatChildren_1_1-8                    	180521926	         6.592 ns/op	       0 B/op	       0 allocs/op
-BenchmarkFlatChildren_10_10-8                  	186883720	         6.427 ns/op	       0 B/op	       0 allocs/op
-BenchmarkAddChildToParentWithGrandParent-8     	11669298	        95.11 ns/op	     198 B/op	       0 allocs/op
-BenchmarkAddChildToParentWith5GrandParents-8   	10917055	       101.0 ns/op	     211 B/op	       0 allocs/op
-BenchmarkRemoveChild-8                         	 6898168	       162.1 ns/op	      50 B/op	       1 allocs/op
-BenchmarkRemoveParentWith1Children-8           	  188970	      6325 ns/op	   16488 B/op	       5 allocs/op
-BenchmarkRemoveParentWith100Children-8         	   38294	     30320 ns/op	   17496 B/op	      11 allocs/op
+BenchmarkChildren_1-8                          	218718276	         5.434 ns/op
+BenchmarkChildren_10-8                         	218095960	         5.493 ns/op
+BenchmarkChildren_100-8                        	223585050	         5.369 ns/op
+BenchmarkFlatChildren_1_1-8                    	185249932	         6.479 ns/op
+BenchmarkFlatChildren_10_10-8                  	185683435	         6.463 ns/op
+BenchmarkAddChildToParentWithGrandParent-8     	 6614376	       173.4 ns/op
+BenchmarkAddChildToParentWith5GrandParents-8   	 6784557	       168.3 ns/op
+BenchmarkRemoveChild-8                         	 1610326	       764.7 ns/op
+BenchmarkRemoveParentWith1Children-8           	   84132	     14547 ns/op
+BenchmarkRemoveParentWith100Children-8         	   10000	    108985 ns/op
+PASS
+ok  	engine/modules/hierarchy/test	15.764s
 ```
-
-## Usage examples
-### Service interface
-Service methods are self explainatory.
-```go
-type Service interface {
-	Component() ecs.ComponentsArray[Component]
-
-	// returns true if is child of any parent doesn't matter the depth
-	IsChildOf(child ecs.EntityID, parent ecs.EntityID) bool
-	SetParent(child ecs.EntityID, parent ecs.EntityID)
-	Parent(child ecs.EntityID) (ecs.EntityID, bool)
-
-	// from closest to furthest
-	GetParents(child ecs.EntityID) datastructures.SparseSetReader[ecs.EntityID]
-	GetOrderedParents(child ecs.EntityID) []ecs.EntityID
-
-	// maintains order of children and adds component to children
-	// even if children doesn't exist
-	SetChildren(parent ecs.EntityID, children ...ecs.EntityID)
-
-	Children(parent ecs.EntityID) datastructures.SparseSetReader[ecs.EntityID]
-	// includes children of children
-	FlatChildren(parent ecs.EntityID) datastructures.SparseSetReader[ecs.EntityID]
-}
+## Lines of code
 ```
+github.com/AlDanial/cloc
+-------------------------------------------------------------------------------
+Language                     files          blank        comment           code
+-------------------------------------------------------------------------------
+Go                               7            103             21            483
+-------------------------------------------------------------------------------
+SUM:                             7            103             21            483
+-------------------------------------------------------------------------------
 
-### `IsChildOf`
-Returns `true` if child is child of parent.
-```go
-func _(hierarchy hierarchy.Service, child, parent ecs.EntityID) {
-    if hierarchy.IsChildOf(child, parent) {
-        // do something
-    }
-}
 ```
-
-### `SetParent`
-Adds `hierarchy.Component` to a child and doing so sets child-parent relation
-```go
-func _(hierarchy hierarchy.Service, child, parent ecs.EntityID) {
-    hierarchy.SetParent(child, parent)
-}
-```
-
-### `Parent`
-Reads `hierarchy.Component` from a child and returns parent and ok
-```go
-func _(hierarchy hierarchy.Service, child ecs.EntityID) {
-    parent, ok := hierarchy.Parent(child)
-}
-```
-
-### `GetParents`
-Returns parents in `SparseSetReader`.
-```go
-func _(hierarchy hierarchy.Service, child, parent ecs.EntityID) {
-    parents, ok := hierarchy.GetParents(child)
-    isRelated := parents.Get(parent)
-}
-```
-
-### `GetOrderedParents`
-Returns parents in `slice` in order.\
-Its separate from `GetParents` because `SparseSetReader` doesn't maintain order.
-```go
-func _(hierarchy hierarchy.Service, child ecs.EntityID) {
-    for _, parent := range hierarchy.GetOrderedParents(child) {
-    }
-}
-```
-
-### `SetChildren`
-Sets children for each child parent as parent
-```go
-func _(hierarchy hierarchy.Service, parent, child1, child2 ecs.EntityID) {
-    hierarchy.SetChildren(parent, child1, child2)
-}
-```
-
-### `Children`
-Reads parent children.
-```go
-func _(hierarchy hierarchy.Service, parent ecs.EntityID) {
-    children := hierarchy.Children(parent)
-}
-```
-
-### `FlatChildren`
-Reads parent children and grand children.
-```go
-func _(hierarchy hierarchy.Service, parent ecs.EntityID) {
-    flatChildren := hierarchy.FlatChildren(parent)
-}
-```
-
 ## Dependencies
-- [codec](/engine/modules/codec/readme/README.md)
-- [datastructures](/engine/services/datastructures/readme/README.md)
-- [ecs](/engine/services/ecs/readme/README.md)
-- [logger](/engine/modules/logger/readme/README.md)
+`engine`:
+  - `engine.EngineWorld`
+  - `engine.World`
+
+`engine/modules/hierarchy`:
+  - `engine/modules/hierarchy.Component`
+  - `engine/modules/hierarchy.NewParent`
+  - `engine/modules/hierarchy.Parent`
+  - `engine/modules/hierarchy.Service`
+
+`engine/modules/typeregistry/pkg`:
+  - `engine/modules/typeregistry/pkg.PkgT`
+
+`engine/pkg`:
+  - `engine/pkg.Pkg`
+
+`engine/services/datastructures`:
+  - `engine/services/datastructures.Add`
+  - `engine/services/datastructures.Get`
+  - `engine/services/datastructures.GetIndices`
+  - `engine/services/datastructures.NewSparseArray`
+  - `engine/services/datastructures.NewSparseSetWithPaging`
+  - `engine/services/datastructures.Remove`
+  - `engine/services/datastructures.Set`
+  - `engine/services/datastructures.SparseArray`
+  - `engine/services/datastructures.SparseSet`
+  - `engine/services/datastructures.SparseSetReader`
+
+`engine/services/ecs`:
+  - `engine/services/ecs.ComponentsArray`
+  - `engine/services/ecs.EntityID`
+  - `engine/services/ecs.Get`
+  - `engine/services/ecs.GetComponentsArray`
+  - `engine/services/ecs.OnRemove`
+  - `engine/services/ecs.OnUpsert`
+  - `engine/services/ecs.Remove`
+  - `engine/services/ecs.RemoveEntity`
+  - `engine/services/ecs.Set`
+  - `engine/services/ecs.World`
+
+### Third Party
+- `github.com/ogiusek/ioc/v2`

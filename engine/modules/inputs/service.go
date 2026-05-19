@@ -1,3 +1,12 @@
+// integrates inputs into the engine
+//
+// defines mouse and keyboard high-level abstractions.
+//
+// ### mouse
+// directly parses mouse inputs to specific entity click events
+//
+// ### keyboard
+// takes keyboard inputs and spreads them using signals which can be captured by entities in focused element hierarchy
 package inputs
 
 import (

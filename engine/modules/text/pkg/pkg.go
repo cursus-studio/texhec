@@ -101,7 +101,7 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 	})
 
 	ioc.Wrap(b, func(c ioc.Dic, b assets.Service) {
-		world := ioc.GetServices[engine.EngineWorld](c)
+		world := ioc.Get[engine.EngineWorld](c)
 		config := ioc.Get[Config](c).(*config)
 		getLetterImage := func(drawer font.Drawer, letter rune) *image.RGBA {
 			var text = string(letter)

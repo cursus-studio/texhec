@@ -28,7 +28,7 @@ func newImage(v uint8) image.Image {
 }
 
 func TestNewAsset(t *testing.T) {
-	world := ioc.GetServices[game.GameWorld](ioc.NewContainer(corepkg.Pkg))
+	world := ioc.Get[game.GameWorld](ioc.NewContainer(corepkg.Pkg))
 	srcImages := [6][]image.Image{
 		{newImage(0b0011)},
 		{newImage(0b1111)},

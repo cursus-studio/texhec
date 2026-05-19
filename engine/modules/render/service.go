@@ -1,3 +1,5 @@
+// this module is respinsible for defining unified events and components for rendering and
+// for providing basic instancing renderer
 package render
 
 import (

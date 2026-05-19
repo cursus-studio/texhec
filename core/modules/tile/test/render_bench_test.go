@@ -46,7 +46,7 @@ func BenchmarkRendering1MTilesMap(b *testing.B) {
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 
-	world := ioc.GetServices[game.GameWorld](ioc.NewContainer(
+	world := ioc.Get[game.GameWorld](ioc.NewContainer(
 		corepkg.Pkg,
 		func(b ioc.Builder) {
 			ioc.Wrap(b, func(c ioc.Dic, w window.Service) {

@@ -1,3 +1,5 @@
+// generates normalized noises.
+// extremely useful for generating maps
 package noise
 
 import (

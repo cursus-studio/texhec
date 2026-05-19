@@ -31,7 +31,7 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 	})
 
 	ioc.Wrap(b, func(c ioc.Dic, b entityregistry.Service) {
-		world := ioc.GetServices[game.GameWorld](c)
+		world := ioc.Get[game.GameWorld](c)
 		b.Register("speed", func(entity ecs.EntityID, structTagValue string) {
 			v, err := strconv.Atoi(structTagValue)
 			if err != nil {

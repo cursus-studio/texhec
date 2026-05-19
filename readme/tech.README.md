@@ -1,283 +1,183 @@
 # TEXHEC
-## Table of contents
-- [What is TEXHEC ?](#what-is-texhec-)
-- [Why golang](#why-golang)
-- [Dependencies](#dependencies)
-- [Module vs Service](#module-vs-service)
-- [Module structure](#module-structure)
-- [Module readme schema](#module-readme-schema)
-- [Implicit dependency graph](#implicit-dependency-graph)
-- [Modules](#modules)
-- [Technical challenges](#technical-challenges)
-- [CI/CD](#cicd)
-- [Graphics](#graphics)
-- [How to run ?](#how-to-run-)
-- [Contribution](#contribution)
-- [License](#license)
+## About
+**TEXHEC** is an experimental, high-performance, ECS-based simulation engine.
+**The Goal:** Create a massive, immersive strategy game world that pushes hardware limits within a realistic timeframe.
 
-## What is TEXHEC ?
-TEXHEC is a **HIGH-Performance** project where natural map size is **1.000.000** tiles with\
-hundreds or thousands buildings and units **all** being **simulated** in real time on\
-low end hardware Intel® Core™ i5-8350U × 8 Intel® and UHD Graphics 620 (KBL GT2).\
-We use **DOD** and use our **own** **ECS** and **DI container** framework.
+## Projects
+Pick readme for your niche:
+- ### [CI/CD](/cicd/readme/README.md)
+[CI/CD](/cicd/readme/README.md) runs on both client (using `git hooks`) and server (using `jenkins`).
+Before-commit documentation sections are automatically generated and added to main readmes.
 
-We focus on what works. What is scalable and what is performant.\
-We achieved framework which reduced boilerplate and allowed us to write 40+ modules in less than 20k loc.
+- ### Low-Level [TEXHEC Engine](/engine/readme/README.md)
+Defines data structures to store whole game state in continuous chunks and game engine foundations
 
-[More about **ECS** framework](/engine/services/ecs/readme/README.md)
-[More about **IOC** framework](https://github.com/ogiusek/ioc)
+- ### [TEXHEC Core](/core/readme/README.md)
+Defines game and game objects. In [DOD](#dod) section you can see performance of **engine** and **core**.
 
-## Architectural choices
-### Why golang
-Others would **discard golang** due to **garbage collector**.\
-In reality garbage collector isn't an inconvenience because we follow **DOD** and\
-we do not have enough pointers to be an inconvenience.
+- ### [DI container](https://github.com/ogiusek/ioc)
+Implements more efficient structures to store and access services while providing more sugary
+abstractions reducing **LOC**.
 
-In reality using golang has benefits:
-- its very performant (its compiled)
-- its fast to write, understand and its very easy to use (necessary to deliver by a single developer)
+- ### [Event bus](https://github.com/ogiusek/events)
+**DI container** and **event bus** was made to have full control over this project.
+In comparison to whole project scope these were like single features to implement so cost
+of writing and maintaining them is well worth it.
+
+## Principles
+- ### Adapt. Engineers are meant to adapt to project requirements not the other way around.
+- ### Legacy should be something that pushes us. One working feature tomorrow over two half baked today
+- ### Pick lowest hanging fruit first. Cut corners to deliver without building technical debt
+
+## Architecture
+### DOD
+Following **DOD** creates exceptionally performant software and avoids **GC**.
+#### Proof
+[Tile benchmark](/core/modules/tile/readme/README.md#benchmarks)
+
+A 1.000.000 tile map is generated in seconds and rendered in less than **5.1ms** using:
+- cpu: 5 years old Intel® Core™ i5-8350U × 8 Intel®
+- gpu: UHD Graphics 620 (KBL GT2)
+
+![Map scroll](map_scroll.gif)
+![Whole map](whole_map.png)
+![Bottom right map corner](bottom_right.png)
+
+#### Architecture
+In this project we follow **DOD** by using [ECS](/engine/services/ecs/readme/README.md)
+
+### Determinism
+Using **DOD** alongside **EDD** creates deterministic engine.
+Using **TPS** (ticks per second) to perform modifications and **FPS** (frames per second)
+to perform client GUI and input updates creates environment which is easy to debug and to send over network.
+
+### Golang
+Golang despite having **GC** is a perfect choice for a game engine.
+By following [**DOD**](#dod) we leave no pointers behind which have to be heavily cleaned.
+Pros:
+- very performant (it's compiled)
+- it's fast to write, understand and it's very easy to use
 - it lacks decades of building technical debt
 - aligned philosophies (simplicity creates performance not other way around)
 
-### Dependencies
-Dependencies are only added if necessary.
-- `sdl2`
-- `opengl`
-- `opengl math`
-- `golang constraints`
-- `golang images and text (used only to generate image per letter)`
-- `google uuid`
+### DI container
+Why:
+1. Services store data, and with such dependencies, we need to have an instance manager.
+2. Service wrappers allow us to extend our services in a way that everything is contained.
 
-Dependencies which are written by me:
-- `ioc`
-- `events`
+### Implicit dependency injection graph
+Implicit dependency injection graph in code is single struct with all services.
+The point is to automate dependency management and to expose s single facade.
+```go
+type EngineWorld struct {
+	World         ioc.Lazy[ecs.World]      `inject:""`
+	EventsBuilder ioc.Lazy[events.Builder] `inject:""`
+	Events        ioc.Lazy[events.Events]  `inject:""`
 
-### Module vs Service
-Service is something separate from game engine which is basis for it.\
-After creating **ECS** service i attempt to migrate everything to a module.\
-Modules also have more struct rules and have dedicated file structure.\
-Services are more detached from alone game engine and have less strict rules.
+	Assets         ioc.Lazy[assets.Service]         `inject:""`
+	Audio          ioc.Lazy[audio.Service]          `inject:""`
+    // ...
+}
+```
+
+#### Pros
+- DX. Unified structure with all services in project
+- Loc reduction. Less imports and repeating service properties
+- Less maintenance on adding or removing unused services injected
+
+#### Cons
+1. Forces separation of interface from implementation to avoid circular dependencies\
+**Solution**: Own file structure separating interface from implementation.
+2. Theoretically using lazy listeners decreases performance\
+**Solution**: Uses bool under the hood stored alongside pointer therefore in practice hot path doesn't show up in profiler
+3. Automatic dependencies spread in module.\
+**Solution**: This is solved with automatic documentation listing all dependencies in one place
+4. Testing requires whole world.\
+**Solution**: Packages have default configurations.
+
+These cons enforce good practices, while with these solutions, their impact is negligible.
+
+### Documentation generation
+Own documentation format allows for additional sections like:
+- `Types`
+- `Benchmarks`
+- `Lines of code`
+- `Dependencies`
 
 ### Module structure
 ```
 modules/
 └─ `$module_name`/
-    ├── internal/       # Defines implementation for `Service` and `System` (if exist in module)
-    ├── pkg/            # This exposes `Package` function to register `Service` implementation.
-    │                   # `pkg`, `internal` and `test` separation allows `modules`
-    │                   # Decouples the interface definition from the construction logic to allow for flexible dependency wiring
-    ├── test/           # Defines test
-    ├── readme/         # Defines readme
-    └── `$interface.go` # There is no strict file rule naming. This defines what module exposes
-                        # Expects interface name `Service` so module name and service purpose were related
-```
-Everything in module file structure is optional and should be only added if used.
-
-### Module readme schema
-```md
-# Module_name
-## Architecture
-How module is built and general flow of data and why this way in case of controversial choices.
-
-## Benchmarks (optional)
-
-## Usage examples
-Code snippets of `Service` and of how to use it.
-...
+    ├── internal/          # Defines implementation for `Service` and `System` (if exist in module)
+    │
+    ├── pkg/               # This exposes `Package` function to register `Service` implementation.
+    │                      # `pkg`, `internal` and `test` separation allows `modules`
+    │                      # Decouples the interface definition from the construction logic to allow for flexible dependency wiring
+    │
+    ├── test/              # Defines test
+    │                      # Benchmarks here are automatically used in generated readme
+    │
+    ├── readme/            # Defines readme
+    │   ├─ TITLE.md        # Overwrites `package name` as automatic readme header
+    │   ├─ ARCHITECTURE.md # Overwrites package comments as automatic readme architecture section
+    │   ├─ BENCH.md        # Overwrites automatic benchmarks
+    │   ├─ CHALLENGES.md   # Challenges section in generated readme
+    │   ├─ TODO.md         # TODO  section in generated readme
+    │   └─ README.md       # generated readme
+    │
+    └── `service.go`       # There is no strict file rule naming. This defines what module exposes
+                           # Expects interface name `Service` so module name and service purpose were related
 ```
 
-### Implicit dependency graph
-#### How explicit dependency graph looks ?
-```modules/mod3/internal.go
-type service struct {
-    Dep1 mod1.Service `inject:""`
-    Dep2 mod2.Service `inject:""`
-}
-```
-This explicitly states all used dependencies.
+### Module vs Service
+**Module**: integral part of an engine with specific structure.
+It is faster to write, use and has dedicated tooling (in [CI/CD](/cicd/readme/README.md)) but it is harder to separate.
 
-**Pros**:
-- Easier to read module dependencies
-- Faster
-**Cons**:
-- Additional maintenance cost and loc
-- Fragments the engine
+**Service**: separate package which can be used in other projects without modifications.
 
-#### How implicit dependency graph looks ?
-```engine.go
-type EngineWorld struct {
-    Dep1 ioc.Lazy[mod1.Service] `inject:""`
-    Dep2 ioc.Lazy[mod2.Service] `inject:""`
-    Dep3 ioc.Lazy[mod3.Service] `inject:""`
-}
-```
+Most of codebase leans towards modules for developer velocity and unification.
 
-```modules/mod3/internal.go
-type service struct {
-    engine.EngineWorld `inject:""`
-}
-```
-
-**Pros**:
-- Easy wiring (wiring becomes a matter of 2 loc per module)
-- Centralizes the app and treats it as a single object
-**Cons**:
-- Less performant (Additional boolean check within the lambda during access)
-
-This makes additions to engine a piece of cake and reduces boilerplate and allows for circular dependencies.
-While circular dependencies are a bad practice additional technical effort for each module
-to explicitly ensure they won't occur isn't a way to avoid them.
-
-#### Conclusion
-The choice of implicit dependency management provides:
-- Developer velocity
-- Less code to maintain
-For the price of:
-- Performance (Additional if check during any service access)
-
-Why performance cost high-performance project is negligible:
-- Bool and pointer are so small that they'll always be loaded into memory so there won't be a cache miss (biggest performance cost)
-- While the boolean check has a cost, it is negligible compared to calling the most expensive methods (these which need optimization) methods like pathfinding on 1M tiles map
-
-This trade of is a no brainer for scenario where one developer builds whole game/simulation engine from scratch.
-Developer velocity is everything in this scenario and this minor price is well worth it.
-This project isn't in asm for a reason.
-
-What, contrary to appearances, is not a price:
-- ##### safety
-All dependencies are resolved at startup so there won't be circular dependencies at runtime.
-- ##### promoption of bad practices
-Some could argue that this promotes circular dependencies but
-maintaining this rule shouldn't be at a cost of boilerplate.
-Code isn't about enforcing rules its about composition of functionalities.
-Forbidding functionalities in code BECAUSE, with no technical reason is a bad practice.
-
-### Modules
-**Currently only cherry picked readmes are written**
-Cherry picked readmes to show project complexity:
+## Cherry picked readmes
+**CI/CD**:
+- [docs](/cicd/modules/docs/readme/README.md)
+- [pipe](/cicd/modules/pipe/readme/README.md)
+**Foundations**:
 - [tile](/core/modules/tile/readme/README.md)
 - [ecs](/engine/services/ecs/readme/README.md)
+**Building Blocks**:
 - [assets](/engine/modules/assets/readme/README.md)
 - [hierarchy](/engine/modules/hierarchy/readme/README.md)
 - [record](/engine/modules/record/readme/README.md)
 - [transform](/engine/modules/transform/readme/README.md)
-
-#### Core
-Core is game source code.\
-It defines game specific objects like `tiles`, `units`, map `generation` or `pathfinding`.\
-Core modules:
-- [definitions (readme placeholder)](/core/modules/definitions/readme/README.md)
-- [deploy (readme placeholder)](/core/modules/deploy/readme/README.md)
-- [fpslogger (readme placeholder)](/core/modules/fpslogger/readme/README.md)
-- [generation (readme placeholder)](/core/modules/generation/readme/README.md)
-- [loading (readme placeholder)](/core/modules/loading/readme/README.md)
-- [pathfind (readme placeholder)](/core/modules/pathfind/readme/README.md)
-- [player (readme placeholder)](/core/modules/player/readme/README.md)
-- [settings (readme placeholder)](/core/modules/settings/readme/README.md)
-- [tile](/core/modules/tile/readme/README.md)
-- [ui (readme placeholder)](/core/modules/ui/readme/README.md)
-
-#### Engine
-Engine is reusable in other projects.\
-It defines ecs framework and basic engine modules like `transform` or `hierarchy`.\
-Engine modules:
-- [assets](/engine/modules/assets/readme/README.md)
-- [audio (readme placeholder)](/engine/modules/audio/readme/README.md)
-- [batcher (readme placeholder)](/engine/modules/batcher/readme/README.md)
-- [camera (readme placeholder)](/engine/modules/camera/readme/README.md)
-- [codec (readme placeholder)](/engine/modules/codec/readme/README.md)
-- [collider (readme placeholder)](/engine/modules/collider/readme/README.md)
-- [connection (readme placeholder)](/engine/modules/connection/readme/README.md)
-- [drag (readme placeholder)](/engine/modules/drag/readme/README.md)
-- [entityregistry (readme placeholder)](/engine/modules/entityregistry/readme/README.md)
-- [graphics (readme placeholder)](/engine/modules/graphics/readme/README.md)
-- [grid (readme placeholder)](/engine/modules/grid/readme/README.md)
-- [groups (readme placeholder)](/engine/modules/groups/readme/README.md)
-- [hierarchy](/engine/modules/hierarchy/readme/README.md)
-- [inputs (readme placeholder)](/engine/modules/inputs/readme/README.md)
-- [layout (readme placeholder)](/engine/modules/layout/readme/README.md)
-- [logger (readme placeholder)](/engine/modules/logger/readme/README.md)
-- [loop (readme placeholder)](/engine/modules/loop/readme/README.md)
-- [metadata (readme placeholder)](/engine/modules/metadata/readme/README.md)
-- [netsync (readme placeholder)](/engine/modules/netsync/readme/README.md)
-- [noise (readme placeholder)](/engine/modules/noise/readme/README.md)
-- [prototype (readme placeholder)](/engine/modules/prototype/readme/README.md)
-- [record](/engine/modules/record/readme/README.md)
-- [relation (readme placeholder)](/engine/modules/relation/readme/README.md)
-- [render (readme placeholder)](/engine/modules/render/readme/README.md)
-- [scene (readme placeholder)](/engine/modules/scene/readme/README.md)
-- [seed (readme placeholder)](/engine/modules/seed/readme/README.md)
-- [smooth (readme placeholder)](/engine/modules/smooth/readme/README.md)
-- [text (readme placeholder)](/engine/modules/text/readme/README.md)
-- [transform](/engine/modules/transform/readme/README.md)
-- [transition (readme placeholder)](/engine/modules/transition/readme/README.md)
-- [typeregistry (readme placeholder)](/engine/modules/typeregistry/readme/README.md)
-- [uuid (readme placeholder)](/engine/modules/uuid/readme/README.md)
-- [warmup (readme placeholder)](/engine/modules/warmup/readme/README.md)
-- [window (readme placeholder)](/engine/modules/window/readme/README.md)
-
-Engine services:
-- [clock (readme placeholder)](/engine/services/clock/readme/README.md)
-- [console (readme placeholder)](/engine/services/console/readme/README.md)
-- [datastructures (readme placeholder)](/engine/services/datastructures/readme/README.md)
-- [ecs](/engine/services/ecs/readme/README.md)
-
-### Technical challenges
-Each and every module had unique challenges and they are described in these readmes.
-
-Biggest challenge of the whole project was architecture.\
-Finding file structure which allows for most logic with least friction between modules.\
-Current approach reduces whole friction to a few interface files and often in a single `Service` interface.
-
-## CI/CD
-Current pipeline is hosted using **Jenkins** on **Raspberry PI**.
-Current pipeline **CI** flow:
-- `quality`: `golangci-lint`, dependency hygiene
-- `correctness`: `unit tests`
-- `security`: `gosec`, `trivy`
-
-Using **GitHub Status API** integrates notifications into developer worflow.\
-Current design leaves space to add in the future stages for **CD**.
-
-[CI/CD directory](/ci-cd)
-
-## Graphics
-
-Example map generated in a matter of seconds and rendered in less than 6ms\
-using 5 years old Intel® Core™ i5-8350U × 8 Intel® and UHD Graphics 620 (KBL GT2):
-![Map scroll](/readme/map_scroll.gif)
-![Whole map](/readme/whole_map.png)
-![Bottom right map corner](/readme/bottom_right.png)
 
 ## How to run ?
+### Clone repository
+```
+git clone https://github.com/cursus-studio/texhec.git
+```
+
+### Setup project
+```
+go run cicd setup
+```
+
 ### Install dependencies
 Install packages for:
-- opengl
-- sdl2
-
-ubuntu:
-```
-sudo apt install libsdl2-dev libsdl2-image-dev libsdl2-ttf-dev libsdl2-mixer-dev
-sudo apt install mesa-common-dev libglew-dev libglu1-mesa-dev
-```
-
-arch:
-```
-sudo pacman -S sdl2 mesa libglew glue
-sudo pacman -S sdl2_image sdl2_mixer sdl2_ttf
-```
+- `opengl`
+- `sdl2`
+- `golang`
+- `docker`
 
 ### Run
 ```
-cd core
-go run .
+go -C core run .
 ```
 
 ## Contribution
 We are not currently seeking external contributions.\
 However, we will review individual inquiries on a case-by-case basis.\
 While we remain selective at this stage, we are open to discussion.\
-Please note that this project is not yet open-source, as it is in the early stages of development.
+Please note that this project is not yet open-source, as it is in too early stages of development.
 
 ## License
 Copyright © 2026. All rights reserved.

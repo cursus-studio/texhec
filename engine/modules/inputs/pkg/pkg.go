@@ -45,7 +45,7 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 	}
 
 	ioc.Wrap(b, func(c ioc.Dic, b events.Builder) {
-		world := ioc.GetServices[engine.EngineWorld](c)
+		world := ioc.Get[engine.EngineWorld](c)
 		world.Scene() // ensure scene events are loaded before current event
 		events.Listen(b, func(e scene.ChangeSceneEvent) {
 			events.Emit(world.Events(), inputs.NewDefaultFocusEvent(world.Scene().Scene()))

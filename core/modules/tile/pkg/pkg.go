@@ -97,7 +97,7 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 	})
 
 	ioc.Wrap(b, func(c ioc.Dic, b assets.Service) {
-		world := ioc.GetServices[game.GameWorld](c)
+		world := ioc.Get[game.GameWorld](c)
 		b.Register("biome", func(path assets.PathComponent) (assets.Asset, error) {
 			images := [6][]image.Image{}
 			directory, _ := strings.CutSuffix(path.Path, ".biome")
@@ -139,7 +139,7 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 	})
 
 	ioc.Wrap(b, func(c ioc.Dic, b entityregistry.Service) {
-		world := ioc.GetServices[game.GameWorld](c)
+		world := ioc.Get[game.GameWorld](c)
 		var counter tile.ID
 		b.Register("object", func(entity ecs.EntityID, structTagValue string) {
 			var layer tile.Coord

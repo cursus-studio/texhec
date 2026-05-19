@@ -39,7 +39,7 @@ func main() {
 	}
 
 	c := getDic()
-	world := ioc.GetServices[game.GameWorld](c)
+	world := ioc.Get[game.GameWorld](c)
 
 	// before start
 	events.GlobalErrHandler(world.EventsBuilder(), func(err error) {

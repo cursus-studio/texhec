@@ -1,3 +1,4 @@
+// integrates window management
 package window
 
 import (
