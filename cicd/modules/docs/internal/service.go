@@ -4,7 +4,6 @@ import (
 	"cicd/modules/docs"
 	"cicd/world"
 	"fmt"
-	"log"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -53,7 +52,6 @@ func (s *service) GenerateModuleDocs(modulePath string) error {
 	if _, err := os.Stat(modulePath); os.IsNotExist(err) {
 		return nil
 	}
-	log.Printf("Generating \"%v\" docs...\n", modulePath)
 	readmePath := fmt.Sprintf("%v/readme/README.md", modulePath)
 	dir := filepath.Dir(readmePath)
 
@@ -81,7 +79,6 @@ func (s *service) DiffModuleDocs(modulePath string) error {
 	if _, err := os.Stat(modulePath); os.IsNotExist(err) {
 		return nil
 	}
-	log.Printf("Comparing \"%v\" module docs...\n", modulePath)
 	readmePath := filepath.Join(filepath.Clean(modulePath), "readme", "README.md")
 	file, err := os.ReadFile(readmePath)
 	if err != nil {
@@ -104,7 +101,6 @@ func (s *service) GenerateProjectDocs(projectPath string) error {
 	if _, err := os.Stat(projectPath); os.IsNotExist(err) {
 		return nil
 	}
-	log.Printf("Generating \"%v\" docs...\n", projectPath)
 	readmePath := fmt.Sprintf("%v/readme/README.md", projectPath)
 	dir := filepath.Dir(readmePath)
 
@@ -131,7 +127,6 @@ func (s *service) DiffProjectDocs(projectPath string) error {
 	if _, err := os.Stat(projectPath); os.IsNotExist(err) {
 		return nil
 	}
-	log.Printf("Comparing \"%v\" project docs...\n", projectPath)
 	readmePath := filepath.Join(filepath.Clean(projectPath), "readme", "README.md")
 	file, err := os.ReadFile(readmePath)
 	if err != nil {

@@ -78,24 +78,26 @@ func NewService(c ioc.Dic) pipe.Service {
 		}),
 
 		NewStage("Deps", func(ctx StageCtx) error {
-			for _, dir := range ctx.Projects {
+			for _, proj := range ctx.Projects {
+				fmt.Printf("  \"%v\"\n", proj)
 				cmd := exec.Command("sh", "-c", "go mod download && go mod tidy -diff && go mod verify")
-				cmd.Dir = dir
+				cmd.Dir = proj
 				if output, err := cmd.CombinedOutput(); err != nil {
 					return fmt.Errorf("%s", output)
 				}
 			}
 			return nil
 		}).SetFix(func(ctx StageCtx) error {
-			for _, dir := range ctx.Projects {
+			for _, proj := range ctx.Projects {
+				fmt.Printf("  \"%v\"\n", proj)
 				cmd := exec.Command("go", "mod", "tidy")
-				cmd.Dir = dir
+				cmd.Dir = proj
 				if output, err := cmd.CombinedOutput(); err != nil {
 					return fmt.Errorf("%s", string(output))
 				}
 				if err := s.Git().Stage(
-					fmt.Sprintf("%v/go.mod", dir),
-					fmt.Sprintf("%v/go.sum", dir),
+					fmt.Sprintf("%v/go.mod", proj),
+					fmt.Sprintf("%v/go.sum", proj),
 				); err != nil {
 					return err
 				}
@@ -107,9 +109,10 @@ func NewService(c ioc.Dic) pipe.Service {
 		}),
 
 		NewStage("Build", func(ctx StageCtx) error {
-			for _, dir := range ctx.Projects {
+			for _, proj := range ctx.Projects {
+				fmt.Printf("  \"%v\"\n", proj)
 				cmd := exec.Command("go", "build", "-o", "/dev/null")
-				cmd.Dir = dir
+				cmd.Dir = proj
 				if output, err := cmd.CombinedOutput(); err != nil {
 					return fmt.Errorf("%s", string(output))
 				}
@@ -119,6 +122,7 @@ func NewService(c ioc.Dic) pipe.Service {
 
 		NewStage("Lint", func(ctx StageCtx) error {
 			for _, proj := range ctx.ChangedProjects {
+				fmt.Printf("  \"%v\"\n", proj)
 				cmd := exec.Command("golangci-lint", "run")
 				cmd.Dir = proj
 				if output, err := cmd.CombinedOutput(); err != nil {
@@ -130,6 +134,7 @@ func NewService(c ioc.Dic) pipe.Service {
 
 		NewStage("Security", func(ctx StageCtx) error {
 			for _, proj := range ctx.Projects {
+				fmt.Printf("  \"%v\"\n", proj)
 				cmd := exec.Command("gosec", "-quiet", "./...")
 				cmd.Dir = proj
 				if output, err := cmd.CombinedOutput(); err != nil {
@@ -141,6 +146,7 @@ func NewService(c ioc.Dic) pipe.Service {
 
 		NewStage("Test", func(ctx StageCtx) error {
 			for _, proj := range ctx.Projects {
+				fmt.Printf("  \"%v\"\n", proj)
 				cmd := exec.Command("go", "test", "./...", "-benchtime=1x")
 				cmd.Dir = proj
 				if output, err := cmd.CombinedOutput(); err != nil {
@@ -152,11 +158,13 @@ func NewService(c ioc.Dic) pipe.Service {
 
 		NewStage("Docs Genaration", func(ctx StageCtx) error {
 			for _, module := range ctx.ChangedModules {
+				fmt.Printf("  checking \"%v\" module\n", module)
 				if err := s.Docs().DiffModuleDocs(module); err != nil {
 					return err
 				}
 			}
 			for _, proj := range ctx.ChangedProjects {
+				fmt.Printf("  checking \"%v\" project\n", proj)
 				if err := s.Docs().DiffProjectDocs(proj); err != nil {
 					return err
 				}
@@ -164,6 +172,7 @@ func NewService(c ioc.Dic) pipe.Service {
 			return nil
 		}).SetFix(func(ctx StageCtx) error {
 			for _, module := range ctx.ChangedModules {
+				fmt.Printf("  generating \"%v\" module\n", module)
 				if err := s.Docs().GenerateModuleDocs(module); err != nil {
 					return err
 				}
@@ -171,13 +180,14 @@ func NewService(c ioc.Dic) pipe.Service {
 				// if error is returned it means that we just generated additional readme.
 				_ = s.Git().Stage(fmt.Sprintf("%v/readme/README.md", module))
 			}
-			for _, project := range ctx.ChangedProjects {
-				if err := s.Docs().GenerateProjectDocs(project); err != nil {
+			for _, proj := range ctx.ChangedProjects {
+				fmt.Printf("  generating \"%v\" project\n", proj)
+				if err := s.Docs().GenerateProjectDocs(proj); err != nil {
 					return err
 				}
 				// if we cannot stage readme we do not stage it.
 				// if error is returned it means that we just generated additional readme.
-				_ = s.Git().Stage(fmt.Sprintf("%v/readme/README.md", project))
+				_ = s.Git().Stage(fmt.Sprintf("%v/readme/README.md", proj))
 			}
 			return nil
 		}),
@@ -234,12 +244,13 @@ func (s *service) Sync() error {
 	)
 
 	for _, stage := range s.stages {
-		log.Printf("Stage \"%v\"", stage.Name)
 		if stage.Fix != nil {
+			log.Printf("Fix Stage \"%v\"", stage.Name)
 			if err := stage.Fix(ctx); err != nil {
 				return err
 			}
 		}
+		log.Printf("Verify Stage \"%v\"", stage.Name)
 		if err := stage.Verify(ctx); err != nil {
 			return err
 		}
@@ -270,12 +281,13 @@ func (s *service) Fix() error {
 	)
 
 	for _, stage := range s.stages {
-		log.Printf("Stage \"%v\"", stage.Name)
 		if stage.Fix != nil {
+			log.Printf("Fix Stage \"%v\"", stage.Name)
 			if err := stage.Fix(ctx); err != nil {
 				return err
 			}
 		}
+		log.Printf("Verify Stage \"%v\"", stage.Name)
 		if err := stage.Verify(ctx); err != nil {
 			return err
 		}
@@ -305,7 +317,7 @@ func (s *service) Cloud(commitHash string) error {
 		projects,
 	)
 	for _, stage := range s.stages {
-		msg := fmt.Sprintf("Stage \"%v\"", stage.Name)
+		msg := fmt.Sprintf("Verify Stage \"%v\"", stage.Name)
 		log.Print(msg)
 		if err := s.Git().SetStatus(git.Pending, msg); err != nil {
 			return err
@@ -338,7 +350,7 @@ func (s *service) Verify(commitHash string) error {
 		projects,
 	)
 	for _, stage := range s.stages {
-		log.Printf("Stage \"%v\"", stage.Name)
+		log.Printf("Verify Stage \"%v\"", stage.Name)
 		if err := stage.Verify(ctx); err != nil {
 			return err
 		}
