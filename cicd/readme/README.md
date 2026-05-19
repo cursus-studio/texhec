@@ -34,10 +34,10 @@ To send changes using github status api it needs ENV variables:
 To see implementation details of documentation or pipeline go to its module readme.
 
 ## Modules
-- [docs](/cicd/modules/docs)
-- [git](/cicd/modules/git)
-- [pipe](/cicd/modules/pipe)
-- [projectfs](/cicd/modules/projectfs)
+- [docs](/cicd/modules/docs/readme/README.md)
+- [git](/cicd/modules/git/readme/README.md)
+- [pipe](/cicd/modules/pipe/readme/README.md)
+- [projectfs](/cicd/modules/projectfs/readme/README.md)
 
 ## Lines of code
 ```

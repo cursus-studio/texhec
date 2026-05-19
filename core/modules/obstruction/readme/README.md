@@ -72,7 +72,7 @@ Type: `func() core/modules/obstruction.DeployedComponent`
 ```
 $ go test ./... -bench=.
 PASS
-ok  	core/modules/obstruction/test	0.005s
+ok  	core/modules/obstruction/test	0.004s
 ```
 ## Lines of code
 ```

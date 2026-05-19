@@ -13,17 +13,17 @@ Map scale preview:
 ![Map scroll](/readme/map_scroll.gif)
 
 ## Modules
-- [definitions](/core/modules/definitions)
-- [deploy](/core/modules/deploy)
-- [fpslogger](/core/modules/fpslogger)
-- [generation](/core/modules/generation)
-- [loading](/core/modules/loading)
-- [obstruction](/core/modules/obstruction)
-- [pathfind](/core/modules/pathfind)
-- [player](/core/modules/player)
-- [settings](/core/modules/settings)
-- [tile](/core/modules/tile)
-- [ui](/core/modules/ui)
+- [definitions](/core/modules/definitions/readme/README.md)
+- [deploy](/core/modules/deploy/readme/README.md)
+- [fpslogger](/core/modules/fpslogger/readme/README.md)
+- [generation](/core/modules/generation/readme/README.md)
+- [loading](/core/modules/loading/readme/README.md)
+- [obstruction](/core/modules/obstruction/readme/README.md)
+- [pathfind](/core/modules/pathfind/readme/README.md)
+- [player](/core/modules/player/readme/README.md)
+- [settings](/core/modules/settings/readme/README.md)
+- [tile](/core/modules/tile/readme/README.md)
+- [ui](/core/modules/ui/readme/README.md)
 
 ## Challenges
 Challenge of this module is to create something on incomplete foundation (`engine`)

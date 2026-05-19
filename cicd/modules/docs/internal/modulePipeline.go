@@ -266,7 +266,7 @@ func (s *service) Modules(projectPath string) (string, error) {
 	}
 	for _, module := range modules {
 		name := strings.Split(module, "/")
-		fmt.Fprintf(b, "- [%v](/%v)\n", name[len(name)-1], module)
+		fmt.Fprintf(b, "- [%v](/%v/readme/README.md)\n", name[len(name)-1], module)
 	}
 
 	services := s.ProjectFS().ProjectServices(projectPath)
@@ -275,7 +275,7 @@ func (s *service) Modules(projectPath string) (string, error) {
 	}
 	for _, service := range services {
 		name := strings.Split(service, "/")
-		fmt.Fprintf(b, "- [%v](/%v)\n", name[len(name)-1], service)
+		fmt.Fprintf(b, "- [%v](/%v/readme/README.md)\n", name[len(name)-1], service)
 	}
 
 	doc := b.String()

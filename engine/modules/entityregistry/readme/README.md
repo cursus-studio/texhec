@@ -34,7 +34,7 @@ Type: `func[Registry any](s engine/modules/entityregistry.Service) (Registry, er
 ```
 $ go test ./... -bench=.
 PASS
-ok  	engine/modules/entityregistry/test	0.008s
+ok  	engine/modules/entityregistry/test	0.007s
 ```
 ## Lines of code
 ```
