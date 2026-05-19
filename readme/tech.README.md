@@ -168,18 +168,6 @@ Install packages for:
 - `golang`
 - `docker`
 
-ubuntu:
-```
-sudo apt install libsdl2-dev libsdl2-image-dev libsdl2-ttf-dev libsdl2-mixer-dev
-sudo apt install mesa-common-dev libglew-dev libglu1-mesa-dev
-```
-
-arch:
-```
-sudo pacman -S sdl2 mesa glew glu
-sudo pacman -S sdl2_image sdl2_mixer sdl2_ttf
-```
-
 ### Run
 ```
 go -C core run .
