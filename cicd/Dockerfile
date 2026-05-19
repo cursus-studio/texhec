@@ -31,8 +31,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     pkg-config \
     curl \
     git \
-    cloc \
     && rm -rf /var/lib/apt/lists/*
+
+RUN curl -sSL -o /usr/bin/cloc https://github.com/AlDanial/cloc/releases/download/v2.08/cloc-2.08.pl \
+    && chmod +x /usr/bin/cloc
 
 WORKDIR /go/src/app
 
