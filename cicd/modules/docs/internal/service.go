@@ -29,7 +29,7 @@ var coreSuffixRegex = regexp.MustCompile(`(-\d+)\s+\d+`)
 
 // Matches the metric numbers precisely without swallowing preceding newlines
 // Group 1 catches the iteration count, Group 2 catches the speed
-var benchMetricRegex = regexp.MustCompile(`(-\d+)?\s+\d+\s+[\d.]+\s+ns/op`)
+var benchMetricRegex = regexp.MustCompile(`(-\d+)?X\s+[\d.]+\s+ns/op`)
 
 // Safely targets the final execution summary duration line
 var benchDurationRegex = regexp.MustCompile(`(?m)^ok\s+\S+\s+([\d.]+)s$`)
