@@ -64,18 +64,18 @@ goos: linux
 goarch: amd64
 pkg: engine/modules/hierarchy/test
 cpu: Intel(R) Core(TM) i5-8350U CPU @ 1.70GHz
-BenchmarkChildren_1-8                          	222558036	         5.410 ns/op
-BenchmarkChildren_10-8                         	213871576	         5.535 ns/op
-BenchmarkChildren_100-8                        	213634142	         5.722 ns/op
-BenchmarkFlatChildren_1_1-8                    	184667103	         6.492 ns/op
-BenchmarkFlatChildren_10_10-8                  	185011980	         6.533 ns/op
-BenchmarkAddChildToParentWithGrandParent-8     	 7163500	       157.8 ns/op
-BenchmarkAddChildToParentWith5GrandParents-8   	 7115264	       158.3 ns/op
-BenchmarkRemoveChild-8                         	 1617282	       750.4 ns/op
-BenchmarkRemoveParentWith1Children-8           	   75552	     16122 ns/op
-BenchmarkRemoveParentWith100Children-8         	   10000	    110356 ns/op
+BenchmarkChildren_1-8                          	210312880	         5.760 ns/op
+BenchmarkChildren_10-8                         	204112270	         5.907 ns/op
+BenchmarkChildren_100-8                        	210374590	         5.697 ns/op
+BenchmarkFlatChildren_1_1-8                    	171084793	         6.990 ns/op
+BenchmarkFlatChildren_10_10-8                  	183129691	         6.541 ns/op
+BenchmarkAddChildToParentWithGrandParent-8     	 7233871	       162.0 ns/op
+BenchmarkAddChildToParentWith5GrandParents-8   	 7017080	       159.2 ns/op
+BenchmarkRemoveChild-8                         	 1582922	       770.0 ns/op
+BenchmarkRemoveParentWith1Children-8           	   84732	     15811 ns/op
+BenchmarkRemoveParentWith100Children-8         	   10000	    125745 ns/op
 PASS
-ok  	engine/modules/hierarchy/test	15.705s
+ok  	engine/modules/hierarchy/test	16.305s
 ```
 ## Lines of code
 ```
