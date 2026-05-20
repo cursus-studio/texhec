@@ -2,6 +2,18 @@
 ## Architecture
 defines generic slice based data structure to store grids
 
+## Lines of code
+```
+github.com/AlDanial/cloc
+-------------------------------------------------------------------------------
+Language                     files          blank        comment           code
+-------------------------------------------------------------------------------
+Go                               5             48              9            196
+-------------------------------------------------------------------------------
+SUM:                             5             48              9            196
+-------------------------------------------------------------------------------
+
+```
 ## Types
 ### type Service
 Type: `engine/modules/grid.Service[Tile engine/modules/grid.TileConstraint]`
@@ -71,18 +83,6 @@ Type: `func[Number golang.org/x/exp/constraints.Integer](x Number, y Number) eng
 Type: `func[Tile engine/modules/grid.TileConstraint](w engine/modules/grid.Coord, h engine/modules/grid.Coord) engine/modules/grid.SquareGridComponent[Tile]`
 
 
-## Lines of code
-```
-github.com/AlDanial/cloc
--------------------------------------------------------------------------------
-Language                     files          blank        comment           code
--------------------------------------------------------------------------------
-Go                               5             48              9            196
--------------------------------------------------------------------------------
-SUM:                             5             48              9            196
--------------------------------------------------------------------------------
-
-```
 ## Dependencies
 `engine`:
   - `engine.EngineWorld`

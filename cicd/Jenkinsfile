@@ -1,9 +1,9 @@
 pipeline {
     agent any
 
-    triggers {
-        githubPush()
-    }
+    // triggers {
+    //     githubPush()
+    // }
     options {
         buildDiscarder(logRotator(numToKeepStr: '20', artifactNumToKeepStr: '20'))
         preserveStashes(buildCount: 5)

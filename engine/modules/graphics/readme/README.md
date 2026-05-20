@@ -2,6 +2,18 @@
 ## Architecture
 integrates opengl into the engine
 
+## Lines of code
+```
+github.com/AlDanial/cloc
+-------------------------------------------------------------------------------
+Language                     files          blank        comment           code
+-------------------------------------------------------------------------------
+Go                              17            188             60            833
+-------------------------------------------------------------------------------
+SUM:                            17            188             60            833
+-------------------------------------------------------------------------------
+
+```
 ## Types
 ### type Service
 Type: `engine/modules/graphics.Service`
@@ -277,18 +289,6 @@ Type: `func[Stored comparable](target uint32, usage uint32, index uint32) engine
 Type: `func[Locations any](p engine/modules/graphics.Program) (Locations, error)`
 
 
-## Lines of code
-```
-github.com/AlDanial/cloc
--------------------------------------------------------------------------------
-Language                     files          blank        comment           code
--------------------------------------------------------------------------------
-Go                              17            188             60            833
--------------------------------------------------------------------------------
-SUM:                            17            188             60            833
--------------------------------------------------------------------------------
-
-```
 ## Dependencies
 `engine/modules/graphics`:
   - `engine/modules/graphics.Configure`

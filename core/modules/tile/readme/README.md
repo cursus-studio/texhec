@@ -66,6 +66,34 @@ One line using `entityregistry` is enough in codebase:
 ```
 and biome file structure like [example file structure presented](#biome-extension).
 
+## Benchmarks
+```sh
+$ go test . -bench=. -benchtime=10s
+Failed to load plugin 'libdecor-gtk.so': failed to init
+gpu: Kaby Lake-R GT2 [UHD Graphics 620]
+goos: linux
+goarch: amd64
+pkg: core/modules/tile/test
+cpu: Intel(R) Core(TM) i5-8350U CPU @ 1.70GHz
+BenchmarkRendering1MTilesMap-8   	    2221	   5062408 ns/op
+```
+
+Rendering 1 million tiles on `UHD Graphics 620` in less than **5.1ms**.
+
+## Lines of code
+```
+github.com/AlDanial/cloc
+-------------------------------------------------------------------------------
+Language                     files          blank        comment           code
+-------------------------------------------------------------------------------
+Go                               9            179            134            969
+GLSL                             3             29              2            114
+Markdown                         1              1              0             11
+-------------------------------------------------------------------------------
+SUM:                            13            209            136           1094
+-------------------------------------------------------------------------------
+
+```
 ## Types
 ### type Service
 Type: `core/modules/tile.Service`
@@ -266,34 +294,6 @@ Type: `func(grid engine/services/ecs.EntityID, tile engine/modules/grid.Index) a
 Type: `func() core/modules/tile.ClickEntityEvent`
 
 
-## Benchmarks
-```sh
-$ go test . -bench=. -benchtime=10s
-Failed to load plugin 'libdecor-gtk.so': failed to init
-gpu: Kaby Lake-R GT2 [UHD Graphics 620]
-goos: linux
-goarch: amd64
-pkg: core/modules/tile/test
-cpu: Intel(R) Core(TM) i5-8350U CPU @ 1.70GHz
-BenchmarkRendering1MTilesMap-8   	    2221	   5062408 ns/op
-```
-
-Rendering 1 million tiles on `UHD Graphics 620` in less than **5.1ms**.
-
-## Lines of code
-```
-github.com/AlDanial/cloc
--------------------------------------------------------------------------------
-Language                     files          blank        comment           code
--------------------------------------------------------------------------------
-Go                               9            179            134            969
-GLSL                             3             29              2            114
-Markdown                         1              1              0             11
--------------------------------------------------------------------------------
-SUM:                            13            209            136           1094
--------------------------------------------------------------------------------
-
-```
 ## Dependencies
 `core/game`:
   - `core/game.Definitions`

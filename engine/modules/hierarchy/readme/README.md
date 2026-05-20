@@ -6,6 +6,38 @@ this is one of core modules on which relies most of the engine.
 service stores separate relation cache and updates it on changes to the hierarchy.
 this allows us to have O(1) access time to children and parents
 
+## Benchmarks
+```
+$ go test ./... -bench=.
+goos: linux
+goarch: amd64
+pkg: engine/modules/hierarchy/test
+cpu: Intel(R) Core(TM) i5-8350U CPU @ 1.70GHz
+BenchmarkChildren_1-8                          	206980362	         5.873 ns/op
+BenchmarkChildren_10-8                         	191128879	         6.124 ns/op
+BenchmarkChildren_100-8                        	199982721	         5.998 ns/op
+BenchmarkFlatChildren_1_1-8                    	149269428	         7.842 ns/op
+BenchmarkFlatChildren_10_10-8                  	173515244	         6.863 ns/op
+BenchmarkAddChildToParentWithGrandParent-8     	 6963937	       181.0 ns/op
+BenchmarkAddChildToParentWith5GrandParents-8   	 6626678	       179.4 ns/op
+BenchmarkRemoveChild-8                         	 1457080	       787.8 ns/op
+BenchmarkRemoveParentWith1Children-8           	   75834	     15614 ns/op
+BenchmarkRemoveParentWith100Children-8         	   10723	    108229 ns/op
+PASS
+ok  	engine/modules/hierarchy/test	15.890s
+```
+## Lines of code
+```
+github.com/AlDanial/cloc
+-------------------------------------------------------------------------------
+Language                     files          blank        comment           code
+-------------------------------------------------------------------------------
+Go                               7            103             21            483
+-------------------------------------------------------------------------------
+SUM:                             7            103             21            483
+-------------------------------------------------------------------------------
+
+```
 ## Types
 ### type Service
 Type: `engine/modules/hierarchy.Service`
@@ -57,38 +89,6 @@ Type: `error`
 Type: `func(parent engine/services/ecs.EntityID) engine/modules/hierarchy.Component`
 
 
-## Benchmarks
-```
-$ go test ./... -bench=.
-goos: linux
-goarch: amd64
-pkg: engine/modules/hierarchy/test
-cpu: Intel(R) Core(TM) i5-8350U CPU @ 1.70GHz
-BenchmarkChildren_1-8                          	218718276	         5.434 ns/op
-BenchmarkChildren_10-8                         	218095960	         5.493 ns/op
-BenchmarkChildren_100-8                        	223585050	         5.369 ns/op
-BenchmarkFlatChildren_1_1-8                    	185249932	         6.479 ns/op
-BenchmarkFlatChildren_10_10-8                  	185683435	         6.463 ns/op
-BenchmarkAddChildToParentWithGrandParent-8     	 6614376	       173.4 ns/op
-BenchmarkAddChildToParentWith5GrandParents-8   	 6784557	       168.3 ns/op
-BenchmarkRemoveChild-8                         	 1610326	       764.7 ns/op
-BenchmarkRemoveParentWith1Children-8           	   84132	     14547 ns/op
-BenchmarkRemoveParentWith100Children-8         	   10000	    108985 ns/op
-PASS
-ok  	engine/modules/hierarchy/test	15.764s
-```
-## Lines of code
-```
-github.com/AlDanial/cloc
--------------------------------------------------------------------------------
-Language                     files          blank        comment           code
--------------------------------------------------------------------------------
-Go                               7            103             21            483
--------------------------------------------------------------------------------
-SUM:                             7            103             21            483
--------------------------------------------------------------------------------
-
-```
 ## Dependencies
 `engine`:
   - `engine.EngineWorld`

@@ -2,6 +2,18 @@
 ## Architecture
 contains all game specific objects
 
+## Lines of code
+```
+github.com/AlDanial/cloc
+-------------------------------------------------------------------------------
+Language                     files          blank        comment           code
+-------------------------------------------------------------------------------
+Go                               3             42              7            308
+-------------------------------------------------------------------------------
+SUM:                             3             42              7            308
+-------------------------------------------------------------------------------
+
+```
 ## Types
 ### type Service
 Type: `core/modules/definitions.Service`
@@ -190,18 +202,6 @@ Type: `core/modules/obstruction.Obstruction`
 Type: `core/modules/obstruction.Obstruction`
 
 
-## Lines of code
-```
-github.com/AlDanial/cloc
--------------------------------------------------------------------------------
-Language                     files          blank        comment           code
--------------------------------------------------------------------------------
-Go                               3             42              7            308
--------------------------------------------------------------------------------
-SUM:                             3             42              7            308
--------------------------------------------------------------------------------
-
-```
 ## Dependencies
 `core/game`:
   - `core/game.Definitions`

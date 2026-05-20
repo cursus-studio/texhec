@@ -2,6 +2,18 @@
 ## Architecture
 defines GUI for deploying objects
 
+## Lines of code
+```
+github.com/AlDanial/cloc
+-------------------------------------------------------------------------------
+Language                     files          blank        comment           code
+-------------------------------------------------------------------------------
+Go                               3             48             24            225
+-------------------------------------------------------------------------------
+SUM:                             3             48             24            225
+-------------------------------------------------------------------------------
+
+```
 ## Types
 ### type Service
 Type: `core/modules/deploy.Service`
@@ -89,18 +101,6 @@ Type: `func(by engine/services/ecs.EntityID, blueprint engine/services/ecs.Entit
 Type: `func(by engine/services/ecs.EntityID, blueprint engine/services/ecs.EntityID) core/modules/deploy.ExecuteEvent`
 
 
-## Lines of code
-```
-github.com/AlDanial/cloc
--------------------------------------------------------------------------------
-Language                     files          blank        comment           code
--------------------------------------------------------------------------------
-Go                               3             48             24            225
--------------------------------------------------------------------------------
-SUM:                             3             48             24            225
--------------------------------------------------------------------------------
-
-```
 ## Dependencies
 `core/game`:
   - `core/game.Definitions`

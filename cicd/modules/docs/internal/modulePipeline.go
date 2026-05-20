@@ -50,9 +50,6 @@ func (s *service) GetModuleDocs(modulePath string) (string, error) {
 	} else {
 		return "", docs.ErrMissingPackageComments
 	}
-	if section, err := s.Types(modulePath); err == nil && section != "" {
-		sections = append(sections, string(section))
-	}
 	if section, err := s.Bench(modulePath); err == nil && section != "" {
 		sections = append(sections, string(section))
 	}
@@ -63,6 +60,9 @@ func (s *service) GetModuleDocs(modulePath string) (string, error) {
 		sections = append(sections, string(section))
 	}
 	if section, err := s.Todo(modulePath); err == nil && section != "" {
+		sections = append(sections, string(section))
+	}
+	if section, err := s.Types(modulePath); err == nil && section != "" {
 		sections = append(sections, string(section))
 	}
 	if section, err := s.Dependencies(modulePath); err == nil && section != "" {
@@ -179,14 +179,6 @@ func (s *service) Architecture(modulePath string) (string, error) {
 	return doc, nil
 }
 
-func (s *service) Types(modulePath string) (string, error) {
-	meta, err := types.NewAST(modulePath)
-	if err != nil {
-		return "", err
-	}
-	return meta.String(), nil
-}
-
 func (s *service) Bench(modulePath string) (string, error) {
 	if data, err := os.ReadFile(fmt.Sprintf("%v/readme/BENCH.md", modulePath)); err == nil {
 		doc := fmt.Sprintf("## Benchmarks\n%v", string(data))
@@ -298,6 +290,14 @@ func (s *service) Todo(modulePath string) (string, error) {
 	}
 	doc := fmt.Sprintf("## TODO\n%v", string(data))
 	return doc, nil
+}
+
+func (s *service) Types(modulePath string) (string, error) {
+	meta, err := types.NewAST(modulePath)
+	if err != nil {
+		return "", err
+	}
+	return meta.String(), nil
 }
 
 func (s *service) Dependencies(modulePath string) (string, error) {

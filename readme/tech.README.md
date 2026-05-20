@@ -1,25 +1,26 @@
 # TEXHEC
 ## About
 **TEXHEC** is an experimental, high-performance, ECS-based simulation engine.
+
 **The Goal:** Create a massive, immersive strategy game world that pushes hardware limits within a realistic timeframe.
 
 ## Projects
 Pick readme for your niche:
-- ### [CI/CD](/cicd/readme/README.md)
-[CI/CD](/cicd/readme/README.md) runs on both client (using `git hooks`) and server (using `jenkins`).
+- ### Devops [CI/CD](/cicd/readme/README.md)
+Runs on both client (using `git hooks`) and server (using `jenkins`).
 Before-commit documentation sections are automatically generated and added to main readmes.
 
 - ### Low-Level [TEXHEC Engine](/engine/readme/README.md)
 Defines data structures to store whole game state in continuous chunks and game engine foundations
 
-- ### [TEXHEC Core](/core/readme/README.md)
+- ### Game [TEXHEC Core](/core/readme/README.md)
 Defines game and game objects. In [DOD](#dod) section you can see performance of **engine** and **core**.
 
-- ### [DI container](https://github.com/ogiusek/ioc)
+- ### Dependencies [DI container](https://github.com/ogiusek/ioc)
 Implements more efficient structures to store and access services while providing more sugary
 abstractions reducing **LOC**.
 
-- ### [Event bus](https://github.com/ogiusek/events)
+- ### Events [Event bus](https://github.com/ogiusek/events)
 **DI container** and **event bus** was made to have full control over this project.
 In comparison to whole project scope these were like single features to implement so cost
 of writing and maintaining them is well worth it.
@@ -40,8 +41,6 @@ A 1.000.000 tile map is generated in seconds and rendered in less than **5.1ms**
 - gpu: UHD Graphics 620 (KBL GT2)
 
 ![Map scroll](map_scroll.gif)
-![Whole map](whole_map.png)
-![Bottom right map corner](bottom_right.png)
 
 #### Architecture
 In this project we follow **DOD** by using [ECS](/engine/services/ecs/readme/README.md)

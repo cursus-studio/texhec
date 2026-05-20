@@ -2,6 +2,18 @@
 ## Architecture
 this module allows us to write tasks and to progress them across frames without stuterring
 
+## Lines of code
+```
+github.com/AlDanial/cloc
+-------------------------------------------------------------------------------
+Language                     files          blank        comment           code
+-------------------------------------------------------------------------------
+Go                               6             49              5            221
+-------------------------------------------------------------------------------
+SUM:                             6             49              5            221
+-------------------------------------------------------------------------------
+
+```
 ## Types
 ### type Service
 Type: `engine/modules/batcher.Service`
@@ -60,18 +72,6 @@ Type: `func(int)`
 Type: `func(steps int, handler func(int)) engine/modules/batcher.Batch`
 
 
-## Lines of code
-```
-github.com/AlDanial/cloc
--------------------------------------------------------------------------------
-Language                     files          blank        comment           code
--------------------------------------------------------------------------------
-Go                               6             49              5            221
--------------------------------------------------------------------------------
-SUM:                             6             49              5            221
--------------------------------------------------------------------------------
-
-```
 ## Dependencies
 `engine`:
   - `engine.EngineWorld`

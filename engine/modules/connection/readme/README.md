@@ -2,6 +2,24 @@
 ## Architecture
 defines connection and stores it in component
 
+## Benchmarks
+```
+$ go test ./... -bench=.
+PASS
+ok  	engine/modules/connection/test	0.053s
+```
+## Lines of code
+```
+github.com/AlDanial/cloc
+-------------------------------------------------------------------------------
+Language                     files          blank        comment           code
+-------------------------------------------------------------------------------
+Go                               7             89             17            411
+-------------------------------------------------------------------------------
+SUM:                             7             89             17            411
+-------------------------------------------------------------------------------
+
+```
 ## Types
 ### type Service
 Type: `engine/modules/connection.Service`
@@ -59,24 +77,6 @@ Type: `func(listener net.Listener) engine/modules/connection.ListenerComponent`
 Type: `func(conn engine/modules/connection.Conn) engine/modules/connection.ConnectionComponent`
 
 
-## Benchmarks
-```
-$ go test ./... -bench=.
-PASS
-ok  	engine/modules/connection/test	0.051s
-```
-## Lines of code
-```
-github.com/AlDanial/cloc
--------------------------------------------------------------------------------
-Language                     files          blank        comment           code
--------------------------------------------------------------------------------
-Go                               7             89             17            411
--------------------------------------------------------------------------------
-SUM:                             7             89             17            411
--------------------------------------------------------------------------------
-
-```
 ## Dependencies
 `engine`:
   - `engine.Codec`

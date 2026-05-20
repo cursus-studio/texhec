@@ -14,6 +14,18 @@ main entry point responsible for setuping pipe hooks, running pipe hooks, runnin
 - generate or verify docs using [docs](/cicd/modules/docs)
 - lychee
 
+## Lines of code
+```
+github.com/AlDanial/cloc
+-------------------------------------------------------------------------------
+Language                     files          blank        comment           code
+-------------------------------------------------------------------------------
+Go                               3             38             22            336
+-------------------------------------------------------------------------------
+SUM:                             3             38             22            336
+-------------------------------------------------------------------------------
+
+```
 ## Types
 ### type Service
 Type: `cicd/modules/pipe.Service`
@@ -34,18 +46,6 @@ Type: `func() error`
 Type: `func(commitHash string) error`
 
 
-## Lines of code
-```
-github.com/AlDanial/cloc
--------------------------------------------------------------------------------
-Language                     files          blank        comment           code
--------------------------------------------------------------------------------
-Go                               3             38             22            336
--------------------------------------------------------------------------------
-SUM:                             3             38             22            336
--------------------------------------------------------------------------------
-
-```
 ## Dependencies
 `cicd/modules/git`:
   - `cicd/modules/git.DiffCompare`

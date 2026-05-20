@@ -2,6 +2,18 @@
 ## Architecture
 allows us to drag objects and/or camera
 
+## Lines of code
+```
+github.com/AlDanial/cloc
+-------------------------------------------------------------------------------
+Language                     files          blank        comment           code
+-------------------------------------------------------------------------------
+Go                               3             18              1             71
+-------------------------------------------------------------------------------
+SUM:                             3             18              1             71
+-------------------------------------------------------------------------------
+
+```
 ## Types
 ### type Service
 Type: `engine/modules/drag.Service`
@@ -26,18 +38,6 @@ Type: `func(dragEvent engine/modules/inputs.DragEvent) any`
 Type: `func(entity engine/services/ecs.EntityID) engine/modules/drag.DraggableEvent`
 
 
-## Lines of code
-```
-github.com/AlDanial/cloc
--------------------------------------------------------------------------------
-Language                     files          blank        comment           code
--------------------------------------------------------------------------------
-Go                               3             18              1             71
--------------------------------------------------------------------------------
-SUM:                             3             18              1             71
--------------------------------------------------------------------------------
-
-```
 ## Dependencies
 `engine`:
   - `engine.Camera`

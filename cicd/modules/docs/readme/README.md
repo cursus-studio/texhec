@@ -18,6 +18,27 @@ Where and how to write comments:
 - `readme/CHALLENGES.md` is used to spark discussions
 - `readme/TODO.md` is great for contribution and notes
 
+## Lines of code
+```
+github.com/AlDanial/cloc
+-------------------------------------------------------------------------------
+Language                     files          blank        comment           code
+-------------------------------------------------------------------------------
+Go                               6            113             69            817
+Markdown                         1              1              0              5
+-------------------------------------------------------------------------------
+SUM:                             7            114             69            822
+-------------------------------------------------------------------------------
+
+```
+## TODO
+1. Check is there better readme extension than ".md".
+Extension to preview:
+- ".rst"
+- ".adoc"
+
+2. Re work module interface to take struct and output string
+
 ## Types
 ### type Service
 Type: `cicd/modules/docs.Service`
@@ -48,27 +69,6 @@ Type: `error`
 ### var ErrInconsistentPackageComments
 Type: `error`
 
-
-## Lines of code
-```
-github.com/AlDanial/cloc
--------------------------------------------------------------------------------
-Language                     files          blank        comment           code
--------------------------------------------------------------------------------
-Go                               6            113             69            817
-Markdown                         1              1              0              5
--------------------------------------------------------------------------------
-SUM:                             7            114             69            822
--------------------------------------------------------------------------------
-
-```
-## TODO
-1. Check is there better readme extension than ".md".
-Extension to preview:
-- ".rst"
-- ".adoc"
-
-2. Re work module interface to take struct and output string
 
 ## Dependencies
 `cicd/modules/docs`:

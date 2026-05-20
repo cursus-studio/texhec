@@ -2,6 +2,24 @@
 ## Architecture
 positions and re-size children
 
+## Benchmarks
+```
+$ go test ./... -bench=.
+PASS
+ok  	engine/modules/layout/test	0.007s
+```
+## Lines of code
+```
+github.com/AlDanial/cloc
+-------------------------------------------------------------------------------
+Language                     files          blank        comment           code
+-------------------------------------------------------------------------------
+Go                               6             68             25            264
+-------------------------------------------------------------------------------
+SUM:                             6             68             25            264
+-------------------------------------------------------------------------------
+
+```
 ## Types
 ### type Service
 Type: `engine/modules/layout.Service`
@@ -71,24 +89,6 @@ Type: `func(order engine/modules/layout.Order) engine/modules/layout.OrderCompon
 Type: `func(x float32) engine/modules/layout.GapComponent`
 
 
-## Benchmarks
-```
-$ go test ./... -bench=.
-PASS
-ok  	engine/modules/layout/test	0.009s
-```
-## Lines of code
-```
-github.com/AlDanial/cloc
--------------------------------------------------------------------------------
-Language                     files          blank        comment           code
--------------------------------------------------------------------------------
-Go                               6             68             25            264
--------------------------------------------------------------------------------
-SUM:                             6             68             25            264
--------------------------------------------------------------------------------
-
-```
 ## Dependencies
 `engine`:
   - `engine.EngineWorld`

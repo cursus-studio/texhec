@@ -10,6 +10,18 @@ directly parses mouse inputs to specific entity click events
 ### keyboard
 takes keyboard inputs and spreads them using signals which can be captured by entities in focused element hierarchy
 
+## Lines of code
+```
+github.com/AlDanial/cloc
+-------------------------------------------------------------------------------
+Language                     files          blank        comment           code
+-------------------------------------------------------------------------------
+Go                              13            200             39            955
+-------------------------------------------------------------------------------
+SUM:                            13            200             39            955
+-------------------------------------------------------------------------------
+
+```
 ## Types
 ### type Service
 Type: `engine/modules/inputs.Service`
@@ -355,18 +367,6 @@ Type: `func(event any) engine/modules/inputs.HoverComponent`
 Type: `func(event any) engine/modules/inputs.DragComponent`
 
 
-## Lines of code
-```
-github.com/AlDanial/cloc
--------------------------------------------------------------------------------
-Language                     files          blank        comment           code
--------------------------------------------------------------------------------
-Go                              13            200             39            955
--------------------------------------------------------------------------------
-SUM:                            13            200             39            955
--------------------------------------------------------------------------------
-
-```
 ## Dependencies
 `engine`:
   - `engine.Camera`

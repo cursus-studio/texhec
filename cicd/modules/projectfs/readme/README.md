@@ -2,6 +2,18 @@
 ## Architecture
 responsible for accessing project file structure and project specific directories
 
+## Lines of code
+```
+github.com/AlDanial/cloc
+-------------------------------------------------------------------------------
+Language                     files          blank        comment           code
+-------------------------------------------------------------------------------
+Go                               3             21              4            153
+-------------------------------------------------------------------------------
+SUM:                             3             21              4            153
+-------------------------------------------------------------------------------
+
+```
 ## Types
 ### type Service
 Type: `cicd/modules/projectfs.Service`
@@ -28,18 +40,6 @@ Type: `func(project string) []string`
 Type: `func(file string, content string) error`
 
 
-## Lines of code
-```
-github.com/AlDanial/cloc
--------------------------------------------------------------------------------
-Language                     files          blank        comment           code
--------------------------------------------------------------------------------
-Go                               3             21              4            153
--------------------------------------------------------------------------------
-SUM:                             3             21              4            153
--------------------------------------------------------------------------------
-
-```
 ## Dependencies
 `cicd/modules/projectfs`:
   - `cicd/modules/projectfs.Service`

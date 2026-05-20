@@ -3,17 +3,6 @@
 runs all lazy listeners
 it should be used executing anything concurrently
 
-## Types
-### type Service
-Type: `engine/modules/warmup.Service`
-
-#### method Service WarmUp
-Type: `func()`
-
-### type Event
-Type: `engine/modules/warmup.Event`
-
-
 ## Lines of code
 ```
 github.com/AlDanial/cloc
@@ -26,6 +15,17 @@ SUM:                             3             10              2             40
 -------------------------------------------------------------------------------
 
 ```
+## Types
+### type Service
+Type: `engine/modules/warmup.Service`
+
+#### method Service WarmUp
+Type: `func()`
+
+### type Event
+Type: `engine/modules/warmup.Event`
+
+
 ## Dependencies
 `engine`:
   - `engine.EngineWorld`

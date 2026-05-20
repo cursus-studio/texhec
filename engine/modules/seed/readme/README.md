@@ -2,6 +2,16 @@
 ## Architecture
 defines seed data structure used for generating pseudo random numbers
 
+## Lines of code
+```
+github.com/AlDanial/cloc
+-------------------------------------------------------------------------------
+Language                     files          blank        comment           code
+-------------------------------------------------------------------------------
+Go                               1              6              3             20
+-------------------------------------------------------------------------------
+
+```
 ## Types
 ### type Seed
 Type: `engine/modules/seed.Seed`
@@ -20,16 +30,6 @@ Type: `func(s2 engine/modules/seed.Seed) *math/rand/v2.Rand`
 Type: `func[Number golang.org/x/exp/constraints.Integer](s Number) engine/modules/seed.Seed`
 
 
-## Lines of code
-```
-github.com/AlDanial/cloc
--------------------------------------------------------------------------------
-Language                     files          blank        comment           code
--------------------------------------------------------------------------------
-Go                               1              6              3             20
--------------------------------------------------------------------------------
-
-```
 ## Dependencies
 ### Third Party
 - `golang.org/x/exp/constraints`

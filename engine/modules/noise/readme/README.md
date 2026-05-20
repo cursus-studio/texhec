@@ -3,6 +3,25 @@
 generates normalized noises.
 extremely useful for generating maps
 
+## Benchmarks
+```
+$ go test ./... -bench=.
+PASS
+ok  	engine/modules/noise/test	1.448s
+```
+## Lines of code
+```
+github.com/AlDanial/cloc
+-------------------------------------------------------------------------------
+Language                     files          blank        comment           code
+-------------------------------------------------------------------------------
+Go                              11             93             70            392
+Markdown                         1              3              0             43
+-------------------------------------------------------------------------------
+SUM:                            12             96             70            435
+-------------------------------------------------------------------------------
+
+```
 ## Types
 ### type Service
 Type: `engine/modules/noise.Service`
@@ -48,25 +67,6 @@ Type: `func(fn func(github.com/go-gl/mathgl/mgl64.Vec2) float64) engine/modules/
 Type: `func(cellSize float64, weight float64) engine/modules/noise.LayerConfig`
 
 
-## Benchmarks
-```
-$ go test ./... -bench=.
-PASS
-ok  	engine/modules/noise/test	1.273s
-```
-## Lines of code
-```
-github.com/AlDanial/cloc
--------------------------------------------------------------------------------
-Language                     files          blank        comment           code
--------------------------------------------------------------------------------
-Go                              11             93             70            392
-Markdown                         1              3              0             43
--------------------------------------------------------------------------------
-SUM:                            12             96             70            435
--------------------------------------------------------------------------------
-
-```
 ## Dependencies
 `engine`:
   - `engine.EngineWorld`
