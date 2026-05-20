@@ -2,6 +2,18 @@
 ## Architecture
 defines loging abstraction which can be easily expanded to log information in GUI or sent to developer
 
+## Lines of code
+```
+github.com/AlDanial/cloc
+-------------------------------------------------------------------------------
+Language                     files          blank        comment           code
+-------------------------------------------------------------------------------
+Go                               3             25             12            121
+-------------------------------------------------------------------------------
+SUM:                             3             25             12            121
+-------------------------------------------------------------------------------
+
+```
 ## Types
 ### type Service
 Type: `engine/modules/logger.Service`
@@ -37,18 +49,6 @@ warn is default
 Type: `func(meta error) bool`
 
 
-## Lines of code
-```
-github.com/AlDanial/cloc
--------------------------------------------------------------------------------
-Language                     files          blank        comment           code
--------------------------------------------------------------------------------
-Go                               3             25             12            121
--------------------------------------------------------------------------------
-SUM:                             3             25             12            121
--------------------------------------------------------------------------------
-
-```
 ## Dependencies
 `engine/modules/logger`:
   - `engine/modules/logger.ErrFatal`

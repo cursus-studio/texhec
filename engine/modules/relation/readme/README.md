@@ -2,14 +2,6 @@
 ## Architecture
 this is a generic package which is used to access entities by component (id) in O(1) time
 
-## Types
-### type Service
-Type: `engine/modules/relation.Service[Key any]`
-
-#### method Service Get
-Type: `func(Key) (engine/services/ecs.EntityID, bool)`
-
-
 ## Lines of code
 ```
 github.com/AlDanial/cloc
@@ -22,6 +14,14 @@ SUM:                             8             49              1            266
 -------------------------------------------------------------------------------
 
 ```
+## Types
+### type Service
+Type: `engine/modules/relation.Service[Key any]`
+
+#### method Service Get
+Type: `func(Key) (engine/services/ecs.EntityID, bool)`
+
+
 ## Dependencies
 `engine/modules/relation`:
   - `engine/modules/relation.Get`

@@ -2,6 +2,24 @@
 ## Architecture
 this module allows us to encode and decode golang objects.
 
+## Benchmarks
+```
+$ go test ./... -bench=.
+PASS
+ok  	engine/modules/codec/test	0.007s
+```
+## Lines of code
+```
+github.com/AlDanial/cloc
+-------------------------------------------------------------------------------
+Language                     files          blank        comment           code
+-------------------------------------------------------------------------------
+Go                               6             29              3            165
+-------------------------------------------------------------------------------
+SUM:                             6             29              3            165
+-------------------------------------------------------------------------------
+
+```
 ## Types
 ### type Service
 Type: `engine/modules/codec.Service`
@@ -22,24 +40,6 @@ Type: `error`
 Type: `error`
 
 
-## Benchmarks
-```
-$ go test ./... -bench=.
-PASS
-ok  	engine/modules/codec/test	0.006s
-```
-## Lines of code
-```
-github.com/AlDanial/cloc
--------------------------------------------------------------------------------
-Language                     files          blank        comment           code
--------------------------------------------------------------------------------
-Go                               6             29              3            165
--------------------------------------------------------------------------------
-SUM:                             6             29              3            165
--------------------------------------------------------------------------------
-
-```
 ## Dependencies
 `engine`:
   - `engine.EngineWorld`

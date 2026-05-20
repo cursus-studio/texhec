@@ -2,6 +2,24 @@
 ## Architecture
 defines how obstruction map is stored and accessed
 
+## Benchmarks
+```
+$ go test ./... -bench=.
+PASS
+ok  	core/modules/obstruction/test	0.005s
+```
+## Lines of code
+```
+github.com/AlDanial/cloc
+-------------------------------------------------------------------------------
+Language                     files          blank        comment           code
+-------------------------------------------------------------------------------
+Go                               6             55             12            332
+-------------------------------------------------------------------------------
+SUM:                             6             55             12            332
+-------------------------------------------------------------------------------
+
+```
 ## Types
 ### type Service
 Type: `core/modules/obstruction.Service`
@@ -68,24 +86,6 @@ Type: `func(coords core/modules/tile.PosComponent, size core/modules/tile.SizeCo
 Type: `func() core/modules/obstruction.DeployedComponent`
 
 
-## Benchmarks
-```
-$ go test ./... -bench=.
-PASS
-ok  	core/modules/obstruction/test	0.004s
-```
-## Lines of code
-```
-github.com/AlDanial/cloc
--------------------------------------------------------------------------------
-Language                     files          blank        comment           code
--------------------------------------------------------------------------------
-Go                               6             55             12            332
--------------------------------------------------------------------------------
-SUM:                             6             55             12            332
--------------------------------------------------------------------------------
-
-```
 ## Dependencies
 `core/game`:
   - `core/game.GameWorld`

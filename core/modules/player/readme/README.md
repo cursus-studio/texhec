@@ -2,6 +2,18 @@
 ## Architecture
 allowes objects to be owned
 
+## Lines of code
+```
+github.com/AlDanial/cloc
+-------------------------------------------------------------------------------
+Language                     files          blank        comment           code
+-------------------------------------------------------------------------------
+Go                               3             14              2             48
+-------------------------------------------------------------------------------
+SUM:                             3             14              2             48
+-------------------------------------------------------------------------------
+
+```
 ## Types
 ### type Service
 Type: `core/modules/player.Service`
@@ -20,18 +32,6 @@ Type: `engine/services/ecs.EntityID`
 Type: `func(owner engine/services/ecs.EntityID) core/modules/player.OwnerComponent`
 
 
-## Lines of code
-```
-github.com/AlDanial/cloc
--------------------------------------------------------------------------------
-Language                     files          blank        comment           code
--------------------------------------------------------------------------------
-Go                               3             14              2             48
--------------------------------------------------------------------------------
-SUM:                             3             14              2             48
--------------------------------------------------------------------------------
-
-```
 ## Dependencies
 `core/game`:
   - `core/game.GameWorld`

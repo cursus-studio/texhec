@@ -3,6 +3,18 @@
 allows to store data about objects.
 its extremely useful when having in game documentation of objects
 
+## Lines of code
+```
+github.com/AlDanial/cloc
+-------------------------------------------------------------------------------
+Language                     files          blank        comment           code
+-------------------------------------------------------------------------------
+Go                               3             21              5             85
+-------------------------------------------------------------------------------
+SUM:                             3             21              5             85
+-------------------------------------------------------------------------------
+
+```
 ## Types
 ### type Service
 Type: `engine/modules/metadata.Service`
@@ -45,18 +57,6 @@ Type: `func(description string) engine/modules/metadata.DescriptionComponent`
 Type: `func(entity engine/services/ecs.EntityID) engine/modules/metadata.LinkComponent`
 
 
-## Lines of code
-```
-github.com/AlDanial/cloc
--------------------------------------------------------------------------------
-Language                     files          blank        comment           code
--------------------------------------------------------------------------------
-Go                               3             21              5             85
--------------------------------------------------------------------------------
-SUM:                             3             21              5             85
--------------------------------------------------------------------------------
-
-```
 ## Dependencies
 `engine`:
   - `engine.EngineWorld`

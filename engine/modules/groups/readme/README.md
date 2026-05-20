@@ -3,6 +3,24 @@
 uses bitmasks and allows us to group entities to do not collide despite shared position or
 to do not be visible for a camera despite being in its view
 
+## Benchmarks
+```
+$ go test ./... -bench=.
+PASS
+ok  	engine/modules/groups/test	0.005s
+```
+## Lines of code
+```
+github.com/AlDanial/cloc
+-------------------------------------------------------------------------------
+Language                     files          blank        comment           code
+-------------------------------------------------------------------------------
+Go                               7             52              3            214
+-------------------------------------------------------------------------------
+SUM:                             7             52              3            214
+-------------------------------------------------------------------------------
+
+```
 ## Types
 ### type Service
 Type: `engine/modules/groups.Service`
@@ -59,24 +77,6 @@ Type: `func() engine/modules/groups.GroupsComponent`
 Type: `func() engine/modules/groups.GroupsComponent`
 
 
-## Benchmarks
-```
-$ go test ./... -bench=.
-PASS
-ok  	engine/modules/groups/test	0.006s
-```
-## Lines of code
-```
-github.com/AlDanial/cloc
--------------------------------------------------------------------------------
-Language                     files          blank        comment           code
--------------------------------------------------------------------------------
-Go                               7             52              3            214
--------------------------------------------------------------------------------
-SUM:                             7             52              3            214
--------------------------------------------------------------------------------
-
-```
 ## Dependencies
 `engine`:
   - `engine.EngineWorld`

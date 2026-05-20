@@ -9,6 +9,24 @@ To release assets we just remove `CacheComponent` (recommended) or entity with t
 `func GetAsset[Asset any](assets Service, assetID ecs.EntityID) (Asset, error)`\
 to parse is to our asset type.
 
+## Benchmarks
+```
+$ go test ./... -bench=.
+PASS
+ok  	engine/modules/assets/test	0.006s
+```
+## Lines of code
+```
+github.com/AlDanial/cloc
+-------------------------------------------------------------------------------
+Language                     files          blank        comment           code
+-------------------------------------------------------------------------------
+Go                               6             60             13            274
+-------------------------------------------------------------------------------
+SUM:                             6             60             13            274
+-------------------------------------------------------------------------------
+
+```
 ## Types
 ### type Service
 Type: `engine/modules/assets.Service`
@@ -65,24 +83,6 @@ Type: `func(cache engine/modules/assets.Asset) engine/modules/assets.CacheCompon
 Type: `func[Asset any](assets engine/modules/assets.Service, assetID engine/services/ecs.EntityID) (Asset, error)`
 
 
-## Benchmarks
-```
-$ go test ./... -bench=.
-PASS
-ok  	engine/modules/assets/test	0.006s
-```
-## Lines of code
-```
-github.com/AlDanial/cloc
--------------------------------------------------------------------------------
-Language                     files          blank        comment           code
--------------------------------------------------------------------------------
-Go                               6             60             13            274
--------------------------------------------------------------------------------
-SUM:                             6             60             13            274
--------------------------------------------------------------------------------
-
-```
 ## Dependencies
 `engine`:
   - `engine.EngineWorld`

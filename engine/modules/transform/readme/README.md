@@ -4,6 +4,32 @@ This module contains many components which allow us to define relative position
 and this module transforms these relative components to absolute position which
 is used in collisions and rendering
 
+## Benchmarks
+```
+$ go test ./... -bench=.
+goos: linux
+goarch: amd64
+pkg: engine/modules/transform/test
+cpu: Intel(R) Core(TM) i5-8350U CPU @ 1.70GHz
+BenchmarkGetPos-8                 	40271223	        29.03 ns/op
+BenchmarkRawGetPos-8              	98706297	        11.62 ns/op
+BenchmarkSetAbsolutePos-8         	 1870334	       657.9 ns/op
+BenchmarkSetAndGetAbsolutePos-8   	 1964582	       607.1 ns/op
+PASS
+ok  	engine/modules/transform/test	6.079s
+```
+## Lines of code
+```
+github.com/AlDanial/cloc
+-------------------------------------------------------------------------------
+Language                     files          blank        comment           code
+-------------------------------------------------------------------------------
+Go                              14            163             23            792
+-------------------------------------------------------------------------------
+SUM:                            14            163             23            792
+-------------------------------------------------------------------------------
+
+```
 ## Types
 ### type Service
 Type: `engine/modules/transform.Service`
@@ -259,32 +285,6 @@ Type: `func(mask engine/modules/transform.ParentFlag) engine/modules/transform.P
 Type: `func(x float32, y float32, z float32) engine/modules/transform.ParentPivotPointComponent`
 
 
-## Benchmarks
-```
-$ go test ./... -bench=.
-goos: linux
-goarch: amd64
-pkg: engine/modules/transform/test
-cpu: Intel(R) Core(TM) i5-8350U CPU @ 1.70GHz
-BenchmarkGetPos-8                 	44180418	        28.02 ns/op
-BenchmarkRawGetPos-8              	100000000	        10.94 ns/op
-BenchmarkSetAbsolutePos-8         	 1919872	       633.1 ns/op
-BenchmarkSetAndGetAbsolutePos-8   	 2024383	       592.0 ns/op
-PASS
-ok  	engine/modules/transform/test	7.038s
-```
-## Lines of code
-```
-github.com/AlDanial/cloc
--------------------------------------------------------------------------------
-Language                     files          blank        comment           code
--------------------------------------------------------------------------------
-Go                              14            163             23            792
--------------------------------------------------------------------------------
-SUM:                            14            163             23            792
--------------------------------------------------------------------------------
-
-```
 ## Dependencies
 `engine`:
   - `engine.EngineWorld`

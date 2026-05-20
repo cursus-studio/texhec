@@ -2,6 +2,18 @@
 ## Architecture
 synchronizes client and server worlds while accounting for permissions
 
+## Lines of code
+```
+github.com/AlDanial/cloc
+-------------------------------------------------------------------------------
+Language                     files          blank        comment           code
+-------------------------------------------------------------------------------
+Go                              11            125             59            772
+-------------------------------------------------------------------------------
+SUM:                            11            125             59            772
+-------------------------------------------------------------------------------
+
+```
 ## Types
 ### type Service
 Type: `engine/modules/netsync.Service`
@@ -34,18 +46,6 @@ Type: `engine/modules/netsync.ClientComponent`
 entity with this component and connection will get notifications about changes
 
 
-## Lines of code
-```
-github.com/AlDanial/cloc
--------------------------------------------------------------------------------
-Language                     files          blank        comment           code
--------------------------------------------------------------------------------
-Go                              11            125             59            772
--------------------------------------------------------------------------------
-SUM:                            11            125             59            772
--------------------------------------------------------------------------------
-
-```
 ## Dependencies
 `engine`:
   - `engine.Connection`

@@ -3,6 +3,19 @@
 this module is respinsible for defining unified events and components for rendering and
 for providing basic instancing renderer
 
+## Lines of code
+```
+github.com/AlDanial/cloc
+-------------------------------------------------------------------------------
+Language                     files          blank        comment           code
+-------------------------------------------------------------------------------
+Go                              11            136             73            640
+GLSL                             2             15              0             42
+-------------------------------------------------------------------------------
+SUM:                            13            151             73            682
+-------------------------------------------------------------------------------
+
+```
 ## Types
 ### type Service
 Type: `engine/modules/render.Service`
@@ -137,19 +150,6 @@ Type: `func(frameNormalized float64) engine/modules/render.TextureFrameComponent
 Type: `func(images ...image.Image) (engine/modules/render.TextureAsset, error)`
 
 
-## Lines of code
-```
-github.com/AlDanial/cloc
--------------------------------------------------------------------------------
-Language                     files          blank        comment           code
--------------------------------------------------------------------------------
-Go                              11            136             73            640
-GLSL                             2             15              0             42
--------------------------------------------------------------------------------
-SUM:                            13            151             73            682
--------------------------------------------------------------------------------
-
-```
 ## Dependencies
 `engine`:
   - `engine.Assets`

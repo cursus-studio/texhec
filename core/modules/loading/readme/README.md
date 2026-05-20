@@ -2,14 +2,6 @@
 ## Architecture
 defines GUI to show up when batcher processes any task
 
-## Types
-### type Service
-Type: `core/modules/loading.Service`
-
-#### method Service Register
-Type: `func() error`
-
-
 ## Lines of code
 ```
 github.com/AlDanial/cloc
@@ -22,6 +14,14 @@ SUM:                             3             19              1             88
 -------------------------------------------------------------------------------
 
 ```
+## Types
+### type Service
+Type: `core/modules/loading.Service`
+
+#### method Service Register
+Type: `func() error`
+
+
 ## Dependencies
 `core/game`:
   - `core/game.GameWorld`

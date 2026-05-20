@@ -4,6 +4,32 @@ allows us to copy entity with copyable components
 
 its to create copies of entities. its equivalent of unity prefabs (unity semantics)
 
+## Benchmarks
+```
+$ go test ./... -bench=.
+goos: linux
+goarch: amd64
+pkg: engine/modules/prototype/test
+cpu: Intel(R) Core(TM) i5-8350U CPU @ 1.70GHz
+BenchmarkClone1-8         	  434900	      2320 ns/op
+BenchmarkClone2-8         	  538801	      2156 ns/op
+BenchmarkManual1Clone-8   	46239169	        23.43 ns/op
+BenchmarkManual2Clone-8   	38737875	        30.91 ns/op
+PASS
+ok  	engine/modules/prototype/test	4.492s
+```
+## Lines of code
+```
+github.com/AlDanial/cloc
+-------------------------------------------------------------------------------
+Language                     files          blank        comment           code
+-------------------------------------------------------------------------------
+Go                               7             46              4            194
+-------------------------------------------------------------------------------
+SUM:                             7             46              4            194
+-------------------------------------------------------------------------------
+
+```
 ## Types
 ### type Service
 Type: `engine/modules/prototype.Service`
@@ -28,32 +54,6 @@ Type: `engine/services/ecs.EntityID`
 Type: `func(cloned engine/services/ecs.EntityID, clone engine/services/ecs.EntityID) engine/modules/prototype.CloneEvent`
 
 
-## Benchmarks
-```
-$ go test ./... -bench=.
-goos: linux
-goarch: amd64
-pkg: engine/modules/prototype/test
-cpu: Intel(R) Core(TM) i5-8350U CPU @ 1.70GHz
-BenchmarkClone1-8         	  533560	      1909 ns/op
-BenchmarkClone2-8         	  562302	      2073 ns/op
-BenchmarkManual1Clone-8   	52079911	        22.57 ns/op
-BenchmarkManual2Clone-8   	36796689	        27.86 ns/op
-PASS
-ok  	engine/modules/prototype/test	4.403s
-```
-## Lines of code
-```
-github.com/AlDanial/cloc
--------------------------------------------------------------------------------
-Language                     files          blank        comment           code
--------------------------------------------------------------------------------
-Go                               7             46              4            194
--------------------------------------------------------------------------------
-SUM:                             7             46              4            194
--------------------------------------------------------------------------------
-
-```
 ## Dependencies
 `engine`:
   - `engine.EngineWorld`
