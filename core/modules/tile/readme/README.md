@@ -10,13 +10,10 @@ which will allow basic optimizations and the ability to store chunks on disk whi
 
 ### Biome extension
 Integration with `entityregistry` allows us to define biome assets in a **single** `struct tag`.
-
 ```go
-
-	type Tiles struct {
-		BiomeName    ecs.EntityID `path:"tiles/biome_directory.biome"`
-	}
-
+type Tiles struct {
+	BiomeName    ecs.EntityID `path:"tiles/biome_directory.biome"`
+}
 ```
 
 The snippet trims suffix (`.biome`) and expects a path without suffix (`tiles/biome_directory`)
@@ -42,7 +39,7 @@ tiles/biome_directory/
 ├─ 5/         # fifth shape directory with its own variants
 │   └── ...   # variants...
 └─ 6/         # sixth shape directory with its own variants
-.   └── ...   # variants...
+    └── ...   # variants...
 ```
 
 Expected shapes in directories from `1` to `6`:
@@ -58,12 +55,11 @@ Example [biome file structure](grass/).
 ### How to import a biome
 One line using `entityregistry` is enough in codebase:
 ```go
-
-	type Tiles struct {
-		BiomeName    ecs.EntityID `path:"tiles/biome_directory.biome"`
-	}
-
+type Tiles struct {
+	BiomeName    ecs.EntityID `path:"tiles/biome_directory.biome"`
+}
 ```
+
 and biome file structure like [example file structure presented](#biome-extension).
 
 ## Benchmarks
@@ -86,13 +82,12 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                               9            180            134            976
+Go                               9            180             69            976
 GLSL                             3             29              2            114
-Markdown                         1              1              0             11
+Markdown                         2              9              0             64
 -------------------------------------------------------------------------------
-SUM:                            13            210            136           1101
+SUM:                            14            218             71           1154
 -------------------------------------------------------------------------------
-
 ```
 ## Types
 ### type Service

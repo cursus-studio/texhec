@@ -14,7 +14,7 @@ example:
 ```
 $ go test ./... -bench=.
 PASS
-ok  	engine/modules/entityregistry/test	0.009s
+ok  	engine/modules/entityregistry/test	0.008s
 ```
 ## Lines of code
 ```
@@ -26,7 +26,6 @@ Go                               5             31             10            163
 -------------------------------------------------------------------------------
 SUM:                             5             31             10            163
 -------------------------------------------------------------------------------
-
 ```
 ## Types
 ### type Service

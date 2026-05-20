@@ -13,7 +13,7 @@ to parse is to our asset type.
 ```
 $ go test ./... -bench=.
 PASS
-ok  	engine/modules/assets/test	0.006s
+ok  	engine/modules/assets/test	0.007s
 ```
 ## Lines of code
 ```
@@ -25,7 +25,6 @@ Go                               6             60             13            274
 -------------------------------------------------------------------------------
 SUM:                             6             60             13            274
 -------------------------------------------------------------------------------
-
 ```
 ## Types
 ### type Service
