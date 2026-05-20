@@ -11,14 +11,13 @@ import (
 
 func getFilesRespectingGitignore(modulePath string) ([]string, error) {
 	var files []string
-	root, err := os.OpenRoot(modulePath)
+	root, err := os.OpenRoot(".")
 	if err != nil {
 		return nil, err
 	}
 	defer func() { _ = root.Close() }()
 
 	var patterns []gitignore.Pattern
-	// 2. Read .gitignore relative to the root jail safely
 	if data, err := root.ReadFile(".gitignore"); err == nil {
 		for line := range strings.SplitSeq(string(data), "\n") {
 			line = strings.TrimSpace(line)

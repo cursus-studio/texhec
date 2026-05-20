@@ -45,17 +45,7 @@ To see implementation details of documentation or pipeline go to its module read
 
 ## Lines of code
 ```
-github.com/AlDanial/cloc
--------------------------------------------------------------------------------
-Language                     files          blank        comment           code
--------------------------------------------------------------------------------
-Go                              19            219             99           1584
-Groovy                           1              5              4             72
-Markdown                         4             10              0             33
-Dockerfile                       1              7              3             30
--------------------------------------------------------------------------------
-SUM:                            25            241            106           1719
--------------------------------------------------------------------------------
+
 ```
 ## TODO
 Ensure script wraps itself in `Dockerfile` if is runned on local machine
