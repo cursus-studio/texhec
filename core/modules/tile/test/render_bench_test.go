@@ -10,6 +10,7 @@ import (
 	"engine/modules/grid"
 	"engine/modules/loop"
 	"engine/modules/seed"
+	"engine/modules/transform"
 	"engine/modules/window"
 	"engine/services/ecs"
 	"fmt"
@@ -29,7 +30,7 @@ type Tiles struct {
 	Mountain ecs.EntityID `path:"tiles/mountain.biome" tile:"" generate:"25"`
 }
 
-func BenchmarkRendering1MTilesMap(b *testing.B) {
+func benchmarkRenderingXTilesMap(b *testing.B, n int) {
 	if gpu, err := ghw.GPU(); err != nil {
 		b.Error(err)
 		return
@@ -51,6 +52,7 @@ func BenchmarkRendering1MTilesMap(b *testing.B) {
 		func(b ioc.Builder) {
 			ioc.Wrap(b, func(c ioc.Dic, w window.Service) {
 				w.Window().SetTitle("tile module benchmark")
+				w.Window().SetSize(1000, 1000)
 				gl.ClearColor(0.2, 0.3, 0.3, 1.0)
 			})
 			ioc.Wrap(b, func(c ioc.Dic, b assetspkg.Config) { b.SetPath("../../../assets/") })
@@ -73,13 +75,16 @@ func BenchmarkRendering1MTilesMap(b *testing.B) {
 
 	gridEntity := world.World().NewEntity()
 
-	config := generation.NewConfig(gridEntity, seed.New(21377137), grid.NewCoords(1000, 1000))
+	config := generation.NewConfig(gridEntity, seed.New(21377137), grid.NewCoords(n, n))
 	world.Generation().Generate(config).Perform()
 
 	gameCamera := world.World().NewEntity()
 	ortho := camera.NewOrtho(-1000, +1000)
-	ortho.Zoom = 0.01
+	ortho.Zoom = 10. / float32(n)
 	world.Camera().Ortho().Set(gameCamera, ortho)
+	tileSize := world.Tile().GetTileSize().Size
+	cameraPos := transform.NewPos(tileSize.X()*float32(n)/2, tileSize.Y()*float32(n)/2, 0)
+	world.Transform().Pos().Set(gameCamera, cameraPos)
 
 	events.Emit(world.Events(), loop.FrameEvent{})
 	b.ResetTimer()
@@ -89,3 +94,6 @@ func BenchmarkRendering1MTilesMap(b *testing.B) {
 	}
 	gl.Finish()
 }
+
+func BenchmarkRendering1MTilesMap(b *testing.B) { benchmarkRenderingXTilesMap(b, 1000) }
+func BenchmarkRendering4MTilesMap(b *testing.B) { benchmarkRenderingXTilesMap(b, 2000) }
