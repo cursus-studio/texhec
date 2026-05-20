@@ -41,8 +41,6 @@ A 1.000.000 tile map is generated in seconds and rendered in less than **5.1ms**
 - gpu: UHD Graphics 620 (KBL GT2)
 
 ![Map scroll](map_scroll.gif)
-![Whole map](whole_map.png)
-![Bottom right map corner](bottom_right.png)
 
 #### Architecture
 In this project we follow **DOD** by using [ECS](/engine/services/ecs/readme/README.md)
