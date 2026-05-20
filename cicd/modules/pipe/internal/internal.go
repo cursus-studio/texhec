@@ -250,10 +250,6 @@ func (s *service) Sync() error {
 				return err
 			}
 		}
-		log.Printf("Verify Stage \"%v\"", stage.Name)
-		if err := stage.Verify(ctx); err != nil {
-			return err
-		}
 	}
 
 	return nil

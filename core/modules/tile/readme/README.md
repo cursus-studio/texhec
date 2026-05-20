@@ -63,6 +63,22 @@ type Tiles struct {
 and biome file structure like [example file structure presented](#biome-extension).
 
 ## Benchmarks
+Flag benchmark:
+```sh
+goos: windows
+goarch: amd64
+pkg: core/modules/tile/test
+cpu: Intel(R) Core(TM) i7-14700KF
+BenchmarkRendering36MTilesMap
+gpu: Meta Virtual Monitor
+gpu 2: NVIDIA GeForce RTX 4080 SUPER
+BenchmarkRendering36MTilesMap-28    	     135	   8510424 ns/op
+PASS
+ok  	core/modules/tile/test	57.055s
+```
+Rendering 36 million tiles on `NVIDIA GeForce RTX 4080 SUPER` in less than **8.6ms**.
+
+Standard benchmark:
 ```sh
 $ go test . -bench=. -benchtime=10s
 Failed to load plugin 'libdecor-gtk.so': failed to init
@@ -73,7 +89,6 @@ pkg: core/modules/tile/test
 cpu: Intel(R) Core(TM) i5-8350U CPU @ 1.70GHz
 BenchmarkRendering1MTilesMap-8   	    2221	   5062408 ns/op
 ```
-
 Rendering 1 million tiles on `UHD Graphics 620` in less than **5.1ms**.
 
 ## Lines of code
@@ -84,9 +99,9 @@ Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
 Go                               9            180             69            976
 GLSL                             3             29              2            114
-Markdown                         2              9              0             64
+Markdown                         2              9              0             79
 -------------------------------------------------------------------------------
-SUM:                            14            218             71           1154
+SUM:                            14            218             71           1169
 -------------------------------------------------------------------------------
 ```
 ## Types
