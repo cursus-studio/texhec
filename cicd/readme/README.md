@@ -3,23 +3,27 @@
 ## Architecture
 This project is responsible for code quality and commit history.
 
+### Hosting
+Hosted on Rasperry Pi and uses prometheus and grafana for monitoring.
+
+### Commands
 CI/CD tool exposes 5 commands:
-- ### `go run cicd setup`
+- #### `go run cicd setup`
 It initializes git hooks.
 
-- ### `go run cicd sync`
+- #### `go run cicd sync`
 It generates readmes in whole codebase.
 It is used when readme generation algorithm is changes.
 
-- ### `go run cicd fix`
+- #### `go run cicd fix`
 It takes uncommited files and runs all tests on them and updates readmes and stages them.
 
-- ### `go run cicd verify $compared-commit-hash`
+- #### `go run cicd verify $compared-commit-hash`
 `$compared-commit-hash` - By deafult only not commited changed are tested. In CI-CD pipeline previous successful commit is used here.
 
 It runs all quality tests only on specific changed files.
 
-- ### `go run cicd cloud $compared-commit-hash`
+- #### `go run cicd cloud $compared-commit-hash`
 `$compared-commit-hash` - By deafult only not commited changed are tested. In CI-CD pipeline previous successful commit is used here.
 
 It is effectively the save as `go run cicd verify` but also uses github status api.
@@ -47,10 +51,10 @@ Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
 Go                              18            213             98           1539
 Groovy                           1              5              4             72
+Markdown                         4             10              0             33
 Dockerfile                       1              7              3             30
-Markdown                         4              9              0             30
 -------------------------------------------------------------------------------
-SUM:                            24            234            105           1671
+SUM:                            24            235            105           1674
 -------------------------------------------------------------------------------
 
 ```
