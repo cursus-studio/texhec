@@ -14,7 +14,7 @@ example:
 ```
 $ go test ./... -bench=.
 PASS
-ok  	engine/modules/entityregistry/test	0.008s
+ok  	engine/modules/entityregistry/test	0.009s
 ```
 ## Lines of code
 ```
