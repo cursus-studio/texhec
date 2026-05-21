@@ -12,5 +12,9 @@ Please note that this project is not yet open-source, as it is in to early stage
 
 ## License
 Copyright © 2026. All rights reserved.
-Currently, this repository is public to allow for code review and demonstration of functionality for recruitment purposes.\
-No part of this software may be reproduced, distributed, or transmitted in any form or by any means without prior written permission.
+
+Permission is hereby granted to download, compile, and run this software locally on your own machine, and to make local modifications solely for the purposes of personal evaluation, testing, and generating feedback.
+
+**Strictly Prohibited:**
+* **Public Distribution & Forking:** You may not distribute, publish, or transmit modified versions of this software (derivative works), nor host public forks intended to branch or continue the project independently.
+* **Commercial Use:** You may not use this software, in whole or in part, for any commercial purposes or financial gain.

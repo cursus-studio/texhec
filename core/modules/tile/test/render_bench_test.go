@@ -95,5 +95,6 @@ func benchmarkRenderingXTilesMap(b *testing.B, n int) {
 	gl.Finish()
 }
 
+// const MAP_SIZE
 func BenchmarkRendering1MTilesMap(b *testing.B) { benchmarkRenderingXTilesMap(b, 1000) }
 func BenchmarkRendering4MTilesMap(b *testing.B) { benchmarkRenderingXTilesMap(b, 2000) }
