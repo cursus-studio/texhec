@@ -6,7 +6,6 @@ import (
 	"cicd/modules/docs/internal/deps"
 	"cicd/modules/docs/internal/types"
 	"fmt"
-	"io"
 	"os"
 	"os/exec"
 	"regexp"
@@ -232,10 +231,10 @@ func (s *service) LinesOfCode(modulePath string) (string, error) {
 
 	var stdoutBuffer bytes.Buffer
 	cmd.Stdout = &stdoutBuffer
-	cmd.Stderr = io.Discard
+	cmd.Stderr = &stdoutBuffer
 
 	if err := cmd.Run(); err != nil {
-		return "", err
+		return "", fmt.Errorf("%v", stdoutBuffer.String())
 	}
 
 	prepared := stdoutBuffer.String()
