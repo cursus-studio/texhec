@@ -229,15 +229,12 @@ func (s *service) LinesOfCode(modulePath string) (string, error) {
 	}
 	cmd.Stdin = &stdinBuffer
 
-	var stdoutBuffer bytes.Buffer
-	cmd.Stdout = &stdoutBuffer
-	cmd.Stderr = &stdoutBuffer
-
-	if err := cmd.Run(); err != nil {
-		return "", fmt.Errorf("%v", stdoutBuffer.String())
+	output, err := cmd.CombinedOutput()
+	if err != nil {
+		return "", fmt.Errorf("%v", string(output))
 	}
 
-	prepared := stdoutBuffer.String()
+	prepared := string(output)
 	// Breakdown:
 	// (github\.com/\S+) -> Group 1: Captures the base URL/path (e.g., github.com/AlDanial/cloc)
 	// \s+v\s+[\d.]+    -> Matches the version string (e.g., v 2.08)
