@@ -33,7 +33,12 @@ of writing and maintaining them is well worth it.
 ## Architecture
 ### DOD
 Following **DOD** creates exceptionally performant software and avoids **GC**.
-#### Proof
+#### Zero allocation **ECS** framework
+[ECS benchmark](/engine/services/ecs/readme/README.md#benchmarks)
+
+Data oriented ECS framework implemented in Go completely avoids **GC**.
+
+#### Performance showcase
 [Tile benchmark](/core/modules/tile/readme/README.md#benchmarks)
 
 A 36.000.000 tile map rendered in less than **8.6ms** using:

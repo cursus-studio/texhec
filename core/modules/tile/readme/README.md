@@ -63,7 +63,7 @@ type Tiles struct {
 and biome file structure like [example file structure presented](#biome-extension).
 
 ## Benchmarks
-Flag benchmark:
+### Flag benchmark
 ```sh
 goos: windows
 goarch: amd64
@@ -78,7 +78,7 @@ ok  	core/modules/tile/test	57.055s
 ```
 Rendering 36 million tiles on `NVIDIA GeForce RTX 4080 SUPER` in less than **8.6ms**.
 
-Standard benchmark:
+### Standard benchmark
 ```sh
 $ go test . -bench=. -benchtime=10s
 Failed to load plugin 'libdecor-gtk.so': failed to init
@@ -91,18 +91,18 @@ BenchmarkRendering1MTilesMap-8   	    2221	   5062408 ns/op
 ```
 Rendering 1 million tiles on `UHD Graphics 620` in less than **5.1ms**.
 
+### Custom benchmark
+To run benchmark on your machine with map with custom size then find `BenchmarkRendering1MTilesMap`.
+```go
+func BenchmarkRendering1MTilesMap(b *testing.B) { benchmarkRenderingXTilesMap(b, 1000) }
+func BenchmarkRendering4MTilesMap(b *testing.B) { benchmarkRenderingXTilesMap(b, 2000) }
+```
+
+These benchmarks create map with custom size `n`*`n` (in first example 1,000*1,000 = 1,000,000).
+
 ## Lines of code
 ```
-github.com/AlDanial/cloc
--------------------------------------------------------------------------------
-Language                     files          blank        comment           code
--------------------------------------------------------------------------------
-Go                               9            180             69            976
-GLSL                             3             29              2            114
-Markdown                         2              9              0             79
--------------------------------------------------------------------------------
-SUM:                            14            218             71           1169
--------------------------------------------------------------------------------
+
 ```
 ## Types
 ### type Service
