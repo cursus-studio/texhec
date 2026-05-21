@@ -16,12 +16,12 @@ It is used when readme generation algorithm is changes.
 It takes uncommited files and runs all tests on them and updates readmes and stages them.
 
 - #### `go run cicd verify $compared-commit-hash`
-`$compared-commit-hash` - By deafult only not commited changed are tested. In CI-CD pipeline previous successful commit is used here.
+`$compared-commit-hash` - By default only not commited changed are tested. In CI-CD pipeline previous successful commit is used here.
 
 It runs all quality tests only on specific changed files.
 
 - #### `go run cicd cloud $compared-commit-hash`
-`$compared-commit-hash` - By deafult only not commited changed are tested. In CI-CD pipeline previous successful commit is used here.
+`$compared-commit-hash` - By default only not commited changed are tested. In CI-CD pipeline previous successful commit is used here.
 
 It is effectively the save as `go run cicd verify` but also uses github status api.
 To send changes using github status api it needs ENV variables:

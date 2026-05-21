@@ -26,11 +26,10 @@ Map scale preview:
 - [ui](/core/modules/ui/readme/README.md)
 
 ## Challenges
-Challenge of this module is to create something on incomplete foundation (`engine`)
-without ending up in spagetti relations or broken code.
-It needs to balance stability and features.
+Challenge of this project is to create evolving foundation (`engine`) on which
+(`core`) can rely while its still changing.
 
-`grid` module which were made to deliver pre-mature features.
+`grid` module were made to deliver pre-mature features.
 It stores whole map in a single slice where it should chunk the map.
 
 ## Lines of code
@@ -40,10 +39,10 @@ github.com/AlDanial/cloc
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
 Go                              57            727            271           3952
-Markdown                         7             25              0            140
+Markdown                         7             25              0            139
 GLSL                             3             29              2            114
 -------------------------------------------------------------------------------
-SUM:                            67            781            273           4206
+SUM:                            67            781            273           4205
 -------------------------------------------------------------------------------
 ```
 ## Dependencies
