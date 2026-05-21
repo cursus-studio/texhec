@@ -21,13 +21,13 @@ import (
 	"github.com/ogiusek/ioc/v2"
 )
 
+const MAP_SIZE = 1000
+
 func addScene(world game.GameWorld, sceneParent ecs.EntityID) {
 	// biggest maps on mods in rusted warfare 2560x1440
 	// - all tiles are rendered at once
 	// - strategic map is used at some point
 	// biggest zoom out in factorio is 448x256 (in 4k)
-	rows := 1000
-	cols := 1000
 
 	{
 		uiCamera := world.World().NewEntity()
@@ -76,10 +76,10 @@ func addScene(world game.GameWorld, sceneParent ecs.EntityID) {
 	world.Groups().Component().Set(gameCamera, groups.EmptyGroups().Ptr().Enable(definitions.GameGroup).Val())
 	world.Camera().Mobile().Set(gameCamera, camera.NewMobileCamera())
 	world.Camera().Limits().Set(gameCamera, camera.NewCameraLimits(
-		10./float32(max(rows, cols)), 10,
+		10./float32(MAP_SIZE), 10,
 		mgl32.Vec3{0, 0, -1000}, mgl32.Vec3{
-			world.Tile().GetTileSize().Size[0] * float32(cols),
-			world.Tile().GetTileSize().Size[1] * float32(rows),
+			world.Tile().GetTileSize().Size[0] * float32(MAP_SIZE),
+			world.Tile().GetTileSize().Size[1] * float32(MAP_SIZE),
 			1000,
 		},
 	))
@@ -93,7 +93,7 @@ func addScene(world game.GameWorld, sceneParent ecs.EntityID) {
 		gridEntity,
 		// seed.New(world.Clock.Now().Unix()),
 		seed.New(21377137),
-		grid.NewCoords(cols, rows),
+		grid.NewCoords(MAP_SIZE, MAP_SIZE),
 	))
 	world.Batcher().Queue(task)
 }
