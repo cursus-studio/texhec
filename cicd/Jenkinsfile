@@ -1,13 +1,14 @@
 pipeline {
     agent any
 
-    // triggers {
-    //     githubPush()
-    // }
+    triggers {
+        githubPush()
+    }
     options {
         buildDiscarder(logRotator(numToKeepStr: '20', artifactNumToKeepStr: '20'))
         preserveStashes(buildCount: 5)
         disableConcurrentBuilds(abortPrevious: true)
+        overrideIndexTriggers(false)
     }
     environment {
         CONTEXT = 'jenkins/cicd'
