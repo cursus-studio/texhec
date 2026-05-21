@@ -6,7 +6,7 @@ defines how obstruction map is stored and accessed
 ```
 $ go test ./... -bench=.
 PASS
-ok  	core/modules/obstruction/test	0.005s
+ok  	core/modules/obstruction/test	0.004s
 ```
 ## Lines of code
 ```
@@ -18,7 +18,6 @@ Go                               6             55             12            332
 -------------------------------------------------------------------------------
 SUM:                             6             55             12            332
 -------------------------------------------------------------------------------
-
 ```
 ## Types
 ### type Service

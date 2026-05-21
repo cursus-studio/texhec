@@ -6,7 +6,7 @@ defines connection and stores it in component
 ```
 $ go test ./... -bench=.
 PASS
-ok  	engine/modules/connection/test	0.053s
+ok  	engine/modules/connection/test	0.056s
 ```
 ## Lines of code
 ```
@@ -18,7 +18,6 @@ Go                               7             89             17            411
 -------------------------------------------------------------------------------
 SUM:                             7             89             17            411
 -------------------------------------------------------------------------------
-
 ```
 ## Types
 ### type Service

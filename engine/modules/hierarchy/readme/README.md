@@ -13,18 +13,18 @@ goos: linux
 goarch: amd64
 pkg: engine/modules/hierarchy/test
 cpu: Intel(R) Core(TM) i5-8350U CPU @ 1.70GHz
-BenchmarkChildren_1-8                          	206980362	         5.873 ns/op
-BenchmarkChildren_10-8                         	191128879	         6.124 ns/op
-BenchmarkChildren_100-8                        	199982721	         5.998 ns/op
-BenchmarkFlatChildren_1_1-8                    	149269428	         7.842 ns/op
-BenchmarkFlatChildren_10_10-8                  	173515244	         6.863 ns/op
-BenchmarkAddChildToParentWithGrandParent-8     	 6963937	       181.0 ns/op
-BenchmarkAddChildToParentWith5GrandParents-8   	 6626678	       179.4 ns/op
-BenchmarkRemoveChild-8                         	 1457080	       787.8 ns/op
-BenchmarkRemoveParentWith1Children-8           	   75834	     15614 ns/op
-BenchmarkRemoveParentWith100Children-8         	   10723	    108229 ns/op
+BenchmarkChildren_1-8                          	215221099	         5.477 ns/op
+BenchmarkChildren_10-8                         	206531972	         5.733 ns/op
+BenchmarkChildren_100-8                        	221496177	         5.477 ns/op
+BenchmarkFlatChildren_1_1-8                    	178174026	         6.668 ns/op
+BenchmarkFlatChildren_10_10-8                  	172217704	         6.895 ns/op
+BenchmarkAddChildToParentWithGrandParent-8     	 7234621	       170.8 ns/op
+BenchmarkAddChildToParentWith5GrandParents-8   	 6127701	       164.6 ns/op
+BenchmarkRemoveChild-8                         	 1536834	       842.3 ns/op
+BenchmarkRemoveParentWith1Children-8           	   82946	     14288 ns/op
+BenchmarkRemoveParentWith100Children-8         	   10000	    116548 ns/op
 PASS
-ok  	engine/modules/hierarchy/test	15.890s
+ok  	engine/modules/hierarchy/test	15.862s
 ```
 ## Lines of code
 ```
@@ -36,7 +36,6 @@ Go                               7            103             21            483
 -------------------------------------------------------------------------------
 SUM:                             7            103             21            483
 -------------------------------------------------------------------------------
-
 ```
 ## Types
 ### type Service

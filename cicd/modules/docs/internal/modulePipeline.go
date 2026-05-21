@@ -6,10 +6,8 @@ import (
 	"cicd/modules/docs/internal/deps"
 	"cicd/modules/docs/internal/types"
 	"fmt"
-	"io"
 	"os"
 	"os/exec"
-	"path/filepath"
 	"regexp"
 	"strings"
 
@@ -211,17 +209,17 @@ func (s *service) Bench(modulePath string) (string, error) {
 
 func (s *service) LinesOfCode(modulePath string) (string, error) {
 	var files []string
-	err := filepath.WalkDir(modulePath, func(path string, d os.DirEntry, err error) error {
-		if err != nil {
-			return err
+	unfilteredFiles, err := getFilesRespectingGitignore(modulePath)
+	if err != nil {
+		return "", err
+	}
+	for _, file := range unfilteredFiles {
+		if strings.Contains(file, "readme/README.md") {
+			continue
 		}
-		if d.IsDir() || strings.Contains(path, "readme/README.md") {
-			return nil
-		}
-		files = append(files, path)
-		return nil
-	})
-	if err != nil || len(files) == 0 {
+		files = append(files, file)
+	}
+	if len(files) == 0 {
 		return "", err
 	}
 	cmd := exec.Command("cloc", "--list-file=-")
@@ -231,21 +229,19 @@ func (s *service) LinesOfCode(modulePath string) (string, error) {
 	}
 	cmd.Stdin = &stdinBuffer
 
-	var stdoutBuffer bytes.Buffer
-	cmd.Stdout = &stdoutBuffer
-	cmd.Stderr = io.Discard
-
-	if err := cmd.Run(); err != nil {
-		return "", err
+	output, err := cmd.CombinedOutput()
+	if err != nil {
+		return "", fmt.Errorf("%v", string(output))
 	}
 
-	prepared := stdoutBuffer.String()
+	prepared := string(output)
 	// Breakdown:
 	// (github\.com/\S+) -> Group 1: Captures the base URL/path (e.g., github.com/AlDanial/cloc)
 	// \s+v\s+[\d.]+    -> Matches the version string (e.g., v 2.08)
 	// .*$              -> Matches everything else to the end of the line (T=0.01 s...)
 	var clocCleanupRegex = regexp.MustCompile(`(?m)^(github\.com/\S+)\s+v\s+[\d.]+.*$`)
 	prepared = clocCleanupRegex.ReplaceAllString(prepared, "$1")
+	prepared = strings.Trim(prepared, " \n")
 	return fmt.Sprintf("## Lines of code\n```\n%v\n```", prepared), nil
 }
 

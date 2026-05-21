@@ -24,12 +24,11 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                               6            113             69            817
+Go                               7            129             69            895
 Markdown                         1              1              0              5
 -------------------------------------------------------------------------------
-SUM:                             7            114             69            822
+SUM:                             8            130             69            900
 -------------------------------------------------------------------------------
-
 ```
 ## TODO
 1. Check is there better readme extension than ".md".
@@ -82,5 +81,6 @@ Type: `error`
   - `cicd/world.ProjectFS`
 
 ### Third Party
+- `github.com/go-git/go-git/v5/plumbing/format/gitignore`
 - `github.com/ogiusek/ioc/v2`
 - `golang.org/x/tools/go/packages`

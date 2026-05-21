@@ -7,7 +7,7 @@ extremely useful for generating maps
 ```
 $ go test ./... -bench=.
 PASS
-ok  	engine/modules/noise/test	1.448s
+ok  	engine/modules/noise/test	1.366s
 ```
 ## Lines of code
 ```
@@ -20,7 +20,6 @@ Markdown                         1              3              0             43
 -------------------------------------------------------------------------------
 SUM:                            12             96             70            435
 -------------------------------------------------------------------------------
-
 ```
 ## Types
 ### type Service

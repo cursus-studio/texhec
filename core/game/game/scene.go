@@ -76,7 +76,7 @@ func addScene(world game.GameWorld, sceneParent ecs.EntityID) {
 	world.Groups().Component().Set(gameCamera, groups.EmptyGroups().Ptr().Enable(definitions.GameGroup).Val())
 	world.Camera().Mobile().Set(gameCamera, camera.NewMobileCamera())
 	world.Camera().Limits().Set(gameCamera, camera.NewCameraLimits(
-		.01, 10,
+		10./float32(max(rows, cols)), 10,
 		mgl32.Vec3{0, 0, -1000}, mgl32.Vec3{
 			world.Tile().GetTileSize().Size[0] * float32(cols),
 			world.Tile().GetTileSize().Size[1] * float32(rows),

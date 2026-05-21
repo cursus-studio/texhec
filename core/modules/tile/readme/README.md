@@ -10,13 +10,10 @@ which will allow basic optimizations and the ability to store chunks on disk whi
 
 ### Biome extension
 Integration with `entityregistry` allows us to define biome assets in a **single** `struct tag`.
-
 ```go
-
-	type Tiles struct {
-		BiomeName    ecs.EntityID `path:"tiles/biome_directory.biome"`
-	}
-
+type Tiles struct {
+	BiomeName    ecs.EntityID `path:"tiles/biome_directory.biome"`
+}
 ```
 
 The snippet trims suffix (`.biome`) and expects a path without suffix (`tiles/biome_directory`)
@@ -42,7 +39,7 @@ tiles/biome_directory/
 ├─ 5/         # fifth shape directory with its own variants
 │   └── ...   # variants...
 └─ 6/         # sixth shape directory with its own variants
-.   └── ...   # variants...
+    └── ...   # variants...
 ```
 
 Expected shapes in directories from `1` to `6`:
@@ -58,15 +55,30 @@ Example [biome file structure](grass/).
 ### How to import a biome
 One line using `entityregistry` is enough in codebase:
 ```go
-
-	type Tiles struct {
-		BiomeName    ecs.EntityID `path:"tiles/biome_directory.biome"`
-	}
-
+type Tiles struct {
+	BiomeName    ecs.EntityID `path:"tiles/biome_directory.biome"`
+}
 ```
+
 and biome file structure like [example file structure presented](#biome-extension).
 
 ## Benchmarks
+### Flag benchmark
+```sh
+goos: windows
+goarch: amd64
+pkg: core/modules/tile/test
+cpu: Intel(R) Core(TM) i7-14700KF
+BenchmarkRendering36MTilesMap
+gpu: Meta Virtual Monitor
+gpu 2: NVIDIA GeForce RTX 4080 SUPER
+BenchmarkRendering36MTilesMap-28    	     135	   8510424 ns/op
+PASS
+ok  	core/modules/tile/test	57.055s
+```
+Rendering 36 million tiles on `NVIDIA GeForce RTX 4080 SUPER` in less than **8.6ms**.
+
+### Standard benchmark
 ```sh
 $ go test . -bench=. -benchtime=10s
 Failed to load plugin 'libdecor-gtk.so': failed to init
@@ -77,8 +89,16 @@ pkg: core/modules/tile/test
 cpu: Intel(R) Core(TM) i5-8350U CPU @ 1.70GHz
 BenchmarkRendering1MTilesMap-8   	    2221	   5062408 ns/op
 ```
-
 Rendering 1 million tiles on `UHD Graphics 620` in less than **5.1ms**.
+
+### Custom benchmark
+To run benchmark on your machine with map with custom size then find `BenchmarkRendering1MTilesMap`.
+```go
+func BenchmarkRendering1MTilesMap(b *testing.B) { benchmarkRenderingXTilesMap(b, 1000) }
+func BenchmarkRendering4MTilesMap(b *testing.B) { benchmarkRenderingXTilesMap(b, 2000) }
+```
+
+These benchmarks create map with custom size `n`*`n` (in first example 1,000*1,000 = 1,000,000).
 
 ## Lines of code
 ```
@@ -86,13 +106,12 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                               9            179            134            969
+Go                               9            180             69            976
 GLSL                             3             29              2            114
-Markdown                         1              1              0             11
+Markdown                         2             11              0             86
 -------------------------------------------------------------------------------
-SUM:                            13            209            136           1094
+SUM:                            14            220             71           1176
 -------------------------------------------------------------------------------
-
 ```
 ## Types
 ### type Service
