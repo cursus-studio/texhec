@@ -8,36 +8,18 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                               3             43             11            262
+Go                               3             43             15            282
 Markdown                         1              3              0             13
 -------------------------------------------------------------------------------
-SUM:                             4             46             11            275
+SUM:                             4             46             15            295
 -------------------------------------------------------------------------------
 ```
 ## Types
 ### type Service
 Type: `core/modules/generation.Service`
 
-#### method Service Generate
-Type: `func(core/modules/generation.Config) engine/modules/batcher.Task`
-adds to world all grids
-
-### type Config
-Type: `core/modules/generation.Config`
-
-#### property Config Entity
-Type: `engine/services/ecs.EntityID`
-
-#### property Config Seed
-Type: `engine/modules/seed.Seed`
-
-#### property Config Size
-Type: `engine/modules/grid.Coords`
-will be generated <0, n)
-
-## Functions
-### func NewConfig
-Type: `func(entity engine/services/ecs.EntityID, seed engine/modules/seed.Seed, size engine/modules/grid.Coords) core/modules/generation.Config`
+#### method Service Register
+Type: `func() error`
 
 
 ## Dependencies
@@ -49,25 +31,19 @@ Type: `func(entity engine/services/ecs.EntityID, seed engine/modules/seed.Seed, 
   - `core/game.Tile`
 
 `core/modules/generation`:
-  - `core/modules/generation.Config`
-  - `core/modules/generation.Entity`
-  - `core/modules/generation.Seed`
   - `core/modules/generation.Service`
-  - `core/modules/generation.Size`
-
-`core/modules/obstruction`:
-  - `core/modules/obstruction.Component`
-  - `core/modules/obstruction.Grid`
-  - `core/modules/obstruction.NewGrid`
-  - `core/modules/obstruction.Obstruction`
 
 `core/modules/tile`:
   - `core/modules/tile.Component`
+  - `core/modules/tile.Config`
+  - `core/modules/tile.Coords`
+  - `core/modules/tile.GetConfig`
   - `core/modules/tile.GetTile`
   - `core/modules/tile.GetTileSize`
   - `core/modules/tile.Grid`
   - `core/modules/tile.ID`
-  - `core/modules/tile.NewGrid`
+  - `core/modules/tile.MissingChunkEvent`
+  - `core/modules/tile.Seed`
 
 `engine/modules/batcher`:
   - `engine/modules/batcher.AddConcurrentBatch`
@@ -75,7 +51,7 @@ Type: `func(entity engine/services/ecs.EntityID, seed engine/modules/seed.Seed, 
   - `engine/modules/batcher.Build`
   - `engine/modules/batcher.NewBatch`
   - `engine/modules/batcher.NewTask`
-  - `engine/modules/batcher.Task`
+  - `engine/modules/batcher.Queue`
 
 `engine/modules/collider`:
   - `engine/modules/collider.Component`
@@ -86,17 +62,26 @@ Type: `func(entity engine/services/ecs.EntityID, seed engine/modules/seed.Seed, 
   - `engine/modules/entityregistry.Service`
 
 `engine/modules/grid`:
+  - `engine/modules/grid.AbsoluteCoords`
+  - `engine/modules/grid.Chunk`
+  - `engine/modules/grid.ChunkSize`
   - `engine/modules/grid.Coord`
   - `engine/modules/grid.Coords`
-  - `engine/modules/grid.GetCoords`
-  - `engine/modules/grid.GetIndex`
+  - `engine/modules/grid.CoordsIndex`
   - `engine/modules/grid.GetLastIndex`
   - `engine/modules/grid.GetTile`
   - `engine/modules/grid.Index`
+  - `engine/modules/grid.IndexCoords`
+  - `engine/modules/grid.NewChunk`
+  - `engine/modules/grid.NewChunkCoords`
   - `engine/modules/grid.NewCoords`
   - `engine/modules/grid.SetTile`
   - `engine/modules/grid.X`
   - `engine/modules/grid.Y`
+
+`engine/modules/groups`:
+  - `engine/modules/groups.Inherit`
+  - `engine/modules/groups.InheritGroupsComponent`
 
 `engine/modules/inputs`:
   - `engine/modules/inputs.Stack`
@@ -114,12 +99,11 @@ Type: `func(entity engine/services/ecs.EntityID, seed engine/modules/seed.Seed, 
   - `engine/modules/noise.NewNoise`
   - `engine/modules/noise.Read`
 
-`engine/modules/seed`:
-  - `engine/modules/seed.Seed`
-
 `engine/modules/transform`:
   - `engine/modules/transform.NewPivotPoint`
+  - `engine/modules/transform.NewPos`
   - `engine/modules/transform.PivotPoint`
+  - `engine/modules/transform.Pos`
   - `engine/modules/transform.Size`
 
 `engine/services/datastructures`:
@@ -133,7 +117,9 @@ Type: `func(entity engine/services/ecs.EntityID, seed engine/modules/seed.Seed, 
   - `engine/services/ecs.Get`
   - `engine/services/ecs.NewEntity`
   - `engine/services/ecs.Set`
+  - `engine/services/ecs.SystemRegister`
 
 ### Third Party
 - `github.com/go-gl/mathgl/mgl64`
+- `github.com/ogiusek/events`
 - `github.com/ogiusek/ioc/v2`

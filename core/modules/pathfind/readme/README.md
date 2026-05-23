@@ -8,9 +8,9 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                               6             97             94            523
+Go                               6             93             36            521
 -------------------------------------------------------------------------------
-SUM:                             6             97             94            523
+SUM:                             6             93             36            521
 -------------------------------------------------------------------------------
 ```
 ## Types
@@ -137,7 +137,6 @@ Type: `func(entity engine/services/ecs.EntityID) core/modules/pathfind.FindPathE
   - `core/modules/definitions.Assets`
   - `core/modules/definitions.Can`
   - `core/modules/definitions.Cannot`
-  - `core/modules/definitions.GameGroup`
   - `core/modules/definitions.Hud`
   - `core/modules/definitions.PathLayer`
   - `core/modules/definitions.SquareCollider`
@@ -179,6 +178,7 @@ Type: `func(entity engine/services/ecs.EntityID) core/modules/pathfind.FindPathE
   - `core/modules/tile.ErrInvalidPosition`
   - `core/modules/tile.ErrInvalidStep`
   - `core/modules/tile.ErrPositionAndSpeedIsRequiredToStep`
+  - `core/modules/tile.GetConfig`
   - `core/modules/tile.Layer`
   - `core/modules/tile.NewLayer`
   - `core/modules/tile.NewPos`
@@ -212,21 +212,20 @@ Type: `func(entity engine/services/ecs.EntityID) core/modules/pathfind.FindPathE
   - `engine/modules/entityregistry.Service`
 
 `engine/modules/grid`:
+  - `engine/modules/grid.Component`
   - `engine/modules/grid.Coord`
   - `engine/modules/grid.Coords`
-  - `engine/modules/grid.GetIndex`
+  - `engine/modules/grid.CoordsData`
   - `engine/modules/grid.GetTile`
   - `engine/modules/grid.Index`
+  - `engine/modules/grid.NewCoord`
   - `engine/modules/grid.NewCoords`
   - `engine/modules/grid.X`
   - `engine/modules/grid.Y`
 
 `engine/modules/groups`:
-  - `engine/modules/groups.Component`
-  - `engine/modules/groups.EmptyGroups`
-  - `engine/modules/groups.Enable`
-  - `engine/modules/groups.Ptr`
-  - `engine/modules/groups.Val`
+  - `engine/modules/groups.Inherit`
+  - `engine/modules/groups.InheritGroupsComponent`
 
 `engine/modules/inputs`:
   - `engine/modules/inputs.LeftClick`
@@ -243,12 +242,6 @@ Type: `func(entity engine/services/ecs.EntityID) core/modules/pathfind.FindPathE
 
 `engine/modules/typeregistry/pkg`:
   - `engine/modules/typeregistry/pkg.PkgT`
-
-`engine/services/datastructures`:
-  - `engine/services/datastructures.Get`
-  - `engine/services/datastructures.NewSparseArray`
-  - `engine/services/datastructures.Set`
-  - `engine/services/datastructures.SparseArray`
 
 `engine/services/ecs`:
   - `engine/services/ecs.ComponentsArray`

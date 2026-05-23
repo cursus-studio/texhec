@@ -3,8 +3,8 @@ package service
 import (
 	"core/modules/obstruction"
 	"core/modules/tile"
+	"engine/modules/grid"
 	"engine/services/ecs"
-	"errors"
 )
 
 func (s *service) Register() error {
@@ -12,21 +12,12 @@ func (s *service) Register() error {
 	s.Tile().Size().AddDirtySet(s.dirtyEntities)
 	s.Obstruction().Component().AddDirtySet(s.dirtyEntities)
 	s.Obstruction().Deployed().AddDirtySet(s.dirtyEntities)
-	s.Obstruction().Grid().BeforeGet(s.UpdateObstructionGridBeforeGet)
+	s.Obstruction().Grid().Chunk().BeforeGet(s.UpdateObstructionGridBeforeGet)
 	return nil
 }
 
 func (s *service) UpdateObstructionGridBeforeGet() {
 	if len(s.dirtyEntities.Get()) == 0 {
-		return
-	}
-	if len(s.Obstruction().Grid().GetEntities()) == 0 {
-		return
-	}
-	obstructionGridEntity := s.Obstruction().Grid().GetEntities()[0]
-	obstructionGrid, ok := s.Obstruction().Grid().Get(obstructionGridEntity)
-	if !ok {
-		s.Logger().Log(errors.New("didn't found obstruction grid"))
 		return
 	}
 
@@ -57,12 +48,13 @@ func (s *service) UpdateObstructionGridBeforeGet() {
 		obstructionComp, _ := s.obstructionGetter(components)
 		aabb := obstruction.NewAABB(pos, size)
 		for _, coords := range aabb.Tiles {
-			index, ok := obstructionGrid.GetIndex(coords.Coords())
+			data, ok := s.Obstruction().Grid().CoordsData(coords)
 			if !ok {
 				s.Logger().Log(tile.ErrInvalidPosition)
 				continue
 			}
-			obstructionGrid.SetTile(index, obstructionGrid.GetTile(index)&^obstructionComp.Obstruction)
+			data.Component.SetTile(data.Index, data.Component.GetTile(data.Index)&^obstructionComp.Obstruction)
+			s.Obstruction().Grid().Chunk().Set(data.Entity, data.Component)
 		}
 	}
 
@@ -79,26 +71,27 @@ entityLoop:
 		size, _ := s.Tile().Size().Get(entity)
 		obstructionComp, _ := s.Obstruction().Component().Get(entity)
 		aabb := obstruction.NewAABB(pos, size)
-		for _, coords := range aabb.Tiles {
-			index, ok := obstructionGrid.GetIndex(coords.Coords())
+		tilesData := make([]grid.CoordsData[obstruction.Obstruction], len(aabb.Tiles))
+		for i, coords := range aabb.Tiles {
+			data, ok := s.Obstruction().Grid().CoordsData(coords)
 			if !ok {
 				s.Logger().Log(tile.ErrInvalidPosition)
 				continue
 			}
-			if obstructionGrid.GetTile(index)&obstructionComp.Obstruction == 0 {
+			tilesData[i] = data
+			if data.Component.GetTile(data.Index)&obstructionComp.Obstruction == 0 {
 				continue
 			}
 			s.World().RemoveEntity(entity)
 			s.Logger().Log(obstruction.ErrPositionIsOccupied)
 			continue entityLoop
 		}
-		for _, coords := range aabb.Tiles {
-			// index, ok validation is performed in loop before
-			index, _ := obstructionGrid.GetIndex(coords.Coords())
-			obstructionGrid.SetTile(index, obstructionGrid.GetTile(index)^obstructionComp.Obstruction)
+		for i := range aabb.Tiles {
+			data := tilesData[i]
+			data.Component.SetTile(data.Index, data.Component.GetTile(data.Index)^obstructionComp.Obstruction)
+			s.Obstruction().Grid().Chunk().Set(data.Entity, data.Component)
 		}
 	}
 
 	s.recordingID = s.Record().Entity().StartBackwardsRecording(s.config)
-	s.Obstruction().Grid().Set(obstructionGridEntity, obstructionGrid)
 }

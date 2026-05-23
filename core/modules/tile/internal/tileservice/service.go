@@ -14,7 +14,7 @@ import (
 
 type service struct {
 	game.GameWorld   `inject:""`
-	TileGridService  grid.Service[tile.ID]     `inject:""`
+	TileGridService  grid.ServiceT[tile.ID]    `inject:""`
 	TileTypeRelation relation.Service[tile.ID] `inject:""`
 
 	ecs.SystemRegister
@@ -22,10 +22,11 @@ type service struct {
 
 	tile ecs.ComponentsArray[tile.Component]
 
-	pos   ecs.ComponentsArray[tile.PosComponent]
-	size  ecs.ComponentsArray[tile.SizeComponent]
-	rot   ecs.ComponentsArray[tile.RotComponent]
-	layer ecs.ComponentsArray[tile.LayerComponent]
+	pos    ecs.ComponentsArray[tile.PosComponent]
+	size   ecs.ComponentsArray[tile.SizeComponent]
+	rot    ecs.ComponentsArray[tile.RotComponent]
+	layer  ecs.ComponentsArray[tile.LayerComponent]
+	config ecs.ComponentsArray[tile.ConfigComponent]
 }
 
 func NewService(c ioc.Dic, system, renderer ecs.SystemRegister) tile.Service {
@@ -39,6 +40,7 @@ func NewService(c ioc.Dic, system, renderer ecs.SystemRegister) tile.Service {
 	s.size = ecs.GetComponentsArray[tile.SizeComponent](s.World())
 	s.rot = ecs.GetComponentsArray[tile.RotComponent](s.World())
 	s.layer = ecs.GetComponentsArray[tile.LayerComponent](s.World())
+	s.config = ecs.GetComponentsArray[tile.ConfigComponent](s.World())
 
 	s.size.SetEmpty(tile.NewSize(1, 1))
 	s.layer.SetEmpty(tile.NewLayer(definitions.TileLayer))
@@ -51,9 +53,7 @@ func (s *service) Renderer() ecs.SystemRegister { return s.renderer }
 func (s *service) Component() ecs.ComponentsArray[tile.Component] {
 	return s.tile
 }
-func (s *service) Grid() ecs.ComponentsArray[grid.SquareGridComponent[tile.ID]] {
-	return s.TileGridService.Component()
-}
+func (s *service) Grid() grid.ServiceT[tile.ID] { return s.TileGridService }
 func (s *service) GetTile(id tile.ID) (ecs.EntityID, bool) {
 	return s.TileTypeRelation.Get(id)
 }
@@ -62,6 +62,19 @@ func (s *service) Pos() ecs.ComponentsArray[tile.PosComponent]     { return s.po
 func (s *service) Size() ecs.ComponentsArray[tile.SizeComponent]   { return s.size }
 func (s *service) Rot() ecs.ComponentsArray[tile.RotComponent]     { return s.rot }
 func (s *service) Layer() ecs.ComponentsArray[tile.LayerComponent] { return s.layer }
+
+func (s *service) Config() ecs.ComponentsArray[tile.ConfigComponent] { return s.config }
+
+func (s *service) GetConfig() (ecs.EntityID, bool) {
+	configEntities := s.config.GetEntities()
+	if len(configEntities) == 0 {
+		return 0, false
+	}
+	if len(configEntities) > 1 {
+		s.Logger().Warn(tile.ErrExpectedOneConfiguration)
+	}
+	return configEntities[0], true
+}
 
 // NewBiomeAsset in other file
 

@@ -56,7 +56,10 @@ func (s *service) Deploy(
 	owner ecs.EntityID,
 	coords grid.Coords,
 ) (ecs.EntityID, error) {
-	events.Emit(s.Events(), ui.NewUnselect[ui.ObjectComponent]())
+	worldEntity, ok := s.Tile().GetConfig()
+	if !ok {
+		return 0, tile.ErrExpectedOneConfiguration
+	}
 	// check can place:
 
 	// - is position occuped
@@ -70,7 +73,7 @@ func (s *service) Deploy(
 
 	// place
 	deployed := s.Prototype().Clone(blueprint)
-	s.Hierarchy().SetParent(deployed, s.Scene().Scene())
+	s.Hierarchy().SetParent(deployed, worldEntity)
 
 	s.Player().Owner().Set(deployed, player.NewOwner(owner))
 	s.Obstruction().Deployed().Set(deployed, obstruction.NewDeployed())
@@ -83,6 +86,11 @@ func (s *service) Select(e deploy.SelectEvent) {
 	events.Emit(s.Events(), tile.NewSelectEvent(deploy.NewPreviewEvent(e.By, e.Blueprint)))
 }
 func (s *service) Preview(e deploy.PreviewEvent) {
+	worldEntity, ok := s.Tile().GetConfig()
+	if !ok {
+		return
+	}
+
 	pos := tile.NewPos(e.Coords.Coords())
 	blueprintObstruction, _ := s.Obstruction().Component().Get(e.Blueprint)
 	size, _ := s.Tile().Size().Get(e.Blueprint)
@@ -103,7 +111,7 @@ func (s *service) Preview(e deploy.PreviewEvent) {
 	events.Emit(s.Events(), ui.NewUnselect[ui.ActionComponent]())
 
 	placeholderEntity := s.Prototype().Clone(e.Blueprint)
-	s.Hierarchy().SetParent(placeholderEntity, s.Scene().Scene())
+	s.Hierarchy().SetParent(placeholderEntity, worldEntity)
 	s.Tile().Layer().Set(placeholderEntity, tile.NewLayer(definitions.ObjectPlaceholderLayer))
 	s.Tile().Pos().Set(placeholderEntity, pos)
 	s.Ui().Actions().Set(placeholderEntity, ui.ActionComponent{})
@@ -119,12 +127,12 @@ func (s *service) Preview(e deploy.PreviewEvent) {
 	// place indicator on occupied tiles
 	for _, collision := range previewComp.Collisions {
 		entity := s.Prototype().Clone(s.Definitions().Assets().Blank)
-		s.Hierarchy().SetParent(entity, s.Scene().Scene())
+		s.Hierarchy().SetParent(entity, worldEntity)
 
 		s.Tile().Layer().Set(entity, tile.NewLayer(definitions.TilePlaceholderLayer))
 		s.Render().Mesh().Set(entity, render.NewMesh(s.Definitions().Assets().SquareMesh))
 		s.Render().Texture().Set(entity, render.NewTexture(s.Definitions().Assets().Blank))
-		s.Groups().Component().Set(entity, groups.EmptyGroups().Ptr().Enable(definitions.GameGroup).Val())
+		s.Groups().Inherit().Set(entity, groups.InheritGroupsComponent{})
 
 		s.Tile().Layer().Set(entity, tile.NewLayer(definitions.TilePlaceholderLayer))
 		s.Tile().Pos().Set(entity, tile.NewPos(collision.Coords()))
@@ -134,6 +142,10 @@ func (s *service) Preview(e deploy.PreviewEvent) {
 	s.Render().Color().Set(placeholderEntity, render.NewColor(mgl32.Vec4{1, 0, 0, 1}))
 }
 func (s *service) Execute(e deploy.ExecuteEvent) {
+	worldEntity, ok := s.Tile().GetConfig()
+	if !ok {
+		return
+	}
 	events.Emit(s.Events(), ui.NewUnselect[ui.ObjectComponent]())
 
 	// pay
@@ -144,29 +156,16 @@ func (s *service) Execute(e deploy.ExecuteEvent) {
 	size, _ := s.Tile().Size().Get(e.Blueprint)
 	blueprintObstruction, _ := s.Obstruction().Component().Get(e.Blueprint)
 
-	obstructionGridEntity := s.Obstruction().Grid().GetEntities()[0]
-	obstructed, ok := s.Obstruction().Grid().Get(obstructionGridEntity)
-	if !ok {
+	aabb := obstruction.NewAABB(pos, size)
+	collisions := s.Obstruction().Collisions(aabb, blueprintObstruction.Obstruction)
+	if len(collisions) != 0 {
 		s.Logger().Log(obstruction.ErrPositionIsOccupied)
 		return
-	}
-	aabb := obstruction.NewAABB(pos, size)
-	for _, coords := range aabb.Tiles {
-		index, ok := obstructed.GetIndex(coords.Coords())
-		if !ok {
-			s.Logger().Log(obstruction.ErrPositionIsOccupied)
-			return
-		}
-		coordsObstruction := obstructed.GetTile(index)
-		if blueprintObstruction.Obstruction&coordsObstruction != 0 {
-			s.Logger().Log(obstruction.ErrPositionIsOccupied)
-			return
-		}
 	}
 
 	// place
 	deployed := s.Prototype().Clone(e.Blueprint)
-	s.Hierarchy().SetParent(deployed, s.Scene().Scene())
+	s.Hierarchy().SetParent(deployed, worldEntity)
 	if owner, ok := s.Player().Owner().Get(e.By); ok {
 		s.Player().Owner().Set(deployed, owner)
 	}

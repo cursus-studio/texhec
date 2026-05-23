@@ -59,7 +59,7 @@ func (s *service) CanStep(
 	obstructionComp obstruction.Component,
 	step pathfind.StepComponent,
 ) bool {
-	isValidStep := abs(step.X-pos.X)+abs(step.Y-pos.Y) == 1
+	isValidStep := abs(step.X-pos.X)+abs(step.Y-pos.Y) == abs(grid.Coord(1))
 	if !isValidStep {
 		return false
 	}

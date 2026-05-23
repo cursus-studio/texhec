@@ -6,7 +6,7 @@ defines how obstruction map is stored and accessed
 ```
 $ go test ./... -bench=.
 PASS
-ok  	core/modules/obstruction/test	0.004s
+ok  	core/modules/obstruction/test	0.005s
 ```
 ## Lines of code
 ```
@@ -14,9 +14,9 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                               6             55             12            332
+Go                               6             54             11            319
 -------------------------------------------------------------------------------
-SUM:                             6             55             12            332
+SUM:                             6             54             11            319
 -------------------------------------------------------------------------------
 ```
 ## Types
@@ -33,7 +33,7 @@ Type: `func() engine/services/ecs.ComponentsArray[core/modules/obstruction.Compo
 Type: `func() engine/services/ecs.ComponentsArray[core/modules/obstruction.DeployedComponent]`
 
 #### method Service Grid
-Type: `func() engine/services/ecs.ComponentsArray[engine/modules/grid.SquareGridComponent[core/modules/obstruction.Obstruction]]`
+Type: `func() engine/modules/grid.ServiceT[core/modules/obstruction.Obstruction]`
 
 #### method Service Register
 Type: `func() error`
@@ -72,9 +72,6 @@ adding and removing deployed component modifies obstruction component
 Type: `error`
 
 ## Functions
-### func NewGrid
-Type: `func(w engine/modules/grid.Coord, h engine/modules/grid.Coord) engine/modules/grid.SquareGridComponent[core/modules/obstruction.Obstruction]`
-
 ### func NewObstruction
 Type: `func(obstruction core/modules/obstruction.Obstruction) core/modules/obstruction.Component`
 
@@ -127,19 +124,19 @@ Type: `func() core/modules/obstruction.DeployedComponent`
   - `engine/modules/entityregistry.Service`
 
 `engine/modules/grid`:
+  - `engine/modules/grid.Chunk`
   - `engine/modules/grid.Component`
   - `engine/modules/grid.Coord`
   - `engine/modules/grid.Coords`
-  - `engine/modules/grid.GetIndex`
+  - `engine/modules/grid.CoordsData`
+  - `engine/modules/grid.Entity`
   - `engine/modules/grid.GetTile`
+  - `engine/modules/grid.Index`
   - `engine/modules/grid.NewCoords`
-  - `engine/modules/grid.NewSquareGrid`
-  - `engine/modules/grid.Service`
+  - `engine/modules/grid.ServiceT`
   - `engine/modules/grid.SetTile`
-  - `engine/modules/grid.SquareGridComponent`
 
 `engine/modules/grid/pkg`:
-  - `engine/modules/grid/pkg.NewConfig`
   - `engine/modules/grid/pkg.PkgT`
 
 `engine/modules/inputs`:

@@ -6,6 +6,8 @@ import (
 	"core/modules/generation/internal"
 	"engine/modules/entityregistry"
 	"engine/services/ecs"
+	"math/bits"
+	"runtime"
 	"strconv"
 
 	"github.com/ogiusek/ioc/v2"
@@ -13,7 +15,11 @@ import (
 
 var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 	ioc.Register(b, func(c ioc.Dic) *internal.Config {
-		return internal.NewConfig()
+		world := ioc.Get[game.GameWorld](c)
+		s := int(world.Grid().ChunkSize())
+		s /= runtime.NumCPU()
+		s = 1 << max(bits.Len(uint(s))-1, 1)
+		return internal.NewConfig(s)
 	})
 	ioc.Register(b, func(c ioc.Dic) generation.Service {
 		return internal.NewService(c)

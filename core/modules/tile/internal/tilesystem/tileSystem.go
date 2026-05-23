@@ -6,7 +6,6 @@ import (
 	"core/modules/ui"
 	"engine/modules/transform"
 	"engine/services/ecs"
-	"fmt"
 
 	"github.com/ogiusek/events"
 	"github.com/ogiusek/ioc/v2"
@@ -87,12 +86,11 @@ func (s *system) OnHover(e tile.HoverEvent) {
 	if s.selectedEvent == nil {
 		return
 	}
-	grid, ok := s.Tile().Grid().Get(e.Grid)
+	chunkCoords, ok := s.Grid().Coords().Get(e.Chunk)
 	if !ok {
-		s.Logger().Log(fmt.Errorf("grid doesn't exist"))
 		return
 	}
-	coords := grid.GetCoords(e.Tile)
+	coords := s.Grid().AbsoluteCoords(chunkCoords, e.Coords)
 	if event, ok := s.selectedEvent.HoverEvent.(tile.ApplyCoordsEvent); ok {
 		s.selectedEvent.HoverEvent = event.ApplyCoords(coords)
 	}

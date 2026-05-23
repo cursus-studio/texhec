@@ -3,11 +3,11 @@ package internal
 import (
 	"core/game"
 	"core/modules/generation"
-	"core/modules/obstruction"
 	"core/modules/tile"
 	"engine/modules/batcher"
 	"engine/modules/collider"
 	"engine/modules/grid"
+	"engine/modules/groups"
 	"engine/modules/inputs"
 	"engine/modules/metadata"
 	"engine/modules/noise"
@@ -18,6 +18,7 @@ import (
 	"slices"
 
 	"github.com/go-gl/mathgl/mgl64"
+	"github.com/ogiusek/events"
 	"github.com/ogiusek/ioc/v2"
 )
 
@@ -31,9 +32,9 @@ type Config struct {
 	tilesPerJob int
 }
 
-func NewConfig() *Config {
+func NewConfig(tilesPerJob int) *Config {
 	return &Config{
-		tilesPerJob: 100,
+		tilesPerJob: tilesPerJob,
 	}
 }
 
@@ -56,6 +57,11 @@ func NewService(c ioc.Dic) generation.Service {
 
 func MapRange(val, min, max float64) float64 { return min + (val * (max - min)) }
 
+func (s *service) Register() error {
+	events.Listen(s.EventsBuilder(), s.GenerateOn)
+	return nil
+}
+
 func (s *service) Chances() (*Config, []tile.ID) {
 	config := ioc.Get[*Config](s.C)
 	types := []tile.ID{}
@@ -71,14 +77,27 @@ func (s *service) Chances() (*Config, []tile.ID) {
 	return config, types
 }
 
-func (s *service) Generate(c generation.Config) batcher.Task {
+func (s *service) GenerateOn(event tile.MissingChunkEvent) {
+	// this shouldn't override parrent component instead create additional child
+	// this isn't a comment to purposfully throw error
+	worldGenerationEntity, ok := s.Tile().GetConfig()
+	if !ok {
+		return
+	}
+	if _, ok := s.Tile().Grid().Chunk().Get(worldGenerationEntity); ok {
+		return
+	}
+	c, ok := s.Tile().Config().Get(worldGenerationEntity)
+	if !ok {
+		return
+	}
 	config, tileTypes := s.Chances()
-	gridStateComponent := tile.NewGrid(c.Size.Coords())
-	gridModifiedComponent := tile.NewGrid(c.Size.Coords())
+	gridStateComponent := s.Tile().Grid().NewChunk()
+	gridModifiedComponent := s.Tile().Grid().NewChunk()
 
-	obstructGridComponent := obstruction.NewGrid(c.Size.Coords())
+	obstructGridComponent := s.Obstruction().Grid().NewChunk()
 
-	jobs := int(gridStateComponent.GetLastIndex()) / config.tilesPerJob
+	jobs := int(s.Grid().GetLastIndex()) / config.tilesPerJob
 
 	// apply batch
 	applyBatch := batcher.NewBatch(jobs, func(i int) {
@@ -115,7 +134,7 @@ func (s *service) Generate(c generation.Config) batcher.Task {
 	generateBatch := batcher.NewBatch(jobs, func(i int) {
 		for j := range config.tilesPerJob {
 			gridI := grid.Index(i*config.tilesPerJob + j)
-			coords := gridModifiedComponent.GetCoords(gridI)
+			coords := s.Grid().AbsoluteCoords(event.Coords, s.Grid().IndexCoords(gridI))
 			value := noise.Read(mgl64.Vec2{float64(coords.X), float64(coords.Y)})
 			value *= float64(len(tileTypes))
 			value = min(value, float64(len(tileTypes)-1))
@@ -141,11 +160,11 @@ func (s *service) Generate(c generation.Config) batcher.Task {
 	smoothingBatch := batcher.NewBatch(jobs, func(i int) {
 		for j := range config.tilesPerJob {
 			gridI := grid.Index(i*config.tilesPerJob + j)
-			coords := gridStateComponent.GetCoords(gridI)
+			coords := s.Grid().IndexCoords(gridI)
 			counts := datastructures.NewSparseArray[tile.ID, int]()
 			for _, neighbour := range neighbours {
 				coords := grid.NewCoords(coords.X+neighbour.X, coords.Y+neighbour.Y)
-				index, ok := gridStateComponent.GetIndex(coords.Coords())
+				index, ok := s.Grid().CoordsIndex(coords)
 				if !ok {
 					continue
 				}
@@ -191,23 +210,33 @@ func (s *service) Generate(c generation.Config) batcher.Task {
 
 	// flush batch
 	flushBatch := batcher.NewBatch(1, func(i int) {
+		chunkEntity := s.World().NewEntity()
+
+		s.Hierarchy().SetParent(chunkEntity, worldGenerationEntity)
+		s.Groups().Inherit().Set(chunkEntity, groups.InheritGroupsComponent{})
 		size := s.Tile().GetTileSize()
-		size.Size[0] *= float32(c.Size.X)
-		size.Size[1] *= float32(c.Size.Y)
+		size.Size[0] *= float32(s.Grid().ChunkSize())
+		size.Size[1] *= float32(s.Grid().ChunkSize())
 
-		s.Transform().Size().Set(c.Entity, size)
-		s.Transform().PivotPoint().Set(c.Entity, transform.NewPivotPoint(0, 0, .5))
+		s.Transform().Pos().Set(chunkEntity, transform.NewPos(
+			float32(event.Coords.X)*size.Size[0],
+			float32(event.Coords.Y)*size.Size[1],
+			0,
+		))
+		s.Transform().Size().Set(chunkEntity, size)
+		s.Transform().PivotPoint().Set(chunkEntity, transform.NewPivotPoint(0, 0, .5))
 
-		s.Collider().Component().Set(c.Entity, collider.NewCollider(s.Definitions().Assets().SquareCollider))
-		s.Inputs().Stack().Set(c.Entity, inputs.StackComponent{})
-		s.Tile().Grid().Set(c.Entity, gridStateComponent)
-		s.Obstruction().Grid().Set(c.Entity, obstructGridComponent)
+		s.Collider().Component().Set(chunkEntity, collider.NewCollider(s.Definitions().Assets().SquareCollider))
+		s.Inputs().Stack().Set(chunkEntity, inputs.StackComponent{})
+		s.Grid().Coords().Set(chunkEntity, grid.NewChunkCoords(event.Coords.X, event.Coords.Y))
+		s.Tile().Grid().Chunk().Set(chunkEntity, gridStateComponent)
+		s.Obstruction().Grid().Chunk().Set(chunkEntity, obstructGridComponent)
 
 		playerEntity := s.World().NewEntity()
-		s.Hierarchy().SetParent(playerEntity, c.Entity)
+		s.Hierarchy().SetParent(playerEntity, worldGenerationEntity)
 		s.Metadata().Name().Set(playerEntity, metadata.NewName("john"))
 		player2Entity := s.World().NewEntity()
-		s.Hierarchy().SetParent(player2Entity, c.Entity)
+		s.Hierarchy().SetParent(player2Entity, worldGenerationEntity)
 		s.Metadata().Name().Set(player2Entity, metadata.NewName("anna"))
 
 		// generates objects
@@ -219,14 +248,18 @@ func (s *service) Generate(c generation.Config) batcher.Task {
 			{s.Definitions().Objects().Farm, playerEntity},
 			{s.Definitions().Objects().Tank, player2Entity},
 		}
-		for index := grid.Index(1); index < gridStateComponent.GetLastIndex(); index++ {
-			if len(toDeploy) == 0 {
-				break
-			}
-			coords := gridStateComponent.GetCoords(index)
-			deployed := toDeploy[0]
-			if _, err := s.Deploy().Deploy(deployed.Blueprint, deployed.Player, coords); err == nil {
-				toDeploy = toDeploy[1:]
+	loop:
+		for y := range s.Grid().ChunkSize() {
+			for x := range s.Grid().ChunkSize() {
+				coords := grid.NewCoords(x, y)
+				coords = s.Grid().AbsoluteCoords(event.Coords, coords)
+				deployed := toDeploy[0]
+				if _, err := s.Deploy().Deploy(deployed.Blueprint, deployed.Player, coords); err == nil {
+					toDeploy = toDeploy[1:]
+				}
+				if len(toDeploy) == 0 {
+					break loop
+				}
 			}
 		}
 	})
@@ -243,5 +276,5 @@ func (s *service) Generate(c generation.Config) batcher.Task {
 	task.AddConcurrentBatch(obstructBatch)
 	task.AddOrderedBatch(flushBatch)
 
-	return task.Build()
+	s.Batcher().Queue(task.Build())
 }

@@ -86,6 +86,7 @@ func main() {
 		world.Transition(),
 		temporaryInlineSystems,
 
+		world.Generation(),
 		world.Tile(),
 		world.Obstruction(),
 		world.Pathfind(),
@@ -93,7 +94,7 @@ func main() {
 		// ui update
 		world.Ui(),
 		world.Settings(),
-		world.Loading(),
+		// world.Loading(),
 		world.Batcher(),
 		// } (update)
 
