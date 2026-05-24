@@ -6,9 +6,11 @@ import (
 	_ "embed"
 	"engine/modules/assets"
 	"engine/modules/graphics"
+	"engine/modules/grid"
 	"engine/modules/render"
 	"engine/services/datastructures"
 	"engine/services/ecs"
+	"errors"
 	"fmt"
 	"image"
 	"math"
@@ -17,6 +19,7 @@ import (
 	"github.com/go-gl/mathgl/mgl32"
 	"github.com/ogiusek/events"
 	"github.com/ogiusek/ioc/v2"
+	"golang.org/x/exp/constraints"
 )
 
 //go:embed shader.vert
@@ -43,12 +46,10 @@ func (b *Batch) Release() {
 //
 
 type locations struct {
-	Mvp    int32 `uniform:"mvp"`    // mat4
-	Width  int32 `uniform:"width"`  // uint
-	Height int32 `uniform:"height"` // uint
+	Mvp  int32 `uniform:"mvp"`  // mat4
+	Size int32 `uniform:"size"` // uint
 	// widthInv and heightInv is 2/width and 2/height
-	WidthInv  int32 `uniform:"widthInv"`  // float
-	HeightInv int32 `uniform:"heightInv"` // float
+	SizeInv int32 `uniform:"sizeInv"` // float
 }
 
 type system struct {
@@ -121,7 +122,7 @@ func NewSystem(c ioc.Dic) error {
 	s.Tile().Component().AddDirtySet(s.tilesDirtySet)
 
 	s.gridDirtySet = ecs.NewDirtySet()
-	s.Tile().Grid().AddDirtySet(s.gridDirtySet)
+	s.Tile().Grid().Chunk().AddDirtySet(s.gridDirtySet)
 
 	s.batches = datastructures.NewSparseArray[ecs.EntityID, Batch]()
 
@@ -129,8 +130,134 @@ func NewSystem(c ioc.Dic) error {
 	return nil
 }
 
+// padding neighbor
+
+type Neighbor struct {
+	ChunkCoords grid.Coords
+}
+
+func NewNeighbor[Number constraints.Integer](x, y Number) Neighbor {
+	return Neighbor{grid.NewCoords(grid.NewCoord(x), grid.NewCoord(y))}
+}
+
+// returns required (padding indices and grid indices) on grid with padding
+// these can be taken to paste values from neighbor chunks to current chunks
+// (padding is of size 1 around whole grid so new grid size is n+2)
+func (n *Neighbor) GetIndices(size int) (gridIndices, paddingIndices []int) {
+	s := size + 2
+	dx, dy := n.ChunkCoords.X, n.ChunkCoords.Y
+	xLen, yLen := size, size
+	if dx != 0 {
+		xLen = 1
+	}
+	if dy != 0 {
+		yLen = 1
+	}
+	gridIndices = make([]int, xLen*yLen)
+	paddingIndices = make([]int, xLen*yLen)
+
+	idx := 0
+	for i := range yLen {
+		var gY, pY int
+		switch dy {
+		case grid.NewCoord(-1):
+			gY, pY = size, 0
+		case 0:
+			gY, pY = i+1, i+1
+		case 1:
+			gY, pY = 1, size+1
+		}
+
+		for j := range xLen {
+			var gX, pX int
+			switch dx {
+			case grid.NewCoord(-1):
+				gX, pX = size, 0
+			case 0:
+				gX, pX = j+1, j+1
+			case 1:
+				gX, pX = 1, size+1
+			}
+
+			gridIndices[idx] = gY*s + gX
+			paddingIndices[idx] = pY*s + pX
+			idx++
+		}
+	}
+	return gridIndices, paddingIndices
+}
+
+var Neighbors = []Neighbor{
+	NewNeighbor(-1, -1),
+	NewNeighbor(0, -1),
+	NewNeighbor(1, -1),
+	NewNeighbor(-1, 0),
+	NewNeighbor(1, 0),
+	NewNeighbor(-1, 1),
+	NewNeighbor(0, 1),
+	NewNeighbor(1, 1),
+}
+
+func getLastID(s *system) int {
+	size := s.Grid().ChunkSize() + 2
+	return int(size * size)
+}
+func getIndexOnPadding[Num constraints.Integer](s *system, i Num) Num {
+	size := Num(s.Grid().ChunkSize())
+	return i + size + 3 + (i/(size))*2
+}
+func (s *system) applyPadding(
+	chunkCoords grid.ChunkCoordsComponent,
+	batch Batch,
+) {
+	// get neighbor to copy from and neighbor to copy to
+	for _, neighbor := range Neighbors {
+		neighborCoords := grid.NewChunkCoords(
+			chunkCoords.X+neighbor.ChunkCoords.X,
+			chunkCoords.Y+neighbor.ChunkCoords.Y,
+		)
+		neighborEntity, ok := s.Grid().GetChunk(neighborCoords)
+		if !ok {
+			continue
+		}
+		neighborBatch, ok := s.batches.Get(neighborEntity)
+		if !ok {
+			continue
+		}
+		// apply padding on current chunk
+		gridIndices, paddingIndices := neighbor.GetIndices(int(s.Grid().ChunkSize()))
+		for i, gridIndex := range gridIndices {
+			paddingIndex := paddingIndices[i]
+			val := neighborBatch.buffer.Get()[gridIndex]
+			batch.buffer.Set(paddingIndex, val)
+		}
+	}
+	for _, neighbor := range Neighbors {
+		neighborCoords := grid.NewChunkCoords(
+			chunkCoords.X-neighbor.ChunkCoords.X,
+			chunkCoords.Y-neighbor.ChunkCoords.Y,
+		)
+		neighborEntity, ok := s.Grid().GetChunk(neighborCoords)
+		if !ok {
+			continue
+		}
+		neighborBatch, ok := s.batches.Get(neighborEntity)
+		if !ok {
+			continue
+		}
+		// apply padding on neighbor chunk
+		gridIndices, paddingIndices := neighbor.GetIndices(int(s.Grid().ChunkSize()))
+		for i, gridIndex := range gridIndices {
+			paddingIndex := paddingIndices[i]
+			val := batch.buffer.Get()[gridIndex]
+			neighborBatch.buffer.Set(paddingIndex, val)
+		}
+		neighborBatch.buffer.Flush()
+	}
+}
+
 func (s *system) ListenRender(render render.RenderEvent) {
-	{ // rare reload. it reloads definitions, buffers, texture arrays (not optimal because currently its used once)
+	{ // reload bioms. it reloads definitions, buffers, texture arrays
 		dirtyTiles := s.tilesDirtySet.Get()
 		for _, entity := range dirtyTiles {
 			tileComp, ok := s.Tile().Component().Get(entity)
@@ -189,7 +316,7 @@ func (s *system) ListenRender(render render.RenderEvent) {
 			}
 
 			dirtySet := ecs.NewDirtySet()
-			s.Tile().Grid().AddDirtySet(dirtySet)
+			s.Tile().Grid().Chunk().AddDirtySet(dirtySet)
 
 			for _, t := range s.lodTextureArrays {
 				t.Release()
@@ -214,7 +341,8 @@ func (s *system) ListenRender(render render.RenderEvent) {
 	// reload per grid buffers
 	for _, entity := range s.gridDirtySet.Get() {
 		batch, batchOk := s.batches.Get(entity)
-		grid, compOk := s.Tile().Grid().Get(entity)
+		grid, compOk := s.Tile().Grid().Chunk().Get(entity)
+		chunkCoords, _ := s.Grid().Coords().Get(entity)
 
 		if !batchOk && !compOk {
 			continue
@@ -228,6 +356,8 @@ func (s *system) ListenRender(render render.RenderEvent) {
 			batch = Batch{
 				graphics.NewBuffer[int32](gl.SHADER_STORAGE_BUFFER, gl.DYNAMIC_DRAW, 0),
 			}
+			// set size buffer
+			batch.buffer.Set(getLastID(s), 0)
 			s.batches.Set(entity, batch)
 		}
 
@@ -240,8 +370,10 @@ func (s *system) ListenRender(render render.RenderEvent) {
 				continue
 			}
 			// #nosec G115
-			batch.buffer.Set(i, int32(id))
+			batch.buffer.Set(getIndexOnPadding(s, i), int32(id))
 		}
+		// apply paddings
+		s.applyPadding(chunkCoords, batch)
 		batch.buffer.Flush()
 	}
 
@@ -259,6 +391,10 @@ func (s *system) ListenRender(render render.RenderEvent) {
 	cameraGroups, _ := s.Groups().Component().Get(render.Camera)
 	cameraMatrix := s.Camera().Mat4(render.Camera)
 
+	size := s.Grid().ChunkSize()
+	gl.Uniform1ui(s.locations.Size, uint32(size))
+	gl.Uniform1f(s.locations.SizeInv, 2/float32(size))
+
 	for _, entity := range s.batches.GetIndices() {
 		batch, ok := s.batches.Get(entity)
 		if !ok {
@@ -269,20 +405,14 @@ func (s *system) ListenRender(render render.RenderEvent) {
 		}
 		batch.buffer.Bind()
 
-		grid, _ := s.Tile().Grid().Get(entity)
-
-		// width or height won't be below 0
-		// #nosec G115
-		gl.Uniform1ui(s.locations.Width, uint32(grid.Width()))
-		// #nosec G115
-		gl.Uniform1ui(s.locations.Height, uint32(grid.Height()))
-		gl.Uniform1f(s.locations.WidthInv, 2/float32(grid.Width()))
-		gl.Uniform1f(s.locations.HeightInv, 2/float32(grid.Height()))
-
 		mvp := cameraMatrix.Mul4(s.Transform().Mat4(entity))
 		gl.UniformMatrix4fv(s.locations.Mvp, 1, false, &mvp[0])
 
-		verticesCount := (grid.Width() + 1) * (grid.Height() + 1)
+		verticesCount := (size + 1) * (size + 1)
+		if verticesCount > math.MaxInt32 {
+			s.Logger().Warn(errors.New("tiles have to many vertices"))
+			verticesCount = math.MaxInt32
+		}
 		gl.DrawArrays(gl.POINTS, 0, int32(verticesCount))
 	}
 }

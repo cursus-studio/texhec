@@ -7,7 +7,7 @@ to do not be visible for a camera despite being in its view
 ```
 $ go test ./... -bench=.
 PASS
-ok  	engine/modules/groups/test	0.006s
+ok  	engine/modules/groups/test	0.005s
 ```
 ## Lines of code
 ```
@@ -15,9 +15,9 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                               7             52              3            214
+Go                               7             52              3            215
 -------------------------------------------------------------------------------
-SUM:                             7             52              3            214
+SUM:                             7             52              3            215
 -------------------------------------------------------------------------------
 ```
 ## Types

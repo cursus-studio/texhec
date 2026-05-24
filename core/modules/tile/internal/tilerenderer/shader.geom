@@ -21,20 +21,18 @@ layout(std430, binding = 1) buffer TileTextures {
   vec2 tileTextures[]; // [index, amount]
 };
 
-uniform uint width;
-uniform uint height;
+uniform uint size;
 
 vec2 getCoord(int i) {
-  return vec2(         // this uses +1 because of dual grid system
-      i % (width + 1), // X: Coord(index) % g.width
-      i / (width + 1)  //  Y: Coord(index) / g.width
+  return vec2(        // this uses +1 because of dual grid system
+      i % (size + 1), // X: Coord(index % g.width)
+      i / (size + 1)  // Y: Coord(index >> g.width)
   );
 }
 
-int getIndex(
-    vec2 coord) { // this doesn't use +1 because tile map is still normal
-  coord = clamp(coord, vec2(0, 0), vec2(width - 1, height - 1));
-  return int(coord.x) + int(coord.y) * int(width);
+int getIndex(vec2 coord) {
+  coord = clamp(coord, vec2(0), vec2(size + 1));
+  return int(coord.x) + int(coord.y) * int(size + 2);
 }
 
 int getTile(vec2 coord) { return grid[getIndex(coord)]; }
@@ -74,9 +72,8 @@ void sort4(inout int a[4]) {
 }
 
 void setBiomes(int index, vec2 coord) {
-  int neighbours[4] = {
-      getTile(coord + vec2(-1, -1)), getTile(coord + vec2(0, -1)),
-      getTile(coord + vec2(-1, 0)), getTile(coord + vec2(0, 0))};
+  int neighbours[4] = {getTile(coord + vec2(0)), getTile(coord + vec2(1, 0)),
+                       getTile(coord + vec2(0, 1)), getTile(coord + vec2(1))};
   int biomes[4] = neighbours;
   sort4(biomes);
 
@@ -92,8 +89,7 @@ void setBiomes(int index, vec2 coord) {
 }
 
 uniform mat4 mvp;
-uniform float widthInv;  // = 2 / width
-uniform float heightInv; // = 2 / height
+uniform float sizeInv; // = 2 / size
 
 vec2 corners[4] =
     vec2[](vec2(-.5, -.5), vec2(-.5, 0.5), vec2(0.5, -.5), vec2(0.5, 0.5));
@@ -105,12 +101,16 @@ void main() {
   setBiomes(i, coord);
 
   for (int i = 0; i < 4; i++) {
-    vec4 pos = vec4(0, 0, 0, 1);
-    vec2 offset = vec2(coord.x + corners[i].x, coord.y + corners[i].y);
-    pos.x = widthInv * offset.x - 1;
-    pos.y = heightInv * offset.y - 1;
+    vec2 rawOffset = coord + corners[i];
+
+    vec2 offset = clamp(rawOffset, vec2(0.0), vec2(size));
+    vec2 uv = corners[i] + vec2(0.5);
+    uv += step(rawOffset, vec2(0.0)) * 0.5;
+    uv -= step(vec2(size), rawOffset) * 0.5;
+
+    vec4 pos = vec4(sizeInv * offset - vec2(1.0), 0.0, 1.0);
     gl_Position = mvp * pos;
-    gs_out.uv = corners[i] + vec2(.5, .5);
+    gs_out.uv = uv;
     EmitVertex();
   }
 

@@ -2,7 +2,6 @@ package clicksystem
 
 import (
 	"core/game"
-	"core/modules/definitions"
 	"core/modules/deploy"
 	"core/modules/pathfind"
 	"core/modules/tile"
@@ -111,7 +110,7 @@ func (s *system) SelectEntity(e ui.SelectEvent[ui.ObjectComponent]) {
 
 		s.Render().Mesh().Set(marker, render.NewMesh(s.Definitions().Assets().SquareMesh))
 		s.Render().Texture().Set(marker, render.NewTexture(s.Definitions().Hud().Selected))
-		s.Groups().Component().Set(marker, groups.EmptyGroups().Ptr().Enable(definitions.GameGroup).Val())
+		s.Groups().Inherit().Set(marker, groups.InheritGroupsComponent{})
 
 		s.Collider().Component().Set(marker, collider.NewCollider(s.Definitions().Assets().SquareCollider))
 

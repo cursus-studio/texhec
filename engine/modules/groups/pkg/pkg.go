@@ -11,6 +11,7 @@ import (
 var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 	pkgs := []ioc.Pkg{
 		typeregistrypkg.PkgT[groups.GroupsComponent],
+		typeregistrypkg.PkgT[groups.InheritGroupsComponent],
 	}
 	for _, pkg := range pkgs {
 		pkg(b)

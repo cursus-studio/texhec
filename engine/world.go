@@ -11,6 +11,7 @@ import (
 	"engine/modules/drag"
 	"engine/modules/entityregistry"
 	"engine/modules/graphics"
+	"engine/modules/grid"
 	"engine/modules/groups"
 	"engine/modules/hierarchy"
 	"engine/modules/inputs"
@@ -54,6 +55,7 @@ type EngineWorld struct {
 	Drag           ioc.Lazy[drag.Service]           `inject:""`
 	EntityRegistry ioc.Lazy[entityregistry.Service] `inject:""`
 	Graphics       ioc.Lazy[graphics.Service]       `inject:""`
+	Grid           ioc.Lazy[grid.Service]           `inject:""`
 	Groups         ioc.Lazy[groups.Service]         `inject:""`
 	Hierarchy      ioc.Lazy[hierarchy.Service]      `inject:""`
 	Inputs         ioc.Lazy[inputs.Service]         `inject:""`

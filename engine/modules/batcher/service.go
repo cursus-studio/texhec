@@ -30,6 +30,7 @@ type Service interface {
 	NewTask() TaskFactory
 
 	Queue(Task)
+	Tasks() []Task
 	// progress of first task in queue
 	// when there is no tasks in queue -1 is returned
 	Progress() float32

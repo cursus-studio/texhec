@@ -111,7 +111,7 @@ func getDic() ioc.Dic {
 				config.SetMaxPredictions(150)
 				record.AddToConfig[transform.PosComponent](config.RecordConfig())
 				record.AddToConfig[camera.OrthoComponent](config.RecordConfig())
-				record.AddToConfig[grid.SquareGridComponent[tile.ID]](config.RecordConfig())
+				record.AddToConfig[grid.ChunkComponent[tile.ID]](config.RecordConfig())
 				// netsyncpkg.AddComponent[transform.PosComponent](config)
 				// netsyncpkg.AddComponent[camera.OrthoComponent](config)
 				// netsyncpkg.AddComponent[definition.DefinitionLinkComponent](config)

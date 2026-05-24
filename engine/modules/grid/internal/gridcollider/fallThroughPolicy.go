@@ -33,20 +33,20 @@ func (ClickEvent[Tile]) SetTarget(target inputs.Target) inputs.EventTargetSetter
 
 type squareFallThroughPolicy[Tile grid.TileConstraint] struct {
 	engine.EngineWorld `inject:""`
-	Grid               grid.Service[Tile] `inject:""`
+	GridT              grid.ServiceT[Tile] `inject:""`
 
 	zero       Tile
-	hoverEvent func(ecs.EntityID, grid.Index) any
+	hoverEvent func(ecs.EntityID, grid.Coords) any
 }
 
 func NewColliderWithPolicy[Tile grid.TileConstraint](
 	c ioc.Dic,
-	hoverEvent func(ecs.EntityID, grid.Index) any,
+	hoverEvent func(ecs.EntityID, grid.Coords) any,
 ) collider.FallTroughPolicy {
 	s := ioc.GetServices[*squareFallThroughPolicy[Tile]](c)
 	s.hoverEvent = hoverEvent
 
-	s.Grid.Component().OnUpsert(s.OnUpsert)
+	s.GridT.Chunk().OnUpsert(s.OnUpsert)
 
 	events.Listen(s.EventsBuilder(), s.OnHover)
 
@@ -58,31 +58,23 @@ func (t *squareFallThroughPolicy[Tile]) OnUpsert(entity ecs.EntityID) {
 	t.Inputs().LeftClick().Set(entity, inputs.NewLeftClick(ClickEvent[Tile]{}))
 }
 
-func (t *squareFallThroughPolicy[Tile]) getIndex(
-	gridComponent grid.SquareGridComponent[Tile],
-	collision collider.ObjectRayCollision,
-) (grid.Index, bool) {
-	w := float32(gridComponent.Width())
-	h := float32(gridComponent.Height())
-
+func (t *squareFallThroughPolicy[Tile]) getCoords(collision collider.ObjectRayCollision) grid.Coords {
+	size := float32(t.Grid().ChunkSize())
 	point := collision.Hit.Point
-	x := grid.Coord(w * (1 + point.X()) / 2)
-	y := grid.Coord(h * (1 + point.Y()) / 2)
-
-	index, ok := gridComponent.GetIndex(x, y)
-	if !ok {
-		return 0, false
-	}
-	return index, true
+	return grid.NewCoords(
+		grid.Coord(size*(1+point.X())/2),
+		grid.Coord(size*(1+point.Y())/2),
+	)
 }
 
 func (t *squareFallThroughPolicy[Tile]) FallThrough(collision collider.ObjectRayCollision) bool {
-	gridComponent, ok := t.Grid.Component().Get(collision.Entity)
+	gridComponent, ok := t.GridT.Chunk().Get(collision.Entity)
 	if !ok {
 		return false
 	}
 
-	index, ok := t.getIndex(gridComponent, collision)
+	coords := t.getCoords(collision)
+	index, ok := t.Grid().CoordsIndex(coords)
 	if !ok {
 		return true
 	}
@@ -92,14 +84,7 @@ func (t *squareFallThroughPolicy[Tile]) FallThrough(collision collider.ObjectRay
 }
 
 func (t *squareFallThroughPolicy[Tile]) OnHover(e HoverEvent[Tile]) {
-	gridComponent, ok := t.Grid.Component().Get(e.Target.Entity)
-	if !ok {
-		return
-	}
-	index, ok := t.getIndex(gridComponent, e.Target.ObjectRayCollision)
-	if !ok {
-		return
-	}
-	event := t.hoverEvent(e.Target.Entity, index)
+	coords := t.getCoords(e.Target.ObjectRayCollision)
+	event := t.hoverEvent(e.Target.Entity, coords)
 	events.EmitAny(t.Events(), event)
 }

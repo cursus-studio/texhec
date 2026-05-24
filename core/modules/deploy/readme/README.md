@@ -8,9 +8,9 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                               3             48             24            225
+Go                               3             49             24            223
 -------------------------------------------------------------------------------
-SUM:                             3             48             24            225
+SUM:                             3             49             24            223
 -------------------------------------------------------------------------------
 ```
 ## Types
@@ -112,7 +112,6 @@ Type: `func(by engine/services/ecs.EntityID, blueprint engine/services/ecs.Entit
 `core/modules/definitions`:
   - `core/modules/definitions.Assets`
   - `core/modules/definitions.Blank`
-  - `core/modules/definitions.GameGroup`
   - `core/modules/definitions.ObjectPlaceholderLayer`
   - `core/modules/definitions.SquareMesh`
   - `core/modules/definitions.TilePlaceholderLayer`
@@ -135,17 +134,17 @@ Type: `func(by engine/services/ecs.EntityID, blueprint engine/services/ecs.Entit
   - `core/modules/obstruction.Component`
   - `core/modules/obstruction.Deployed`
   - `core/modules/obstruction.ErrPositionIsOccupied`
-  - `core/modules/obstruction.Grid`
   - `core/modules/obstruction.NewAABB`
   - `core/modules/obstruction.NewDeployed`
   - `core/modules/obstruction.Obstruction`
-  - `core/modules/obstruction.Tiles`
 
 `core/modules/player`:
   - `core/modules/player.NewOwner`
   - `core/modules/player.Owner`
 
 `core/modules/tile`:
+  - `core/modules/tile.ErrExpectedOneConfiguration`
+  - `core/modules/tile.GetConfig`
   - `core/modules/tile.Layer`
   - `core/modules/tile.NewClickEntityEvent`
   - `core/modules/tile.NewLayer`
@@ -162,15 +161,10 @@ Type: `func(by engine/services/ecs.EntityID, blueprint engine/services/ecs.Entit
 
 `engine/modules/grid`:
   - `engine/modules/grid.Coords`
-  - `engine/modules/grid.GetIndex`
-  - `engine/modules/grid.GetTile`
 
 `engine/modules/groups`:
-  - `engine/modules/groups.Component`
-  - `engine/modules/groups.EmptyGroups`
-  - `engine/modules/groups.Enable`
-  - `engine/modules/groups.Ptr`
-  - `engine/modules/groups.Val`
+  - `engine/modules/groups.Inherit`
+  - `engine/modules/groups.InheritGroupsComponent`
 
 `engine/modules/inputs`:
   - `engine/modules/inputs.KeepSelected`

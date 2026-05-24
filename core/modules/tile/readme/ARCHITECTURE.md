@@ -3,9 +3,6 @@ This module contains:
 - `.biome` extension
 - lazy mapping from tile `Pos`, `Size`, `Rot` to transform `Pos`, `Size`, `Rot`
 
-Current version stores the entire grid in a contiguous slice and in the future it'll store the world in chunks
-which will allow basic optimizations and the ability to store chunks on disk while loading the necessary into memory.
-
 ### Biome extension
 Integration with `entityregistry` allows us to define biome assets in a **single** `struct tag`.
 ```go

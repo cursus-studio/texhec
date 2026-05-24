@@ -2,7 +2,7 @@ package test
 
 import (
 	"core/game"
-	"core/modules/generation"
+	"core/modules/tile"
 	corepkg "core/pkg"
 	assetspkg "engine/modules/assets/pkg"
 	"engine/modules/camera"
@@ -30,7 +30,7 @@ type Tiles struct {
 	Mountain ecs.EntityID `path:"tiles/mountain.biome" tile:"" generate:"25"`
 }
 
-func benchmarkRenderingXTilesMap(b *testing.B, n int) {
+func BenchmarkRenderingChunk(b *testing.B) {
 	if gpu, err := ghw.GPU(); err != nil {
 		b.Error(err)
 		return
@@ -58,12 +58,18 @@ func benchmarkRenderingXTilesMap(b *testing.B, n int) {
 			ioc.Wrap(b, func(c ioc.Dic, b assetspkg.Config) { b.SetPath("../../../assets/") })
 		},
 	))
+	tilesInChunk := world.Grid().ChunkSize()
+	tilesInChunk *= tilesInChunk
+	fmt.Printf("tiles in chunk: %v\n", tilesInChunk)
 
 	events.GlobalErrHandler(world.EventsBuilder(), world.Logger().Log)
 
 	errs := ecs.RegisterSystems(
 		world.Render(),
+		world.Tile(),
+		world.Batcher(),
 		world.Tile().Renderer(),
+		world.Generation(),
 	)
 	for _, err := range errs {
 		world.Logger().Log(err)
@@ -73,28 +79,27 @@ func benchmarkRenderingXTilesMap(b *testing.B, n int) {
 	_, err := entityregistry.GetRegistry[Tiles](world.EntityRegistry())
 	world.Logger().Log(err)
 
-	gridEntity := world.World().NewEntity()
-
-	config := generation.NewConfig(gridEntity, seed.New(21377137), grid.NewCoords(n, n))
-	world.Generation().Generate(config).Perform()
-
+	n := float32(world.Grid().ChunkSize())
 	gameCamera := world.World().NewEntity()
 	ortho := camera.NewOrtho(-1000, +1000)
-	ortho.Zoom = 10. / float32(n)
+	ortho.Zoom = 10. / n
 	world.Camera().Ortho().Set(gameCamera, ortho)
 	tileSize := world.Tile().GetTileSize().Size
-	cameraPos := transform.NewPos(tileSize.X()*float32(n)/2, tileSize.Y()*float32(n)/2, 0)
+	cameraPos := transform.NewPos(tileSize.X()*n, tileSize.Y()*n, 0)
 	world.Transform().Pos().Set(gameCamera, cameraPos)
 
+	generationEntity := world.World().NewEntity()
+	world.Hierarchy().SetParent(generationEntity, gameCamera)
+	world.Tile().Config().Set(generationEntity, tile.NewConfig(seed.New(21377137)))
+
+	events.Emit(world.Events(), tile.NewMissingChunkEvent(grid.NewChunkCoords(0, 0)))
+	for _, task := range world.Batcher().Tasks() {
+		task.Perform()
+	}
 	events.Emit(world.Events(), loop.FrameEvent{})
 	b.ResetTimer()
-
 	for b.Loop() {
 		events.Emit(world.Events(), loop.FrameEvent{})
 	}
 	gl.Finish()
 }
-
-// const MAP_SIZE
-func BenchmarkRendering1MTilesMap(b *testing.B) { benchmarkRenderingXTilesMap(b, 1000) }
-func BenchmarkRendering4MTilesMap(b *testing.B) { benchmarkRenderingXTilesMap(b, 2000) }

@@ -15,7 +15,7 @@ import (
 
 type service struct {
 	game.GameWorld         `inject:""`
-	ObstructionGridService grid.Service[obstruction.Obstruction] `inject:""`
+	ObstructionGridService grid.ServiceT[obstruction.Obstruction] `inject:""`
 
 	obstruction ecs.ComponentsArray[obstruction.Component]
 	deployed    ecs.ComponentsArray[obstruction.DeployedComponent]
@@ -57,23 +57,19 @@ func (s *service) OnDeployUpsert(entity ecs.EntityID) {
 	s.Inputs().Stack().Set(entity, inputs.StackComponent{})
 }
 
-func (s *service) Grid() ecs.ComponentsArray[grid.SquareGridComponent[obstruction.Obstruction]] {
-	return s.ObstructionGridService.Component()
-}
+func (s *service) Grid() grid.ServiceT[obstruction.Obstruction]                 { return s.ObstructionGridService }
 func (s *service) Component() ecs.ComponentsArray[obstruction.Component]        { return s.obstruction }
 func (s *service) Deployed() ecs.ComponentsArray[obstruction.DeployedComponent] { return s.deployed }
 
 func (s *service) Collisions(aabb obstruction.AABB, obstruction obstruction.Obstruction) []grid.Coords {
 	var collisions []grid.Coords
-	obstructionGridEntity := s.Grid().GetEntities()[0]
-	obstructed, ok := s.Grid().Get(obstructionGridEntity)
-	if !ok {
-		collisions = append(collisions, aabb.Tiles...)
-		return collisions
-	}
 	for _, coords := range aabb.Tiles {
-		index, ok := obstructed.GetIndex(coords.Coords())
-		if !ok || obstruction&obstructed.GetTile(index) != 0 {
+		data, ok := s.Obstruction().Grid().CoordsData(coords)
+		if !ok {
+			collisions = append(collisions, coords)
+			continue
+		}
+		if obstruction&data.Component.GetTile(data.Index) != 0 {
 			collisions = append(collisions, coords)
 			continue
 		}

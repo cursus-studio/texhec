@@ -8,9 +8,9 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                               6             49              5            221
+Go                               6             49              5            223
 -------------------------------------------------------------------------------
-SUM:                             6             49              5            221
+SUM:                             6             49              5            223
 -------------------------------------------------------------------------------
 ```
 ## Types
@@ -30,6 +30,9 @@ Type: `func(engine/modules/batcher.Task)`
 
 #### method Service Register
 Type: `func() error`
+
+#### method Service Tasks
+Type: `func() []engine/modules/batcher.Task`
 
 ### type TaskFactory
 Type: `engine/modules/batcher.TaskFactory`

@@ -19,7 +19,7 @@ type Service struct {
 func NewService(
 	c ioc.Dic,
 	workers int,
-) *Service {
+) batcher.Service {
 	s := ioc.GetServices[*Service](c)
 	s.workers = workers
 	return s
@@ -31,6 +31,7 @@ func (s *Service) NewTask() batcher.TaskFactory {
 	return f
 }
 func (s *Service) Queue(task batcher.Task) { s.tasks = append(s.tasks, task) }
+func (s *Service) Tasks() []batcher.Task   { return s.tasks }
 func (s *Service) Progress() float32 {
 	if len(s.tasks) != 0 {
 		return s.tasks[0].Progress()

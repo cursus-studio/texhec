@@ -5,38 +5,90 @@ import (
 	"engine/modules/grid"
 	"engine/modules/grid/internal/gridcollider"
 	"engine/modules/grid/internal/service"
+	relationpkg "engine/modules/relation/pkg"
 	typeregistrypkg "engine/modules/typeregistry/pkg"
 	"engine/services/ecs"
 
 	"github.com/ogiusek/ioc/v2"
 )
 
-type config[Tile grid.TileConstraint] struct {
-	hoverEvent func(ecs.EntityID, grid.Index) any
+type config struct {
+	chunkSize grid.ChunkSize
 }
 
-func NewConfig[Tile grid.TileConstraint](
-	hoverEvent func(ecs.EntityID, grid.Index) any,
-) config[Tile] {
-	return config[Tile]{hoverEvent}
+func NewConfig() *config {
+	return &config{grid.NewChunkSize(5)}
+}
+func (c *config) SetChunkSize(s grid.ChunkSize) { c.chunkSize = s }
+
+//
+
+type configT[Tile grid.TileConstraint] struct {
+	hoverEvent func(ecs.EntityID, grid.Coords) any
 }
 
-func PkgT[Tile grid.TileConstraint](config config[Tile]) ioc.Pkg {
+func NewConfigT[Tile grid.TileConstraint]() *configT[Tile] {
+	return &configT[Tile]{nil}
+}
+func (c *configT[Tile]) SetHoverEvent(hoverEvent func(ecs.EntityID, grid.Coords) any) {
+	c.hoverEvent = hoverEvent
+}
+
+type Config interface {
+	SetChunkSize(grid.ChunkSize)
+}
+
+type ConfigT[Tile grid.TileConstraint] interface {
+	SetHoverEvent(func(ecs.EntityID, grid.Coords) any)
+}
+
+var Pkg = ioc.NewPkg(func(b ioc.Builder) {
+	pkgs := []ioc.Pkg{
+		relationpkg.MapRelationPkg(
+			func(w ecs.World) ecs.DirtySet {
+				set := ecs.NewDirtySet()
+				ecs.GetComponentsArray[grid.ChunkCoordsComponent](w).AddDirtySet(set)
+				return set
+			},
+			func(w ecs.World) func(entity ecs.EntityID) (indexType grid.ChunkCoordsComponent, ok bool) {
+				arr := ecs.GetComponentsArray[grid.ChunkCoordsComponent](w)
+				return func(entity ecs.EntityID) (indexType grid.ChunkCoordsComponent, ok bool) {
+					return arr.Get(entity)
+				}
+			},
+		),
+	}
+	for _, pkg := range pkgs {
+		pkg(b)
+	}
+	ioc.Register(b, func(c ioc.Dic) Config {
+		return NewConfig()
+	})
+	ioc.Register(b, func(c ioc.Dic) grid.Service {
+		return service.NewService(c, ioc.Get[Config](c).(*config).chunkSize)
+	})
+})
+
+func PkgT[Tile grid.TileConstraint]() ioc.Pkg {
 	return ioc.NewPkg(func(b ioc.Builder) {
 		pkgs := []ioc.Pkg{
-			typeregistrypkg.PkgT[grid.SquareGridComponent[Tile]],
+			typeregistrypkg.PkgT[grid.ChunkComponent[Tile]],
 		}
 		for _, pkg := range pkgs {
 			pkg(b)
 		}
-		ioc.Register(b, func(c ioc.Dic) grid.Service[Tile] {
-			return service.NewService[Tile](c)
+		ioc.Register(b, func(c ioc.Dic) ConfigT[Tile] {
+			return NewConfigT[Tile]()
+		})
+		ioc.Register(b, func(c ioc.Dic) grid.ServiceT[Tile] {
+			return service.NewServiceT[Tile](c)
 		})
 
-		if config.hoverEvent == nil {
-			return
-		}
 		ioc.Wrap(b, func(c ioc.Dic, collider collider.Service) {
+			config := ioc.Get[ConfigT[Tile]](c).(*configT[Tile])
+			if config.hoverEvent == nil {
+				return
+			}
 			policy := gridcollider.NewColliderWithPolicy[Tile](
 				c,
 				config.hoverEvent,

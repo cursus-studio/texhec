@@ -12,6 +12,7 @@ import (
 	dragpkg "engine/modules/drag/pkg"
 	entityregistrypkg "engine/modules/entityregistry/pkg"
 	graphicspkg "engine/modules/graphics/pkg"
+	gridpkg "engine/modules/grid/pkg"
 	groupspkg "engine/modules/groups/pkg"
 	hierarchypkg "engine/modules/hierarchy/pkg"
 	inputspkg "engine/modules/inputs/pkg"
@@ -51,6 +52,7 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 		dragpkg.Pkg,
 		entityregistrypkg.Pkg,
 		graphicspkg.Pkg,
+		gridpkg.Pkg,
 		groupspkg.Pkg,
 		hierarchypkg.Pkg,
 		inputspkg.Pkg,

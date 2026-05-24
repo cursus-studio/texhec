@@ -15,10 +15,6 @@ var (
 // mask of ways in which tile is obstructed
 type Obstruction uint8
 
-func NewGrid(w, h grid.Coord) grid.SquareGridComponent[Obstruction] {
-	return grid.NewSquareGrid[Obstruction](w, h)
-}
-
 // Defines how entity or tile obstruct
 // On obstruction collision new entity is removed and warning is logged
 type Component struct {
@@ -65,7 +61,7 @@ func NewDeployed() DeployedComponent {
 
 type Service interface {
 	ecs.SystemRegister
-	Grid() ecs.ComponentsArray[grid.SquareGridComponent[Obstruction]]
+	Grid() grid.ServiceT[Obstruction]
 	Component() ecs.ComponentsArray[Component]
 	Deployed() ecs.ComponentsArray[DeployedComponent]
 

@@ -2,6 +2,7 @@ package tile
 
 import (
 	"engine/modules/grid"
+	"engine/modules/seed"
 	"engine/modules/transform"
 	"engine/modules/transition"
 	"engine/services/ecs"
@@ -18,13 +19,10 @@ var (
 	ErrInvalidPosition                  error = errors.New("tile:position not found on the grid")
 	ErrInvalidStep                      error = errors.New("tile:invalid step")
 	ErrPositionAndSpeedIsRequiredToStep error = errors.New("tile:to step you need to have speed and position")
+	ErrExpectedOneConfiguration         error = errors.New("tile:expected one configuration")
 )
 
 type ID uint8
-
-func NewGrid(w, h grid.Coord) grid.SquareGridComponent[ID] {
-	return grid.NewSquareGrid[ID](w, h)
-}
 
 //
 
@@ -102,6 +100,8 @@ func (e *RotComponent) Quat() mgl32.Quat {
 	return mgl32.QuatRotate(e.Radians, mgl32.Vec3{0, 0, 1})
 }
 
+//
+
 type BiomeAsset interface {
 	Images() [15][]image.Image
 	Res() image.Rectangle
@@ -111,18 +111,43 @@ type BiomeAsset interface {
 
 //
 
+type ConfigComponent struct {
+	Seed seed.Seed
+}
+
+func NewConfig(seed seed.Seed) ConfigComponent {
+	return ConfigComponent{seed}
+}
+
+//
+
+type MissingChunkEvent struct{ Coords grid.ChunkCoordsComponent }
+type UnloadChunkEvent struct{ Coords grid.ChunkCoordsComponent }
+
+func NewMissingChunkEvent(coords grid.ChunkCoordsComponent) MissingChunkEvent {
+	return MissingChunkEvent{coords}
+}
+func NewUnloadChunkEvent(coords grid.ChunkCoordsComponent) UnloadChunkEvent {
+	return UnloadChunkEvent{coords}
+}
+
+//
+
 type Service interface {
 	ecs.SystemRegister
 	Renderer() ecs.SystemRegister
 
 	Component() ecs.ComponentsArray[Component]
-	Grid() ecs.ComponentsArray[grid.SquareGridComponent[ID]]
+	Grid() grid.ServiceT[ID]
 	GetTile(ID) (ecs.EntityID, bool)
 
 	Pos() ecs.ComponentsArray[PosComponent]
 	Size() ecs.ComponentsArray[SizeComponent]
 	Rot() ecs.ComponentsArray[RotComponent]
 	Layer() ecs.ComponentsArray[LayerComponent]
+	Config() ecs.ComponentsArray[ConfigComponent]
+
+	GetConfig() (ecs.EntityID, bool)
 
 	// src images should be:
 	// - 1111
@@ -156,11 +181,11 @@ func NewSelectEvent(hoverEvent any) SelectEvent { return SelectEvent{hoverEvent}
 //
 
 type HoverEvent struct {
-	Grid ecs.EntityID
-	Tile grid.Index
+	Chunk  ecs.EntityID
+	Coords grid.Coords
 }
 
-func NewHoverEvent(grid ecs.EntityID, tile grid.Index) any { return HoverEvent{grid, tile} }
+func NewHoverEvent(chunk ecs.EntityID, tile grid.Coords) any { return HoverEvent{chunk, tile} }
 
 //
 

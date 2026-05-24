@@ -14,6 +14,10 @@ import (
 )
 
 func (s *service) PreviewPath(e pathfind.PreviewPathEvent) {
+	worldEntity, ok := s.Tile().GetConfig()
+	if !ok {
+		return
+	}
 	events.Emit(s.Events(), ui.NewUnselect[ui.ActionComponent]())
 
 	from, ok := s.Tile().Pos().Get(e.Entity)
@@ -30,11 +34,11 @@ func (s *service) PreviewPath(e pathfind.PreviewPathEvent) {
 	destination := tile.NewPos(e.Coords.Coords())
 	if !ok {
 		entity := s.World().NewEntity()
-		s.Hierarchy().SetParent(entity, s.Scene().Scene())
+		s.Hierarchy().SetParent(entity, worldEntity)
 
 		s.Render().Mesh().Set(entity, render.NewMesh(s.Definitions().Assets().SquareMesh))
 		s.Render().Texture().Set(entity, render.NewTexture(s.Definitions().Hud().Cannot))
-		s.Groups().Component().Set(entity, groups.EmptyGroups().Ptr().Enable(definitions.GameGroup).Val())
+		s.Groups().Inherit().Set(entity, groups.InheritGroupsComponent{})
 
 		s.Collider().Component().Set(entity, collider.NewCollider(s.Definitions().Assets().SquareCollider))
 
@@ -45,11 +49,11 @@ func (s *service) PreviewPath(e pathfind.PreviewPathEvent) {
 		return
 	}
 	entity := s.World().NewEntity()
-	s.Hierarchy().SetParent(entity, s.Scene().Scene())
+	s.Hierarchy().SetParent(entity, worldEntity)
 
 	s.Render().Mesh().Set(entity, render.NewMesh(s.Definitions().Assets().SquareMesh))
 	s.Render().Texture().Set(entity, render.NewTexture(s.Definitions().Hud().Can))
-	s.Groups().Component().Set(entity, groups.EmptyGroups().Ptr().Enable(definitions.GameGroup).Val())
+	s.Groups().Inherit().Set(entity, groups.InheritGroupsComponent{})
 
 	s.Collider().Component().Set(entity, collider.NewCollider(s.Definitions().Assets().SquareCollider))
 	if destination.X == tile.Coord(e.Coords.X) && destination.Y == tile.Coord(e.Coords.Y) {
@@ -84,6 +88,10 @@ func (s *service) FindPath(e pathfind.FindPathEvent) {
 }
 
 func (s *service) OnObjectSelect(e ui.SelectEvent[ui.ObjectComponent]) {
+	worldEntity, ok := s.Tile().GetConfig()
+	if !ok {
+		return
+	}
 	for _, entity := range e.Entities {
 		target, ok := s.Target().Get(entity)
 		if !ok {
@@ -92,11 +100,11 @@ func (s *service) OnObjectSelect(e ui.SelectEvent[ui.ObjectComponent]) {
 		size, _ := s.Tile().Size().Get(entity)
 
 		marker := s.World().NewEntity()
-		s.Hierarchy().SetParent(marker, s.Scene().Scene())
+		s.Hierarchy().SetParent(marker, worldEntity)
 
 		s.Render().Mesh().Set(marker, render.NewMesh(s.Definitions().Assets().SquareMesh))
 		s.Render().Texture().Set(marker, render.NewTexture(s.Definitions().Hud().Target))
-		s.Groups().Component().Set(marker, groups.EmptyGroups().Ptr().Enable(definitions.GameGroup).Val())
+		s.Groups().Inherit().Set(marker, groups.InheritGroupsComponent{})
 
 		s.Tile().Layer().Set(marker, tile.NewLayer(definitions.PathLayer))
 		s.Tile().Pos().Set(marker, tile.NewPos(target.Coords.Coords()))
