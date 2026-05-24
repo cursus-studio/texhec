@@ -265,7 +265,6 @@ func (s *service) GenerateOn(event tile.MissingChunkEvent) {
 	})
 
 	// task
-
 	task := s.Batcher().NewTask()
 	task.AddConcurrentBatch(generateBatch)
 	task.AddConcurrentBatch(applyBatch)
