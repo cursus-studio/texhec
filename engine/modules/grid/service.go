@@ -1,4 +1,5 @@
 // defines generic slice based data structure to store grids
+// it implements unified chunk size
 package grid
 
 import (
