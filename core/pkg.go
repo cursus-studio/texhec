@@ -5,11 +5,14 @@ import (
 	"core/modules/definitions"
 	"core/modules/settings"
 	"core/modules/tile"
+	tilepkg "core/modules/tile/pkg"
 	corepkg "core/pkg"
 	"engine/modules/camera"
+	colliderpkg "engine/modules/collider/pkg"
 	"engine/modules/drag"
 	"engine/modules/graphics"
 	"engine/modules/grid"
+	gridpkg "engine/modules/grid/pkg"
 	"engine/modules/inputs"
 	"engine/modules/logger"
 	loggerpkg "engine/modules/logger/pkg"
@@ -127,6 +130,11 @@ func getDic() ioc.Dic {
 				// netsyncpkg.AddEventAuthorization(config, func(c inputs.DragEvent) error {
 				// 	return errors.New("no")
 				// })
+			})
+			ioc.Wrap(b, func(c ioc.Dic, config colliderpkg.Config) {
+				tileSize := ioc.Get[tilepkg.Config](c).GetTileSize()
+				chunkSize := float32(ioc.Get[gridpkg.Config](c).GetChunkSize().Val())
+				config.SetChunkSize(tileSize * chunkSize / 2)
 			})
 		},
 	}

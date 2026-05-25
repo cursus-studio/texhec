@@ -19,7 +19,13 @@ type config struct {
 func NewConfig() *config {
 	return &config{grid.NewChunkSize(5)}
 }
+func (c *config) GetChunkSize() grid.ChunkSize  { return c.chunkSize }
 func (c *config) SetChunkSize(s grid.ChunkSize) { c.chunkSize = s }
+
+type Config interface {
+	GetChunkSize() grid.ChunkSize
+	SetChunkSize(grid.ChunkSize)
+}
 
 //
 
@@ -30,15 +36,13 @@ type configT[Tile grid.TileConstraint] struct {
 func NewConfigT[Tile grid.TileConstraint]() *configT[Tile] {
 	return &configT[Tile]{nil}
 }
+func (c *configT[Tile]) GetHoverEvent() func(ecs.EntityID, grid.Coords) any { return c.hoverEvent }
 func (c *configT[Tile]) SetHoverEvent(hoverEvent func(ecs.EntityID, grid.Coords) any) {
 	c.hoverEvent = hoverEvent
 }
 
-type Config interface {
-	SetChunkSize(grid.ChunkSize)
-}
-
 type ConfigT[Tile grid.TileConstraint] interface {
+	GetHoverEvent() func(ecs.EntityID, grid.Coords) any
 	SetHoverEvent(func(ecs.EntityID, grid.Coords) any)
 }
 
@@ -65,7 +69,7 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 		return NewConfig()
 	})
 	ioc.Register(b, func(c ioc.Dic) grid.Service {
-		return service.NewService(c, ioc.Get[Config](c).(*config).chunkSize)
+		return service.NewService(c, ioc.Get[Config](c).GetChunkSize())
 	})
 })
 
@@ -85,13 +89,13 @@ func PkgT[Tile grid.TileConstraint]() ioc.Pkg {
 		})
 
 		ioc.Wrap(b, func(c ioc.Dic, collider collider.Service) {
-			config := ioc.Get[ConfigT[Tile]](c).(*configT[Tile])
-			if config.hoverEvent == nil {
+			config := ioc.Get[ConfigT[Tile]](c)
+			if config.GetHoverEvent() == nil {
 				return
 			}
 			policy := gridcollider.NewColliderWithPolicy[Tile](
 				c,
-				config.hoverEvent,
+				config.GetHoverEvent(),
 			)
 			collider.AddRayFallThroughPolicy(policy)
 		})

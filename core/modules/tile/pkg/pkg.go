@@ -30,6 +30,24 @@ import (
 	"github.com/ogiusek/ioc/v2"
 )
 
+type config struct {
+	tileSize float32
+}
+
+func NewConfig() Config {
+	return &config{
+		tileSize: 100,
+	}
+}
+
+func (c *config) GetTileSize() float32     { return c.tileSize }
+func (c *config) SetTileSize(size float32) { c.tileSize = size }
+
+type Config interface {
+	GetTileSize() float32
+	SetTileSize(float32)
+}
+
 var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 	pkgs := []ioc.Pkg{
 		gridpkg.PkgT[tile.ID](),
@@ -60,6 +78,9 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 		pkg(b)
 	}
 
+	ioc.Register(b, func(c ioc.Dic) Config {
+		return NewConfig()
+	})
 	ioc.Wrap(b, func(c ioc.Dic, config gridpkg.ConfigT[tile.ID]) {
 		config.SetHoverEvent(tile.NewHoverEvent)
 	})
@@ -97,6 +118,7 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 
 				return tilerenderer.NewSystem(c)
 			}),
+			ioc.Get[Config](c).GetTileSize(),
 		)
 	})
 
