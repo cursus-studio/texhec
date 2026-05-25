@@ -31,6 +31,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     pkg-config \
     curl \
     git \
+    # CI/CD shaders
+    clang-format \
+    glslang-tools \
     && rm -rf /var/lib/apt/lists/*
 
 RUN curl -sSL -o /usr/bin/cloc https://github.com/AlDanial/cloc/releases/download/v2.08/cloc-2.08.pl \

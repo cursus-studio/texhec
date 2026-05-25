@@ -9,6 +9,7 @@ import (
 	"log"
 	"os"
 	"os/exec"
+	"strings"
 
 	"github.com/ogiusek/ioc/v2"
 )
@@ -68,7 +69,26 @@ func NewService(c ioc.Dic) pipe.Service {
 	s := ioc.GetServices[*service](c)
 	s.hooksDirectory = ".git-hooks"
 
+	// pipeline
+	// shaders
+	shaders := []string{}
+	// golang
+	// docs
 	s.stages = []Stage{
+		NewStage("Loading Data", func(ctx StageCtx) error {
+			cmd := exec.Command(
+				"find", ".", "-type", "f", "-regextype", "posix-extended",
+				"-iregex", `.*\.(vert|frag|geom|comp|tesc|tese|glsl)`)
+			out, err := cmd.CombinedOutput()
+			if err != nil {
+				return err
+			}
+			s := string(out)
+			s = strings.Trim(s, " \n")
+			shaders = strings.Split(s, "\n")
+			return nil
+		}),
+		// pipeline
 		NewStage("Pipeline Security", func(ctx StageCtx) error {
 			cmd := exec.Command("trivy", "config", "--exit-code", "1", "--quiet", "--severity", "HIGH,CRITICAL", ".")
 			if output, err := cmd.CombinedOutput(); err != nil {
@@ -77,6 +97,25 @@ func NewService(c ioc.Dic) pipe.Service {
 			return nil
 		}),
 
+		// shaders
+		NewStage("Shaders Validation", func(ctx StageCtx) error {
+			// #nosec G204
+			cmd := exec.Command("glslangValidator", shaders...)
+			if output, err := cmd.CombinedOutput(); err != nil {
+				return fmt.Errorf("%s", string(output))
+			}
+			return nil
+		}),
+		NewStage("Shaders Lint", func(ctx StageCtx) error {
+			cmd := exec.Command("clang-format", "--dry-run", "--Werror")
+			cmd.Args = append(cmd.Args, shaders...)
+			if output, err := cmd.CombinedOutput(); err != nil {
+				return fmt.Errorf("%s", string(output))
+			}
+			return nil
+		}),
+
+		// golang
 		NewStage("Deps", func(ctx StageCtx) error {
 			for _, proj := range ctx.Projects {
 				fmt.Printf("  \"%v\"\n", proj)
@@ -107,7 +146,6 @@ func NewService(c ioc.Dic) pipe.Service {
 			}
 			return nil
 		}),
-
 		NewStage("Build", func(ctx StageCtx) error {
 			for _, proj := range ctx.Projects {
 				fmt.Printf("  \"%v\"\n", proj)
@@ -119,7 +157,6 @@ func NewService(c ioc.Dic) pipe.Service {
 			}
 			return nil
 		}),
-
 		NewStage("Lint", func(ctx StageCtx) error {
 			for _, proj := range ctx.ChangedProjects {
 				fmt.Printf("  \"%v\"\n", proj)
@@ -131,7 +168,6 @@ func NewService(c ioc.Dic) pipe.Service {
 			}
 			return nil
 		}),
-
 		NewStage("Security", func(ctx StageCtx) error {
 			for _, proj := range ctx.Projects {
 				fmt.Printf("  \"%v\"\n", proj)
@@ -143,7 +179,6 @@ func NewService(c ioc.Dic) pipe.Service {
 			}
 			return nil
 		}),
-
 		NewStage("Test", func(ctx StageCtx) error {
 			for _, proj := range ctx.Projects {
 				fmt.Printf("  \"%v\"\n", proj)
@@ -156,6 +191,7 @@ func NewService(c ioc.Dic) pipe.Service {
 			return nil
 		}),
 
+		// docs
 		NewStage("Docs Genaration", func(ctx StageCtx) error {
 			for _, module := range ctx.ChangedModules {
 				fmt.Printf("  checking \"%v\" module\n", module)
@@ -191,7 +227,6 @@ func NewService(c ioc.Dic) pipe.Service {
 			}
 			return nil
 		}),
-
 		NewStage("Docs Lint", func(ctx StageCtx) error {
 			cmd := exec.Command("lychee", "--root-dir", ".", "**/*.md")
 			if output, err := cmd.CombinedOutput(); err != nil {
