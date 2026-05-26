@@ -73,6 +73,7 @@ func (t *TODO) String() string {
 
 	res := &strings.Builder{}
 	res.WriteString("# TODO\n")
+	res.WriteString("This list contains a list of tasks to keep in mind. Often architectural changes to revise and either implement it or omit it entirely\n")
 
 	for _, proj := range t.Projects {
 		fmt.Fprintf(res, "## [%s](/%s/readme/README.md)\n", proj.Name, proj.Name)

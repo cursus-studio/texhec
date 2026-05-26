@@ -1,4 +1,5 @@
 # TODO
+This list contains a list of tasks to keep in mind. Often architectural changes to revise and either implement it or omit it entirely
 ## [cicd](/cicd/readme/README.md)
 Ensure script wraps itself in `Dockerfile` if it runs on local machine
 - ### [docs](/cicd/modules/docs/readme/README.md)
