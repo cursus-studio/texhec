@@ -30,9 +30,14 @@ type Config struct {
 
 type Service interface {
 	// Generates module documentation in `$modulePath/readme/README.md`
-	GenerateModuleDocs(modulePath string) error
-	DiffModuleDocs(modulePath string) error
+	GenerateModule(modulePath string) error
+	DiffModule(modulePath string) error
 
-	GenerateProjectDocs(projectPath string) error
-	DiffProjectDocs(projectPath string) error
+	GenerateProject(projectPath string) error
+	DiffProject(projectPath string) error
+
+	// reads TODO.md in all modules
+	// generates readme/TODO.md
+	GenerateTODO() error
+	DiffTODO() error
 }

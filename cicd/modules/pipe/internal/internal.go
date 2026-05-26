@@ -195,21 +195,25 @@ func NewService(c ioc.Dic) pipe.Service {
 		NewStage("Docs Genaration", func(ctx StageCtx) error {
 			for _, module := range ctx.ChangedModules {
 				fmt.Printf("  checking \"%v\" module\n", module)
-				if err := s.Docs().DiffModuleDocs(module); err != nil {
+				if err := s.Docs().DiffModule(module); err != nil {
 					return err
 				}
 			}
 			for _, proj := range ctx.ChangedProjects {
 				fmt.Printf("  checking \"%v\" project\n", proj)
-				if err := s.Docs().DiffProjectDocs(proj); err != nil {
+				if err := s.Docs().DiffProject(proj); err != nil {
 					return err
 				}
 			}
+			if err := s.Docs().DiffTODO(); err != nil {
+				return err
+			}
+			_ = s.Git().Stage("/readme/TODO.md")
 			return nil
 		}).SetFix(func(ctx StageCtx) error {
 			for _, module := range ctx.ChangedModules {
 				fmt.Printf("  generating \"%v\" module\n", module)
-				if err := s.Docs().GenerateModuleDocs(module); err != nil {
+				if err := s.Docs().GenerateModule(module); err != nil {
 					return err
 				}
 				// if we cannot stage readme we do not stage it.
@@ -218,12 +222,15 @@ func NewService(c ioc.Dic) pipe.Service {
 			}
 			for _, proj := range ctx.ChangedProjects {
 				fmt.Printf("  generating \"%v\" project\n", proj)
-				if err := s.Docs().GenerateProjectDocs(proj); err != nil {
+				if err := s.Docs().GenerateProject(proj); err != nil {
 					return err
 				}
 				// if we cannot stage readme we do not stage it.
 				// if error is returned it means that we just generated additional readme.
 				_ = s.Git().Stage(fmt.Sprintf("%v/readme/README.md", proj))
+			}
+			if err := s.Docs().GenerateTODO(); err != nil {
+				return err
 			}
 			return nil
 		}),

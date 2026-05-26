@@ -17,10 +17,16 @@ github.com/AlDanial/cloc
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
 Go                              13            200             39            955
+Markdown                         1              1              0              2
 -------------------------------------------------------------------------------
-SUM:                            13            200             39            955
+SUM:                            14            201             39            957
 -------------------------------------------------------------------------------
 ```
+## TODO
+Implement a proper input cursor and improve focusing and unfocusing on input
+
+abstract `CaptureKeyboardEvent` to `CaptureEvent` and move it to hierarchy module and use it for text input.
+
 ## Types
 ### type Service
 Type: `engine/modules/inputs.Service`

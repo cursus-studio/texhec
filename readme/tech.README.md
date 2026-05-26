@@ -186,6 +186,8 @@ We are not currently seeking external contributions.\
 However, we will review individual inquiries on a case-by-case basis.\
 While we remain selective at this stage, we are open to discussion.
 
+### [TODO](/readme/TODO.md)
+
 ## License
 Copyright © 2026. All rights reserved.
 

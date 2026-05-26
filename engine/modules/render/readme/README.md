@@ -11,10 +11,14 @@ Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
 Go                              11            136             73            640
 GLSL                             2             15              0             42
+Markdown                         1              0              0              1
 -------------------------------------------------------------------------------
-SUM:                            13            151             73            682
+SUM:                            14            151             73            683
 -------------------------------------------------------------------------------
 ```
+## TODO
+Add frustrum culling. For each camera store all colliding objects.
+
 ## Types
 ### type Service
 Type: `engine/modules/render.Service`

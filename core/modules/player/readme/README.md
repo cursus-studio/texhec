@@ -9,10 +9,15 @@ github.com/AlDanial/cloc
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
 Go                               3             14              2             48
+Markdown                         1              0              0              2
 -------------------------------------------------------------------------------
-SUM:                             3             14              2             48
+SUM:                             4             14              2             50
 -------------------------------------------------------------------------------
 ```
+## TODO
+Restrict actions to allow only user to perform his actions.
+Perhaps attach `PlayerComponent` to camera.
+
 ## Types
 ### type Service
 Type: `core/modules/player.Service`

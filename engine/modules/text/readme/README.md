@@ -10,10 +10,15 @@ Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
 Go                              11            157             49            776
 GLSL                             3             20              4             57
+Markdown                         1              0              0              2
 -------------------------------------------------------------------------------
-SUM:                            14            177             53            833
+SUM:                            15            177             53            835
 -------------------------------------------------------------------------------
 ```
+## TODO
+1. Implement more letters and make them easier to expand.
+2. Write own letter rendering.
+
 ## Types
 ### type Service
 Type: `engine/modules/text.Service`
