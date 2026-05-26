@@ -232,6 +232,7 @@ func NewService(c ioc.Dic) pipe.Service {
 			if err := s.Docs().GenerateTODO(); err != nil {
 				return err
 			}
+			_ = s.Git().Stage("readme/TODO.md")
 			return nil
 		}),
 		NewStage("Docs Lint", func(ctx StageCtx) error {
