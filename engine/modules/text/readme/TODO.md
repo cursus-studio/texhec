@@ -1,2 +1,2 @@
-1. Implement more letters and make them easier to expand.
-2. Write own letter rendering.
+1. Implement more letters and make them easier to expand (emojis, hiragana, etc.).
+2. Write own glyph rendering (solves first issue).

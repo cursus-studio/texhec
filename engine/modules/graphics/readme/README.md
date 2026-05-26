@@ -15,7 +15,7 @@ SUM:                            18            188             60            834
 -------------------------------------------------------------------------------
 ```
 ## TODO
-Move to vulcan
+Check `vulcan` and `wasm` as opengl alternatives
 
 ## Types
 ### type Service
