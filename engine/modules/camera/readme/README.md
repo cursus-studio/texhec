@@ -19,7 +19,7 @@ SUM:                            12            171             32            822
 -------------------------------------------------------------------------------
 ```
 ## TODO
-- clean up pkg
+clean up pkg and move logic to internal
 
 ## Types
 ### type Service

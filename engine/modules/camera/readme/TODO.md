@@ -1,1 +1,1 @@
-- clean up pkg
+clean up pkg and move logic to internal

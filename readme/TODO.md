@@ -27,11 +27,11 @@ Restrict actions to allow only user to perform his actions.
 Perhaps attach `PlayerComponent` to camera.
 ## [engine](/engine/readme/README.md)
 - ### [camera](/engine/modules/camera/readme/README.md)
-- clean up pkg
+clean up pkg and move logic to internal
 - ### [collider](/engine/modules/collider/readme/README.md)
 Implement `CollidesWithObject`
 - ### [graphics](/engine/modules/graphics/readme/README.md)
-Move to vulcan
+Check `vulcan` and `wasm` as opengl alternatives
 - ### [hierarchy](/engine/modules/hierarchy/readme/README.md)
 abstract `InheritGroups` to inherit allowing to inherit any component.
 Try to reduce calls during removal.
@@ -47,5 +47,5 @@ Avoid equasions for flattening and instead create 10k sample slice to create a b
 - ### [render](/engine/modules/render/readme/README.md)
 Add frustrum culling. For each camera store all colliding objects.
 - ### [text](/engine/modules/text/readme/README.md)
-1. Implement more letters and make them easier to expand.
-2. Write own letter rendering.
+1. Implement more letters and make them easier to expand (emojis, hiragana, etc.).
+2. Write own glyph rendering (solves first issue).
