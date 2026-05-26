@@ -29,9 +29,6 @@ Map scale preview:
 Challenge of this project is to create evolving foundation (`engine`) on which
 (`core`) can rely while its still changing.
 
-`grid` module were made to deliver pre-mature features.
-It stores whole map in a single slice where it should chunk the map.
-
 ## Lines of code
 ```
 github.com/AlDanial/cloc
@@ -39,10 +36,10 @@ github.com/AlDanial/cloc
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
 Go                              57            743            224           4133
-Markdown                        10             26              0            147
+Markdown                        10             25              0            145
 GLSL                             3             31              2            112
 -------------------------------------------------------------------------------
-SUM:                            70            800            226           4392
+SUM:                            70            799            226           4390
 -------------------------------------------------------------------------------
 ```
 ## Dependencies

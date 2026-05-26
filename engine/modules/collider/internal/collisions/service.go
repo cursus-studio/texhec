@@ -18,10 +18,10 @@ type service struct {
 	// shared
 	engine.EngineWorld `inject:""`
 
-	colliderArray ecs.ComponentsArray[collider.Component]
+	collider ecs.ComponentsArray[collider.Component]
 
 	// tracking
-	dirtySet          ecs.DirtySet
+	collidersDirtySet ecs.DirtySet
 	chunkSize         float32
 	chunks            map[mgl32.Vec2]datastructures.Set[ecs.EntityID]
 	entitiesPositions map[ecs.EntityID][]mgl32.Vec2
@@ -34,16 +34,16 @@ func NewService(c ioc.Dic,
 ) collider.Service {
 	t := ioc.GetServices[*service](c)
 
-	t.dirtySet = ecs.NewDirtySet()
-	t.colliderArray = ecs.GetComponentsArray[collider.Component](t.World())
+	t.collider = ecs.GetComponentsArray[collider.Component](t.World())
+
+	t.collidersDirtySet = ecs.NewDirtySet()
+	t.Transform().AddDirtySet(t.collidersDirtySet)
+	t.collider.AddDirtySet(t.collidersDirtySet)
+
 	t.chunkSize = chunkSize
 	t.chunks = make(map[mgl32.Vec2]datastructures.Set[ecs.EntityID])
 	t.entitiesPositions = make(map[ecs.EntityID][]mgl32.Vec2)
 	t.rayFallTroughPolicies = make([]collider.FallTroughPolicy, 0)
-
-	t.Transform().AddDirtySet(t.dirtySet)
-	colliderArray := ecs.GetComponentsArray[collider.Component](t.World())
-	colliderArray.AddDirtySet(t.dirtySet)
 
 	return t
 }
@@ -80,10 +80,10 @@ func (t *service) Chunks() map[mgl32.Vec2]datastructures.Set[ecs.EntityID] { ret
 // tracking
 
 func (t *service) ApplyChanges() {
-	entities := t.dirtySet.Get()
+	entities := t.collidersDirtySet.Get()
 	t.Remove(entities...)
 	for _, entity := range entities {
-		if _, ok := t.colliderArray.Get(entity); !ok {
+		if _, ok := t.collider.Get(entity); !ok {
 			continue
 		}
 		aabb := TransformAABB(t.Transform(), entity)
@@ -123,7 +123,7 @@ func (t *service) Remove(entities ...ecs.EntityID) {
 
 //
 
-func (t *service) Component() ecs.ComponentsArray[collider.Component] { return t.colliderArray }
+func (t *service) Component() ecs.ComponentsArray[collider.Component] { return t.collider }
 
 func (t *service) CollidesWithRay(entity ecs.EntityID, ray collider.Ray) *collider.ObjectRayCollision {
 	t.ApplyChanges()
@@ -140,7 +140,7 @@ func (t *service) CollidesWithRay(entity ecs.EntityID, ray collider.Ray) *collid
 		return nil
 	}
 
-	colliderComponent, ok := t.colliderArray.Get(entity)
+	colliderComponent, ok := t.collider.Get(entity)
 	if !ok {
 		return nil
 	}
