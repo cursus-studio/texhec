@@ -7,7 +7,7 @@ extremely useful for generating maps
 ```
 $ go test ./... -bench=.
 PASS
-ok  	engine/modules/noise/test	1.366s
+ok  	engine/modules/noise/test	1.291s
 ```
 ## Lines of code
 ```
@@ -16,11 +16,15 @@ github.com/AlDanial/cloc
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
 Go                              11             93             70            392
-Markdown                         1              3              0             43
+Markdown                         2              3              0             45
 -------------------------------------------------------------------------------
-SUM:                            12             96             70            435
+SUM:                            13             96             70            437
 -------------------------------------------------------------------------------
 ```
+## TODO
+Improve noise flatenning bell curve.
+Avoid equasions for flattening and instead create 10k sample slice to create a bell curve.
+
 ## Types
 ### type Service
 Type: `engine/modules/noise.Service`

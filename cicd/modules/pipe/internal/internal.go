@@ -9,6 +9,7 @@ import (
 	"log"
 	"os"
 	"os/exec"
+	"strings"
 
 	"github.com/ogiusek/ioc/v2"
 )
@@ -68,7 +69,26 @@ func NewService(c ioc.Dic) pipe.Service {
 	s := ioc.GetServices[*service](c)
 	s.hooksDirectory = ".git-hooks"
 
+	// pipeline
+	// shaders
+	shaders := []string{}
+	// golang
+	// docs
 	s.stages = []Stage{
+		NewStage("Loading Data", func(ctx StageCtx) error {
+			cmd := exec.Command(
+				"find", ".", "-type", "f", "-regextype", "posix-extended",
+				"-iregex", `.*\.(vert|frag|geom|comp|tesc|tese|glsl)`)
+			out, err := cmd.CombinedOutput()
+			if err != nil {
+				return err
+			}
+			s := string(out)
+			s = strings.Trim(s, " \n")
+			shaders = strings.Split(s, "\n")
+			return nil
+		}),
+		// pipeline
 		NewStage("Pipeline Security", func(ctx StageCtx) error {
 			cmd := exec.Command("trivy", "config", "--exit-code", "1", "--quiet", "--severity", "HIGH,CRITICAL", ".")
 			if output, err := cmd.CombinedOutput(); err != nil {
@@ -77,6 +97,25 @@ func NewService(c ioc.Dic) pipe.Service {
 			return nil
 		}),
 
+		// shaders
+		NewStage("Shaders Validation", func(ctx StageCtx) error {
+			// #nosec G204
+			cmd := exec.Command("glslangValidator", shaders...)
+			if output, err := cmd.CombinedOutput(); err != nil {
+				return fmt.Errorf("%s", string(output))
+			}
+			return nil
+		}),
+		NewStage("Shaders Lint", func(ctx StageCtx) error {
+			cmd := exec.Command("clang-format", "--dry-run", "--Werror")
+			cmd.Args = append(cmd.Args, shaders...)
+			if output, err := cmd.CombinedOutput(); err != nil {
+				return fmt.Errorf("%s", string(output))
+			}
+			return nil
+		}),
+
+		// golang
 		NewStage("Deps", func(ctx StageCtx) error {
 			for _, proj := range ctx.Projects {
 				fmt.Printf("  \"%v\"\n", proj)
@@ -107,7 +146,6 @@ func NewService(c ioc.Dic) pipe.Service {
 			}
 			return nil
 		}),
-
 		NewStage("Build", func(ctx StageCtx) error {
 			for _, proj := range ctx.Projects {
 				fmt.Printf("  \"%v\"\n", proj)
@@ -119,7 +157,6 @@ func NewService(c ioc.Dic) pipe.Service {
 			}
 			return nil
 		}),
-
 		NewStage("Lint", func(ctx StageCtx) error {
 			for _, proj := range ctx.ChangedProjects {
 				fmt.Printf("  \"%v\"\n", proj)
@@ -131,7 +168,6 @@ func NewService(c ioc.Dic) pipe.Service {
 			}
 			return nil
 		}),
-
 		NewStage("Security", func(ctx StageCtx) error {
 			for _, proj := range ctx.Projects {
 				fmt.Printf("  \"%v\"\n", proj)
@@ -143,7 +179,6 @@ func NewService(c ioc.Dic) pipe.Service {
 			}
 			return nil
 		}),
-
 		NewStage("Test", func(ctx StageCtx) error {
 			for _, proj := range ctx.Projects {
 				fmt.Printf("  \"%v\"\n", proj)
@@ -156,24 +191,29 @@ func NewService(c ioc.Dic) pipe.Service {
 			return nil
 		}),
 
+		// docs
 		NewStage("Docs Genaration", func(ctx StageCtx) error {
 			for _, module := range ctx.ChangedModules {
 				fmt.Printf("  checking \"%v\" module\n", module)
-				if err := s.Docs().DiffModuleDocs(module); err != nil {
+				if err := s.Docs().DiffModule(module); err != nil {
 					return err
 				}
 			}
 			for _, proj := range ctx.ChangedProjects {
 				fmt.Printf("  checking \"%v\" project\n", proj)
-				if err := s.Docs().DiffProjectDocs(proj); err != nil {
+				if err := s.Docs().DiffProject(proj); err != nil {
 					return err
 				}
 			}
+			if err := s.Docs().DiffTODO(); err != nil {
+				return err
+			}
+			_ = s.Git().Stage("/readme/TODO.md")
 			return nil
 		}).SetFix(func(ctx StageCtx) error {
 			for _, module := range ctx.ChangedModules {
 				fmt.Printf("  generating \"%v\" module\n", module)
-				if err := s.Docs().GenerateModuleDocs(module); err != nil {
+				if err := s.Docs().GenerateModule(module); err != nil {
 					return err
 				}
 				// if we cannot stage readme we do not stage it.
@@ -182,16 +222,19 @@ func NewService(c ioc.Dic) pipe.Service {
 			}
 			for _, proj := range ctx.ChangedProjects {
 				fmt.Printf("  generating \"%v\" project\n", proj)
-				if err := s.Docs().GenerateProjectDocs(proj); err != nil {
+				if err := s.Docs().GenerateProject(proj); err != nil {
 					return err
 				}
 				// if we cannot stage readme we do not stage it.
 				// if error is returned it means that we just generated additional readme.
 				_ = s.Git().Stage(fmt.Sprintf("%v/readme/README.md", proj))
 			}
+			if err := s.Docs().GenerateTODO(); err != nil {
+				return err
+			}
+			_ = s.Git().Stage("readme/TODO.md")
 			return nil
 		}),
-
 		NewStage("Docs Lint", func(ctx StageCtx) error {
 			cmd := exec.Command("lychee", "--root-dir", ".", "**/*.md")
 			if output, err := cmd.CombinedOutput(); err != nil {

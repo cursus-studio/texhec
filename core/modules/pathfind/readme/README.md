@@ -9,10 +9,19 @@ github.com/AlDanial/cloc
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
 Go                               6             93             36            521
+Markdown                         1              1              0              5
 -------------------------------------------------------------------------------
-SUM:                             6             93             36            521
+SUM:                             7             94             36            526
 -------------------------------------------------------------------------------
 ```
+## TODO
+Modify speed to allow moving many tiles per tick.
+Modify pathfinding to do not use shortest route and instead use optimal path (optimize paths per chunks).
+
+Research materials:
+- `supreme commander`
+- `multi agent pathfinding`
+
 ## Types
 ### type Service
 Type: `core/modules/pathfind.Service`

@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"cicd/modules/docs"
 	"cicd/modules/docs/internal/deps"
+	"cicd/modules/docs/internal/todo"
 	"cicd/modules/docs/internal/types"
 	"fmt"
 	"os"
@@ -117,6 +118,19 @@ func (s *service) GetProjectDocs(projectPath string) (string, error) {
 	doc := strings.Join(sections, "\n")
 	doc = strings.Trim(doc, " \n")
 	return doc, nil
+}
+
+func (s *service) GetTODODocs() (string, error) {
+	cmd := exec.Command(
+		"find", ".", "-type", "f", "-regextype", "posix-extended",
+		"-iregex", `.*readme/TODO\.md`)
+	out, err := cmd.CombinedOutput()
+	if err != nil {
+		return "", err
+	}
+	files := strings.Split(strings.Trim(string(out), " \n"), "\n")
+	todo := todo.ReadProjects(files)
+	return todo.String(), nil
 }
 
 //

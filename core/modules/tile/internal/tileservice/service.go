@@ -27,9 +27,11 @@ type service struct {
 	rot    ecs.ComponentsArray[tile.RotComponent]
 	layer  ecs.ComponentsArray[tile.LayerComponent]
 	config ecs.ComponentsArray[tile.ConfigComponent]
+
+	tileSize float32
 }
 
-func NewService(c ioc.Dic, system, renderer ecs.SystemRegister) tile.Service {
+func NewService(c ioc.Dic, system, renderer ecs.SystemRegister, tileSize float32) tile.Service {
 	s := ioc.GetServices[*service](c)
 	s.SystemRegister = system
 	s.renderer = renderer
@@ -44,6 +46,8 @@ func NewService(c ioc.Dic, system, renderer ecs.SystemRegister) tile.Service {
 
 	s.size.SetEmpty(tile.NewSize(1, 1))
 	s.layer.SetEmpty(tile.NewLayer(definitions.TileLayer))
+
+	s.tileSize = tileSize
 
 	return s
 }
@@ -87,5 +91,5 @@ func (s *service) GetPos(coords grid.Coords) transform.PosComponent {
 	)
 }
 func (s *service) GetTileSize() transform.SizeComponent {
-	return transform.NewSize(100, 100, 1)
+	return transform.NewSize(s.tileSize, s.tileSize, 1)
 }

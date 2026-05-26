@@ -9,10 +9,17 @@ github.com/AlDanial/cloc
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
 Go                               3             42              7            308
+Markdown                         1              1              0              3
 -------------------------------------------------------------------------------
-SUM:                             3             42              7            308
+SUM:                             4             43              7            311
 -------------------------------------------------------------------------------
 ```
+## TODO
+Move.
+Clean up `/assets` and start using it instead of local copy.
+
+Create automatic export from `.pxo` to `.png` and/or `.git`
+
 ## Types
 ### type Service
 Type: `core/modules/definitions.Service`
