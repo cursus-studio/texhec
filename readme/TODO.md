@@ -30,6 +30,9 @@ Perhaps attach `PlayerComponent` to camera.
 clean up pkg and move logic to internal
 - ### [collider](/engine/modules/collider/readme/README.md)
 Implement `CollidesWithObject`
+
+Change main algorithm from spatial algorithm to tree algorithm.
+Create methods to perform only shallow comparisons or only deep comparisons.
 - ### [graphics](/engine/modules/graphics/readme/README.md)
 Check `vulcan` and `wasm` as opengl alternatives
 - ### [hierarchy](/engine/modules/hierarchy/readme/README.md)

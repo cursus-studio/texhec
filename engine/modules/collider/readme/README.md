@@ -9,14 +9,17 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                              10            126             22            531
-Markdown                         1              0              0              1
+Go                              10            127             22            530
+Markdown                         1              1              0              3
 -------------------------------------------------------------------------------
-SUM:                            11            126             22            532
+SUM:                            11            128             22            533
 -------------------------------------------------------------------------------
 ```
 ## TODO
 Implement `CollidesWithObject`
+
+Change main algorithm from spatial algorithm to tree algorithm.
+Create methods to perform only shallow comparisons or only deep comparisons.
 
 ## Types
 ### type Service
