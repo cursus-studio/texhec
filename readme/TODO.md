@@ -26,21 +26,21 @@ Research materials:
 Restrict actions to allow only user to perform his actions.
 Perhaps attach `PlayerComponent` to camera.
 ## [engine](/engine/readme/README.md)
-- ### [graphics](/engine/modules/graphics/readme/README.md)
-Move to vulcan
 - ### [camera](/engine/modules/camera/readme/README.md)
 - clean up pkg
-- ### [netsync](/engine/modules/netsync/readme/README.md)
-Create more features to allow more specific features to allow more specific calls
+- ### [collider](/engine/modules/collider/readme/README.md)
+Implement `CollidesWithObject`
+- ### [graphics](/engine/modules/graphics/readme/README.md)
+Move to vulcan
+- ### [hierarchy](/engine/modules/hierarchy/readme/README.md)
+abstract `InheritGroups` to inherit allowing to inherit any component.
+Try to reduce calls during removal.
 - ### [inputs](/engine/modules/inputs/readme/README.md)
 Implement a proper input cursor and improve focusing and unfocusing on input
 
 abstract `CaptureKeyboardEvent` to `CaptureEvent` and move it to hierarchy module and use it for text input.
-- ### [collider](/engine/modules/collider/readme/README.md)
-Implement `CollidesWithObject`
-- ### [hierarchy](/engine/modules/hierarchy/readme/README.md)
-abstract `InheritGroups` to inherit allowing to inherit any component.
-Try to reduce calls during removal.
+- ### [netsync](/engine/modules/netsync/readme/README.md)
+Create more features to allow more specific features to allow more specific calls
 - ### [noise](/engine/modules/noise/readme/README.md)
 Improve noise flatenning bell curve.
 Avoid equasions for flattening and instead create 10k sample slice to create a bell curve.

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"sort"
 	"strings"
 )
 
@@ -24,6 +25,7 @@ type TODO struct {
 // ./$projectName/readme/TODO.md
 // ./$projectName/modules/$moduleName/readme/TODO.md
 func ReadProjects(files []string) TODO {
+	sort.Strings(files)
 	var todo TODO
 
 	for _, file := range files {
