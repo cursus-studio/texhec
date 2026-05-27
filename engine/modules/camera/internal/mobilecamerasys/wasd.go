@@ -2,6 +2,7 @@ package mobilecamerasys
 
 import (
 	"engine"
+	"engine/modules/inputs"
 	"engine/modules/loop"
 	"engine/services/ecs"
 
@@ -50,15 +51,26 @@ func (s *wasdMoveSystem) Listen(event loop.FrameEvent) {
 		moveHorizontaly *= float32(event.Delta.Milliseconds()) * s.cameraSpeed
 		moveVerticaly *= float32(event.Delta.Milliseconds()) * s.cameraSpeed
 	}
+	var bubbles []ecs.EntityID
+	{
+		focusEvent, ok := s.Focus().NewFocusedBubbleEvent(inputs.KeyboardEvent{})
+		if !ok {
+			goto cameraLoop
+		}
+		bubbles, _ = s.Focus().DryRun(focusEvent)
+	}
 
+cameraLoop:
 	for _, camera := range s.Camera().Mobile().GetEntities() {
 		pos, _ := s.Transform().AbsolutePos().Get(camera)
 		ortho, ok := s.Camera().Ortho().Get(camera)
 		if !ok {
 			continue
 		}
-		if s.Inputs().IsCaptured(camera) {
-			continue
+		for _, bubble := range bubbles {
+			if bubble == camera {
+				continue cameraLoop
+			}
 		}
 
 		pos.Pos = mgl32.Vec3{

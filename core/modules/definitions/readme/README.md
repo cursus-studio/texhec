@@ -8,10 +8,10 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                               3             42              7            308
+Go                               3             42              7            309
 Markdown                         1              1              0              3
 -------------------------------------------------------------------------------
-SUM:                             4             43              7            311
+SUM:                             4             43              7            312
 -------------------------------------------------------------------------------
 ```
 ## TODO
@@ -270,6 +270,11 @@ Type: `core/modules/obstruction.Obstruction`
 `engine/modules/entityregistry`:
   - `engine/modules/entityregistry.GetRegistry`
 
+`engine/modules/focus`:
+  - `engine/modules/focus.Bubbling`
+  - `engine/modules/focus.FocusEvent`
+  - `engine/modules/focus.NewBubbling`
+
 `engine/modules/graphics`:
   - `engine/modules/graphics.Index`
 
@@ -281,12 +286,9 @@ Type: `core/modules/obstruction.Obstruction`
   - `engine/modules/groups.InheritGroupsComponent`
 
 `engine/modules/inputs`:
-  - `engine/modules/inputs.CaptureKeyboard`
-  - `engine/modules/inputs.FocusEvent`
   - `engine/modules/inputs.KeepSelected`
   - `engine/modules/inputs.KeepSelectedComponent`
   - `engine/modules/inputs.LeftClick`
-  - `engine/modules/inputs.NewCaptureKeyboard`
   - `engine/modules/inputs.NewLeftClick`
   - `engine/modules/inputs.NewTextInputEvent`
 

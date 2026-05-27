@@ -6,7 +6,6 @@ import (
 	"engine/modules/text"
 	"engine/services/ecs"
 	"errors"
-	"fmt"
 	"strings"
 
 	"github.com/ogiusek/events"
@@ -44,12 +43,7 @@ func NewInputsSystem(c ioc.Dic) ecs.SystemRegister {
 
 		events.Listen(s.EventsBuilder(), s.PollOnFrame)
 
-		events.Listen(s.EventsBuilder(), s.OnDefaultFocus)
-		events.Listen(s.EventsBuilder(), s.OnFocus)
-		events.Listen(s.EventsBuilder(), s.OnUnfocus)
-
 		events.Listen(s.EventsBuilder(), s.OnTextInputEvent)
-		events.Listen(s.EventsBuilder(), s.OnKeyboardEvent)
 
 		return nil
 	})
@@ -131,44 +125,4 @@ func (s *inputsSystem) OnTextInputEvent(event inputs.TextInputEvent) {
 	}
 
 	s.Inputs().TextInput().Set(event.Entity, input)
-}
-
-func (s *inputsSystem) OnKeyboardEvent(event sdl.KeyboardEvent) {
-	e := inputs.NewKeyboardEvent(event)
-	focusedEntities := s.Inputs().Focused().GetEntities()
-	if len(focusedEntities) > 1 {
-		s.Logger().Log(fmt.Errorf("expected most one focused element"))
-		for _, focusedEntity := range focusedEntities {
-			s.Inputs().Focused().Remove(focusedEntity)
-		}
-	}
-
-	if len(focusedEntities) == 0 {
-		focusedEntities = s.Inputs().DefaultFocused().GetEntities()
-	}
-
-	if len(focusedEntities) == 0 {
-		events.Emit(s.Events(), e)
-		return
-	}
-
-	focusedEntity := focusedEntities[0]
-	parents := append([]ecs.EntityID{focusedEntity}, s.Hierarchy().GetOrderedParents(focusedEntity)...)
-
-	for _, entity := range parents {
-		comp, ok := s.Inputs().CaptureKeyboard().Get(entity)
-		if !ok {
-			continue
-		}
-		event := comp.Capture(e)
-		if apply, ok := event.(inputs.ApplyEntityEvent); ok {
-			event = apply.ApplyEntity(entity)
-		}
-		events.EmitAny(s.Events(), event)
-		if !comp.Fallthrough() {
-			return
-		}
-	}
-
-	events.Emit(s.Events(), e)
 }

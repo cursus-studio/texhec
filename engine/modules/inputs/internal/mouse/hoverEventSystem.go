@@ -29,7 +29,7 @@ func (s *hoverEventSystem) Listen(event loop.FrameEvent) {
 			continue
 		}
 
-		if e, ok := eventsComponent.Event.(inputs.ApplyEntityEvent); ok {
+		if e, ok := eventsComponent.Event.(ecs.ApplyEntityEvent); ok {
 			eventsComponent.Event = e.ApplyEntity(entity)
 		}
 		if setter, ok := eventsComponent.Event.(inputs.EventTargetSetter); ok {

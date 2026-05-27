@@ -104,10 +104,6 @@ func getDic() ioc.Dic {
 					if errors.Is(meta, logger.ErrFatal) {
 						world.Console().Flush()
 					}
-					if logger.IsWarning(meta) {
-						world.Console().Flush()
-						panic("Debug warning")
-					}
 				})
 			})
 			ioc.Wrap(b, func(c ioc.Dic, config netsyncpkg.Config) {

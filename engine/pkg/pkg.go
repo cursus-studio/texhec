@@ -11,6 +11,7 @@ import (
 	connectionpkg "engine/modules/connection/pkg"
 	dragpkg "engine/modules/drag/pkg"
 	entityregistrypkg "engine/modules/entityregistry/pkg"
+	focuspkg "engine/modules/focus/pkg"
 	graphicspkg "engine/modules/graphics/pkg"
 	gridpkg "engine/modules/grid/pkg"
 	groupspkg "engine/modules/groups/pkg"
@@ -51,6 +52,7 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 		connectionpkg.Pkg,
 		dragpkg.Pkg,
 		entityregistrypkg.Pkg,
+		focuspkg.Pkg,
 		graphicspkg.Pkg,
 		gridpkg.Pkg,
 		groupspkg.Pkg,

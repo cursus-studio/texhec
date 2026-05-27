@@ -1,9 +1,13 @@
 package datastructures
 
-type Set[Stored comparable] interface {
+type SetReader[Stored comparable] interface {
 	Get() []Stored
 	GetStored(index int) (element Stored, ok bool)
 	GetIndex(element Stored) (index int, ok bool)
+}
+
+type Set[Stored comparable] interface {
+	SetReader[Stored]
 	Add(elements ...Stored)
 	Set(index int, e Stored)
 	Remove(indices ...int)

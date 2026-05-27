@@ -7,6 +7,7 @@ import (
 	"engine/modules/assets"
 	"engine/modules/collider"
 	"engine/modules/entityregistry"
+	"engine/modules/focus"
 	"engine/modules/graphics"
 	"engine/modules/groups"
 	"engine/modules/inputs"
@@ -151,8 +152,8 @@ func (s *service) Hud() definitions.Hud {
 		s.World.Collider().Component().Set(def.Input, collider.NewCollider(s.World.Definitions().Assets().SquareCollider))
 		s.World.Inputs().KeepSelected().Set(def.Input, inputs.KeepSelectedComponent{})
 
-		s.World.Inputs().CaptureKeyboard().Set(def.Input, inputs.NewCaptureKeyboard(inputs.NewTextInputEvent()))
-		s.World.Inputs().LeftClick().Set(def.Input, inputs.NewLeftClick(inputs.FocusEvent{}))
+		s.World.Focus().Bubbling().Set(def.Input, focus.NewBubbling(inputs.NewTextInputEvent()))
+		s.World.Inputs().LeftClick().Set(def.Input, inputs.NewLeftClick(focus.FocusEvent{}))
 
 		s.World.Text().Align().Set(def.Input, text.NewAlign(.5, .5))
 		s.World.Text().FontSize().Set(def.Input, text.NewFontSize(24))

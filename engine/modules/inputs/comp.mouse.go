@@ -77,9 +77,6 @@ type DragEvent struct {
 type ApplyDragEvent interface {
 	ApplyDrag(DragEvent) (event any)
 }
-type ApplyEntityEvent interface {
-	ApplyEntity(entityEmitting ecs.EntityID) (event any)
-}
 
 type SynchronizePositionEvent DragEvent
 
