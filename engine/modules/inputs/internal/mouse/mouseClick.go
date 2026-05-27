@@ -74,7 +74,7 @@ func (s *clickSystem) ListenMove(event sdl.MouseMotionEvent) {
 		if i, ok := dragComponent.Event.(inputs.ApplyDragEvent); ok {
 			dragComponent.Event = i.ApplyDrag(dragEvent)
 		}
-		if e, ok := dragComponent.Event.(inputs.ApplyEntityEvent); ok {
+		if e, ok := dragComponent.Event.(ecs.ApplyEntityEvent); ok {
 			dragComponent.Event = e.ApplyEntity(entity)
 		}
 		events.EmitAny(s.Events(), dragComponent.Event)
@@ -190,7 +190,7 @@ func (s *clickSystem) ListenClick(event sdl.MouseButtonEvent) {
 			if setter, ok := eventToEmit.(inputs.EventTargetSetter); ok {
 				eventToEmit = setter.SetTarget(*target)
 			}
-			if e, ok := eventToEmit.(inputs.ApplyEntityEvent); ok {
+			if e, ok := eventToEmit.(ecs.ApplyEntityEvent); ok {
 				eventToEmit = e.ApplyEntity(target.Entity)
 			}
 			events.EmitAny(s.Events(), eventToEmit)

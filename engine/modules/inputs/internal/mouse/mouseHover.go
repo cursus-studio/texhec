@@ -33,7 +33,7 @@ func (s *hoverSystem) handleMouseLeave(entity ecs.EntityID) {
 	if !ok {
 		return
 	}
-	if event, ok := mouseLeave.Event.(inputs.ApplyEntityEvent); ok {
+	if event, ok := mouseLeave.Event.(ecs.ApplyEntityEvent); ok {
 		mouseLeave.Event = event.ApplyEntity(entity)
 	}
 	events.EmitAny(s.Events(), mouseLeave.Event)
@@ -66,7 +66,7 @@ func (s *hoverSystem) Listen(event internal.RayChangedTargetEvent) {
 		if !ok {
 			continue
 		}
-		if e, ok := mouseEnter.Event.(inputs.ApplyEntityEvent); ok {
+		if e, ok := mouseEnter.Event.(ecs.ApplyEntityEvent); ok {
 			mouseEnter.Event = e.ApplyEntity(target.Entity)
 		}
 		events.EmitAny(s.Events(), mouseEnter.Event)

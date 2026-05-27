@@ -16,26 +16,18 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                              13            200             39            955
-Markdown                         1              1              0              2
+Go                              12            177             27            821
+Markdown                         1              0              0              1
 -------------------------------------------------------------------------------
-SUM:                            14            201             39            957
+SUM:                            13            177             27            822
 -------------------------------------------------------------------------------
 ```
 ## TODO
 Implement a proper input cursor and improve focusing and unfocusing on input
 
-abstract `CaptureKeyboardEvent` to `CaptureEvent` and move it to hierarchy module and use it for text input.
-
 ## Types
 ### type Service
 Type: `engine/modules/inputs.Service`
-
-#### method Service CaptureKeyboard
-Type: `func() engine/services/ecs.ComponentsArray[engine/modules/inputs.CaptureKeyboardComponent]`
-
-#### method Service DefaultFocused
-Type: `func() engine/services/ecs.ComponentsArray[engine/modules/inputs.DefaultFocusedComponent]`
 
 #### method Service DoubleLeftClick
 Type: `func() engine/services/ecs.ComponentsArray[engine/modules/inputs.DoubleLeftClickComponent]`
@@ -49,19 +41,11 @@ Type: `func() engine/services/ecs.ComponentsArray[engine/modules/inputs.DragComp
 #### method Service Dragged
 Type: `func() engine/services/ecs.ComponentsArray[engine/modules/inputs.DraggedComponent]`
 
-#### method Service Focused
-Type: `func() engine/services/ecs.ComponentsArray[engine/modules/inputs.FocusedComponent]`
-
 #### method Service Hover
 Type: `func() engine/services/ecs.ComponentsArray[engine/modules/inputs.HoverComponent]`
 
 #### method Service Hovered
 Type: `func() engine/services/ecs.ComponentsArray[engine/modules/inputs.HoveredComponent]`
-
-#### method Service IsCaptured
-Type: `func(engine/services/ecs.EntityID) bool`
-checks is entity event captured
-if it is then it shouldn't listen to keyboard events
 
 #### method Service KeepSelected
 Type: `func() engine/services/ecs.ComponentsArray[engine/modules/inputs.KeepSelectedComponent]`
@@ -94,31 +78,12 @@ returns ordered targets with additional data
 #### method Service TextInput
 Type: `func() engine/services/ecs.ComponentsArray[engine/modules/inputs.TextInputComponent]`
 
-### type CaptureKeyboardConstraint
-Type: `engine/modules/inputs.CaptureKeyboardConstraint`
-on keyboardEvent capture events are emitted
-from child with [FocusedComponent]
-to uppermost parent with [CaptureKeyboardComponent] with fallthrough == false
-if none [CaptureKeyboardComponent] stops further emission then [KeyboardEvent] is emited
-
-#### method CaptureKeyboardConstraint Capture
-Type: `func(engine/modules/inputs.KeyboardEvent) any`
-
-#### method CaptureKeyboardConstraint Fallthrough
-Type: `func() bool`
-
 ### type ApplyDragEvent
 Type: `engine/modules/inputs.ApplyDragEvent`
 interfaces which can be implemented by events {
 
 #### method ApplyDragEvent ApplyDrag
 Type: `func(engine/modules/inputs.DragEvent) (event any)`
-
-### type ApplyEntityEvent
-Type: `engine/modules/inputs.ApplyEntityEvent`
-
-#### method ApplyEntityEvent ApplyEntity
-Type: `func(entityEmitting engine/services/ecs.EntityID) (event any)`
 
 ### type EventTargetSetter
 Type: `engine/modules/inputs.EventTargetSetter`
@@ -131,40 +96,6 @@ Type: `engine/modules/inputs.KeyboardEvent`
 
 #### property KeyboardEvent KeyboardEvent
 Type: `github.com/veandco/go-sdl2/sdl.KeyboardEvent`
-
-### type UnfocusEvent
-Type: `engine/modules/inputs.UnfocusEvent`
-focuses default entity like scene or camera
-
-### type FocusEvent
-Type: `engine/modules/inputs.FocusEvent`
-unfocuses all elements and only focuses specific one
-
-#### property FocusEvent Entity
-Type: `engine/services/ecs.EntityID`
-
-#### method FocusEvent ApplyEntity
-Type: `func(entity engine/services/ecs.EntityID) any`
-
-### type DefaultFocusEvent
-Type: `engine/modules/inputs.DefaultFocusEvent`
-
-#### property DefaultFocusEvent Entity
-Type: `engine/services/ecs.EntityID`
-
-### type CaptureKeyboardComponent
-Type: `engine/modules/inputs.CaptureKeyboardComponent`
-
-#### property CaptureKeyboardComponent CaptureKeyboardConstraint
-Type: `engine/modules/inputs.CaptureKeyboardConstraint`
-
-### type DefaultFocusedComponent
-Type: `engine/modules/inputs.DefaultFocusedComponent`
-
-### type FocusedComponent
-Type: `engine/modules/inputs.FocusedComponent`
-element should be focused on click for example
-on right click or escape element should get unfocused
 
 ### type TextInputComponent
 Type: `engine/modules/inputs.TextInputComponent`
@@ -184,8 +115,7 @@ Type: `func() string`
 
 ### type TextInputEvent
 Type: `engine/modules/inputs.TextInputEvent`
-handles inputs and saves change in description
-this can become generic
+handles inputs and saves change in component
 
 #### property TextInputEvent Entity
 Type: `engine/services/ecs.EntityID`
@@ -193,8 +123,11 @@ Type: `engine/services/ecs.EntityID`
 #### property TextInputEvent KeyboardEvent
 Type: `engine/modules/inputs.KeyboardEvent`
 
+#### method TextInputEvent CapturesEvents
+Type: `func() engine/services/datastructures.SetReader[reflect.Type]`
+
 #### method TextInputEvent Capture
-Type: `func(event engine/modules/inputs.KeyboardEvent) any`
+Type: `func(event any) any`
 
 #### method TextInputEvent ApplyEntity
 Type: `func(entity engine/services/ecs.EntityID) any`
@@ -320,24 +253,6 @@ Type: `engine/services/ecs.EntityID`
 ### func NewKeyboardEvent
 Type: `func(e github.com/veandco/go-sdl2/sdl.KeyboardEvent) engine/modules/inputs.KeyboardEvent`
 
-### func NewUnfocusEvent
-Type: `func() engine/modules/inputs.UnfocusEvent`
-
-### func NewFocusEvent
-Type: `func(entity engine/services/ecs.EntityID) engine/modules/inputs.FocusEvent`
-
-### func NewDefaultFocusEvent
-Type: `func(entity engine/services/ecs.EntityID) engine/modules/inputs.DefaultFocusEvent`
-
-### func NewCaptureKeyboard
-Type: `func(event engine/modules/inputs.CaptureKeyboardConstraint) engine/modules/inputs.CaptureKeyboardComponent`
-
-### func NewDefaultFocused
-Type: `func() engine/modules/inputs.DefaultFocusedComponent`
-
-### func NewFocused
-Type: `func() engine/modules/inputs.FocusedComponent`
-
 ### func NewTextInputEvent
 Type: `func() engine/modules/inputs.TextInputEvent`
 
@@ -379,10 +294,8 @@ Type: `func(event any) engine/modules/inputs.DragComponent`
   - `engine.EngineWorld`
   - `engine.Events`
   - `engine.EventsBuilder`
-  - `engine.Hierarchy`
   - `engine.Inputs`
   - `engine.Logger`
-  - `engine.Scene`
   - `engine.Text`
   - `engine.Window`
   - `engine.World`
@@ -394,20 +307,15 @@ Type: `func(event any) engine/modules/inputs.DragComponent`
   - `engine/modules/collider.ObjectRayCollision`
   - `engine/modules/collider.RaycastAll`
 
+`engine/modules/focus/pkg`:
+  - `engine/modules/focus/pkg.BubblePkgT`
+
 `engine/modules/inputs`:
   - `engine/modules/inputs.ApplyDrag`
   - `engine/modules/inputs.ApplyDragEvent`
-  - `engine/modules/inputs.ApplyEntity`
-  - `engine/modules/inputs.ApplyEntityEvent`
   - `engine/modules/inputs.Camera`
-  - `engine/modules/inputs.Capture`
-  - `engine/modules/inputs.CaptureKeyboard`
-  - `engine/modules/inputs.CaptureKeyboardComponent`
   - `engine/modules/inputs.CursorCol`
   - `engine/modules/inputs.CursorRow`
-  - `engine/modules/inputs.DefaultFocusEvent`
-  - `engine/modules/inputs.DefaultFocused`
-  - `engine/modules/inputs.DefaultFocusedComponent`
   - `engine/modules/inputs.DoubleLeftClick`
   - `engine/modules/inputs.DoubleLeftClickComponent`
   - `engine/modules/inputs.DoubleRightClick`
@@ -419,10 +327,6 @@ Type: `func(event any) engine/modules/inputs.DragComponent`
   - `engine/modules/inputs.Entity`
   - `engine/modules/inputs.Event`
   - `engine/modules/inputs.EventTargetSetter`
-  - `engine/modules/inputs.Fallthrough`
-  - `engine/modules/inputs.FocusEvent`
-  - `engine/modules/inputs.Focused`
-  - `engine/modules/inputs.FocusedComponent`
   - `engine/modules/inputs.Hover`
   - `engine/modules/inputs.HoverComponent`
   - `engine/modules/inputs.Hovered`
@@ -437,9 +341,6 @@ Type: `func(event any) engine/modules/inputs.DragComponent`
   - `engine/modules/inputs.MouseEnterComponent`
   - `engine/modules/inputs.MouseLeave`
   - `engine/modules/inputs.MouseLeaveComponent`
-  - `engine/modules/inputs.NewDefaultFocusEvent`
-  - `engine/modules/inputs.NewDefaultFocused`
-  - `engine/modules/inputs.NewFocused`
   - `engine/modules/inputs.NewKeyboardEvent`
   - `engine/modules/inputs.RightClick`
   - `engine/modules/inputs.RightClickComponent`
@@ -455,15 +356,10 @@ Type: `func(event any) engine/modules/inputs.DragComponent`
   - `engine/modules/inputs.TextInput`
   - `engine/modules/inputs.TextInputComponent`
   - `engine/modules/inputs.TextInputEvent`
-  - `engine/modules/inputs.UnfocusEvent`
 
 `engine/modules/loop`:
   - `engine/modules/loop.FrameEvent`
   - `engine/modules/loop.NewStopEvent`
-
-`engine/modules/scene`:
-  - `engine/modules/scene.ChangeSceneEvent`
-  - `engine/modules/scene.Scene`
 
 `engine/modules/text`:
   - `engine/modules/text.Content`
@@ -479,7 +375,14 @@ Type: `func(event any) engine/modules/inputs.DragComponent`
   - `engine/modules/window.X`
   - `engine/modules/window.Y`
 
+`engine/services/datastructures`:
+  - `engine/services/datastructures.Add`
+  - `engine/services/datastructures.NewSet`
+  - `engine/services/datastructures.SetReader`
+
 `engine/services/ecs`:
+  - `engine/services/ecs.ApplyEntity`
+  - `engine/services/ecs.ApplyEntityEvent`
   - `engine/services/ecs.ComponentsArray`
   - `engine/services/ecs.EntityExists`
   - `engine/services/ecs.EntityID`

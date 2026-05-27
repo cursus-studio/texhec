@@ -1,13 +1,11 @@
 package inputspkg
 
 import (
-	"engine"
+	focuspkg "engine/modules/focus/pkg"
 	"engine/modules/inputs"
 	"engine/modules/inputs/internal/service"
-	"engine/modules/scene"
 	typeregistrypkg "engine/modules/typeregistry/pkg"
 
-	"github.com/ogiusek/events"
 	"github.com/ogiusek/ioc/v2"
 )
 
@@ -26,31 +24,19 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 		typeregistrypkg.PkgT[inputs.MouseLeaveComponent],
 		typeregistrypkg.PkgT[inputs.HoverComponent],
 		typeregistrypkg.PkgT[inputs.DragComponent],
-		typeregistrypkg.PkgT[inputs.CaptureKeyboardComponent],
-		typeregistrypkg.PkgT[inputs.DefaultFocusedComponent],
-		typeregistrypkg.PkgT[inputs.FocusedComponent],
 		typeregistrypkg.PkgT[inputs.TextInputComponent],
 
 		// events
 		typeregistrypkg.PkgT[inputs.DragEvent],
 		typeregistrypkg.PkgT[inputs.SynchronizePositionEvent],
 		typeregistrypkg.PkgT[inputs.KeyboardEvent],
-		typeregistrypkg.PkgT[inputs.UnfocusEvent],
-		typeregistrypkg.PkgT[inputs.FocusEvent],
-		typeregistrypkg.PkgT[inputs.DefaultFocusEvent],
 		typeregistrypkg.PkgT[inputs.TextInputEvent],
+
+		focuspkg.BubblePkgT(inputs.NewKeyboardEvent),
 	}
 	for _, pkg := range pkgs {
 		pkg(b)
 	}
-
-	ioc.Wrap(b, func(c ioc.Dic, b events.Builder) {
-		world := ioc.Get[engine.EngineWorld](c)
-		world.Scene() // ensure scene events are loaded before current event
-		events.Listen(b, func(e scene.ChangeSceneEvent) {
-			events.Emit(world.Events(), inputs.NewDefaultFocusEvent(world.Scene().Scene()))
-		})
-	})
 
 	ioc.Register(b, func(c ioc.Dic) inputs.Service {
 		return service.NewService(c)

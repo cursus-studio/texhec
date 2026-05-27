@@ -12,10 +12,10 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                              11            171             32            821
+Go                              11            171             32            833
 Markdown                         1              0              0              1
 -------------------------------------------------------------------------------
-SUM:                            12            171             32            822
+SUM:                            12            171             32            834
 -------------------------------------------------------------------------------
 ```
 ## TODO
@@ -251,8 +251,8 @@ Type: `func() engine/modules/camera.ChangedResolutionEvent`
   - `engine.EngineWorld`
   - `engine.Events`
   - `engine.EventsBuilder`
+  - `engine.Focus`
   - `engine.Groups`
-  - `engine.Inputs`
   - `engine.Logger`
   - `engine.Transform`
   - `engine.Window`
@@ -315,7 +315,7 @@ Type: `func() engine/modules/camera.ChangedResolutionEvent`
 `engine/modules/inputs`:
   - `engine/modules/inputs.DragEvent`
   - `engine/modules/inputs.From`
-  - `engine/modules/inputs.IsCaptured`
+  - `engine/modules/inputs.KeyboardEvent`
   - `engine/modules/inputs.To`
 
 `engine/modules/loop`:

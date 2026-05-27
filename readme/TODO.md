@@ -40,8 +40,6 @@ abstract `InheritGroups` to inherit allowing to inherit any component.
 Try to reduce calls during removal.
 - ### [inputs](/engine/modules/inputs/readme/README.md)
 Implement a proper input cursor and improve focusing and unfocusing on input
-
-abstract `CaptureKeyboardEvent` to `CaptureEvent` and move it to hierarchy module and use it for text input.
 - ### [netsync](/engine/modules/netsync/readme/README.md)
 Create more features to allow more specific features to allow more specific calls
 - ### [noise](/engine/modules/noise/readme/README.md)
