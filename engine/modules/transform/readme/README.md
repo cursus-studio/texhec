@@ -11,12 +11,12 @@ goos: linux
 goarch: amd64
 pkg: engine/modules/transform/test
 cpu: Intel(R) Core(TM) i5-8350U CPU @ 1.70GHz
-BenchmarkGetPos-8                 	36094822	        28.37 ns/op
-BenchmarkRawGetPos-8              	100000000	        11.61 ns/op
-BenchmarkSetAbsolutePos-8         	 1849447	       652.2 ns/op
-BenchmarkSetAndGetAbsolutePos-8   	 1845324	       622.4 ns/op
+BenchmarkGetPos-8                 	43698514	        26.72 ns/op
+BenchmarkRawGetPos-8              	100000000	        10.92 ns/op
+BenchmarkSetAbsolutePos-8         	 1879580	       612.0 ns/op
+BenchmarkSetAndGetAbsolutePos-8   	 1994540	       596.2 ns/op
 PASS
-ok  	engine/modules/transform/test	5.929s
+ok  	engine/modules/transform/test	5.918s
 ```
 ## Lines of code
 ```
@@ -25,10 +25,14 @@ github.com/AlDanial/cloc
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
 Go                              14            163             23            792
+Markdown                         1              0              0              1
 -------------------------------------------------------------------------------
-SUM:                            14            163             23            792
+SUM:                            15            163             23            793
 -------------------------------------------------------------------------------
 ```
+## TODO
+Start using Fixed-Point math
+
 ## Types
 ### type Service
 Type: `engine/modules/transform.Service`
