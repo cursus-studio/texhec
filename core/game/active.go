@@ -9,6 +9,7 @@ import (
 	"core/modules/obstruction"
 	"core/modules/pathfind"
 	"core/modules/player"
+	"core/modules/reach"
 	"core/modules/settings"
 	"core/modules/tile"
 	"core/modules/ui"
@@ -30,6 +31,7 @@ type GameWorld struct {
 	Obstruction ioc.Lazy[obstruction.Service] `inject:""`
 	Pathfind    ioc.Lazy[pathfind.Service]    `inject:""`
 	Player      ioc.Lazy[player.Service]      `inject:""`
+	Reach       ioc.Lazy[reach.Service]       `inject:""`
 	Settings    ioc.Lazy[settings.Service]    `inject:""`
 	Tile        ioc.Lazy[tile.Service]        `inject:""`
 	Ui          ioc.Lazy[ui.Service]          `inject:""`

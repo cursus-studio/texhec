@@ -14,6 +14,7 @@ import (
 	obstructionpkg "core/modules/obstruction/pkg"
 	pathfindpkg "core/modules/pathfind/pkg"
 	playerpkg "core/modules/player/pkg"
+	reachpkg "core/modules/reach/pkg"
 	settingspkg "core/modules/settings/pkg"
 	tilepkg "core/modules/tile/pkg"
 	uipkg "core/modules/ui/pkg"
@@ -34,6 +35,7 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 		obstructionpkg.Pkg,
 		pathfindpkg.Pkg,
 		playerpkg.Pkg,
+		reachpkg.Pkg,
 		settingspkg.Pkg,
 		tilepkg.Pkg,
 		uipkg.Pkg,

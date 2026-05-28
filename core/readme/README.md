@@ -21,6 +21,7 @@ Map scale preview:
 - [obstruction](/core/modules/obstruction/readme/README.md)
 - [pathfind](/core/modules/pathfind/readme/README.md)
 - [player](/core/modules/player/readme/README.md)
+- [reach](/core/modules/reach/readme/README.md)
 - [settings](/core/modules/settings/readme/README.md)
 - [tile](/core/modules/tile/readme/README.md)
 - [ui](/core/modules/ui/readme/README.md)
@@ -35,11 +36,11 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                              57            743            224           4122
-Markdown                        10             25              0            145
+Go                              64            802            252           4460
+Markdown                        11             25              0            146
 GLSL                             3             31              2            112
 -------------------------------------------------------------------------------
-SUM:                            70            799            226           4379
+SUM:                            78            858            254           4718
 -------------------------------------------------------------------------------
 ```
 ## Dependencies
