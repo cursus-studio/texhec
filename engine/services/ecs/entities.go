@@ -54,8 +54,7 @@ func (entitiesStorage *entitiesImpl) NewEntity() EntityID {
 		return id
 	}
 	entitiesStorage.counter += 1
-	index := entitiesStorage.counter
-	id := EntityID(index)
+	id := entitiesStorage.counter
 	entitiesStorage.entities.Add(id)
 	return id
 }
@@ -64,9 +63,12 @@ func (entitiesStorage *entitiesImpl) EnsureExists(entity EntityID) {
 	if ok := entitiesStorage.entities.Get(entity); ok {
 		return
 	}
-	for i := entity; i < EntityID(entitiesStorage.counter); i++ {
-		entitiesStorage.holes.Add(entity)
+	for entitiesStorage.counter+1 < entity {
+		entitiesStorage.counter += 1
+		holeEntity := entitiesStorage.counter
+		entitiesStorage.holes.Add(holeEntity)
 	}
+	entitiesStorage.counter = max(entitiesStorage.counter, entity)
 	entitiesStorage.entities.Add(entity)
 	entitiesStorage.holes.Remove(entity)
 }
