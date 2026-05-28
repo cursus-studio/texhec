@@ -13,18 +13,18 @@ goos: linux
 goarch: amd64
 pkg: engine/modules/hierarchy/test
 cpu: Intel(R) Core(TM) i5-8350U CPU @ 1.70GHz
-BenchmarkChildren_1-8                          	223546735	         5.381 ns/op
-BenchmarkChildren_10-8                         	217609297	         5.488 ns/op
-BenchmarkChildren_100-8                        	223566892	         5.360 ns/op
-BenchmarkFlatChildren_1_1-8                    	172945767	         6.968 ns/op
-BenchmarkFlatChildren_10_10-8                  	179091206	         6.708 ns/op
-BenchmarkAddChildToParentWithGrandParent-8     	 6948628	       161.4 ns/op
-BenchmarkAddChildToParentWith5GrandParents-8   	 6925312	       162.8 ns/op
-BenchmarkRemoveChild-8                         	 1547041	       760.1 ns/op
-BenchmarkRemoveParentWith1Children-8           	   76017	     15405 ns/op
-BenchmarkRemoveParentWith100Children-8         	   10000	    109442 ns/op
+BenchmarkChildren_1-8                          	204298142	         5.754 ns/op
+BenchmarkChildren_10-8                         	205309812	         5.704 ns/op
+BenchmarkChildren_100-8                        	205420506	         5.983 ns/op
+BenchmarkFlatChildren_1_1-8                    	164552872	         7.289 ns/op
+BenchmarkFlatChildren_10_10-8                  	164600490	         7.427 ns/op
+BenchmarkAddChildToParentWithGrandParent-8     	 6845421	       160.1 ns/op
+BenchmarkAddChildToParentWith5GrandParents-8   	 7143522	       167.6 ns/op
+BenchmarkRemoveChild-8                         	 1297357	       911.9 ns/op
+BenchmarkRemoveParentWith1Children-8           	   90379	     15252 ns/op
+BenchmarkRemoveParentWith100Children-8         	    9372	    111371 ns/op
 PASS
-ok  	engine/modules/hierarchy/test	15.437s
+ok  	engine/modules/hierarchy/test	16.594s
 ```
 ## Lines of code
 ```
@@ -33,15 +33,10 @@ github.com/AlDanial/cloc
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
 Go                               9            127             22            587
-Markdown                         1              0              0              2
 -------------------------------------------------------------------------------
-SUM:                            10            127             22            589
+SUM:                             9            127             22            587
 -------------------------------------------------------------------------------
 ```
-## TODO
-abstract `InheritGroups` to inherit allowing to inherit any component.
-Try to reduce calls during removal.
-
 ## Types
 ### type Service
 Type: `engine/modules/hierarchy.Service`
