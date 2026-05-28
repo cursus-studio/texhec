@@ -8,9 +8,9 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                               3             49             24            223
+Go                               3             49             24            222
 -------------------------------------------------------------------------------
-SUM:                             3             49             24            223
+SUM:                             3             49             24            222
 -------------------------------------------------------------------------------
 ```
 ## Types
@@ -161,10 +161,6 @@ Type: `func(by engine/services/ecs.EntityID, blueprint engine/services/ecs.Entit
 
 `engine/modules/grid`:
   - `engine/modules/grid.Coords`
-
-`engine/modules/groups`:
-  - `engine/modules/groups.Inherit`
-  - `engine/modules/groups.InheritGroupsComponent`
 
 `engine/modules/inputs`:
   - `engine/modules/inputs.KeepSelected`

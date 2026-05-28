@@ -7,7 +7,7 @@ to do not be visible for a camera despite being in its view
 ```
 $ go test ./... -bench=.
 PASS
-ok  	engine/modules/groups/test	0.005s
+ok  	engine/modules/groups/test	0.006s
 ```
 ## Lines of code
 ```
@@ -15,9 +15,9 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                               7             52              3            215
+Go                               7             43             75            158
 -------------------------------------------------------------------------------
-SUM:                             7             52              3            215
+SUM:                             7             43             75            158
 -------------------------------------------------------------------------------
 ```
 ## Types
@@ -28,7 +28,10 @@ Type: `engine/modules/groups.Service`
 Type: `func() engine/services/ecs.ComponentsArray[engine/modules/groups.GroupsComponent]`
 
 #### method Service Inherit
-Type: `func() engine/services/ecs.ComponentsArray[engine/modules/groups.InheritGroupsComponent]`
+Type: `func() engine/services/ecs.ComponentsArray[engine/modules/hierarchy.InheritComponent[engine/modules/groups.GroupsComponent]]`
+
+#### method Service InheritGroups
+Type: `func(engine/services/ecs.EntityID)`
 
 ### type Group
 Type: `engine/modules/groups.Group`
@@ -61,9 +64,6 @@ Type: `func(g2 engine/modules/groups.GroupsComponent) engine/modules/groups.Grou
 #### method GroupsComponent SharesAnyGroup
 Type: `func(g2 engine/modules/groups.GroupsComponent) bool`
 
-### type InheritGroupsComponent
-Type: `engine/modules/groups.InheritGroupsComponent`
-
 ## Variables
 ### var Groupless
 Type: `engine/modules/groups.Group`
@@ -79,21 +79,22 @@ Type: `func() engine/modules/groups.GroupsComponent`
 ## Dependencies
 `engine`:
   - `engine.EngineWorld`
-  - `engine.Hierarchy`
   - `engine.World`
 
 `engine/modules/groups`:
   - `engine/modules/groups.Component`
   - `engine/modules/groups.DefaultGroups`
   - `engine/modules/groups.GroupsComponent`
-  - `engine/modules/groups.InheritGroupsComponent`
   - `engine/modules/groups.Service`
 
 `engine/modules/hierarchy`:
-  - `engine/modules/hierarchy.Children`
-  - `engine/modules/hierarchy.Component`
-  - `engine/modules/hierarchy.Parent`
+  - `engine/modules/hierarchy.Inherit`
+  - `engine/modules/hierarchy.InheritComponent`
   - `engine/modules/hierarchy.Service`
+  - `engine/modules/hierarchy.ServiceT`
+
+`engine/modules/hierarchy/pkg`:
+  - `engine/modules/hierarchy/pkg.PkgT`
 
 `engine/modules/typeregistry/pkg`:
   - `engine/modules/typeregistry/pkg.PkgT`
@@ -102,15 +103,10 @@ Type: `func() engine/modules/groups.GroupsComponent`
   - `engine/pkg.Pkg`
 
 `engine/services/ecs`:
-  - `engine/services/ecs.AddDependency`
-  - `engine/services/ecs.AddDirtySet`
-  - `engine/services/ecs.BeforeGet`
-  - `engine/services/ecs.Clear`
   - `engine/services/ecs.ComponentsArray`
   - `engine/services/ecs.EntityID`
   - `engine/services/ecs.Get`
   - `engine/services/ecs.GetComponentsArray`
-  - `engine/services/ecs.NewDirtySet`
   - `engine/services/ecs.Set`
   - `engine/services/ecs.SetEmpty`
   - `engine/services/ecs.World`

@@ -6,7 +6,6 @@ import (
 	"core/modules/tile"
 	"core/modules/ui"
 	"engine/modules/collider"
-	"engine/modules/groups"
 	"engine/modules/inputs"
 	"engine/modules/render"
 
@@ -38,7 +37,7 @@ func (s *service) PreviewPath(e pathfind.PreviewPathEvent) {
 
 		s.Render().Mesh().Set(entity, render.NewMesh(s.Definitions().Assets().SquareMesh))
 		s.Render().Texture().Set(entity, render.NewTexture(s.Definitions().Hud().Cannot))
-		s.Groups().Inherit().Set(entity, groups.InheritGroupsComponent{})
+		s.Groups().InheritGroups(entity)
 
 		s.Collider().Component().Set(entity, collider.NewCollider(s.Definitions().Assets().SquareCollider))
 
@@ -53,7 +52,7 @@ func (s *service) PreviewPath(e pathfind.PreviewPathEvent) {
 
 	s.Render().Mesh().Set(entity, render.NewMesh(s.Definitions().Assets().SquareMesh))
 	s.Render().Texture().Set(entity, render.NewTexture(s.Definitions().Hud().Can))
-	s.Groups().Inherit().Set(entity, groups.InheritGroupsComponent{})
+	s.Groups().InheritGroups(entity)
 
 	s.Collider().Component().Set(entity, collider.NewCollider(s.Definitions().Assets().SquareCollider))
 	if destination.X == tile.Coord(e.Coords.X) && destination.Y == tile.Coord(e.Coords.Y) {
@@ -104,7 +103,7 @@ func (s *service) OnObjectSelect(e ui.SelectEvent[ui.ObjectComponent]) {
 
 		s.Render().Mesh().Set(marker, render.NewMesh(s.Definitions().Assets().SquareMesh))
 		s.Render().Texture().Set(marker, render.NewTexture(s.Definitions().Hud().Target))
-		s.Groups().Inherit().Set(marker, groups.InheritGroupsComponent{})
+		s.Groups().InheritGroups(marker)
 
 		s.Tile().Layer().Set(marker, tile.NewLayer(definitions.PathLayer))
 		s.Tile().Pos().Set(marker, tile.NewPos(target.Coords.Coords()))

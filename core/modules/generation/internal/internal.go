@@ -7,7 +7,6 @@ import (
 	"engine/modules/batcher"
 	"engine/modules/collider"
 	"engine/modules/grid"
-	"engine/modules/groups"
 	"engine/modules/inputs"
 	"engine/modules/metadata"
 	"engine/modules/noise"
@@ -213,7 +212,7 @@ func (s *service) GenerateOn(event tile.MissingChunkEvent) {
 		chunkEntity := s.World().NewEntity()
 
 		s.Hierarchy().SetParent(chunkEntity, worldGenerationEntity)
-		s.Groups().Inherit().Set(chunkEntity, groups.InheritGroupsComponent{})
+		s.Groups().InheritGroups(chunkEntity)
 		size := s.Tile().GetTileSize()
 		size.Size[0] *= float32(s.Grid().ChunkSize())
 		size.Size[1] *= float32(s.Grid().ChunkSize())

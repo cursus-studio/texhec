@@ -68,7 +68,7 @@ func addScene(world game.GameWorld, sceneParent ecs.EntityID) {
 		bg := world.World().NewEntity()
 		world.Hierarchy().SetParent(bg, bgCamera)
 		world.Transform().Parent().Set(bg, transform.NewParent(transform.RelativePos|transform.RelativeSizeXY))
-		world.Groups().Inherit().Set(bg, groups.InheritGroupsComponent{})
+		world.Groups().InheritGroups(bg)
 		world.Ui().AnimatedBackground().Set(bg, ui.AnimatedBackgroundComponent{})
 	}
 
@@ -84,7 +84,7 @@ func addScene(world game.GameWorld, sceneParent ecs.EntityID) {
 	world.Hierarchy().SetParent(gameCamera, worldEntity)
 	world.UUID().Component().Set(gameCamera, uuid.New([16]byte{48}))
 	world.Camera().Ortho().Set(gameCamera, camera.NewOrtho(-1000, +1000))
-	world.Groups().Inherit().Set(gameCamera, groups.InheritGroupsComponent{})
+	world.Groups().InheritGroups(gameCamera)
 	world.Camera().Mobile().Set(gameCamera, camera.NewMobileCamera())
 	world.Camera().Limits().Set(gameCamera, camera.NewCameraLimits(
 		10./float32(MAX_ZOOM), 10,

@@ -35,9 +35,6 @@ Change main algorithm from spatial algorithm to tree algorithm.
 Create methods to perform only shallow comparisons or only deep comparisons.
 - ### [graphics](/engine/modules/graphics/readme/README.md)
 Check `vulcan` and `wasm` as opengl alternatives
-- ### [hierarchy](/engine/modules/hierarchy/readme/README.md)
-abstract `InheritGroups` to inherit allowing to inherit any component.
-Try to reduce calls during removal.
 - ### [inputs](/engine/modules/inputs/readme/README.md)
 Implement a proper input cursor and improve focusing and unfocusing on input
 - ### [netsync](/engine/modules/netsync/readme/README.md)

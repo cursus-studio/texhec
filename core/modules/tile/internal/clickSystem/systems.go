@@ -7,7 +7,6 @@ import (
 	"core/modules/tile"
 	"core/modules/ui"
 	"engine/modules/collider"
-	"engine/modules/groups"
 	"engine/modules/inputs"
 	"engine/modules/render"
 	"engine/modules/text"
@@ -110,7 +109,7 @@ func (s *system) SelectEntity(e ui.SelectEvent[ui.ObjectComponent]) {
 
 		s.Render().Mesh().Set(marker, render.NewMesh(s.Definitions().Assets().SquareMesh))
 		s.Render().Texture().Set(marker, render.NewTexture(s.Definitions().Hud().Selected))
-		s.Groups().Inherit().Set(marker, groups.InheritGroupsComponent{})
+		s.Groups().InheritGroups(marker)
 
 		s.Collider().Component().Set(marker, collider.NewCollider(s.Definitions().Assets().SquareCollider))
 

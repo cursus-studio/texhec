@@ -8,10 +8,10 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                               3             42             12            278
+Go                               3             42             12            277
 Markdown                         1              3              0             13
 -------------------------------------------------------------------------------
-SUM:                             4             45             12            291
+SUM:                             4             45             12            290
 -------------------------------------------------------------------------------
 ```
 ## Types
@@ -78,10 +78,6 @@ Type: `func() error`
   - `engine/modules/grid.SetTile`
   - `engine/modules/grid.X`
   - `engine/modules/grid.Y`
-
-`engine/modules/groups`:
-  - `engine/modules/groups.Inherit`
-  - `engine/modules/groups.InheritGroupsComponent`
 
 `engine/modules/inputs`:
   - `engine/modules/inputs.Stack`

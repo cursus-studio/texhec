@@ -23,8 +23,8 @@ func TestHierarchy(t *testing.T) {
 	grandChild := setup.world.NewEntity()
 	setup.hierarchy.SetParent(grandChild, child)
 
-	setup.groups.Inherit().Set(grandChild, groups.InheritGroupsComponent{})
-	setup.groups.Inherit().Set(child, groups.InheritGroupsComponent{})
+	setup.groups.InheritGroups(grandChild)
+	setup.groups.InheritGroups(child)
 
 	setup.expectGroups(child, defaultGroups)
 	setup.expectGroups(grandChild, defaultGroups)

@@ -8,10 +8,10 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                               7             98             16            451
+Go                               7             98             16            449
 Markdown                         1              8              0             27
 -------------------------------------------------------------------------------
-SUM:                             8            106             16            478
+SUM:                             8            106             16            476
 -------------------------------------------------------------------------------
 ```
 ## Types
@@ -169,10 +169,6 @@ Type: `func[Component any](tick engine/modules/loop.TickEvent, entities []engine
   - `engine/modules/collider.Direction`
   - `engine/modules/collider.NewCollider`
   - `engine/modules/collider.Pos`
-
-`engine/modules/groups`:
-  - `engine/modules/groups.Inherit`
-  - `engine/modules/groups.InheritGroupsComponent`
 
 `engine/modules/inputs`:
   - `engine/modules/inputs.KeepSelected`

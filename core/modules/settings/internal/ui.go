@@ -5,7 +5,6 @@ import (
 	"core/modules/definitions"
 	"core/modules/settings"
 	"engine/modules/audio"
-	"engine/modules/groups"
 	"engine/modules/inputs"
 	"engine/modules/loop"
 	"engine/modules/scene"
@@ -70,7 +69,7 @@ func (s *system) ListenRender(parent ecs.EntityID) error {
 	// changes
 	labelEntity := s.World().NewEntity()
 	s.Hierarchy().SetParent(labelEntity, parent)
-	s.Groups().Inherit().Set(labelEntity, groups.InheritGroupsComponent{})
+	s.Groups().InheritGroups(labelEntity)
 
 	s.Transform().Parent().Set(labelEntity, transform.NewParent(transform.RelativePos|transform.RelativeSizeX))
 	s.Transform().Size().Set(labelEntity, transform.NewSize(1, 50, 1))
