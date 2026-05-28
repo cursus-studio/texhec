@@ -8,9 +8,9 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                               3             49             24            222
+Go                               3             54             24            281
 -------------------------------------------------------------------------------
-SUM:                             3             49             24            222
+SUM:                             3             54             24            281
 -------------------------------------------------------------------------------
 ```
 ## Types
@@ -30,6 +30,9 @@ Type: `func(core/modules/deploy.ExecuteEvent)`
 
 #### method Service Preview
 Type: `func(core/modules/deploy.PreviewEvent)`
+
+#### method Service Reach
+Type: `func() core/modules/reach.ServiceT[core/modules/deploy.Component]`
 
 #### method Service Select
 Type: `func(core/modules/deploy.SelectEvent)`
@@ -103,9 +106,11 @@ Type: `func(by engine/services/ecs.EntityID, blueprint engine/services/ecs.Entit
 ## Dependencies
 `core/game`:
   - `core/game.Definitions`
+  - `core/game.Deploy`
   - `core/game.GameWorld`
   - `core/game.Obstruction`
   - `core/game.Player`
+  - `core/game.Reach`
   - `core/game.Tile`
   - `core/game.Ui`
 
@@ -126,6 +131,7 @@ Type: `func(by engine/services/ecs.EntityID, blueprint engine/services/ecs.Entit
   - `core/modules/deploy.NewExecuteEvent`
   - `core/modules/deploy.NewPreviewEvent`
   - `core/modules/deploy.PreviewEvent`
+  - `core/modules/deploy.Reach`
   - `core/modules/deploy.SelectEvent`
   - `core/modules/deploy.Service`
 
@@ -142,7 +148,20 @@ Type: `func(by engine/services/ecs.EntityID, blueprint engine/services/ecs.Entit
   - `core/modules/player.NewOwner`
   - `core/modules/player.Owner`
 
+`core/modules/reach`:
+  - `core/modules/reach.Component`
+  - `core/modules/reach.Distance`
+  - `core/modules/reach.ErrOutsideOfReach`
+  - `core/modules/reach.NewReach`
+  - `core/modules/reach.Reach`
+  - `core/modules/reach.Reaches`
+  - `core/modules/reach.ServiceT`
+
+`core/modules/reach/pkg`:
+  - `core/modules/reach/pkg.PkgT`
+
 `core/modules/tile`:
+  - `core/modules/tile.Coord`
   - `core/modules/tile.ErrExpectedOneConfiguration`
   - `core/modules/tile.GetConfig`
   - `core/modules/tile.Layer`
@@ -159,7 +178,12 @@ Type: `func(by engine/services/ecs.EntityID, blueprint engine/services/ecs.Entit
   - `core/modules/ui.NewUnselect`
   - `core/modules/ui.ObjectComponent`
 
+`engine/modules/entityregistry`:
+  - `engine/modules/entityregistry.Register`
+  - `engine/modules/entityregistry.Service`
+
 `engine/modules/grid`:
+  - `engine/modules/grid.Coord`
   - `engine/modules/grid.Coords`
 
 `engine/modules/inputs`:
@@ -183,6 +207,7 @@ Type: `func(by engine/services/ecs.EntityID, blueprint engine/services/ecs.Entit
   - `engine/services/ecs.GetComponentsArray`
   - `engine/services/ecs.GetEntities`
   - `engine/services/ecs.Set`
+  - `engine/services/ecs.SetEmpty`
 
 ### Third Party
 - `github.com/go-gl/mathgl/mgl32`

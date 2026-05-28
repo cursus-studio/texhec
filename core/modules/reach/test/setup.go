@@ -23,7 +23,7 @@ type Setup struct {
 func NewSetup() Setup {
 	c := ioc.NewContainer(
 		corepkg.Pkg,
-		reachpkg.PkgT[FeatureComponent](),
+		reachpkg.PkgT[FeatureComponent],
 	)
 	s := ioc.GetServices[Setup](c)
 	return s
@@ -61,7 +61,7 @@ func (s *Setup) ExpectTilesWithinReach(t *testing.T, expected, actual []grid.Coo
 func (s *Setup) getTilesWithinReach(
 	pos tile.PosComponent,
 	size tile.SizeComponent,
-	reachRange tile.Coord,
+	reachRange grid.Coord,
 ) []grid.Coords {
 	entity := s.World().NewEntity()
 	s.Tile().Pos().Set(entity, pos)

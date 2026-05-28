@@ -73,31 +73,29 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 	})
 })
 
-func PkgT[Tile grid.TileConstraint]() ioc.Pkg {
-	return ioc.NewPkg(func(b ioc.Builder) {
-		pkgs := []ioc.Pkg{
-			typeregistrypkg.PkgT[grid.ChunkComponent[Tile]],
-		}
-		for _, pkg := range pkgs {
-			pkg(b)
-		}
-		ioc.Register(b, func(c ioc.Dic) ConfigT[Tile] {
-			return NewConfigT[Tile]()
-		})
-		ioc.Register(b, func(c ioc.Dic) grid.ServiceT[Tile] {
-			return service.NewServiceT[Tile](c)
-		})
+func PkgT[Tile grid.TileConstraint](b ioc.Builder) {
+	pkgs := []ioc.Pkg{
+		typeregistrypkg.PkgT[grid.ChunkComponent[Tile]],
+	}
+	for _, pkg := range pkgs {
+		pkg(b)
+	}
+	ioc.Register(b, func(c ioc.Dic) ConfigT[Tile] {
+		return NewConfigT[Tile]()
+	})
+	ioc.Register(b, func(c ioc.Dic) grid.ServiceT[Tile] {
+		return service.NewServiceT[Tile](c)
+	})
 
-		ioc.Wrap(b, func(c ioc.Dic, collider collider.Service) {
-			config := ioc.Get[ConfigT[Tile]](c)
-			if config.GetHoverEvent() == nil {
-				return
-			}
-			policy := gridcollider.NewColliderWithPolicy[Tile](
-				c,
-				config.GetHoverEvent(),
-			)
-			collider.AddRayFallThroughPolicy(policy)
-		})
+	ioc.Wrap(b, func(c ioc.Dic, collider collider.Service) {
+		config := ioc.Get[ConfigT[Tile]](c)
+		if config.GetHoverEvent() == nil {
+			return
+		}
+		policy := gridcollider.NewColliderWithPolicy[Tile](
+			c,
+			config.GetHoverEvent(),
+		)
+		collider.AddRayFallThroughPolicy(policy)
 	})
 }

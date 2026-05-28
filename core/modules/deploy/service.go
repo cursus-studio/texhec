@@ -2,6 +2,7 @@
 package deploy
 
 import (
+	"core/modules/reach"
 	"engine/modules/grid"
 	"engine/services/ecs"
 )
@@ -16,12 +17,11 @@ func NewDeploy(deployable ...ecs.EntityID) Component {
 	}
 }
 
-// TODO:
-// - when unit moves below deployed building it doesn't turn red
-
 //
 
 type Service interface {
+	Reach() reach.ServiceT[Component]
+
 	Component() ecs.ComponentsArray[Component]
 
 	// deploy differs from execute event by who deploys.

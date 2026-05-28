@@ -25,6 +25,8 @@ Research materials:
 - ### [player](/core/modules/player/readme/README.md)
 Restrict actions to allow only user to perform his actions.
 Perhaps attach `PlayerComponent` to camera.
+- ### [tile](/core/modules/tile/readme/README.md)
+Currently animated tiles aren't supported and there is a big chance that they won't be supported
 ## [engine](/engine/readme/README.md)
 - ### [camera](/engine/modules/camera/readme/README.md)
 clean up pkg and move logic to internal

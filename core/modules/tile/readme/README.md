@@ -103,13 +103,16 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                               9            201             78           1145
+Go                               9            200             74           1145
 GLSL                             3             31              2            112
-Markdown                         2             10              0             84
+Markdown                         3             10              0             85
 -------------------------------------------------------------------------------
-SUM:                            14            242             80           1341
+SUM:                            15            241             76           1342
 -------------------------------------------------------------------------------
 ```
+## TODO
+Currently animated tiles aren't supported and there is a big chance that they won't be supported
+
 ## Types
 ### type Service
 Type: `core/modules/tile.Service`
