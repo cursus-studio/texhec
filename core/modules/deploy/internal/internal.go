@@ -6,6 +6,7 @@ import (
 	"core/modules/deploy"
 	"core/modules/obstruction"
 	"core/modules/player"
+	"core/modules/reach"
 	"core/modules/tile"
 	"core/modules/ui"
 	"engine/modules/grid"
@@ -30,6 +31,7 @@ func (c1 *PreviewedComponent) Equal(c2 PreviewedComponent) bool {
 
 type service struct {
 	game.GameWorld `inject:""`
+	ReachT         reach.ServiceT[deploy.Component] `inject:""`
 
 	component ecs.ComponentsArray[deploy.Component]
 	previewed ecs.ComponentsArray[PreviewedComponent]
@@ -37,6 +39,7 @@ type service struct {
 
 func NewService(c ioc.Dic) deploy.Service {
 	s := ioc.GetServices[*service](c)
+	s.ReachT.Component().SetEmpty(reach.NewReach[deploy.Component](1))
 
 	s.component = ecs.GetComponentsArray[deploy.Component](s.World())
 	s.previewed = ecs.GetComponentsArray[PreviewedComponent](s.World())
@@ -49,6 +52,7 @@ func NewService(c ioc.Dic) deploy.Service {
 }
 
 func (s *service) Component() ecs.ComponentsArray[deploy.Component] { return s.component }
+func (s *service) Reach() reach.ServiceT[deploy.Component]          { return s.ReachT }
 
 func (s *service) Deploy(
 	blueprint,
@@ -117,9 +121,15 @@ func (s *service) Preview(e deploy.PreviewEvent) {
 	s.Inputs().KeepSelected().Set(placeholderEntity, inputs.KeepSelectedComponent{})
 	s.previewed.Set(placeholderEntity, previewComp)
 
-	if len(previewComp.Collisions) == 0 {
+	isInReach := s.GameWorld.Deploy().Reach().Reaches(e.By, placeholderEntity)
+	if len(previewComp.Collisions) == 0 && isInReach {
 		s.Render().Color().Set(placeholderEntity, render.NewColor(mgl32.Vec4{0, 1, 0, 1}))
 		s.Inputs().LeftClick().Set(placeholderEntity, inputs.NewLeftClick(deploy.NewExecuteEvent(e.By, e.Blueprint).ApplyCoords(e.Coords)))
+		return
+	}
+
+	if !isInReach {
+		s.Render().Color().Set(placeholderEntity, render.NewColor(mgl32.Vec4{1, 0, 0, 1}))
 		return
 	}
 
@@ -147,20 +157,42 @@ func (s *service) Execute(e deploy.ExecuteEvent) {
 	}
 	events.Emit(s.Events(), ui.NewUnselect[ui.ObjectComponent]())
 
-	// pay
-	// ...
-
-	// check can place
-	pos := tile.NewPos(e.Coords.Coords())
-	size, _ := s.Tile().Size().Get(e.Blueprint)
-	blueprintObstruction, _ := s.Obstruction().Component().Get(e.Blueprint)
-
-	aabb := obstruction.NewAABB(pos, size)
-	collisions := s.Obstruction().Collisions(aabb, blueprintObstruction.Obstruction)
-	if len(collisions) != 0 {
+	// by
+	byPos, ok := s.Tile().Pos().Get(e.By)
+	if !ok {
 		s.Logger().Log(obstruction.ErrPositionIsOccupied)
 		return
 	}
+	bySize, _ := s.Tile().Size().Get(e.By)
+	reachComp, _ := s.GameWorld.Deploy().Reach().Component().Get(e.By)
+
+	// target
+	pos := tile.NewPos(e.Coords.Coords())
+	size, _ := s.Tile().Size().Get(e.Blueprint)
+
+	// check can place
+	{ // reach
+		dist := s.GameWorld.Reach().Distance(byPos, bySize, pos, size)
+		isInReach := dist <= tile.Coord(reachComp.Reach)
+		if !isInReach {
+			s.Logger().Log(reach.ErrOutsideOfReach)
+			return
+		}
+	}
+	{ // obstruction
+		blueprintObstruction, _ := s.Obstruction().Component().Get(e.Blueprint)
+
+		aabb := obstruction.NewAABB(pos, size)
+		collisions := s.Obstruction().Collisions(aabb, blueprintObstruction.Obstruction)
+
+		if len(collisions) != 0 {
+			s.Logger().Log(obstruction.ErrPositionIsOccupied)
+			return
+		}
+	}
+
+	// pay
+	// ...
 
 	// place
 	deployed := s.Prototype().Clone(e.Blueprint)

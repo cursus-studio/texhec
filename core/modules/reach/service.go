@@ -4,14 +4,19 @@ import (
 	"core/modules/tile"
 	"engine/modules/grid"
 	"engine/services/ecs"
+	"errors"
+)
+
+var (
+	ErrOutsideOfReach error = errors.New("reach: outside of reach")
 )
 
 // stores reach distance squared (squared to avoid Sqrt)
 type Component[FeatureComponent any] struct {
-	Reach tile.Coord
+	Reach grid.Coord
 }
 
-func NewReach[FeatureComponent any](reach tile.Coord) Component[FeatureComponent] {
+func NewReach[FeatureComponent any](reach grid.Coord) Component[FeatureComponent] {
 	return Component[FeatureComponent]{reach}
 }
 

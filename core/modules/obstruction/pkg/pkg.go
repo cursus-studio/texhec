@@ -16,7 +16,7 @@ import (
 
 var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 	pkgs := []ioc.Pkg{
-		gridpkg.PkgT[obstruction.Obstruction](),
+		gridpkg.PkgT[obstruction.Obstruction],
 
 		typeregistrypkg.PkgT[obstruction.Component],
 		typeregistrypkg.PkgT[obstruction.DeployedComponent],

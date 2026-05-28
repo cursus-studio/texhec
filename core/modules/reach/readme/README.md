@@ -9,11 +9,11 @@ goos: linux
 goarch: amd64
 pkg: core/modules/reach/test
 cpu: Intel(R) Core(TM) i5-8350U CPU @ 1.70GHz
-BenchmarkDist-8                 	100000000	        11.22 ns/op
-Benchmark4TilesWithinReach-8    	12902502	        94.32 ns/op
-Benchmark12TilesWithinReach-8   	 6608149	       181.5 ns/op
+BenchmarkDist-8                 	92555841	        11.74 ns/op
+Benchmark4TilesWithinReach-8    	13877070	        90.06 ns/op
+Benchmark12TilesWithinReach-8   	 7372086	       161.5 ns/op
 PASS
-ok  	core/modules/reach/test	3.554s
+ok  	core/modules/reach/test	3.543s
 ```
 ## Lines of code
 ```
@@ -21,10 +21,10 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                               8             60             29            354
+Go                               8             61             29            364
 Markdown                         1              0              0              1
 -------------------------------------------------------------------------------
-SUM:                             9             60             29            355
+SUM:                             9             61             29            365
 -------------------------------------------------------------------------------
 ```
 ## Types
@@ -52,11 +52,15 @@ Type: `core/modules/reach.Component[FeatureComponent any]`
 stores reach distance squared (squared to avoid Sqrt)
 
 #### property Component Reach
-Type: `core/modules/tile.Coord`
+Type: `engine/modules/grid.Coord`
+
+## Variables
+### var ErrOutsideOfReach
+Type: `error`
 
 ## Functions
 ### func NewReach
-Type: `func[FeatureComponent any](reach core/modules/tile.Coord) core/modules/reach.Component[FeatureComponent]`
+Type: `func[FeatureComponent any](reach engine/modules/grid.Coord) core/modules/reach.Component[FeatureComponent]`
 
 
 ## Dependencies
@@ -95,6 +99,9 @@ Type: `func[FeatureComponent any](reach core/modules/tile.Coord) core/modules/re
   - `engine/modules/grid.NewCoords`
   - `engine/modules/grid.X`
   - `engine/modules/grid.Y`
+
+`engine/modules/typeregistry/pkg`:
+  - `engine/modules/typeregistry/pkg.PkgT`
 
 `engine/services/ecs`:
   - `engine/services/ecs.ComponentsArray`

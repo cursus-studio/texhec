@@ -16,7 +16,7 @@ import (
 func isComponent[T any]() bool {
 	t := reflect.TypeFor[T]()
 	typeName := t.String()
-	return strings.HasSuffix(typeName, "Component")
+	return strings.HasSuffix(typeName, "Component") || strings.Contains(typeName, "Component[")
 }
 
 func isComparable[T any]() bool {

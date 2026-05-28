@@ -49,7 +49,7 @@ type Config interface {
 
 var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 	pkgs := []ioc.Pkg{
-		gridpkg.PkgT[tile.ID](),
+		gridpkg.PkgT[tile.ID],
 		relationpkg.SpatialRelationPkg(
 			func(w ecs.World) ecs.DirtySet {
 				dirtySet := ecs.NewDirtySet()
@@ -110,11 +110,6 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 				return nil
 			}),
 			ecs.NewSystemRegister(func() error {
-				// tilerenderer
-				// TODO
-				// currently doesn't support animated tiles
-				// always renderes first frame if something is animated
-
 				return tilerenderer.NewSystem(c)
 			}),
 			ioc.Get[Config](c).GetTileSize(),

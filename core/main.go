@@ -112,7 +112,7 @@ func main() {
 		world.Logger().Log(err)
 	}
 
-	events.Emit(world.Events(), scene.NewChangeSceneEvent(definitions.MenuID))
+	events.Emit(world.Events(), scene.NewChangeSceneEvent(definitions.GameID))
 
 	world.Logger().Info(errors.New("initialized engine"))
 	runtime.LockOSThread()

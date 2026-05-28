@@ -43,7 +43,7 @@ func (s *serviceT[Component]) Reaches(fromEntity, toEntity ecs.EntityID) bool {
 	toSize, _ := s.Tile().Size().Get(toEntity)
 
 	dist := s.Reach().Distance(fromPos, fromSize, toPos, toSize)
-	return dist <= reach.Reach
+	return dist <= tile.Coord(reach.Reach)
 }
 func (s *serviceT[Component]) TilesWithinReach(entity ecs.EntityID) []grid.Coords {
 	reachComp, _ := s.component.Get(entity)
