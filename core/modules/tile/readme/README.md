@@ -103,11 +103,11 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                               9            201             78           1147
+Go                               9            201             78           1145
 GLSL                             3             31              2            112
 Markdown                         2             10              0             84
 -------------------------------------------------------------------------------
-SUM:                            14            242             80           1343
+SUM:                            14            242             80           1341
 -------------------------------------------------------------------------------
 ```
 ## Types
@@ -488,12 +488,6 @@ Type: `func() core/modules/tile.ClickEntityEvent`
   - `engine/modules/grid/pkg.ConfigT`
   - `engine/modules/grid/pkg.PkgT`
   - `engine/modules/grid/pkg.SetHoverEvent`
-
-`engine/modules/groups`:
-  - `engine/modules/groups.Component`
-  - `engine/modules/groups.Inherit`
-  - `engine/modules/groups.InheritGroupsComponent`
-  - `engine/modules/groups.SharesAnyGroup`
 
 `engine/modules/inputs`:
   - `engine/modules/inputs.LeftClick`

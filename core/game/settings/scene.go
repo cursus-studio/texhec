@@ -43,7 +43,7 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 
 			buttonArea := world.World().NewEntity()
 			world.Transform().Size().Set(buttonArea, transform.NewSize(500, 200, 1))
-			world.Groups().Inherit().Set(buttonArea, groups.InheritGroupsComponent{})
+			world.Groups().InheritGroups(buttonArea)
 			world.Hierarchy().SetParent(buttonArea, cameraEntity)
 			world.Transform().Parent().Set(buttonArea, transform.NewParent(transform.RelativePos))
 

@@ -50,4 +50,4 @@ func (g1 *GroupsComponent) SharesAnyGroup(g2 GroupsComponent) bool {
 
 //
 
-type InheritGroupsComponent struct{}
+// type InheritGroupsComponent struct{}

@@ -60,14 +60,18 @@ type componentsArray[Component any] struct {
 	onRemove     []OnMod
 }
 
-func newComponentsArray[Component any](entities entitiesInterface) *componentsArray[Component] {
+func ComponentComparator[Component any]() func(c1, c2 Component) bool {
 	equal := func(Component, Component) bool { return false }
 	if reflect.TypeFor[Component]().Comparable() {
 		equal = func(c1, c2 Component) bool { return any(c1) == any(c2) }
 	}
+	return equal
+}
+
+func newComponentsArray[Component any](entities entitiesInterface) *componentsArray[Component] {
 	array := &componentsArray[Component]{
 		entities: entities,
-		equal:    equal,
+		equal:    ComponentComparator[Component](),
 		// empty: default,
 		components: datastructures.NewSparseArray[EntityID, Component](),
 

@@ -3,7 +3,6 @@ package uiservice
 import (
 	"core/modules/ui"
 	"engine/modules/collider"
-	"engine/modules/groups"
 	"engine/modules/inputs"
 	"engine/modules/layout"
 	"engine/modules/render"
@@ -33,7 +32,7 @@ mainLoop:
 		s.Render().Color().Set(menu, render.NewColor(mgl32.Vec4{1, 1, 1, .5}))
 		s.AnimatedBackground().Set(menu, ui.AnimatedBackgroundComponent{})
 
-		s.Groups().Inherit().Set(menu, groups.InheritGroupsComponent{})
+		s.Groups().InheritGroups(menu)
 		s.Collider().Component().Set(menu, collider.NewCollider(s.Definitions().Assets().SquareCollider))
 		s.Inputs().KeepSelected().Set(menu, inputs.KeepSelectedComponent{})
 		s.menuArray.Set(menu, menuComponent{})
@@ -42,7 +41,7 @@ mainLoop:
 		quit := s.World().NewEntity()
 
 		s.Hierarchy().SetParent(quit, menu)
-		s.Groups().Inherit().Set(quit, groups.InheritGroupsComponent{})
+		s.Groups().InheritGroups(quit)
 
 		s.Transform().Pos().Set(quit, transform.NewPos(0, 0, 1))
 		s.Transform().Parent().Set(quit, transform.NewParent(transform.RelativePos))
@@ -65,7 +64,7 @@ mainLoop:
 		// child wrapper
 		childWrapper := s.World().NewEntity()
 		s.Hierarchy().SetParent(childWrapper, menu)
-		s.Groups().Inherit().Set(childWrapper, groups.InheritGroupsComponent{})
+		s.Groups().InheritGroups(childWrapper)
 		s.Transform().Pos().Set(childWrapper, transform.NewPos(0, -30 /* quit height + margin */, 0))
 		s.Transform().Parent().Set(childWrapper, transform.NewParent(transform.RelativePos|transform.RelativeSizeXY))
 

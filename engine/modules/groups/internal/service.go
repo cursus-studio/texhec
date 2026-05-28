@@ -3,6 +3,7 @@ package internal
 import (
 	"engine"
 	"engine/modules/groups"
+	"engine/modules/hierarchy"
 	"engine/services/ecs"
 
 	"github.com/ogiusek/ioc/v2"
@@ -10,23 +11,25 @@ import (
 
 type service struct {
 	engine.EngineWorld `inject:""`
+	HierarchyT         hierarchy.ServiceT[groups.GroupsComponent] `inject:""`
 
-	inheritArray ecs.ComponentsArray[groups.InheritGroupsComponent]
-	groupsArray  ecs.ComponentsArray[groups.GroupsComponent]
+	groupsArray ecs.ComponentsArray[groups.GroupsComponent]
 }
 
 func NewService(c ioc.Dic) groups.Service {
 	t := ioc.GetServices[*service](c)
 
-	t.inheritArray = ecs.GetComponentsArray[groups.InheritGroupsComponent](t.World())
 	t.groupsArray = ecs.GetComponentsArray[groups.GroupsComponent](t.World())
 	t.Init()
 	return t
 }
 
-func (t *service) Component() ecs.ComponentsArray[groups.GroupsComponent] {
-	return t.groupsArray
+func (s *service) Component() ecs.ComponentsArray[groups.GroupsComponent] {
+	return s.groupsArray
 }
-func (t *service) Inherit() ecs.ComponentsArray[groups.InheritGroupsComponent] {
-	return t.inheritArray
+func (s *service) Inherit() ecs.ComponentsArray[hierarchy.InheritComponent[groups.GroupsComponent]] {
+	return s.HierarchyT.Inherit()
+}
+func (s *service) InheritGroups(entity ecs.EntityID) {
+	s.HierarchyT.Inherit().Set(entity, hierarchy.InheritComponent[groups.GroupsComponent]{})
 }

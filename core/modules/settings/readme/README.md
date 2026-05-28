@@ -8,9 +8,9 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                               3             30              8            106
+Go                               3             30              8            105
 -------------------------------------------------------------------------------
-SUM:                             3             30              8            106
+SUM:                             3             30              8            105
 -------------------------------------------------------------------------------
 ```
 ## Types
@@ -52,10 +52,6 @@ Type: `engine/services/ecs.EntityID`
 
 `engine/modules/audio`:
   - `engine/modules/audio.NewPlayEvent`
-
-`engine/modules/groups`:
-  - `engine/modules/groups.Inherit`
-  - `engine/modules/groups.InheritGroupsComponent`
 
 `engine/modules/inputs`:
   - `engine/modules/inputs.LeftClick`

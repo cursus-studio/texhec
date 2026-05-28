@@ -282,8 +282,7 @@ Type: `core/modules/obstruction.Obstruction`
   - `engine/modules/groups.Component`
   - `engine/modules/groups.EmptyGroups`
   - `engine/modules/groups.Group`
-  - `engine/modules/groups.Inherit`
-  - `engine/modules/groups.InheritGroupsComponent`
+  - `engine/modules/groups.InheritGroups`
 
 `engine/modules/inputs`:
   - `engine/modules/inputs.KeepSelected`

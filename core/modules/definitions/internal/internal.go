@@ -102,7 +102,7 @@ func (s *service) Hud() definitions.Hud {
 	}
 	btnAspectRatio := btnAsset.AspectRatio()
 	{
-		s.World.Groups().Inherit().Set(def.Btn, groups.InheritGroupsComponent{})
+		s.World.Groups().InheritGroups(def.Btn)
 		s.World.Groups().Component().Set(def.Btn, groups.EmptyGroups())
 
 		s.World.Transform().AspectRatio().Set(def.Btn, transform.NewAspectRatio(float32(btnAspectRatio.Dx()), float32(btnAspectRatio.Dy()), 0, transform.PrimaryAxisX))
@@ -120,7 +120,7 @@ func (s *service) Hud() definitions.Hud {
 		s.World.Text().FontSize().Set(def.Btn, text.NewFontSize(24))
 	}
 	{
-		s.World.Groups().Inherit().Set(def.Text, groups.InheritGroupsComponent{})
+		s.World.Groups().InheritGroups(def.Text)
 		s.World.Groups().Component().Set(def.Text, groups.EmptyGroups())
 
 		s.World.Transform().Size().Set(def.Text, transform.NewSize(150, 50, 1))
@@ -138,7 +138,7 @@ func (s *service) Hud() definitions.Hud {
 		s.World.Text().FontSize().Set(def.Text, text.NewFontSize(24))
 	}
 	{
-		s.World.Groups().Inherit().Set(def.Input, groups.InheritGroupsComponent{})
+		s.World.Groups().InheritGroups(def.Input)
 		s.World.Groups().Component().Set(def.Input, groups.EmptyGroups())
 
 		s.World.Transform().AspectRatio().Set(def.Input, transform.NewAspectRatio(float32(btnAspectRatio.Dx()), float32(btnAspectRatio.Dy()), 0, transform.PrimaryAxisX))

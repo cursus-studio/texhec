@@ -9,7 +9,6 @@ import (
 	"core/modules/tile"
 	"core/modules/ui"
 	"engine/modules/grid"
-	"engine/modules/groups"
 	"engine/modules/inputs"
 	"engine/modules/render"
 	"engine/services/ecs"
@@ -132,7 +131,7 @@ func (s *service) Preview(e deploy.PreviewEvent) {
 		s.Tile().Layer().Set(entity, tile.NewLayer(definitions.TilePlaceholderLayer))
 		s.Render().Mesh().Set(entity, render.NewMesh(s.Definitions().Assets().SquareMesh))
 		s.Render().Texture().Set(entity, render.NewTexture(s.Definitions().Assets().Blank))
-		s.Groups().Inherit().Set(entity, groups.InheritGroupsComponent{})
+		s.Groups().InheritGroups(entity)
 
 		s.Tile().Layer().Set(entity, tile.NewLayer(definitions.TilePlaceholderLayer))
 		s.Tile().Pos().Set(entity, tile.NewPos(collision.Coords()))

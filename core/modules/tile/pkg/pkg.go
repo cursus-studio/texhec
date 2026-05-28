@@ -14,7 +14,6 @@ import (
 	"engine/modules/entityregistry"
 	"engine/modules/graphics"
 	gridpkg "engine/modules/grid/pkg"
-	"engine/modules/groups"
 	relationpkg "engine/modules/relation/pkg"
 	"engine/modules/render"
 	typeregistrypkg "engine/modules/typeregistry/pkg"
@@ -181,7 +180,7 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 			world.Tile().Layer().Set(entity, tile.NewLayer(layer))
 			world.Render().Mesh().Set(entity, render.NewMesh(world.Definitions().Assets().SquareMesh))
 			world.Render().Texture().Set(entity, render.NewTexture(entity))
-			world.Groups().Inherit().Set(entity, groups.InheritGroupsComponent{})
+			world.Groups().InheritGroups(entity)
 
 			world.Collider().Component().Set(entity, collider.NewCollider(world.Definitions().Assets().SquareCollider))
 		})
