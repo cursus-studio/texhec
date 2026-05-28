@@ -5,8 +5,15 @@ is responsible for managing object features range
 ## Benchmarks
 ```
 $ go test ./... -bench=.
+goos: linux
+goarch: amd64
+pkg: core/modules/reach/test
+cpu: Intel(R) Core(TM) i5-8350U CPU @ 1.70GHz
+BenchmarkDist-8                 	100000000	        11.22 ns/op
+Benchmark4TilesWithinReach-8    	12902502	        94.32 ns/op
+Benchmark12TilesWithinReach-8   	 6608149	       181.5 ns/op
 PASS
-ok  	core/modules/reach/test	0.007s
+ok  	core/modules/reach/test	3.554s
 ```
 ## Lines of code
 ```
@@ -14,10 +21,10 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                               7             59             28            334
+Go                               8             60             29            354
 Markdown                         1              0              0              1
 -------------------------------------------------------------------------------
-SUM:                             8             59             28            335
+SUM:                             9             60             29            355
 -------------------------------------------------------------------------------
 ```
 ## Types
@@ -61,9 +68,11 @@ Type: `func[FeatureComponent any](reach core/modules/tile.Coord) core/modules/re
 `core/modules/reach`:
   - `core/modules/reach.Component`
   - `core/modules/reach.Distance`
+  - `core/modules/reach.NewReach`
   - `core/modules/reach.Reach`
   - `core/modules/reach.Service`
   - `core/modules/reach.ServiceT`
+  - `core/modules/reach.TilesWithinReach`
 
 `core/modules/reach/pkg`:
   - `core/modules/reach/pkg.PkgT`
@@ -92,6 +101,9 @@ Type: `func[FeatureComponent any](reach core/modules/tile.Coord) core/modules/re
   - `engine/services/ecs.EntityID`
   - `engine/services/ecs.Get`
   - `engine/services/ecs.GetComponentsArray`
+  - `engine/services/ecs.NewEntity`
+  - `engine/services/ecs.RemoveEntity`
+  - `engine/services/ecs.Set`
 
 ### Third Party
 - `github.com/ogiusek/ioc/v2`

@@ -18,30 +18,27 @@ type FeatureComponent struct{}
 type Setup struct {
 	game.GameWorld `inject:""`
 	ReachT         reach.ServiceT[FeatureComponent] `inject:""`
-
-	T *testing.T
 }
 
-func NewSetup(t *testing.T) Setup {
+func NewSetup() Setup {
 	c := ioc.NewContainer(
 		corepkg.Pkg,
 		reachpkg.PkgT[FeatureComponent](),
 	)
 	s := ioc.GetServices[Setup](c)
-	s.T = t
 	return s
 }
 
-func (s *Setup) ExpectDist(expected, actual tile.Coord) {
-	s.T.Helper()
+func (s *Setup) ExpectDist(t *testing.T, expected, actual tile.Coord) {
+	t.Helper()
 	if expected == actual {
 		return
 	}
-	s.T.Errorf("expected reach %v but got %v", expected, actual)
+	t.Errorf("expected reach %v but got %v", expected, actual)
 }
 
-func (s *Setup) ExpectTilesWithinReach(expected, actual []grid.Coords) {
-	s.T.Helper()
+func (s *Setup) ExpectTilesWithinReach(t *testing.T, expected, actual []grid.Coords) {
+	t.Helper()
 	sorter := func(a, b grid.Coords) int {
 		if a.X > b.X {
 			return -1
@@ -59,5 +56,18 @@ func (s *Setup) ExpectTilesWithinReach(expected, actual []grid.Coords) {
 	if slices.Equal(expected, actual) {
 		return
 	}
-	s.T.Errorf("expected reach %v but got %v", expected, actual)
+	t.Errorf("expected reach %v but got %v", expected, actual)
+}
+func (s *Setup) getTilesWithinReach(
+	pos tile.PosComponent,
+	size tile.SizeComponent,
+	reachRange tile.Coord,
+) []grid.Coords {
+	entity := s.World().NewEntity()
+	s.Tile().Pos().Set(entity, pos)
+	s.Tile().Size().Set(entity, size)
+	s.ReachT.Component().Set(entity, reach.NewReach[FeatureComponent](reachRange))
+	coords := s.ReachT.TilesWithinReach(entity)
+	s.World().RemoveEntity(entity)
+	return coords
 }

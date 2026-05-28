@@ -59,39 +59,38 @@ func (s *serviceT[Component]) TilesWithinReach(entity ecs.EntityID) []grid.Coord
 	if pos.X != tile.Coord(int(pos.X)) || pos.Y != tile.Coord(int(pos.Y)) {
 		return nil
 	}
-	startX, startY := grid.Coord(pos.X), grid.Coord(pos.Y)
-	sizeX := size.X
-	sizeY := size.Y
+
+	//
+
+	start := grid.NewCoords(grid.Coord(pos.X), grid.Coord(pos.Y))
 	r := grid.Coord(reachComp.Reach)
 
-	minX := startX - r
-	minY := startY - r
-	maxX := startX + sizeX + r - 1
-	maxY := startY + sizeY + r - 1
+	min := grid.NewCoords(start.X-r, start.Y-r)
+	max := grid.NewCoords(start.X+size.X+r-1, start.Y+size.Y+r-1)
 
-	var tiles []grid.Coords
+	tiles := make([]grid.Coords, 0, (max.X-min.X)*(max.Y-min.Y))
 
-	for y := minY; y <= maxY || (minY > maxY && y >= minY); y++ {
-		for x := minX; x <= maxX || (minX > maxX && x >= minX); x++ {
-			if x >= startX && x < startX+sizeX &&
-				y >= startY && y < startY+sizeY {
+	for y := min.Y; y <= max.Y || (min.Y > max.Y && y >= min.Y); y++ {
+		for x := min.X; x <= max.X || (min.X > max.X && x >= min.X); x++ {
+			if x >= start.X && x < start.X+size.X &&
+				y >= start.Y && y < start.Y+size.Y {
 				continue
 			}
 
 			var dx, dy grid.Coord
 
-			fromRight := startX + sizeX
+			fromRight := start.X + size.X
 			if x >= fromRight {
 				dx = x - fromRight + 1
-			} else if x < startX {
-				dx = startX - x
+			} else if x < start.X {
+				dx = start.X - x
 			}
 
-			fromBottom := startY + sizeY
+			fromBottom := start.Y + size.Y
 			if y >= fromBottom {
 				dy = y - fromBottom + 1
-			} else if y < startY {
-				dy = startY - y
+			} else if y < start.Y {
+				dy = start.Y - y
 			}
 
 			if (dx*dx)+(dy*dy) <= r*r {
