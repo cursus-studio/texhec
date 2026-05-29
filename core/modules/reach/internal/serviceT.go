@@ -6,6 +6,7 @@ import (
 	"core/modules/tile"
 	"engine/modules/grid"
 	"engine/services/ecs"
+	"math"
 
 	"github.com/ogiusek/ioc/v2"
 )
@@ -63,7 +64,7 @@ func (s *serviceT[Component]) TilesWithinReach(entity ecs.EntityID) []grid.Coord
 	//
 
 	start := grid.NewCoords(grid.Coord(pos.X), grid.Coord(pos.Y))
-	r := grid.Coord(reachComp.Reach)
+	r := grid.Coord(math.Sqrt(float64(reachComp.Reach)))
 
 	min := grid.NewCoords(start.X-r, start.Y-r)
 	max := grid.NewCoords(start.X+size.X+r-1, start.Y+size.Y+r-1)
@@ -93,7 +94,7 @@ func (s *serviceT[Component]) TilesWithinReach(entity ecs.EntityID) []grid.Coord
 				dy = start.Y - y
 			}
 
-			if (dx*dx)+(dy*dy) <= r*r {
+			if (dx*dx)+(dy*dy) <= grid.Coord(reachComp.Reach) {
 				tiles = append(tiles, grid.NewCoords(grid.Coord(x), grid.Coord(y)))
 			}
 		}

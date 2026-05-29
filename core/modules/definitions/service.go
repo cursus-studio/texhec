@@ -61,6 +61,7 @@ type Assets struct {
 	ExampleAudio ecs.EntityID `path:"audio.wav"`
 
 	Blank          ecs.EntityID
+	Border         ecs.EntityID
 	SquareMesh     ecs.EntityID
 	SquareCollider ecs.EntityID
 	FontAsset      ecs.EntityID `path:"font1.ttf"`
