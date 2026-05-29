@@ -121,6 +121,21 @@ func (s *service) Preview(e deploy.PreviewEvent) {
 	s.Inputs().KeepSelected().Set(placeholderEntity, inputs.KeepSelectedComponent{})
 	s.previewed.Set(placeholderEntity, previewComp)
 
+	for _, coords := range s.GameWorld.Deploy().Reach().TilesWithinReach(e.By) {
+		entity := s.Prototype().Clone(s.Definitions().Assets().Blank)
+		s.Hierarchy().SetParent(entity, worldEntity)
+
+		s.Tile().Layer().Set(entity, tile.NewLayer(definitions.TilePlaceholderLayer))
+		s.Render().Mesh().Set(entity, render.NewMesh(s.Definitions().Assets().SquareMesh))
+		s.Render().Texture().Set(entity, render.NewTexture(s.Definitions().Assets().Border))
+		s.Groups().InheritGroups(entity)
+
+		s.Tile().Layer().Set(entity, tile.NewLayer(definitions.TilePlaceholderLayer))
+		s.Tile().Pos().Set(entity, tile.NewPos(coords.Coords()))
+		s.Ui().Actions().Set(entity, ui.ActionComponent{})
+		s.Render().Color().Set(entity, render.NewColor(mgl32.Vec4{0, 0, .5, 1}))
+	}
+
 	isInReach := s.GameWorld.Deploy().Reach().Reaches(e.By, placeholderEntity)
 	if len(previewComp.Collisions) == 0 && isInReach {
 		s.Render().Color().Set(placeholderEntity, render.NewColor(mgl32.Vec4{0, 1, 0, 1}))

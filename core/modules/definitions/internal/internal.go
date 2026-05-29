@@ -61,6 +61,23 @@ func (s *service) Assets() definitions.Assets {
 		s.World.Assets().Cache().Set(def.Blank, assets.NewCache(asset))
 	}
 	{
+		width, height := 32, 32
+		img := image.NewRGBA(image.Rect(0, 0, width, height))
+		white := color.RGBA{255, 255, 255, 255}
+		for x := range width {
+			img.Set(x, 0, white)
+			img.Set(x, height-1, white)
+		}
+		for y := range height - 2 {
+			img.Set(0, y+1, white)
+			img.Set(width-1, y+1, white)
+		}
+		asset, err := render.NewTextureAsset(img)
+		s.World.Logger().Log(err)
+		def.Border = s.World.World().NewEntity()
+		s.World.Assets().Cache().Set(def.Border, assets.NewCache(asset))
+	}
+	{
 		vertices := []render.Vertex{
 			{Pos: [3]float32{1, 1, 1}, TexturePos: [2]float32{1, 1}},
 			{Pos: [3]float32{1, -1, 1}, TexturePos: [2]float32{1, 0}},

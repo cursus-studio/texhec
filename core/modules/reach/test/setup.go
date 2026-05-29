@@ -66,7 +66,7 @@ func (s *Setup) getTilesWithinReach(
 	entity := s.World().NewEntity()
 	s.Tile().Pos().Set(entity, pos)
 	s.Tile().Size().Set(entity, size)
-	s.ReachT.Component().Set(entity, reach.NewReach[FeatureComponent](reachRange))
+	s.ReachT.Component().Set(entity, reach.NewReach[FeatureComponent](reachRange*reachRange))
 	coords := s.ReachT.TilesWithinReach(entity)
 	s.World().RemoveEntity(entity)
 	return coords

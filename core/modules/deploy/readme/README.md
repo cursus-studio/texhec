@@ -8,9 +8,9 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                               3             54             24            281
+Go                               3             57             24            293
 -------------------------------------------------------------------------------
-SUM:                             3             54             24            281
+SUM:                             3             57             24            293
 -------------------------------------------------------------------------------
 ```
 ## Types
@@ -117,6 +117,7 @@ Type: `func(by engine/services/ecs.EntityID, blueprint engine/services/ecs.Entit
 `core/modules/definitions`:
   - `core/modules/definitions.Assets`
   - `core/modules/definitions.Blank`
+  - `core/modules/definitions.Border`
   - `core/modules/definitions.ObjectPlaceholderLayer`
   - `core/modules/definitions.SquareMesh`
   - `core/modules/definitions.TilePlaceholderLayer`
@@ -156,6 +157,7 @@ Type: `func(by engine/services/ecs.EntityID, blueprint engine/services/ecs.Entit
   - `core/modules/reach.Reach`
   - `core/modules/reach.Reaches`
   - `core/modules/reach.ServiceT`
+  - `core/modules/reach.TilesWithinReach`
 
 `core/modules/reach/pkg`:
   - `core/modules/reach/pkg.PkgT`

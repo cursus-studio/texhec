@@ -8,10 +8,10 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                               3             42              7            309
+Go                               3             42              7            327
 Markdown                         1              1              0              3
 -------------------------------------------------------------------------------
-SUM:                             4             43              7            312
+SUM:                             4             43              7            330
 -------------------------------------------------------------------------------
 ```
 ## TODO
@@ -53,6 +53,9 @@ Assets have fewer dependencies
 Type: `engine/services/ecs.EntityID`
 
 #### property Assets Blank
+Type: `engine/services/ecs.EntityID`
+
+#### property Assets Border
 Type: `engine/services/ecs.EntityID`
 
 #### property Assets SquareMesh
@@ -217,6 +220,7 @@ Type: `core/modules/obstruction.Obstruction`
 `core/modules/definitions`:
   - `core/modules/definitions.Assets`
   - `core/modules/definitions.Blank`
+  - `core/modules/definitions.Border`
   - `core/modules/definitions.Btn`
   - `core/modules/definitions.EaseOutElastic`
   - `core/modules/definitions.Farm`

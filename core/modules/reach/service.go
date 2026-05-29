@@ -16,6 +16,7 @@ type Component[FeatureComponent any] struct {
 	Reach grid.Coord
 }
 
+// takes square of distnace
 func NewReach[FeatureComponent any](reach grid.Coord) Component[FeatureComponent] {
 	return Component[FeatureComponent]{reach}
 }
