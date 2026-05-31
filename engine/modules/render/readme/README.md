@@ -11,13 +11,15 @@ Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
 Go                              11            136             73            640
 GLSL                             2             15              0             42
-Markdown                         1              0              0              1
+Markdown                         1              1              0              2
 -------------------------------------------------------------------------------
-SUM:                            14            151             73            683
+SUM:                            14            152             73            684
 -------------------------------------------------------------------------------
 ```
 ## TODO
 Add frustrum culling. For each camera store all colliding objects.
+
+Abstract shaders.
 
 ## Types
 ### type Service
