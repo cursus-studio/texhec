@@ -41,6 +41,8 @@ Create methods to perform only shallow comparisons or only deep comparisons.
 Check `vulcan` and `wasm` as opengl alternatives
 - ### [inputs](/engine/modules/inputs/readme/README.md)
 Implement a proper input cursor and improve focusing and unfocusing on input
+- ### [interactions](/engine/modules/interactions/readme/README.md)
+Add feature and interaction history
 - ### [netsync](/engine/modules/netsync/readme/README.md)
 Create more features to allow more specific features to allow more specific calls
 - ### [noise](/engine/modules/noise/readme/README.md)

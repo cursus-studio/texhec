@@ -17,6 +17,7 @@ import (
 	groupspkg "engine/modules/groups/pkg"
 	hierarchypkg "engine/modules/hierarchy/pkg"
 	inputspkg "engine/modules/inputs/pkg"
+	interactionspkg "engine/modules/interactions/pkg"
 	layoutpkg "engine/modules/layout/pkg"
 	loggerpkg "engine/modules/logger/pkg"
 	looppkg "engine/modules/loop/pkg"
@@ -56,6 +57,7 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 		graphicspkg.Pkg,
 		gridpkg.Pkg,
 		groupspkg.Pkg,
+		interactionspkg.Pkg,
 		hierarchypkg.Pkg,
 		inputspkg.Pkg,
 		layoutpkg.Pkg,

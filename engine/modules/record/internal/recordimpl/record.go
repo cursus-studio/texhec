@@ -139,8 +139,7 @@ func (t *service) synchronizeArrayState(
 	for _, entity := range entities {
 		if component, ok := worldArray.GetAny(entity); ok {
 			t.worldCopy.EnsureExists(entity)
-			err := worldCopyArray.SetAny(entity, component)
-			t.Logger().Log(err)
+			worldCopyArray.SetAny(entity, component)
 			continue
 		}
 		if t.World().EntityExists(entity) {
@@ -174,7 +173,7 @@ func (t *service) GetWorldArray(arrayType reflect.Type, config record.Config) en
 
 	for _, entity := range entityArray.GetEntities() {
 		component, _ := entityArray.GetAny(entity)
-		_ = array.SetAny(entity, component)
+		array.SetAny(entity, component)
 	}
 
 	return entityArray
@@ -203,7 +202,7 @@ func (t *service) GetWorldCopyArray(arrayType reflect.Type, config record.Config
 
 	for _, entity := range entityArray.GetEntities() {
 		component, _ := entityArray.GetAny(entity)
-		_ = array.SetAny(entity, component)
+		array.SetAny(entity, component)
 	}
 
 	return array

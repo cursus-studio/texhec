@@ -11,12 +11,12 @@ goos: linux
 goarch: amd64
 pkg: engine/modules/prototype/test
 cpu: Intel(R) Core(TM) i5-8350U CPU @ 1.70GHz
-BenchmarkClone1-8         	  579832	      2063 ns/op
-BenchmarkClone2-8         	  478113	      2703 ns/op
-BenchmarkManual1Clone-8   	52015118	        26.10 ns/op
-BenchmarkManual2Clone-8   	39357132	        34.08 ns/op
+BenchmarkClone1-8         	  606054	      2022 ns/op
+BenchmarkClone2-8         	  551721	      2111 ns/op
+BenchmarkManual1Clone-8   	53633864	        21.77 ns/op
+BenchmarkManual2Clone-8   	35382292	        28.28 ns/op
 PASS
-ok  	engine/modules/prototype/test	5.234s
+ok  	engine/modules/prototype/test	4.577s
 ```
 ## Lines of code
 ```

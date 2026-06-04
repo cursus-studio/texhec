@@ -146,7 +146,7 @@ func (t *uuidKeyedRecorder) Apply(config record.Config, recordings ...record.UUI
 					array.Remove(entity)
 					continue
 				}
-				_ = array.SetAny(entity, component)
+				array.SetAny(entity, component)
 			}
 		}
 	}

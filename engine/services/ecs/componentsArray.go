@@ -2,11 +2,8 @@ package ecs
 
 import (
 	"engine/services/datastructures"
-	"errors"
 	"reflect"
 )
-
-var ErrInvalidType error = errors.New("expected an error component")
 
 // interface
 
@@ -18,7 +15,7 @@ type AnyComponentArray interface {
 	GetEntities() []EntityID
 
 	// when type doesn't match error is returned
-	SetAny(EntityID, any) error
+	SetAny(EntityID, any)
 	Remove(EntityID)
 
 	// configuration
@@ -103,21 +100,14 @@ func (c *componentsArray[Component]) Set(entity EntityID, component Component) {
 	}
 }
 
-func (c *componentsArray[Component]) SetAny(entity EntityID, anyComponent any) error {
-	component, ok := anyComponent.(Component)
-	if !ok {
-		return ErrInvalidType
-	}
+func (c *componentsArray[Component]) SetAny(entity EntityID, anyComponent any) {
+	// we use zero in case of invalid call
+	component, _ := anyComponent.(Component)
 	c.Set(entity, component)
-	return nil
 }
 
-func (c *componentsArray[Component]) SetEmpty(empty Component) {
-	c.empty = empty
-}
-func (c *componentsArray[Component]) GetEmpty() Component {
-	return c.empty
-}
+func (c *componentsArray[Component]) SetEmpty(empty Component) { c.empty = empty }
+func (c *componentsArray[Component]) GetEmpty() Component      { return c.empty }
 
 func (c *componentsArray[Component]) Remove(entity EntityID) {
 	if _, ok := c.components.Get(entity); !ok {

@@ -16,9 +16,9 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                              12            204             44           1014
+Go                              12            204             44           1013
 -------------------------------------------------------------------------------
-SUM:                            12            204             44           1014
+SUM:                            12            204             44           1013
 -------------------------------------------------------------------------------
 ```
 ## Types
@@ -131,7 +131,6 @@ Type: `func[Component any](config engine/modules/record.Config) engine/modules/r
 ## Dependencies
 `engine`:
   - `engine.EngineWorld`
-  - `engine.Logger`
   - `engine.UUID`
   - `engine.World`
 
