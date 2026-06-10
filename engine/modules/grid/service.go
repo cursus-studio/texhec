@@ -59,6 +59,20 @@ func NewChunkCoords(x, y Coord) ChunkCoordsComponent {
 
 //
 
+type ClickEvent struct {
+	Chunk  ecs.EntityID
+	Coords Coords
+}
+type HoverEvent struct {
+	Chunk  ecs.EntityID
+	Coords Coords
+}
+
+func NewClickEvent(chunk ecs.EntityID, tile Coords) ClickEvent { return ClickEvent{chunk, tile} }
+func NewHoverEvent(chunk ecs.EntityID, tile Coords) HoverEvent { return HoverEvent{chunk, tile} }
+
+//
+
 // stores coords chunk data
 type CoordsData[Tile TileConstraint] struct {
 	Entity    ecs.EntityID

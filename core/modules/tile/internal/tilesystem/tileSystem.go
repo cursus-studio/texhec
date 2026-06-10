@@ -2,20 +2,16 @@ package tilesystem
 
 import (
 	"core/game"
-	"core/modules/tile"
-	"core/modules/ui"
 	"engine/modules/transform"
 	"engine/services/ecs"
 
-	"github.com/ogiusek/events"
 	"github.com/ogiusek/ioc/v2"
 )
 
 type system struct {
 	game.GameWorld `inject:""`
 
-	tileSize      transform.SizeComponent
-	selectedEvent *tile.SelectEvent
+	tileSize transform.SizeComponent
 }
 
 func NewSystem(c ioc.Dic) ecs.SystemRegister {
@@ -23,7 +19,6 @@ func NewSystem(c ioc.Dic) ecs.SystemRegister {
 		s := ioc.GetServices[*system](c)
 
 		s.tileSize = s.Tile().GetTileSize()
-		s.selectedEvent = nil
 
 		//
 
@@ -35,9 +30,6 @@ func NewSystem(c ioc.Dic) ecs.SystemRegister {
 
 		//
 
-		events.Listen(s.EventsBuilder(), s.OnUnselect)
-		events.Listen(s.EventsBuilder(), s.OnSelect)
-		events.Listen(s.EventsBuilder(), s.OnHover)
 		return nil
 	})
 }
@@ -74,25 +66,28 @@ func (s *system) OnTilePosSizeRotUpsert(entity ecs.EntityID) {
 	s.Transform().Rotation().Set(entity, transformRot)
 }
 
-func (s *system) OnUnselect(ui.UnselectEvent[ui.ObjectComponent]) {
-	s.selectedEvent = nil
-}
+// V1:
+// relations by feature:
+// move  (affects coords cursor look): object(affects coords cursor size), coords
+// build: object, coords, building(affects coords cursor size&look)
 
-func (s *system) OnSelect(e tile.SelectEvent) {
-	s.selectedEvent = &e
-}
+// interactions:
+// object (can be first)    : interaction on object click
+// coords (can't be first)  : interaction on hover if it's missing
+//                            cursor look and size can be modified
+// building (can't be first): interaction on button click
 
-func (s *system) OnHover(e tile.HoverEvent) {
-	if s.selectedEvent == nil {
-		return
-	}
-	chunkCoords, ok := s.Grid().Coords().Get(e.Chunk)
-	if !ok {
-		return
-	}
-	coords := s.Grid().AbsoluteCoords(chunkCoords, e.Coords)
-	if event, ok := s.selectedEvent.HoverEvent.(tile.ApplyCoordsEvent); ok {
-		s.selectedEvent.HoverEvent = event.ApplyCoords(coords)
-	}
-	events.EmitAny(s.Events(), s.selectedEvent.HoverEvent)
-}
+// V2:
+// legend:
+// ccc: configures coords cursor
+
+// features:
+// | name  | interactions             | ccc look | ccc size
+// | move  | object, coords           | default  | object
+// | build | object, coords, building | building | size
+
+// interactions:
+// | name     | can be first | config           | how works
+// | object   | yes          | none             | on object click
+// | coords   | no           | cursor look&size | on hover if it's missing
+// | building | no           | none             | on button click

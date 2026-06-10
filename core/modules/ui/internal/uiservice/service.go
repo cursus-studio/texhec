@@ -64,6 +64,7 @@ func NewService(
 
 		events.Listen(s.EventsBuilder(), func(ui.UnselectEvent[ui.ObjectComponent]) {
 			events.Emit(s.Events(), ui.NewUnselect[ui.ActionComponent]())
+			s.World().RemoveEntity(s.Interactions().FeatureEntity())
 			s.HideMenu()
 		})
 		return nil

@@ -5,10 +5,12 @@ import (
 	"core/modules/definitions"
 	"core/modules/tile"
 	"engine/modules/grid"
+	"engine/modules/interactions"
 	"engine/modules/relation"
 	"engine/modules/transform"
 	"engine/services/ecs"
 
+	"github.com/ogiusek/events"
 	"github.com/ogiusek/ioc/v2"
 )
 
@@ -16,6 +18,10 @@ type service struct {
 	game.GameWorld   `inject:""`
 	TileGridService  grid.ServiceT[tile.ID]    `inject:""`
 	TileTypeRelation relation.Service[tile.ID] `inject:""`
+
+	CoordsInteractionService       interactions.InteractionService[tile.CoordsInteraction]       `inject:""`
+	ObjectInteractionService       interactions.InteractionService[tile.ObjectInteraction]       `inject:""`
+	SourceObjectInteractionService interactions.InteractionService[tile.SourceObjectInteraction] `inject:""`
 
 	ecs.SystemRegister
 	renderer ecs.SystemRegister
@@ -46,6 +52,16 @@ func NewService(c ioc.Dic, system, renderer ecs.SystemRegister, tileSize float32
 
 	s.size.SetEmpty(tile.NewSize(1, 1))
 	s.layer.SetEmpty(tile.NewLayer(definitions.TileLayer))
+
+	events.Listen(s.EventsBuilder(), s.OnTileHover)
+	events.Listen(s.EventsBuilder(), s.OnTileClick)
+
+	s.ObjectInteractionService.MissingInteraction().OnUpsert(s.OnMissingObjectInteractionUpsert)
+	s.ObjectInteractionService.MissingInteraction().OnUpsert(s.OnMissingObjectInteractionRemove)
+	events.Listen(s.EventsBuilder(), s.OnClickEntity)
+
+	s.SourceObjectInteractionService.MissingInteraction().OnUpsert(s.OnMissingSourceObjectInteractionUpsert)
+	s.SourceObjectInteractionService.MissingInteraction().OnRemove(s.OnMissingSourceObjectInteractionRemove)
 
 	s.tileSize = tileSize
 

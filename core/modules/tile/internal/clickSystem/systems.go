@@ -46,7 +46,6 @@ func (s *system) OnClickEntity(e tile.ClickEntityEvent) {
 		s.Logger().Log(errors.New("expected link to have name component"))
 		return
 	}
-	deployed, _ := s.Deploy().Component().Get(link.Entity)
 	owner, ok := s.Player().Owner().Get(e.Entity)
 	if !ok {
 		s.Logger().Log(errors.New("object without owner cannot build"))
@@ -66,23 +65,11 @@ func (s *system) OnClickEntity(e tile.ClickEntityEvent) {
 		{fmt.Sprintf("%v's %v", playerName.Name, name.Name), nil},
 	}
 
-	// deploy
-	if len(deployed.Deployable) == 0 {
-		goto skipDeploy
+	if deployed, _ := s.Deploy().Component().Get(link.Entity); len(deployed.Deployable) != 0 {
+		btns = append(btns, Button{"Deploy", deploy.NewFeatureDeployEvent()})
 	}
-	btns = append(btns, Button{"Can deploy", nil})
-	for _, deployed := range deployed.Deployable {
-		name, ok := s.Metadata().Name().Get(deployed)
-		if !ok {
-			s.Logger().Log(errors.New("expected entity to have name component"))
-			continue
-		}
-		btn := Button{fmt.Sprintf("%v", name.Name), deploy.NewSelectEvent(e.Entity, deployed)}
-		btns = append(btns, btn)
-	}
-skipDeploy:
 	if _, ok := s.Pathfind().Speed().Get(e.Entity); ok {
-		btns = append(btns, Button{"Move", pathfind.NewSelectEvent(e.Entity)})
+		btns = append(btns, Button{"Move", pathfind.NewFeatureFindPathEvent()})
 	}
 
 	for _, p := range s.Ui().ShowMenu() {

@@ -22,7 +22,7 @@ type Service interface {
 
 type service struct {
 	engine.EngineWorld `inject:""`
-	feature            ecs.ComponentsArray[interactions.FeatureComponent]
+	feature            ecs.ComponentsArray[interactions.InstanceComponent]
 	featureEvent       ecs.ComponentsArray[interactions.FeatureEventComponent]
 
 	features     map[reflect.Type]interactions.AnyFeatureService
@@ -31,7 +31,7 @@ type service struct {
 
 func NewService(c ioc.Dic) Service {
 	s := ioc.GetServices[*service](c)
-	s.feature = ecs.GetComponentsArray[interactions.FeatureComponent](s.World())
+	s.feature = ecs.GetComponentsArray[interactions.InstanceComponent](s.World())
 	s.featureEvent = ecs.GetComponentsArray[interactions.FeatureEventComponent](s.World())
 
 	s.features = make(map[reflect.Type]interactions.AnyFeatureService)
@@ -54,7 +54,7 @@ func (s *service) Interactions() map[reflect.Type]interactions.AnyInteractionSer
 
 // }
 
-func (s *service) Feature() ecs.ComponentsArray[interactions.FeatureComponent] { return s.feature }
+func (s *service) Instance() ecs.ComponentsArray[interactions.InstanceComponent] { return s.feature }
 func (s *service) FeatureEvent() ecs.ComponentsArray[interactions.FeatureEventComponent] {
 	return s.featureEvent
 }
@@ -67,7 +67,7 @@ func (s *service) FeatureEntity() ecs.EntityID {
 		return entity
 	}
 	if len(entities) > 1 {
-		s.Logger().Warn(fmt.Errorf("GUI cannot handle many features at once"))
+		s.Logger().Warn(fmt.Errorf("cannot handle many instances of interactions at once"))
 		for _, entity := range entities[1:] {
 			s.World().RemoveEntity(entity)
 		}
@@ -78,8 +78,11 @@ func (s *service) FeatureEntity() ecs.EntityID {
 
 // on AnyFeatureComponent or FinishedInteractionComponent upsert
 func (s *service) Proceed(ecs.EntityID) {
-	entity := s.FeatureEntity()
-	featureEvent, _ := s.featureEvent.Get(entity)
+	featureEntity := s.FeatureEntity()
+	featureEvent, ok := s.featureEvent.Get(featureEntity)
+	if !ok {
+		return
+	}
 	featureKey := reflect.TypeOf(featureEvent.Event)
 	feature, ok := s.features[featureKey]
 	if !ok {
@@ -88,16 +91,16 @@ func (s *service) Proceed(ecs.EntityID) {
 	interactions := feature.Interactions()
 	// if there are measurements left start new measurement
 	for _, interaction := range interactions {
-		if _, ok := interaction.MissingInteractionAny().GetAny(entity); ok {
+		if _, ok := interaction.MissingInteractionAny().GetAny(featureEntity); ok {
 			return
 		}
-		if _, ok := interaction.InteractionAny().GetAny(entity); !ok {
-			interaction.MissingInteractionAny().SetAny(entity, nil)
+		if _, ok := interaction.InteractionAny().GetAny(featureEntity); !ok {
+			interaction.MissingInteractionAny().SetAny(featureEntity, nil)
 			return
 		}
 	}
 
 	// if all measurements are done emit feature event and remove all features and measurements
 	events.EmitAny(s.Events(), featureEvent.Event)
-	s.World().RemoveEntity(entity)
+	s.World().RemoveEntity(featureEntity)
 }

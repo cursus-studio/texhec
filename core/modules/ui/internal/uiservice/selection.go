@@ -3,7 +3,6 @@ package uiservice
 import (
 	"core/game"
 	"core/modules/ui"
-	"engine/modules/loop"
 	"engine/services/ecs"
 
 	"github.com/ogiusek/events"
@@ -26,18 +25,9 @@ func NewSelectionGroup[Component any](c ioc.Dic, service *service) ui.SelectionG
 	events.Listen(s.EventsBuilder(), s.OnSelect)
 	events.Listen(s.EventsBuilder(), s.OnUnselect)
 
-	system := ecs.NewSystemRegister(func() error {
-		events.Listen(s.EventsBuilder(), s.OnTick)
-		return nil
-	})
-	service.systems = append(service.systems, system)
-
 	return s.arr
 }
 
-func (s *selectionGroup[Component]) OnTick(e loop.TickEvent) {
-	events.Emit(s.Events(), ui.NewSelectTick[Component](e, s.selected.GetEntities()))
-}
 func (s *selectionGroup[Component]) OnSelect(e ui.SelectEvent[Component]) {
 	s.OnUnselect(ui.NewUnselect[Component]())
 	for _, entity := range e.Entities {

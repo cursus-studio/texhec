@@ -8,9 +8,9 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                               3             57             24            293
+Go                               3             36             14            201
 -------------------------------------------------------------------------------
-SUM:                             3             57             24            293
+SUM:                             3             36             14            201
 -------------------------------------------------------------------------------
 ```
 ## Types
@@ -25,17 +25,11 @@ Type: `func(blueprint engine/services/ecs.EntityID, owner engine/services/ecs.En
 deploy differs from execute event by who deploys.
 execute adds costs and everything where deploy just deploys without any costs (its deployed by system)
 
-#### method Service Execute
-Type: `func(core/modules/deploy.ExecuteEvent)`
-
-#### method Service Preview
-Type: `func(core/modules/deploy.PreviewEvent)`
+#### method Service DeployEvent
+Type: `func(core/modules/deploy.DeployEvent)`
 
 #### method Service Reach
 Type: `func() core/modules/reach.ServiceT[core/modules/deploy.Component]`
-
-#### method Service Select
-Type: `func(core/modules/deploy.SelectEvent)`
 
 ### type Component
 Type: `core/modules/deploy.Component`
@@ -43,97 +37,45 @@ Type: `core/modules/deploy.Component`
 #### property Component Deployable
 Type: `[]engine/services/ecs.EntityID`
 
-### type SelectEvent
-Type: `core/modules/deploy.SelectEvent`
-Select unit.
-Add in gui some indicator.
-Change on click event.
+### type DeployEvent
+Type: `core/modules/deploy.DeployEvent`
 
-#### property SelectEvent By
+#### property DeployEvent By
 Type: `engine/services/ecs.EntityID`
 
-#### property SelectEvent Blueprint
+#### property DeployEvent Blueprint
 Type: `engine/services/ecs.EntityID`
 
-### type PreviewEvent
-Type: `core/modules/deploy.PreviewEvent`
-Select unit.
-Add in gui some indicator.
-Perform all checks and costs
-
-#### property PreviewEvent By
-Type: `engine/services/ecs.EntityID`
-
-#### property PreviewEvent Blueprint
-Type: `engine/services/ecs.EntityID`
-
-#### property PreviewEvent Coords
+#### property DeployEvent Coords
 Type: `engine/modules/grid.Coords`
-
-#### method PreviewEvent ApplyCoords
-Type: `func(coords engine/modules/grid.Coords) any`
-
-### type ExecuteEvent
-Type: `core/modules/deploy.ExecuteEvent`
-Deploys on coords something if it doesn't collide
-
-#### property ExecuteEvent By
-Type: `engine/services/ecs.EntityID`
-
-#### property ExecuteEvent Blueprint
-Type: `engine/services/ecs.EntityID`
-
-#### property ExecuteEvent Coords
-Type: `engine/modules/grid.Coords`
-
-#### method ExecuteEvent ApplyCoords
-Type: `func(coords engine/modules/grid.Coords) any`
 
 ## Functions
 ### func NewDeploy
 Type: `func(deployable ...engine/services/ecs.EntityID) core/modules/deploy.Component`
 
-### func NewSelectEvent
-Type: `func(by engine/services/ecs.EntityID, blueprint engine/services/ecs.EntityID) core/modules/deploy.SelectEvent`
+### func NewFeatureDeployEvent
+Type: `func() engine/modules/interactions.FeatureEvent[core/modules/deploy.DeployEvent]`
 
-### func NewPreviewEvent
-Type: `func(by engine/services/ecs.EntityID, blueprint engine/services/ecs.EntityID) core/modules/deploy.PreviewEvent`
-
-### func NewExecuteEvent
-Type: `func(by engine/services/ecs.EntityID, blueprint engine/services/ecs.EntityID) core/modules/deploy.ExecuteEvent`
+### func NewDeployEvent
+Type: `func(by engine/services/ecs.EntityID, blueprint engine/services/ecs.EntityID, coords engine/modules/grid.Coords) core/modules/deploy.DeployEvent`
 
 
 ## Dependencies
 `core/game`:
-  - `core/game.Definitions`
   - `core/game.Deploy`
   - `core/game.GameWorld`
   - `core/game.Obstruction`
   - `core/game.Player`
   - `core/game.Reach`
   - `core/game.Tile`
-  - `core/game.Ui`
-
-`core/modules/definitions`:
-  - `core/modules/definitions.Assets`
-  - `core/modules/definitions.Blank`
-  - `core/modules/definitions.Border`
-  - `core/modules/definitions.ObjectPlaceholderLayer`
-  - `core/modules/definitions.SquareMesh`
-  - `core/modules/definitions.TilePlaceholderLayer`
 
 `core/modules/deploy`:
-  - `core/modules/deploy.ApplyCoords`
   - `core/modules/deploy.Blueprint`
   - `core/modules/deploy.By`
   - `core/modules/deploy.Component`
   - `core/modules/deploy.Coords`
-  - `core/modules/deploy.ExecuteEvent`
-  - `core/modules/deploy.NewExecuteEvent`
-  - `core/modules/deploy.NewPreviewEvent`
-  - `core/modules/deploy.PreviewEvent`
+  - `core/modules/deploy.DeployEvent`
   - `core/modules/deploy.Reach`
-  - `core/modules/deploy.SelectEvent`
   - `core/modules/deploy.Service`
 
 `core/modules/obstruction`:
@@ -155,28 +97,26 @@ Type: `func(by engine/services/ecs.EntityID, blueprint engine/services/ecs.Entit
   - `core/modules/reach.ErrOutsideOfReach`
   - `core/modules/reach.NewReach`
   - `core/modules/reach.Reach`
-  - `core/modules/reach.Reaches`
   - `core/modules/reach.ServiceT`
-  - `core/modules/reach.TilesWithinReach`
 
 `core/modules/reach/pkg`:
   - `core/modules/reach/pkg.PkgT`
 
 `core/modules/tile`:
   - `core/modules/tile.Coord`
+  - `core/modules/tile.Coords`
+  - `core/modules/tile.CoordsInteraction`
+  - `core/modules/tile.Entity`
   - `core/modules/tile.ErrExpectedOneConfiguration`
   - `core/modules/tile.GetConfig`
-  - `core/modules/tile.Layer`
   - `core/modules/tile.NewClickEntityEvent`
-  - `core/modules/tile.NewLayer`
   - `core/modules/tile.NewPos`
-  - `core/modules/tile.NewSelectEvent`
+  - `core/modules/tile.ObjectInteraction`
   - `core/modules/tile.Pos`
   - `core/modules/tile.Size`
+  - `core/modules/tile.SourceObjectInteraction`
 
 `core/modules/ui`:
-  - `core/modules/ui.ActionComponent`
-  - `core/modules/ui.Actions`
   - `core/modules/ui.NewUnselect`
   - `core/modules/ui.ObjectComponent`
 
@@ -189,29 +129,27 @@ Type: `func(by engine/services/ecs.EntityID, blueprint engine/services/ecs.Entit
   - `engine/modules/grid.Coords`
 
 `engine/modules/inputs`:
-  - `engine/modules/inputs.KeepSelected`
-  - `engine/modules/inputs.KeepSelectedComponent`
   - `engine/modules/inputs.LeftClick`
   - `engine/modules/inputs.NewLeftClick`
 
-`engine/modules/render`:
-  - `engine/modules/render.Color`
-  - `engine/modules/render.Mesh`
-  - `engine/modules/render.NewColor`
-  - `engine/modules/render.NewMesh`
-  - `engine/modules/render.NewTexture`
-  - `engine/modules/render.Texture`
+`engine/modules/interactions`:
+  - `engine/modules/interactions.FeatureEntity`
+  - `engine/modules/interactions.FeatureEvent`
+  - `engine/modules/interactions.Interaction`
+  - `engine/modules/interactions.NewFeatureEvent`
+  - `engine/modules/interactions.State`
+
+`engine/modules/interactions/pkg`:
+  - `engine/modules/interactions/pkg.FeaturePkg`
 
 `engine/services/ecs`:
   - `engine/services/ecs.ComponentsArray`
   - `engine/services/ecs.EntityID`
   - `engine/services/ecs.Get`
   - `engine/services/ecs.GetComponentsArray`
-  - `engine/services/ecs.GetEntities`
   - `engine/services/ecs.Set`
   - `engine/services/ecs.SetEmpty`
 
 ### Third Party
-- `github.com/go-gl/mathgl/mgl32`
 - `github.com/ogiusek/events`
 - `github.com/ogiusek/ioc/v2`

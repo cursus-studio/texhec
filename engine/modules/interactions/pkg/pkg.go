@@ -1,4 +1,4 @@
-package guipkg
+package interactionspkg
 
 import (
 	"engine/modules/interactions"

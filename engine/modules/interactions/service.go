@@ -12,9 +12,13 @@ type Event = any
 
 type MissingInteractionComponent[State any] struct{}
 type InteractionComponent[State any] struct{ State State }
+type FinishMeasurementEvent[State any] struct{ State State }
 
 func NewInteraction[State any](state State) InteractionComponent[State] {
 	return InteractionComponent[State]{State: state}
+}
+func NewFinishMeasurementEvent[State any](state State) FinishMeasurementEvent[State] {
+	return FinishMeasurementEvent[State]{state}
 }
 
 type AnyInteractionService interface {
@@ -30,14 +34,14 @@ type InteractionService[State any] interface {
 	MissingInteraction() ecs.ComponentsArray[MissingInteractionComponent[State]]
 	Interaction() ecs.ComponentsArray[InteractionComponent[State]]
 	AnyInteractionService
-	FinishMeasurement(State) error
+	FinishMeasurement(FinishMeasurementEvent[State])
 }
 
 //
 
 type FeatureEvent[Event any] struct{ Event Event }
 type FeatureEventComponent struct{ Event Event }
-type FeatureComponent struct{}
+type InstanceComponent struct{}
 
 func NewFeatureEvent[Event any](event Event) FeatureEvent[Event] { return FeatureEvent[Event]{event} }
 func (e *FeatureEvent[Event]) Component() FeatureEventComponent {
@@ -54,7 +58,7 @@ type AnyFeatureService interface {
 type FeatureService[Event any] interface{ AnyFeatureService }
 type Service interface {
 	// entity with this stores all components with interactions and selected feature
-	Feature() ecs.ComponentsArray[FeatureComponent]
+	Instance() ecs.ComponentsArray[InstanceComponent]
 	FeatureEvent() ecs.ComponentsArray[FeatureEventComponent]
 
 	FeatureEntity() ecs.EntityID

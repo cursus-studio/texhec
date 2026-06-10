@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"reflect"
 
+	"github.com/ogiusek/events"
 	"github.com/ogiusek/ioc/v2"
 )
 
@@ -25,7 +26,10 @@ func NewInteractionService[State any](
 	s.missingInteraction = ecs.GetComponentsArray[interactions.MissingInteractionComponent[State]](s.World())
 	s.interaction = ecs.GetComponentsArray[interactions.InteractionComponent[State]](s.World())
 	s.name = name
+
+	s.missingInteraction.OnRemove(s.Interactions().Proceed)
 	s.interaction.OnUpsert(s.Interactions().Proceed)
+	events.Listen(s.EventsBuilder(), s.FinishMeasurement)
 	return s
 }
 
@@ -50,12 +54,12 @@ func (s *interactionService[State]) Measure() bool {
 	return false
 }
 
-func (s *interactionService[State]) FinishMeasurement(state State) error {
+func (s *interactionService[State]) FinishMeasurement(event interactions.FinishMeasurementEvent[State]) {
 	entity := s.Interactions().FeatureEntity()
 	if _, ok := s.interaction.Get(entity); ok {
-		return fmt.Errorf("measurement is already done")
+		s.Logger().Warn(fmt.Errorf("measurement is already done"))
+		return
 	}
+	s.interaction.Set(entity, interactions.NewInteraction(event.State))
 	s.missingInteraction.Remove(entity)
-	s.interaction.Set(entity, interactions.NewInteraction(state))
-	return nil
 }

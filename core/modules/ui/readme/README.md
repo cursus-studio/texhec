@@ -8,10 +8,10 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                               7             98             16            449
+Go                               7             96             15            433
 Markdown                         1              8              0             27
 -------------------------------------------------------------------------------
-SUM:                             8            106             16            476
+SUM:                             8            104             15            460
 -------------------------------------------------------------------------------
 ```
 ## Types
@@ -87,7 +87,7 @@ Type: `func(engine/services/ecs.EntityID)`
 Type: `func(engine/services/ecs.EntityID, Component)`
 
 #### method SelectionGroup SetAny
-Type: `func(engine/services/ecs.EntityID, any) error`
+Type: `func(engine/services/ecs.EntityID, any)`
 
 #### method SelectionGroup SetEmpty
 Type: `func(Component)`
@@ -112,16 +112,6 @@ Type: `core/modules/ui.SelectEvent[Component any]`
 #### property SelectEvent Entities
 Type: `[]engine/services/ecs.EntityID`
 
-### type SelectTickEvent
-Type: `core/modules/ui.SelectTickEvent[Component any]`
-each tick is emited with currently selected entity
-
-#### property SelectTickEvent Tick
-Type: `engine/modules/loop.TickEvent`
-
-#### property SelectTickEvent Entities
-Type: `[]engine/services/ecs.EntityID`
-
 ### type ObjectComponent
 Type: `core/modules/ui.ObjectComponent`
 
@@ -134,9 +124,6 @@ Type: `func[Component any]() core/modules/ui.UnselectEvent[Component]`
 
 ### func NewSelect
 Type: `func[Component any](entities ...engine/services/ecs.EntityID) core/modules/ui.SelectEvent[Component]`
-
-### func NewSelectTick
-Type: `func[Component any](tick engine/modules/loop.TickEvent, entities []engine/services/ecs.EntityID) core/modules/ui.SelectTickEvent[Component]`
 
 
 ## Dependencies
@@ -152,7 +139,6 @@ Type: `func[Component any](tick engine/modules/loop.TickEvent, entities []engine
   - `core/modules/ui.CursorCamera`
   - `core/modules/ui.CursorCameraComponent`
   - `core/modules/ui.Entities`
-  - `core/modules/ui.NewSelectTick`
   - `core/modules/ui.NewUnselect`
   - `core/modules/ui.ObjectComponent`
   - `core/modules/ui.SelectEvent`
@@ -187,7 +173,6 @@ Type: `func[Component any](tick engine/modules/loop.TickEvent, entities []engine
 
 `engine/modules/loop`:
   - `engine/modules/loop.FrameEvent`
-  - `engine/modules/loop.TickEvent`
 
 `engine/modules/render`:
   - `engine/modules/render.Color`

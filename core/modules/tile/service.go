@@ -2,6 +2,7 @@ package tile
 
 import (
 	"engine/modules/grid"
+	"engine/modules/interactions"
 	"engine/modules/seed"
 	"engine/modules/transform"
 	"engine/modules/transition"
@@ -161,6 +162,10 @@ type Service interface {
 	// transform 1x1 tile size.
 	// can be used for graphics or collisions.
 	GetTileSize() transform.SizeComponent
+
+	CoordsInteraction() interactions.InteractionService[CoordsInteraction]
+	ObjectInteraction() interactions.InteractionService[ObjectInteraction]
+	SourceObjectInteraction() interactions.InteractionService[SourceObjectInteraction]
 }
 
 //
@@ -171,21 +176,19 @@ type ApplyCoordsEvent interface {
 
 //
 
-// changes event emitted on tile hover
-type SelectEvent struct {
-	HoverEvent any
+type CoordsInteraction struct{ Coords grid.Coords }
+type ObjectInteraction struct{ Entity ecs.EntityID }
+type SourceObjectInteraction struct{ Entity ecs.EntityID }
+
+func NewCoordsInteraction(coords grid.Coords) CoordsInteraction {
+	return CoordsInteraction{coords}
 }
-
-func NewSelectEvent(hoverEvent any) SelectEvent { return SelectEvent{hoverEvent} }
-
-//
-
-type HoverEvent struct {
-	Chunk  ecs.EntityID
-	Coords grid.Coords
+func NewObjectInteraction(entity ecs.EntityID) ObjectInteraction {
+	return ObjectInteraction{entity}
 }
-
-func NewHoverEvent(chunk ecs.EntityID, tile grid.Coords) any { return HoverEvent{chunk, tile} }
+func NewSourceObjectInteraction(entity ecs.EntityID) SourceObjectInteraction {
+	return SourceObjectInteraction{entity}
+}
 
 //
 

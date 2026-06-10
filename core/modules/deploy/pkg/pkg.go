@@ -6,11 +6,14 @@ import (
 	"core/modules/deploy/internal"
 	"core/modules/reach"
 	reachpkg "core/modules/reach/pkg"
+	"core/modules/tile"
 	"engine/modules/entityregistry"
 	"engine/modules/grid"
+	interactionspkg "engine/modules/interactions/pkg"
 	"engine/services/ecs"
 	"errors"
 	"fmt"
+	"reflect"
 	"strconv"
 
 	"github.com/ogiusek/ioc/v2"
@@ -19,6 +22,11 @@ import (
 var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 	pkgs := []ioc.Pkg{
 		reachpkg.PkgT[deploy.Component],
+		interactionspkg.FeaturePkg[deploy.DeployEvent]("deploy", []reflect.Type{
+			reflect.TypeFor[tile.ObjectInteraction](),
+			reflect.TypeFor[tile.SourceObjectInteraction](),
+			reflect.TypeFor[tile.CoordsInteraction](),
+		}),
 	}
 	for _, pkg := range pkgs {
 		pkg(b)
