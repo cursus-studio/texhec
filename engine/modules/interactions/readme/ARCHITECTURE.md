@@ -1,1 +1,1 @@
-Allows to compose events from multiple user interactions with GUI
+Allows to compose features (events) from multiple user interactions
