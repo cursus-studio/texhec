@@ -2,6 +2,8 @@
 package seed
 
 import (
+	"engine/services/ecs"
+	"errors"
 	"math/rand/v2"
 
 	"golang.org/x/exp/constraints"
@@ -26,4 +28,21 @@ func (s *Seed) Value() uint64 {
 func (s1 Seed) SeededRand(s2 Seed) *rand.Rand {
 	// #nosec G404
 	return rand.New(rand.NewPCG(s1.Value(), s2.Value()))
+}
+
+var (
+	ErrWorldCanHaveOneSeed error = errors.New("world can have only one seed")
+)
+
+type SeedComponent struct {
+	Seed Seed
+}
+
+func NewSeed[Number constraints.Integer](s Number) SeedComponent {
+	return SeedComponent{New(s)}
+}
+
+type Service interface {
+	Seed() ecs.ComponentsArray[SeedComponent]
+	WorldSeed() (ecs.EntityID, bool)
 }

@@ -79,14 +79,14 @@ func (s *service) Chances() (*Config, []tile.ID) {
 func (s *service) GenerateOn(event tile.MissingChunkEvent) {
 	// this shouldn't override parrent component instead create additional child
 	// this isn't a comment to purposfully throw error
-	worldGenerationEntity, ok := s.Tile().GetConfig()
+	worldGenerationEntity, ok := s.Seed().WorldSeed()
 	if !ok {
 		return
 	}
 	if _, ok := s.Tile().Grid().Chunk().Get(worldGenerationEntity); ok {
 		return
 	}
-	c, ok := s.Tile().Config().Get(worldGenerationEntity)
+	c, ok := s.Seed().Seed().Get(worldGenerationEntity)
 	if !ok {
 		return
 	}

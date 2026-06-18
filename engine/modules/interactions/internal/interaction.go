@@ -13,6 +13,7 @@ import (
 
 type interactionService[State any] struct {
 	engine.EngineWorld `inject:""`
+	interactionGUI     ecs.ComponentsArray[interactions.InteractionGUIComponent[State]]
 	missingInteraction ecs.ComponentsArray[interactions.MissingInteractionComponent[State]]
 	interaction        ecs.ComponentsArray[interactions.InteractionComponent[State]]
 	name               interactions.Name
@@ -23,16 +24,28 @@ func NewInteractionService[State any](
 	name interactions.Name,
 ) interactions.InteractionService[State] {
 	s := ioc.GetServices[*interactionService[State]](c)
+	s.interactionGUI = ecs.GetComponentsArray[interactions.InteractionGUIComponent[State]](s.World())
 	s.missingInteraction = ecs.GetComponentsArray[interactions.MissingInteractionComponent[State]](s.World())
 	s.interaction = ecs.GetComponentsArray[interactions.InteractionComponent[State]](s.World())
 	s.name = name
 
 	s.missingInteraction.OnRemove(s.Interactions().Proceed)
 	s.interaction.OnUpsert(s.Interactions().Proceed)
+	s.interaction.OnRemove(s.onInteractionRemove)
 	events.Listen(s.EventsBuilder(), s.FinishMeasurement)
 	return s
 }
 
+func (s *interactionService[State]) onInteractionRemove(ecs.EntityID) {
+	entities := s.interactionGUI.GetEntities()
+	for _, entity := range entities {
+		s.World().RemoveEntity(entity)
+	}
+}
+
+func (s *interactionService[State]) InteractionGUI() ecs.ComponentsArray[interactions.InteractionGUIComponent[State]] {
+	return s.interactionGUI
+}
 func (s *interactionService[State]) MissingInteraction() ecs.ComponentsArray[interactions.MissingInteractionComponent[State]] {
 	return s.missingInteraction
 }

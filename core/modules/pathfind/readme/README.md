@@ -8,10 +8,10 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                               6             78             27            455
+Go                               6             71             27            424
 Markdown                         1              1              0              5
 -------------------------------------------------------------------------------
-SUM:                             7             79             27            460
+SUM:                             7             72             27            429
 -------------------------------------------------------------------------------
 ```
 ## TODO
@@ -98,20 +98,10 @@ Type: `func(entity engine/services/ecs.EntityID, coords engine/modules/grid.Coor
 
 ## Dependencies
 `core/game`:
-  - `core/game.Definitions`
   - `core/game.GameWorld`
   - `core/game.Obstruction`
   - `core/game.Pathfind`
   - `core/game.Tile`
-  - `core/game.Ui`
-
-`core/modules/definitions`:
-  - `core/modules/definitions.Assets`
-  - `core/modules/definitions.Hud`
-  - `core/modules/definitions.PathLayer`
-  - `core/modules/definitions.SquareCollider`
-  - `core/modules/definitions.SquareMesh`
-  - `core/modules/definitions.Target`
 
 `core/modules/obstruction`:
   - `core/modules/obstruction.Collisions`
@@ -146,9 +136,6 @@ Type: `func(entity engine/services/ecs.EntityID, coords engine/modules/grid.Coor
   - `core/modules/tile.ErrInvalidPosition`
   - `core/modules/tile.ErrInvalidStep`
   - `core/modules/tile.ErrPositionAndSpeedIsRequiredToStep`
-  - `core/modules/tile.GetConfig`
-  - `core/modules/tile.Layer`
-  - `core/modules/tile.NewLayer`
   - `core/modules/tile.NewPos`
   - `core/modules/tile.NewRot`
   - `core/modules/tile.NewSize`
@@ -161,18 +148,6 @@ Type: `func(entity engine/services/ecs.EntityID, coords engine/modules/grid.Coor
   - `core/modules/tile.SizeComponent`
   - `core/modules/tile.X`
   - `core/modules/tile.Y`
-
-`core/modules/ui`:
-  - `core/modules/ui.ActionComponent`
-  - `core/modules/ui.Entities`
-  - `core/modules/ui.NewUnselect`
-  - `core/modules/ui.ObjectComponent`
-  - `core/modules/ui.Objects`
-  - `core/modules/ui.SelectEvent`
-
-`engine/modules/collider`:
-  - `engine/modules/collider.Component`
-  - `engine/modules/collider.NewCollider`
 
 `engine/modules/entityregistry`:
   - `engine/modules/entityregistry.Register`
@@ -202,12 +177,6 @@ Type: `func(entity engine/services/ecs.EntityID, coords engine/modules/grid.Coor
 `engine/modules/loop`:
   - `engine/modules/loop.TickEvent`
 
-`engine/modules/render`:
-  - `engine/modules/render.Mesh`
-  - `engine/modules/render.NewMesh`
-  - `engine/modules/render.NewTexture`
-  - `engine/modules/render.Texture`
-
 `engine/modules/typeregistry/pkg`:
   - `engine/modules/typeregistry/pkg.PkgT`
 
@@ -217,7 +186,6 @@ Type: `func(entity engine/services/ecs.EntityID, coords engine/modules/grid.Coor
   - `engine/services/ecs.Get`
   - `engine/services/ecs.GetComponentsArray`
   - `engine/services/ecs.GetEntities`
-  - `engine/services/ecs.NewEntity`
   - `engine/services/ecs.Remove`
   - `engine/services/ecs.Set`
   - `engine/services/ecs.SystemRegister`

@@ -3,7 +3,6 @@ package tile
 import (
 	"engine/modules/grid"
 	"engine/modules/interactions"
-	"engine/modules/seed"
 	"engine/modules/transform"
 	"engine/modules/transition"
 	"engine/services/ecs"
@@ -20,7 +19,6 @@ var (
 	ErrInvalidPosition                  error = errors.New("tile:position not found on the grid")
 	ErrInvalidStep                      error = errors.New("tile:invalid step")
 	ErrPositionAndSpeedIsRequiredToStep error = errors.New("tile:to step you need to have speed and position")
-	ErrExpectedOneConfiguration         error = errors.New("tile:expected one configuration")
 )
 
 type ID uint8
@@ -112,16 +110,6 @@ type BiomeAsset interface {
 
 //
 
-type ConfigComponent struct {
-	Seed seed.Seed
-}
-
-func NewConfig(seed seed.Seed) ConfigComponent {
-	return ConfigComponent{seed}
-}
-
-//
-
 type MissingChunkEvent struct{ Coords grid.ChunkCoordsComponent }
 type UnloadChunkEvent struct{ Coords grid.ChunkCoordsComponent }
 
@@ -146,9 +134,9 @@ type Service interface {
 	Size() ecs.ComponentsArray[SizeComponent]
 	Rot() ecs.ComponentsArray[RotComponent]
 	Layer() ecs.ComponentsArray[LayerComponent]
-	Config() ecs.ComponentsArray[ConfigComponent]
 
-	GetConfig() (ecs.EntityID, bool)
+	CoordsCursor() ecs.ComponentsArray[CoordsCursorComponent]
+	CoordsCursorRange() ecs.ComponentsArray[CoordsCursorRangeComponent]
 
 	// src images should be:
 	// - 1111
@@ -175,6 +163,22 @@ type ApplyCoordsEvent interface {
 }
 
 //
+
+type CoordsCursorRangeComponent struct {
+	Entity ecs.EntityID
+}
+type CoordsCursorComponent struct {
+	PropertiesEntity ecs.EntityID
+	// if true then entity is used as an image else default icon is used
+	CustomImage bool
+}
+
+func NewCoordsCursorRange(rangeEntity ecs.EntityID) CoordsCursorRangeComponent {
+	return CoordsCursorRangeComponent{rangeEntity}
+}
+func NewCoordsCursor(propertiesEntity ecs.EntityID, customImage bool) CoordsCursorComponent {
+	return CoordsCursorComponent{propertiesEntity, customImage}
+}
 
 type CoordsInteraction struct{ Coords grid.Coords }
 type ObjectInteraction struct{ Entity ecs.EntityID }

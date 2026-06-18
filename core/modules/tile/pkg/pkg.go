@@ -5,7 +5,6 @@ import (
 	"core/game"
 	"core/modules/definitions"
 	"core/modules/tile"
-	clicksystem "core/modules/tile/internal/clickSystem"
 	"core/modules/tile/internal/tilerenderer"
 	"core/modules/tile/internal/tileservice"
 	"core/modules/tile/internal/tilesystem"
@@ -102,7 +101,6 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 			ecs.NewSystemRegister(func() error {
 				errs := ecs.RegisterSystems(
 					tilesystem.NewSystem(c),
-					clicksystem.NewSystem(c),
 				)
 				if len(errs) != 0 {
 					return errs[0]

@@ -11,6 +11,7 @@ type Event = any
 //
 
 type MissingInteractionComponent[State any] struct{}
+type InteractionGUIComponent[State any] struct{}
 type InteractionComponent[State any] struct{ State State }
 type FinishMeasurementEvent[State any] struct{ State State }
 
@@ -31,6 +32,10 @@ type AnyInteractionService interface {
 	Measure() (alreadyMeasured bool)
 }
 type InteractionService[State any] interface {
+	// elements are removed when interaction is removed.
+	// they can be used to indicate that element is used.
+	InteractionGUI() ecs.ComponentsArray[InteractionGUIComponent[State]]
+
 	MissingInteraction() ecs.ComponentsArray[MissingInteractionComponent[State]]
 	Interaction() ecs.ComponentsArray[InteractionComponent[State]]
 	AnyInteractionService

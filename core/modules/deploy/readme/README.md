@@ -8,9 +8,9 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                               3             36             14            201
+Go                               3             36             14            200
 -------------------------------------------------------------------------------
-SUM:                             3             36             14            201
+SUM:                             3             36             14            200
 -------------------------------------------------------------------------------
 ```
 ## Types
@@ -107,18 +107,12 @@ Type: `func(by engine/services/ecs.EntityID, blueprint engine/services/ecs.Entit
   - `core/modules/tile.Coords`
   - `core/modules/tile.CoordsInteraction`
   - `core/modules/tile.Entity`
-  - `core/modules/tile.ErrExpectedOneConfiguration`
-  - `core/modules/tile.GetConfig`
   - `core/modules/tile.NewClickEntityEvent`
   - `core/modules/tile.NewPos`
   - `core/modules/tile.ObjectInteraction`
   - `core/modules/tile.Pos`
   - `core/modules/tile.Size`
   - `core/modules/tile.SourceObjectInteraction`
-
-`core/modules/ui`:
-  - `core/modules/ui.NewUnselect`
-  - `core/modules/ui.ObjectComponent`
 
 `engine/modules/entityregistry`:
   - `engine/modules/entityregistry.Register`
@@ -141,6 +135,10 @@ Type: `func(by engine/services/ecs.EntityID, blueprint engine/services/ecs.Entit
 
 `engine/modules/interactions/pkg`:
   - `engine/modules/interactions/pkg.FeaturePkg`
+
+`engine/modules/seed`:
+  - `engine/modules/seed.ErrWorldCanHaveOneSeed`
+  - `engine/modules/seed.WorldSeed`
 
 `engine/services/ecs`:
   - `engine/services/ecs.ComponentsArray`

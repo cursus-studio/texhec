@@ -75,9 +75,9 @@ func addScene(world game.GameWorld, sceneParent ecs.EntityID) {
 	worldEntity := world.World().NewEntity()
 	world.Hierarchy().SetParent(worldEntity, sceneParent)
 	world.Groups().Component().Set(worldEntity, groups.EmptyGroups().Ptr().Enable(definitions.GameGroup).Val())
-	world.Tile().Config().Set(worldEntity, tile.NewConfig(
-		// seed.New(world.Clock.Now().Unix()),
-		seed.New(21377137),
+	world.Seed().Seed().Set(worldEntity, seed.NewSeed(
+		// world.Clock.Now().Unix(),
+		21377137,
 	))
 
 	gameCamera := world.World().NewEntity()

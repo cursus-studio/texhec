@@ -8,18 +8,15 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                               7             96             15            433
+Go                               6             79             11            379
 Markdown                         1              8              0             27
 -------------------------------------------------------------------------------
-SUM:                             8            104             15            460
+SUM:                             7             87             11            406
 -------------------------------------------------------------------------------
 ```
 ## Types
 ### type Service
 Type: `core/modules/ui.Service`
-
-#### method Service Actions
-Type: `func() core/modules/ui.SelectionGroup[core/modules/ui.ActionComponent]`
 
 #### method Service AnimatedBackground
 Type: `func() engine/services/ecs.ComponentsArray[core/modules/ui.AnimatedBackgroundComponent]`
@@ -30,9 +27,6 @@ Type: `func() engine/services/ecs.ComponentsArray[core/modules/ui.CursorCameraCo
 #### method Service HideMenu
 Type: `func()`
 removes all children
-
-#### method Service Objects
-Type: `func() core/modules/ui.SelectionGroup[core/modules/ui.ObjectComponent]`
 
 #### method Service Register
 Type: `func() error`
@@ -45,53 +39,6 @@ potentially with enter animation
 #### method Service UiCamera
 Type: `func() engine/services/ecs.ComponentsArray[core/modules/ui.UiCameraComponent]`
 
-### type SelectionGroup
-Type: `core/modules/ui.SelectionGroup[Component any]`
-groups selected elements with component and allows to remove all of them at once
-[SelectionGroup] differs from [ecs.ComponentsArray] that it listens to extra events
-
-#### method SelectionGroup AddDependency
-Type: `func(engine/services/ecs.AnyComponentArray)`
-
-#### method SelectionGroup AddDirtySet
-Type: `func(engine/services/ecs.DirtySet)`
-
-#### method SelectionGroup BeforeGet
-Type: `func(engine/services/ecs.BeforeGet)`
-
-#### method SelectionGroup Get
-Type: `func(entity engine/services/ecs.EntityID) (Component, bool)`
-
-#### method SelectionGroup GetAny
-Type: `func(entity engine/services/ecs.EntityID) (any, bool)`
-
-#### method SelectionGroup GetEmpty
-Type: `func() Component`
-
-#### method SelectionGroup GetEntities
-Type: `func() []engine/services/ecs.EntityID`
-
-#### method SelectionGroup OnMod
-Type: `func(engine/services/ecs.OnMod)`
-
-#### method SelectionGroup OnRemove
-Type: `func(engine/services/ecs.OnMod)`
-
-#### method SelectionGroup OnUpsert
-Type: `func(engine/services/ecs.OnMod)`
-
-#### method SelectionGroup Remove
-Type: `func(engine/services/ecs.EntityID)`
-
-#### method SelectionGroup Set
-Type: `func(engine/services/ecs.EntityID, Component)`
-
-#### method SelectionGroup SetAny
-Type: `func(engine/services/ecs.EntityID, any)`
-
-#### method SelectionGroup SetEmpty
-Type: `func(Component)`
-
 ### type UiCameraComponent
 Type: `core/modules/ui.UiCameraComponent`
 marker which says module relative to which element to position
@@ -102,29 +49,6 @@ Type: `core/modules/ui.AnimatedBackgroundComponent`
 ### type CursorCameraComponent
 Type: `core/modules/ui.CursorCameraComponent`
 
-### type UnselectEvent
-Type: `core/modules/ui.UnselectEvent[Component any]`
-selection group events
-
-### type SelectEvent
-Type: `core/modules/ui.SelectEvent[Component any]`
-
-#### property SelectEvent Entities
-Type: `[]engine/services/ecs.EntityID`
-
-### type ObjectComponent
-Type: `core/modules/ui.ObjectComponent`
-
-### type ActionComponent
-Type: `core/modules/ui.ActionComponent`
-
-## Functions
-### func NewUnselect
-Type: `func[Component any]() core/modules/ui.UnselectEvent[Component]`
-
-### func NewSelect
-Type: `func[Component any](entities ...engine/services/ecs.EntityID) core/modules/ui.SelectEvent[Component]`
-
 
 ## Dependencies
 `core/game`:
@@ -133,19 +57,12 @@ Type: `func[Component any](entities ...engine/services/ecs.EntityID) core/module
   - `core/game.Ui`
 
 `core/modules/ui`:
-  - `core/modules/ui.ActionComponent`
   - `core/modules/ui.AnimatedBackground`
   - `core/modules/ui.AnimatedBackgroundComponent`
   - `core/modules/ui.CursorCamera`
   - `core/modules/ui.CursorCameraComponent`
-  - `core/modules/ui.Entities`
-  - `core/modules/ui.NewUnselect`
-  - `core/modules/ui.ObjectComponent`
-  - `core/modules/ui.SelectEvent`
-  - `core/modules/ui.SelectionGroup`
   - `core/modules/ui.Service`
   - `core/modules/ui.UiCameraComponent`
-  - `core/modules/ui.UnselectEvent`
 
 `engine/modules/assets`:
   - `engine/modules/assets.GetAsset`
@@ -228,10 +145,11 @@ Type: `func[Component any](entities ...engine/services/ecs.EntityID) core/module
   - `engine/services/ecs.GetEntities`
   - `engine/services/ecs.NewDirtySet`
   - `engine/services/ecs.NewEntity`
+  - `engine/services/ecs.NewRemoveEntityEvent`
   - `engine/services/ecs.NewSystemRegister`
+  - `engine/services/ecs.OnRemove`
   - `engine/services/ecs.OnUpsert`
   - `engine/services/ecs.RegisterSystems`
-  - `engine/services/ecs.Remove`
   - `engine/services/ecs.RemoveEntity`
   - `engine/services/ecs.Set`
   - `engine/services/ecs.SystemRegister`

@@ -33,7 +33,6 @@ func (s *service) OnMissingSourceObjectInteractionUpsert(ecs.EntityID) {
 		return
 	}
 
-	// TODO interactions deploy
 	deployed, _ := s.Deploy().Component().Get(link.Entity)
 	if len(deployed.Deployable) == 0 {
 		return
@@ -62,4 +61,18 @@ func (s *service) OnMissingSourceObjectInteractionUpsert(ecs.EntityID) {
 }
 func (s *service) OnMissingSourceObjectInteractionRemove(ecs.EntityID) {
 	s.Ui().HideMenu()
+}
+
+func (s *service) OnSourceObjectMod(ecs.EntityID) {
+	featureEntity := s.Interactions().FeatureEntity()
+
+	sourceObject, ok := s.SourceObjectInteraction().Interaction().Get(featureEntity)
+	if !ok {
+		return
+	}
+
+	s.CoordsCursor().Set(featureEntity, tile.NewCoordsCursor(sourceObject.State.Entity, true))
+	if object, ok := s.ObjectInteraction().Interaction().Get(featureEntity); ok {
+		s.CoordsCursorRange().Set(featureEntity, tile.NewCoordsCursorRange(object.State.Entity))
+	}
 }

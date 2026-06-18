@@ -91,3 +91,9 @@ func (s *system) OnTilePosSizeRotUpsert(entity ecs.EntityID) {
 // | object   | yes          | none             | on object click
 // | coords   | no           | cursor look&size | on hover if it's missing
 // | building | no           | none             | on button click
+
+// game:
+//   scene
+//     map
+//     feature
+//   assets

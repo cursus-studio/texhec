@@ -7,9 +7,9 @@ import (
 	"core/modules/player"
 	"core/modules/reach"
 	"core/modules/tile"
-	"core/modules/ui"
 	"engine/modules/grid"
 	"engine/modules/inputs"
+	"engine/modules/seed"
 	"engine/services/ecs"
 
 	"github.com/ogiusek/events"
@@ -42,9 +42,9 @@ func (s *service) Deploy(
 	owner ecs.EntityID,
 	coords grid.Coords,
 ) (ecs.EntityID, error) {
-	worldEntity, ok := s.Tile().GetConfig()
+	worldEntity, ok := s.Seed().WorldSeed()
 	if !ok {
-		return 0, tile.ErrExpectedOneConfiguration
+		return 0, seed.ErrWorldCanHaveOneSeed
 	}
 	// check can place:
 
@@ -83,11 +83,10 @@ func (s *service) LoadDeploy(e *deploy.DeployEvent) {
 
 func (s *service) DeployEvent(e deploy.DeployEvent) {
 	s.LoadDeploy(&e)
-	worldEntity, ok := s.Tile().GetConfig()
+	worldEntity, ok := s.Seed().WorldSeed()
 	if !ok {
 		return
 	}
-	events.Emit(s.Events(), ui.NewUnselect[ui.ObjectComponent]())
 
 	// by
 	byPos, ok := s.Tile().Pos().Get(e.By)

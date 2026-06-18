@@ -28,6 +28,7 @@ import (
 	recordpkg "engine/modules/record/pkg"
 	renderpkg "engine/modules/render/pkg"
 	scenepkg "engine/modules/scene/pkg"
+	seedpkg "engine/modules/seed/pkg"
 	smoothpkg "engine/modules/smooth/pkg"
 	textpkg "engine/modules/text/pkg"
 	transformpkg "engine/modules/transform/pkg"
@@ -70,6 +71,7 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 		recordpkg.Pkg,
 		renderpkg.Pkg,
 		scenepkg.Pkg,
+		seedpkg.Pkg,
 		smoothpkg.Pkg,
 		textpkg.Pkg,
 		transformpkg.Pkg,

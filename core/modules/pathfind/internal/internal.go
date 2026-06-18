@@ -37,7 +37,6 @@ func (s *service) Register() error {
 	events.Listen(s.EventsBuilder(), s.FindPath)
 	events.Listen(s.EventsBuilder(), s.StepOnTick)
 	events.Listen(s.EventsBuilder(), s.PathfindOnTick)
-	events.Listen(s.EventsBuilder(), s.OnObjectSelect)
 	return nil
 }
 

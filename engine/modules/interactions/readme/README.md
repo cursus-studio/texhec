@@ -8,10 +8,10 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                               5             51             13            271
+Go                               5             53             15            285
 Markdown                         2              0              0              2
 -------------------------------------------------------------------------------
-SUM:                             7             51             13            273
+SUM:                             7             53             15            287
 -------------------------------------------------------------------------------
 ```
 ## TODO
@@ -70,6 +70,11 @@ Type: `func() engine/services/ecs.ComponentsArray[engine/modules/interactions.In
 #### method InteractionService InteractionAny
 Type: `func() engine/services/ecs.AnyComponentArray`
 
+#### method InteractionService InteractionGUI
+Type: `func() engine/services/ecs.ComponentsArray[engine/modules/interactions.InteractionGUIComponent[State]]`
+elements are removed when interaction is removed.
+they can be used to indicate that element is used.
+
 #### method InteractionService Measure
 Type: `func() (alreadyMeasured bool)`
 saves [MissingInteractionComponent] if it there is no [InteractionComponent]
@@ -113,6 +118,9 @@ Type: `func() engine/modules/interactions.Name`
 
 ### type MissingInteractionComponent
 Type: `engine/modules/interactions.MissingInteractionComponent[State any]`
+
+### type InteractionGUIComponent
+Type: `engine/modules/interactions.InteractionGUIComponent[State any]`
 
 ### type InteractionComponent
 Type: `engine/modules/interactions.InteractionComponent[State any]`
@@ -178,6 +186,7 @@ Type: `func[Event any](event Event) engine/modules/interactions.FeatureEvent[Eve
   - `engine/modules/interactions.InstanceComponent`
   - `engine/modules/interactions.InteractionAny`
   - `engine/modules/interactions.InteractionComponent`
+  - `engine/modules/interactions.InteractionGUIComponent`
   - `engine/modules/interactions.InteractionService`
   - `engine/modules/interactions.Interactions`
   - `engine/modules/interactions.MissingInteractionAny`

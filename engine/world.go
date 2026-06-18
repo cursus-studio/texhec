@@ -27,6 +27,7 @@ import (
 	"engine/modules/record"
 	"engine/modules/render"
 	"engine/modules/scene"
+	"engine/modules/seed"
 	"engine/modules/smooth"
 	"engine/modules/text"
 	"engine/modules/transform"
@@ -73,6 +74,7 @@ type EngineWorld struct {
 	Record         ioc.Lazy[record.Service]         `inject:""`
 	Render         ioc.Lazy[render.Service]         `inject:""`
 	Scene          ioc.Lazy[scene.Service]          `inject:""`
+	Seed           ioc.Lazy[seed.Service]           `inject:""`
 	Smooth         ioc.Lazy[smooth.Service]         `inject:""`
 	Text           ioc.Lazy[text.Service]           `inject:""`
 	Transform      ioc.Lazy[transform.Service]      `inject:""`

@@ -28,9 +28,6 @@ type service struct {
 	animatedBackgroundArray ecs.ComponentsArray[ui.AnimatedBackgroundComponent]
 	cursorCameraArray       ecs.ComponentsArray[ui.CursorCameraComponent]
 
-	objects ui.SelectionGroup[ui.ObjectComponent]
-	actions ui.SelectionGroup[ui.ActionComponent]
-
 	menuArray            ecs.ComponentsArray[menuComponent]
 	childrenWrapperArray ecs.ComponentsArray[childrenComponent]
 }
@@ -48,9 +45,6 @@ func NewService(
 	s.animatedBackgroundArray = ecs.GetComponentsArray[ui.AnimatedBackgroundComponent](s.World())
 	s.cursorCameraArray = ecs.GetComponentsArray[ui.CursorCameraComponent](s.World())
 
-	s.objects = NewSelectionGroup[ui.ObjectComponent](c, s)
-	s.actions = NewSelectionGroup[ui.ActionComponent](c, s)
-
 	s.menuArray = ecs.GetComponentsArray[menuComponent](s.World())
 	s.childrenWrapperArray = ecs.GetComponentsArray[childrenComponent](s.World())
 
@@ -59,12 +53,11 @@ func NewService(
 			if e.Button != sdl.BUTTON_RIGHT || e.State != sdl.RELEASED {
 				return
 			}
-			events.Emit(s.Events(), ui.NewUnselect[ui.ObjectComponent]())
+			removeEntityEvent := ecs.NewRemoveEntityEvent(s.Interactions().FeatureEntity())
+			events.Emit(s.Events(), removeEntityEvent)
 		})
 
-		events.Listen(s.EventsBuilder(), func(ui.UnselectEvent[ui.ObjectComponent]) {
-			events.Emit(s.Events(), ui.NewUnselect[ui.ActionComponent]())
-			s.World().RemoveEntity(s.Interactions().FeatureEntity())
+		s.Interactions().Instance().OnRemove(func(ecs.EntityID) {
 			s.HideMenu()
 		})
 		return nil
@@ -100,9 +93,6 @@ func (s *service) AnimatedBackground() ecs.ComponentsArray[ui.AnimatedBackground
 func (s *service) CursorCamera() ecs.ComponentsArray[ui.CursorCameraComponent] {
 	return s.cursorCameraArray
 }
-
-func (s *service) Objects() ui.SelectionGroup[ui.ObjectComponent] { return s.objects }
-func (s *service) Actions() ui.SelectionGroup[ui.ActionComponent] { return s.actions }
 
 func (s *service) ShowMenu() []ecs.EntityID {
 	s.ResetChildWrapper()
