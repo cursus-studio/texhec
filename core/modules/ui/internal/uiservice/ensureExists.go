@@ -8,6 +8,7 @@ import (
 	"engine/modules/render"
 	"engine/modules/text"
 	"engine/modules/transform"
+	"engine/services/ecs"
 
 	"github.com/go-gl/mathgl/mgl32"
 )
@@ -57,7 +58,8 @@ mainLoop:
 		s.Render().Mesh().Set(quit, render.NewMesh(s.Definitions().Assets().SquareMesh))
 		s.Render().Texture().Set(quit, render.NewTexture(s.Definitions().Assets().Blank))
 
-		s.Inputs().LeftClick().Set(quit, inputs.NewLeftClick(ui.NewUnselect[ui.ObjectComponent]()))
+		removeEntityEvent := ecs.NewRemoveEntityEvent(s.Interactions().FeatureEntity())
+		s.Inputs().LeftClick().Set(quit, inputs.NewLeftClick(removeEntityEvent)) // remove entity
 		s.Inputs().KeepSelected().Set(quit, inputs.KeepSelectedComponent{})
 		s.Collider().Component().Set(quit, collider.NewCollider(s.Definitions().Assets().SquareCollider))
 

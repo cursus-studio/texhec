@@ -25,6 +25,8 @@ Research materials:
 - ### [player](/core/modules/player/readme/README.md)
 Restrict actions to allow only user to perform his actions.
 Perhaps attach `PlayerComponent` to camera.
+- ### [reach](/core/modules/reach/readme/README.md)
+Define circle shader for reach
 - ### [tile](/core/modules/tile/readme/README.md)
 Currently animated tiles aren't supported and there is a big chance that they won't be supported
 ## [engine](/engine/readme/README.md)
@@ -39,6 +41,8 @@ Create methods to perform only shallow comparisons or only deep comparisons.
 Check `vulcan` and `wasm` as opengl alternatives
 - ### [inputs](/engine/modules/inputs/readme/README.md)
 Implement a proper input cursor and improve focusing and unfocusing on input
+- ### [interactions](/engine/modules/interactions/readme/README.md)
+Add feature and interaction history
 - ### [netsync](/engine/modules/netsync/readme/README.md)
 Create more features to allow more specific features to allow more specific calls
 - ### [noise](/engine/modules/noise/readme/README.md)
@@ -46,6 +50,8 @@ Improve noise flatenning bell curve.
 Avoid equasions for flattening and instead create 10k sample slice to create a bell curve.
 - ### [render](/engine/modules/render/readme/README.md)
 Add frustrum culling. For each camera store all colliding objects.
+
+Abstract shaders.
 - ### [text](/engine/modules/text/readme/README.md)
 1. Implement more letters and make them easier to expand (emojis, hiragana, etc.).
 2. Write own glyph rendering (solves first issue).

@@ -16,6 +16,7 @@ import (
 	"engine/modules/groups"
 	"engine/modules/hierarchy"
 	"engine/modules/inputs"
+	"engine/modules/interactions"
 	"engine/modules/layout"
 	"engine/modules/logger"
 	"engine/modules/loop"
@@ -26,6 +27,7 @@ import (
 	"engine/modules/record"
 	"engine/modules/render"
 	"engine/modules/scene"
+	"engine/modules/seed"
 	"engine/modules/smooth"
 	"engine/modules/text"
 	"engine/modules/transform"
@@ -59,6 +61,7 @@ type EngineWorld struct {
 	Graphics       ioc.Lazy[graphics.Service]       `inject:""`
 	Grid           ioc.Lazy[grid.Service]           `inject:""`
 	Groups         ioc.Lazy[groups.Service]         `inject:""`
+	Interactions   ioc.Lazy[interactions.Service]   `inject:""`
 	Hierarchy      ioc.Lazy[hierarchy.Service]      `inject:""`
 	Inputs         ioc.Lazy[inputs.Service]         `inject:""`
 	Layout         ioc.Lazy[layout.Service]         `inject:""`
@@ -71,6 +74,7 @@ type EngineWorld struct {
 	Record         ioc.Lazy[record.Service]         `inject:""`
 	Render         ioc.Lazy[render.Service]         `inject:""`
 	Scene          ioc.Lazy[scene.Service]          `inject:""`
+	Seed           ioc.Lazy[seed.Service]           `inject:""`
 	Smooth         ioc.Lazy[smooth.Service]         `inject:""`
 	Text           ioc.Lazy[text.Service]           `inject:""`
 	Transform      ioc.Lazy[transform.Service]      `inject:""`

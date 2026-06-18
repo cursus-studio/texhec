@@ -4,10 +4,13 @@ import (
 	"core/game"
 	"core/modules/pathfind"
 	"core/modules/pathfind/internal"
+	"core/modules/tile"
 	"engine/modules/entityregistry"
+	interactionspkg "engine/modules/interactions/pkg"
 	typeregistrypkg "engine/modules/typeregistry/pkg"
 	"engine/services/ecs"
 	"fmt"
+	"reflect"
 	"strconv"
 
 	"github.com/ogiusek/ioc/v2"
@@ -19,9 +22,11 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 		typeregistrypkg.PkgT[pathfind.SpeedComponent],
 		typeregistrypkg.PkgT[pathfind.StepComponent],
 
-		typeregistrypkg.PkgT[pathfind.SelectEvent],
-		typeregistrypkg.PkgT[pathfind.PreviewPathEvent],
 		typeregistrypkg.PkgT[pathfind.FindPathEvent],
+		interactionspkg.FeaturePkg[pathfind.FindPathEvent]("move", []reflect.Type{
+			reflect.TypeFor[tile.ObjectInteraction](),
+			reflect.TypeFor[tile.CoordsInteraction](),
+		}),
 	}
 	for _, pkg := range pkgs {
 		pkg(b)

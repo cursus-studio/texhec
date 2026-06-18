@@ -90,7 +90,7 @@ func BenchmarkRenderingChunk(b *testing.B) {
 
 	generationEntity := world.World().NewEntity()
 	world.Hierarchy().SetParent(generationEntity, gameCamera)
-	world.Tile().Config().Set(generationEntity, tile.NewConfig(seed.New(21377137)))
+	world.Seed().Seed().Set(generationEntity, seed.NewSeed(21377137))
 
 	events.Emit(world.Events(), tile.NewMissingChunkEvent(grid.NewChunkCoords(0, 0)))
 	for _, task := range world.Batcher().Tasks() {

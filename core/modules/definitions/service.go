@@ -46,6 +46,8 @@ const (
 	UnitLayer
 	PathLayer
 	TilePlaceholderLayer
+	RangePlaceholderLayer
+	ObjectSelectionPlaceholderLayer
 	ObjectPlaceholderLayer
 )
 

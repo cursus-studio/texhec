@@ -9,9 +9,9 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                               5             71             29            338
+Go                               5             60             28            292
 -------------------------------------------------------------------------------
-SUM:                             5             71             29            338
+SUM:                             5             60             28            292
 -------------------------------------------------------------------------------
 ```
 ## Types
@@ -111,6 +111,24 @@ Type: `engine/modules/grid.Coord`
 #### property ChunkCoordsComponent Y
 Type: `engine/modules/grid.Coord`
 
+### type ClickEvent
+Type: `engine/modules/grid.ClickEvent`
+
+#### property ClickEvent Chunk
+Type: `engine/services/ecs.EntityID`
+
+#### property ClickEvent Coords
+Type: `engine/modules/grid.Coords`
+
+### type HoverEvent
+Type: `engine/modules/grid.HoverEvent`
+
+#### property HoverEvent Chunk
+Type: `engine/services/ecs.EntityID`
+
+#### property HoverEvent Coords
+Type: `engine/modules/grid.Coords`
+
 ### type CoordsData
 Type: `engine/modules/grid.CoordsData[Tile engine/modules/grid.TileConstraint]`
 stores coords chunk data
@@ -142,6 +160,12 @@ Type: `func[Tile engine/modules/grid.TileConstraint](s engine/modules/grid.Coord
 ### func NewChunkCoords
 Type: `func(x engine/modules/grid.Coord, y engine/modules/grid.Coord) engine/modules/grid.ChunkCoordsComponent`
 
+### func NewClickEvent
+Type: `func(chunk engine/services/ecs.EntityID, tile engine/modules/grid.Coords) engine/modules/grid.ClickEvent`
+
+### func NewHoverEvent
+Type: `func(chunk engine/services/ecs.EntityID, tile engine/modules/grid.Coords) engine/modules/grid.HoverEvent`
+
 ### func NewCoordsData
 Type: `func[Tile engine/modules/grid.TileConstraint](entity engine/services/ecs.EntityID, component engine/modules/grid.ChunkComponent[Tile], index engine/modules/grid.Index) engine/modules/grid.CoordsData[Tile]`
 
@@ -156,31 +180,29 @@ Type: `func[Tile engine/modules/grid.TileConstraint](entity engine/services/ecs.
   - `engine.World`
 
 `engine/modules/collider`:
-  - `engine/modules/collider.AddRayFallThroughPolicy`
   - `engine/modules/collider.Entity`
-  - `engine/modules/collider.FallTroughPolicy`
   - `engine/modules/collider.Hit`
   - `engine/modules/collider.ObjectRayCollision`
   - `engine/modules/collider.Point`
-  - `engine/modules/collider.Service`
 
 `engine/modules/grid`:
-  - `engine/modules/grid.Chunk`
   - `engine/modules/grid.ChunkComponent`
   - `engine/modules/grid.ChunkCoordsComponent`
   - `engine/modules/grid.ChunkSize`
+  - `engine/modules/grid.ClickEvent`
   - `engine/modules/grid.Coord`
   - `engine/modules/grid.Coords`
   - `engine/modules/grid.CoordsData`
-  - `engine/modules/grid.CoordsIndex`
   - `engine/modules/grid.GetChunk`
-  - `engine/modules/grid.GetTile`
+  - `engine/modules/grid.HoverEvent`
   - `engine/modules/grid.Index`
   - `engine/modules/grid.NewChunk`
   - `engine/modules/grid.NewChunkCoords`
   - `engine/modules/grid.NewChunkSize`
+  - `engine/modules/grid.NewClickEvent`
   - `engine/modules/grid.NewCoords`
   - `engine/modules/grid.NewCoordsData`
+  - `engine/modules/grid.NewHoverEvent`
   - `engine/modules/grid.RelativeCoords`
   - `engine/modules/grid.Service`
   - `engine/modules/grid.ServiceT`

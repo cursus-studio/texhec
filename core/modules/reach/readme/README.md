@@ -9,11 +9,11 @@ goos: linux
 goarch: amd64
 pkg: core/modules/reach/test
 cpu: Intel(R) Core(TM) i5-8350U CPU @ 1.70GHz
-BenchmarkDist-8                 	100000000	        11.26 ns/op
-Benchmark4TilesWithinReach-8    	13036647	        89.51 ns/op
-Benchmark12TilesWithinReach-8   	 9051135	       148.5 ns/op
+BenchmarkDist-8                 	100000000	        11.28 ns/op
+Benchmark4TilesWithinReach-8    	13511037	        91.67 ns/op
+Benchmark12TilesWithinReach-8   	 7572405	       137.8 ns/op
 PASS
-ok  	core/modules/reach/test	3.652s
+ok  	core/modules/reach/test	3.432s
 ```
 ## Lines of code
 ```
@@ -22,11 +22,14 @@ github.com/AlDanial/cloc
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
 Go                               8             61             30            365
-Markdown                         1              0              0              1
+Markdown                         2              0              0              2
 -------------------------------------------------------------------------------
-SUM:                             9             61             30            366
+SUM:                            10             61             30            367
 -------------------------------------------------------------------------------
 ```
+## TODO
+Define circle shader for reach
+
 ## Types
 ### type Service
 Type: `core/modules/reach.Service`

@@ -103,11 +103,11 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                               9            200             74           1145
+Go                              11            242            108           1343
 GLSL                             3             31              2            112
 Markdown                         3             10              0             85
 -------------------------------------------------------------------------------
-SUM:                            15            241             76           1342
+SUM:                            17            283            110           1540
 -------------------------------------------------------------------------------
 ```
 ## TODO
@@ -120,11 +120,14 @@ Type: `core/modules/tile.Service`
 #### method Service Component
 Type: `func() engine/services/ecs.ComponentsArray[core/modules/tile.Component]`
 
-#### method Service Config
-Type: `func() engine/services/ecs.ComponentsArray[core/modules/tile.ConfigComponent]`
+#### method Service CoordsCursor
+Type: `func() engine/services/ecs.ComponentsArray[core/modules/tile.CoordsCursorComponent]`
 
-#### method Service GetConfig
-Type: `func() (engine/services/ecs.EntityID, bool)`
+#### method Service CoordsCursorRange
+Type: `func() engine/services/ecs.ComponentsArray[core/modules/tile.CoordsCursorRangeComponent]`
+
+#### method Service CoordsInteraction
+Type: `func() engine/modules/interactions.InteractionService[core/modules/tile.CoordsInteraction]`
 
 #### method Service GetPos
 Type: `func(coords engine/modules/grid.Coords) engine/modules/transform.PosComponent`
@@ -152,6 +155,9 @@ src images should be:
 - 1001
 - 0001
 
+#### method Service ObjectInteraction
+Type: `func() engine/modules/interactions.InteractionService[core/modules/tile.ObjectInteraction]`
+
 #### method Service Pos
 Type: `func() engine/services/ecs.ComponentsArray[core/modules/tile.PosComponent]`
 
@@ -166,6 +172,9 @@ Type: `func() engine/services/ecs.ComponentsArray[core/modules/tile.RotComponent
 
 #### method Service Size
 Type: `func() engine/services/ecs.ComponentsArray[core/modules/tile.SizeComponent]`
+
+#### method Service SourceObjectInteraction
+Type: `func() engine/modules/interactions.InteractionService[core/modules/tile.SourceObjectInteraction]`
 
 ### type BiomeAsset
 Type: `core/modules/tile.BiomeAsset`
@@ -251,12 +260,6 @@ Type: `func(c2 core/modules/tile.RotComponent, mix32 float32) core/modules/tile.
 #### method RotComponent Quat
 Type: `func() github.com/go-gl/mathgl/mgl32.Quat`
 
-### type ConfigComponent
-Type: `core/modules/tile.ConfigComponent`
-
-#### property ConfigComponent Seed
-Type: `engine/modules/seed.Seed`
-
 ### type MissingChunkEvent
 Type: `core/modules/tile.MissingChunkEvent`
 
@@ -269,21 +272,39 @@ Type: `core/modules/tile.UnloadChunkEvent`
 #### property UnloadChunkEvent Coords
 Type: `engine/modules/grid.ChunkCoordsComponent`
 
-### type SelectEvent
-Type: `core/modules/tile.SelectEvent`
-changes event emitted on tile hover
+### type CoordsCursorRangeComponent
+Type: `core/modules/tile.CoordsCursorRangeComponent`
 
-#### property SelectEvent HoverEvent
-Type: `any`
-
-### type HoverEvent
-Type: `core/modules/tile.HoverEvent`
-
-#### property HoverEvent Chunk
+#### property CoordsCursorRangeComponent Entity
 Type: `engine/services/ecs.EntityID`
 
-#### property HoverEvent Coords
+### type CoordsCursorComponent
+Type: `core/modules/tile.CoordsCursorComponent`
+
+#### property CoordsCursorComponent PropertiesEntity
+Type: `engine/services/ecs.EntityID`
+
+#### property CoordsCursorComponent CustomImage
+Type: `bool`
+if true then entity is used as an image else default icon is used
+
+### type CoordsInteraction
+Type: `core/modules/tile.CoordsInteraction`
+
+#### property CoordsInteraction Coords
 Type: `engine/modules/grid.Coords`
+
+### type ObjectInteraction
+Type: `core/modules/tile.ObjectInteraction`
+
+#### property ObjectInteraction Entity
+Type: `engine/services/ecs.EntityID`
+
+### type SourceObjectInteraction
+Type: `core/modules/tile.SourceObjectInteraction`
+
+#### property SourceObjectInteraction Entity
+Type: `engine/services/ecs.EntityID`
 
 ### type ClickEntityEvent
 Type: `core/modules/tile.ClickEntityEvent`
@@ -305,9 +326,6 @@ Type: `error`
 ### var ErrPositionAndSpeedIsRequiredToStep
 Type: `error`
 
-### var ErrExpectedOneConfiguration
-Type: `error`
-
 ### var Tau
 Type: `untyped float`
 
@@ -327,20 +345,26 @@ Type: `func[Number golang.org/x/exp/constraints.Integer](x Number, y Number) cor
 ### func NewRot
 Type: `func(radians float32) core/modules/tile.RotComponent`
 
-### func NewConfig
-Type: `func(seed engine/modules/seed.Seed) core/modules/tile.ConfigComponent`
-
 ### func NewMissingChunkEvent
 Type: `func(coords engine/modules/grid.ChunkCoordsComponent) core/modules/tile.MissingChunkEvent`
 
 ### func NewUnloadChunkEvent
 Type: `func(coords engine/modules/grid.ChunkCoordsComponent) core/modules/tile.UnloadChunkEvent`
 
-### func NewSelectEvent
-Type: `func(hoverEvent any) core/modules/tile.SelectEvent`
+### func NewCoordsCursorRange
+Type: `func(rangeEntity engine/services/ecs.EntityID) core/modules/tile.CoordsCursorRangeComponent`
 
-### func NewHoverEvent
-Type: `func(chunk engine/services/ecs.EntityID, tile engine/modules/grid.Coords) any`
+### func NewCoordsCursor
+Type: `func(propertiesEntity engine/services/ecs.EntityID, customImage bool) core/modules/tile.CoordsCursorComponent`
+
+### func NewCoordsInteraction
+Type: `func(coords engine/modules/grid.Coords) core/modules/tile.CoordsInteraction`
+
+### func NewObjectInteraction
+Type: `func(entity engine/services/ecs.EntityID) core/modules/tile.ObjectInteraction`
+
+### func NewSourceObjectInteraction
+Type: `func(entity engine/services/ecs.EntityID) core/modules/tile.SourceObjectInteraction`
 
 ### func NewClickEntityEvent
 Type: `func() core/modules/tile.ClickEntityEvent`
@@ -350,7 +374,9 @@ Type: `func() core/modules/tile.ClickEntityEvent`
 `core/game`:
   - `core/game.Definitions`
   - `core/game.Deploy`
+  - `core/game.EngineWorld`
   - `core/game.GameWorld`
+  - `core/game.Obstruction`
   - `core/game.Pathfind`
   - `core/game.Player`
   - `core/game.Tile`
@@ -358,71 +384,81 @@ Type: `func() core/modules/tile.ClickEntityEvent`
 
 `core/modules/definitions`:
   - `core/modules/definitions.Assets`
+  - `core/modules/definitions.Blank`
+  - `core/modules/definitions.Border`
   - `core/modules/definitions.Btn`
+  - `core/modules/definitions.Can`
   - `core/modules/definitions.ConstructLayer`
   - `core/modules/definitions.Hud`
+  - `core/modules/definitions.ObjectPlaceholderLayer`
+  - `core/modules/definitions.ObjectSelectionPlaceholderLayer`
+  - `core/modules/definitions.RangePlaceholderLayer`
   - `core/modules/definitions.Selected`
   - `core/modules/definitions.SquareCollider`
   - `core/modules/definitions.SquareMesh`
   - `core/modules/definitions.Text`
   - `core/modules/definitions.TileLayer`
+  - `core/modules/definitions.TilePlaceholderLayer`
   - `core/modules/definitions.UnitLayer`
 
 `core/modules/deploy`:
   - `core/modules/deploy.Component`
   - `core/modules/deploy.Deployable`
-  - `core/modules/deploy.NewSelectEvent`
+  - `core/modules/deploy.NewFeatureDeployEvent`
+  - `core/modules/deploy.Reach`
+
+`core/modules/obstruction`:
+  - `core/modules/obstruction.Collisions`
+  - `core/modules/obstruction.Component`
+  - `core/modules/obstruction.Deployed`
+  - `core/modules/obstruction.NewAABB`
+  - `core/modules/obstruction.Obstruction`
 
 `core/modules/pathfind`:
-  - `core/modules/pathfind.NewSelectEvent`
+  - `core/modules/pathfind.NewFeatureFindPathEvent`
   - `core/modules/pathfind.Speed`
 
 `core/modules/tile`:
-  - `core/modules/tile.ApplyCoords`
-  - `core/modules/tile.ApplyCoordsEvent`
   - `core/modules/tile.BiomeAsset`
-  - `core/modules/tile.Chunk`
   - `core/modules/tile.ClickEntityEvent`
   - `core/modules/tile.Component`
-  - `core/modules/tile.ConfigComponent`
   - `core/modules/tile.Coord`
   - `core/modules/tile.Coords`
+  - `core/modules/tile.CoordsCursorComponent`
+  - `core/modules/tile.CoordsCursorRangeComponent`
+  - `core/modules/tile.CoordsInteraction`
+  - `core/modules/tile.CustomImage`
   - `core/modules/tile.Entity`
-  - `core/modules/tile.ErrExpectedOneConfiguration`
   - `core/modules/tile.GetTileSize`
   - `core/modules/tile.Grid`
-  - `core/modules/tile.HoverEvent`
   - `core/modules/tile.ID`
   - `core/modules/tile.Images`
   - `core/modules/tile.Layer`
   - `core/modules/tile.LayerComponent`
   - `core/modules/tile.NewBiomeAsset`
-  - `core/modules/tile.NewHoverEvent`
+  - `core/modules/tile.NewCoordsCursor`
+  - `core/modules/tile.NewCoordsCursorRange`
   - `core/modules/tile.NewLayer`
+  - `core/modules/tile.NewObjectInteraction`
+  - `core/modules/tile.NewPos`
   - `core/modules/tile.NewRot`
   - `core/modules/tile.NewSize`
+  - `core/modules/tile.NewSourceObjectInteraction`
   - `core/modules/tile.NewTile`
+  - `core/modules/tile.ObjectInteraction`
   - `core/modules/tile.Pos`
   - `core/modules/tile.PosComponent`
+  - `core/modules/tile.PropertiesEntity`
   - `core/modules/tile.Quat`
   - `core/modules/tile.Rot`
   - `core/modules/tile.RotComponent`
-  - `core/modules/tile.SelectEvent`
   - `core/modules/tile.Service`
   - `core/modules/tile.Size`
   - `core/modules/tile.SizeComponent`
+  - `core/modules/tile.SourceObjectInteraction`
   - `core/modules/tile.X`
   - `core/modules/tile.Y`
   - `core/modules/tile.Z`
-
-`core/modules/ui`:
-  - `core/modules/ui.Entities`
-  - `core/modules/ui.NewSelect`
-  - `core/modules/ui.ObjectComponent`
-  - `core/modules/ui.Objects`
-  - `core/modules/ui.SelectEvent`
-  - `core/modules/ui.ShowMenu`
-  - `core/modules/ui.UnselectEvent`
 
 `engine/modules/assets`:
   - `engine/modules/assets.Asset`
@@ -476,10 +512,12 @@ Type: `func() core/modules/tile.ClickEntityEvent`
   - `engine/modules/grid.Chunk`
   - `engine/modules/grid.ChunkCoordsComponent`
   - `engine/modules/grid.ChunkSize`
+  - `engine/modules/grid.ClickEvent`
   - `engine/modules/grid.Coord`
   - `engine/modules/grid.Coords`
   - `engine/modules/grid.GetChunk`
   - `engine/modules/grid.GetTiles`
+  - `engine/modules/grid.HoverEvent`
   - `engine/modules/grid.NewChunkCoords`
   - `engine/modules/grid.NewCoord`
   - `engine/modules/grid.NewCoords`
@@ -488,14 +526,26 @@ Type: `func() core/modules/tile.ClickEntityEvent`
   - `engine/modules/grid.Y`
 
 `engine/modules/grid/pkg`:
-  - `engine/modules/grid/pkg.ConfigT`
   - `engine/modules/grid/pkg.PkgT`
-  - `engine/modules/grid/pkg.SetHoverEvent`
 
 `engine/modules/inputs`:
   - `engine/modules/inputs.LeftClick`
   - `engine/modules/inputs.NewLeftClick`
   - `engine/modules/inputs.Stack`
+
+`engine/modules/interactions`:
+  - `engine/modules/interactions.FeatureEntity`
+  - `engine/modules/interactions.Interaction`
+  - `engine/modules/interactions.InteractionGUI`
+  - `engine/modules/interactions.InteractionGUIComponent`
+  - `engine/modules/interactions.InteractionService`
+  - `engine/modules/interactions.MissingInteraction`
+  - `engine/modules/interactions.NewFinishMeasurementEvent`
+  - `engine/modules/interactions.NewInteraction`
+  - `engine/modules/interactions.State`
+
+`engine/modules/interactions/pkg`:
+  - `engine/modules/interactions/pkg.InteractionPkg`
 
 `engine/modules/relation`:
   - `engine/modules/relation.Get`
@@ -506,21 +556,21 @@ Type: `func() core/modules/tile.ClickEntityEvent`
 
 `engine/modules/render`:
   - `engine/modules/render.Camera`
+  - `engine/modules/render.Color`
   - `engine/modules/render.ErrTextureAssetImagesHasToMatchResolution`
   - `engine/modules/render.Mesh`
+  - `engine/modules/render.NewColor`
   - `engine/modules/render.NewMesh`
   - `engine/modules/render.NewTexture`
   - `engine/modules/render.RenderEvent`
   - `engine/modules/render.Texture`
-
-`engine/modules/seed`:
-  - `engine/modules/seed.Seed`
 
 `engine/modules/text`:
   - `engine/modules/text.Content`
   - `engine/modules/text.NewText`
 
 `engine/modules/transform`:
+  - `engine/modules/transform.Absolute`
   - `engine/modules/transform.Mat4`
   - `engine/modules/transform.NewParent`
   - `engine/modules/transform.NewPivotPoint`
@@ -531,8 +581,6 @@ Type: `func() core/modules/tile.ClickEntityEvent`
   - `engine/modules/transform.PivotPoint`
   - `engine/modules/transform.Pos`
   - `engine/modules/transform.PosComponent`
-  - `engine/modules/transform.RelativePos`
-  - `engine/modules/transform.RelativeSizeXYZ`
   - `engine/modules/transform.Rotation`
   - `engine/modules/transform.Size`
   - `engine/modules/transform.SizeComponent`
@@ -563,10 +611,12 @@ Type: `func() core/modules/tile.ClickEntityEvent`
   - `engine/services/ecs.NewDirtySet`
   - `engine/services/ecs.NewEntity`
   - `engine/services/ecs.NewSystemRegister`
+  - `engine/services/ecs.OnMod`
   - `engine/services/ecs.OnRemove`
   - `engine/services/ecs.OnUpsert`
   - `engine/services/ecs.RegisterSystems`
   - `engine/services/ecs.Remove`
+  - `engine/services/ecs.RemoveEntity`
   - `engine/services/ecs.Set`
   - `engine/services/ecs.SetEmpty`
   - `engine/services/ecs.SystemRegister`

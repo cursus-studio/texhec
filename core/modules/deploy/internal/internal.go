@@ -2,39 +2,25 @@ package internal
 
 import (
 	"core/game"
-	"core/modules/definitions"
 	"core/modules/deploy"
 	"core/modules/obstruction"
 	"core/modules/player"
 	"core/modules/reach"
 	"core/modules/tile"
-	"core/modules/ui"
 	"engine/modules/grid"
 	"engine/modules/inputs"
-	"engine/modules/render"
+	"engine/modules/seed"
 	"engine/services/ecs"
-	"slices"
 
-	"github.com/go-gl/mathgl/mgl32"
 	"github.com/ogiusek/events"
 	"github.com/ogiusek/ioc/v2"
 )
-
-type PreviewedComponent struct {
-	Event      deploy.PreviewEvent
-	Collisions []grid.Coords
-}
-
-func (c1 *PreviewedComponent) Equal(c2 PreviewedComponent) bool {
-	return c1.Event == c2.Event && slices.Equal(c1.Collisions, c2.Collisions)
-}
 
 type service struct {
 	game.GameWorld `inject:""`
 	ReachT         reach.ServiceT[deploy.Component] `inject:""`
 
 	component ecs.ComponentsArray[deploy.Component]
-	previewed ecs.ComponentsArray[PreviewedComponent]
 }
 
 func NewService(c ioc.Dic) deploy.Service {
@@ -42,11 +28,8 @@ func NewService(c ioc.Dic) deploy.Service {
 	s.ReachT.Component().SetEmpty(reach.NewReach[deploy.Component](1))
 
 	s.component = ecs.GetComponentsArray[deploy.Component](s.World())
-	s.previewed = ecs.GetComponentsArray[PreviewedComponent](s.World())
 
-	events.Listen(s.EventsBuilder(), s.Execute)
-	events.Listen(s.EventsBuilder(), s.Preview)
-	events.Listen(s.EventsBuilder(), s.Select)
+	events.Listen(s.EventsBuilder(), s.DeployEvent)
 
 	return s
 }
@@ -59,9 +42,9 @@ func (s *service) Deploy(
 	owner ecs.EntityID,
 	coords grid.Coords,
 ) (ecs.EntityID, error) {
-	worldEntity, ok := s.Tile().GetConfig()
+	worldEntity, ok := s.Seed().WorldSeed()
 	if !ok {
-		return 0, tile.ErrExpectedOneConfiguration
+		return 0, seed.ErrWorldCanHaveOneSeed
 	}
 	// check can place:
 
@@ -85,92 +68,25 @@ func (s *service) Deploy(
 	return deployed, nil
 }
 
-func (s *service) Select(e deploy.SelectEvent) {
-	events.Emit(s.Events(), tile.NewSelectEvent(deploy.NewPreviewEvent(e.By, e.Blueprint)))
+func (s *service) LoadDeploy(e *deploy.DeployEvent) {
+	featureEntity := s.Interactions().FeatureEntity()
+	if comp, ok := s.Tile().CoordsInteraction().Interaction().Get(featureEntity); ok {
+		e.Coords = comp.State.Coords
+	}
+	if comp, ok := s.Tile().ObjectInteraction().Interaction().Get(featureEntity); ok {
+		e.By = comp.State.Entity
+	}
+	if comp, ok := s.Tile().SourceObjectInteraction().Interaction().Get(featureEntity); ok {
+		e.Blueprint = comp.State.Entity
+	}
 }
-func (s *service) Preview(e deploy.PreviewEvent) {
-	worldEntity, ok := s.Tile().GetConfig()
+
+func (s *service) DeployEvent(e deploy.DeployEvent) {
+	s.LoadDeploy(&e)
+	worldEntity, ok := s.Seed().WorldSeed()
 	if !ok {
 		return
 	}
-
-	pos := tile.NewPos(e.Coords.Coords())
-	blueprintObstruction, _ := s.Obstruction().Component().Get(e.Blueprint)
-	size, _ := s.Tile().Size().Get(e.Blueprint)
-	aabb := obstruction.NewAABB(pos, size)
-	previewComp := PreviewedComponent{
-		Event:      e,
-		Collisions: s.Obstruction().Collisions(aabb, blueprintObstruction.Obstruction),
-	}
-
-	if len(s.previewed.GetEntities()) == 1 {
-		previewed := s.previewed.GetEntities()[0]
-		previousPreviewComp, _ := s.previewed.Get(previewed)
-		if previousPreviewComp.Equal(previewComp) {
-			return
-		}
-	}
-
-	events.Emit(s.Events(), ui.NewUnselect[ui.ActionComponent]())
-
-	placeholderEntity := s.Prototype().Clone(e.Blueprint)
-	s.Hierarchy().SetParent(placeholderEntity, worldEntity)
-	s.Tile().Layer().Set(placeholderEntity, tile.NewLayer(definitions.ObjectPlaceholderLayer))
-	s.Tile().Pos().Set(placeholderEntity, pos)
-	s.Ui().Actions().Set(placeholderEntity, ui.ActionComponent{})
-	s.Inputs().KeepSelected().Set(placeholderEntity, inputs.KeepSelectedComponent{})
-	s.previewed.Set(placeholderEntity, previewComp)
-
-	for _, coords := range s.GameWorld.Deploy().Reach().TilesWithinReach(e.By) {
-		entity := s.Prototype().Clone(s.Definitions().Assets().Blank)
-		s.Hierarchy().SetParent(entity, worldEntity)
-
-		s.Tile().Layer().Set(entity, tile.NewLayer(definitions.TilePlaceholderLayer))
-		s.Render().Mesh().Set(entity, render.NewMesh(s.Definitions().Assets().SquareMesh))
-		s.Render().Texture().Set(entity, render.NewTexture(s.Definitions().Assets().Border))
-		s.Groups().InheritGroups(entity)
-
-		s.Tile().Layer().Set(entity, tile.NewLayer(definitions.TilePlaceholderLayer))
-		s.Tile().Pos().Set(entity, tile.NewPos(coords.Coords()))
-		s.Ui().Actions().Set(entity, ui.ActionComponent{})
-		s.Render().Color().Set(entity, render.NewColor(mgl32.Vec4{0, 0, .5, 1}))
-	}
-
-	isInReach := s.GameWorld.Deploy().Reach().Reaches(e.By, placeholderEntity)
-	if len(previewComp.Collisions) == 0 && isInReach {
-		s.Render().Color().Set(placeholderEntity, render.NewColor(mgl32.Vec4{0, 1, 0, 1}))
-		s.Inputs().LeftClick().Set(placeholderEntity, inputs.NewLeftClick(deploy.NewExecuteEvent(e.By, e.Blueprint).ApplyCoords(e.Coords)))
-		return
-	}
-
-	if !isInReach {
-		s.Render().Color().Set(placeholderEntity, render.NewColor(mgl32.Vec4{1, 0, 0, 1}))
-		return
-	}
-
-	// place indicator on occupied tiles
-	for _, collision := range previewComp.Collisions {
-		entity := s.Prototype().Clone(s.Definitions().Assets().Blank)
-		s.Hierarchy().SetParent(entity, worldEntity)
-
-		s.Tile().Layer().Set(entity, tile.NewLayer(definitions.TilePlaceholderLayer))
-		s.Render().Mesh().Set(entity, render.NewMesh(s.Definitions().Assets().SquareMesh))
-		s.Render().Texture().Set(entity, render.NewTexture(s.Definitions().Assets().Blank))
-		s.Groups().InheritGroups(entity)
-
-		s.Tile().Layer().Set(entity, tile.NewLayer(definitions.TilePlaceholderLayer))
-		s.Tile().Pos().Set(entity, tile.NewPos(collision.Coords()))
-		s.Ui().Actions().Set(entity, ui.ActionComponent{})
-		s.Render().Color().Set(entity, render.NewColor(mgl32.Vec4{1, 0, 0, 1}))
-	}
-	s.Render().Color().Set(placeholderEntity, render.NewColor(mgl32.Vec4{1, 0, 0, 1}))
-}
-func (s *service) Execute(e deploy.ExecuteEvent) {
-	worldEntity, ok := s.Tile().GetConfig()
-	if !ok {
-		return
-	}
-	events.Emit(s.Events(), ui.NewUnselect[ui.ObjectComponent]())
 
 	// by
 	byPos, ok := s.Tile().Pos().Get(e.By)

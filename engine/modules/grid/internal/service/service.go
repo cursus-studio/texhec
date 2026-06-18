@@ -6,6 +6,7 @@ import (
 	"engine/modules/relation"
 	"engine/services/ecs"
 
+	"github.com/ogiusek/events"
 	"github.com/ogiusek/ioc/v2"
 )
 
@@ -22,6 +23,10 @@ func NewService(c ioc.Dic, chunkSize grid.ChunkSize) grid.Service {
 	s.chunkSize = chunkSize
 	s.chunkSizeTileMask = chunkSize.Val() - 1
 	s.coords = ecs.GetComponentsArray[grid.ChunkCoordsComponent](s.World())
+
+	s.Coords().OnUpsert(s.OnUpsert)
+	events.Listen(s.EventsBuilder(), s.OnHover)
+	events.Listen(s.EventsBuilder(), s.OnClick)
 	return s
 }
 

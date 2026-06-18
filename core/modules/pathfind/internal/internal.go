@@ -34,22 +34,15 @@ func (s *service) Register() error {
 		invSpeedTable[i] = 1. / tile.Coord(i)
 	}
 
-	events.Listen(s.EventsBuilder(), s.Select)
-	events.Listen(s.EventsBuilder(), s.PreviewPath)
 	events.Listen(s.EventsBuilder(), s.FindPath)
 	events.Listen(s.EventsBuilder(), s.StepOnTick)
 	events.Listen(s.EventsBuilder(), s.PathfindOnTick)
-	events.Listen(s.EventsBuilder(), s.OnObjectSelect)
 	return nil
 }
 
 func (s *service) Target() ecs.ComponentsArray[pathfind.TargetComponent] { return s.target }
 func (s *service) Speed() ecs.ComponentsArray[pathfind.SpeedComponent]   { return s.speed }
 func (s *service) Step() ecs.ComponentsArray[pathfind.StepComponent]     { return s.step }
-
-func (s *service) Select(e pathfind.SelectEvent) {
-	events.Emit(s.Events(), tile.NewSelectEvent(pathfind.NewPreviewPathEvent(e.Entity)))
-}
 
 func abs[Number constraints.Float | constraints.Integer](n Number) Number { return max(-n, n) }
 

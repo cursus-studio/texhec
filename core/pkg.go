@@ -121,7 +121,7 @@ func getDic() ioc.Dic {
 				netsyncpkg.AddEvent[inputs.DragEvent](config)
 
 				netsyncpkg.AddTransparentEvent[settings.EnterSettingsEvent](config)
-				netsyncpkg.AddTransparentEvent[tile.HoverEvent](config)
+				// netsyncpkg.AddTransparentEvent[tile.TileHoverEvent](config)
 
 				// netsyncpkg.AddEventAuthorization(config, func(c inputs.DragEvent) error {
 				// 	return errors.New("no")

@@ -141,7 +141,7 @@ func (t *entityKeyedRecorder) Apply(config record.Config, recordings ...record.R
 					array.Remove(entity)
 					continue
 				}
-				_ = array.SetAny(entity, component)
+				array.SetAny(entity, component)
 			}
 		}
 	}

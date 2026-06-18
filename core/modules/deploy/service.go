@@ -4,6 +4,7 @@ package deploy
 import (
 	"core/modules/reach"
 	"engine/modules/grid"
+	"engine/modules/interactions"
 	"engine/services/ecs"
 )
 
@@ -31,77 +32,28 @@ type Service interface {
 		owner ecs.EntityID,
 		coords grid.Coords,
 	) (ecs.EntityID, error)
-	Select(SelectEvent)
-	Preview(PreviewEvent)
-	Execute(ExecuteEvent)
+	DeployEvent(DeployEvent)
 }
 
 //
 
-// Select unit.
-// Add in gui some indicator.
-// Change on click event.
-type SelectEvent struct {
-	By,
-	Blueprint ecs.EntityID
-}
-
-func NewSelectEvent(
-	by,
-	blueprint ecs.EntityID,
-) SelectEvent {
-	return SelectEvent{
-		by,
-		blueprint,
-	}
-}
-
-//
-
-// Select unit.
-// Add in gui some indicator.
-// Perform all checks and costs
-type PreviewEvent struct {
+type DeployEvent struct {
 	By,
 	Blueprint ecs.EntityID
 	Coords grid.Coords
 }
 
-func NewPreviewEvent(
+func NewFeatureDeployEvent() interactions.FeatureEvent[DeployEvent] {
+	return interactions.NewFeatureEvent(DeployEvent{})
+}
+func NewDeployEvent(
 	by,
 	blueprint ecs.EntityID,
-) PreviewEvent {
-	return PreviewEvent{
+	coords grid.Coords,
+) DeployEvent {
+	return DeployEvent{
 		By:        by,
 		Blueprint: blueprint,
+		Coords:    coords,
 	}
-}
-
-func (e PreviewEvent) ApplyCoords(coords grid.Coords) any {
-	e.Coords = coords
-	return e
-}
-
-//
-
-// Deploys on coords something if it doesn't collide
-type ExecuteEvent struct {
-	By,
-	Blueprint ecs.EntityID
-	Coords grid.Coords
-}
-
-func NewExecuteEvent(
-	by,
-	blueprint ecs.EntityID,
-) ExecuteEvent {
-	return ExecuteEvent{
-		By:        by,
-		Blueprint: blueprint,
-	}
-}
-
-func (e ExecuteEvent) ApplyCoords(coords grid.Coords) any {
-	e.Coords = coords
-	return e
 }

@@ -5,6 +5,7 @@ import (
 	"core/modules/obstruction"
 	"core/modules/tile"
 	"engine/modules/grid"
+	"engine/modules/interactions"
 	"engine/services/ecs"
 	"errors"
 
@@ -50,8 +51,6 @@ type Service interface {
 	Speed() ecs.ComponentsArray[SpeedComponent]
 	Step() ecs.ComponentsArray[StepComponent]
 
-	Select(SelectEvent)
-	PreviewPath(PreviewPathEvent)
 	FindPath(FindPathEvent)
 
 	CanStep(
@@ -68,59 +67,14 @@ type Service interface {
 // - improve errors
 // - look on `HPA*` and `JPS`
 
-// Select object.
-// Add in gui some indicator.
-// Change on click event.
-type SelectEvent struct {
-	Entity ecs.EntityID
-}
-
-func NewSelectEvent(entity ecs.EntityID) SelectEvent {
-	return SelectEvent{
-		entity,
-	}
-}
-
-//
-
-// Select object.
-// Add in gui some indicator.
-// Perform all checks and costs
-type PreviewPathEvent struct {
-	Entity ecs.EntityID
-	Coords grid.Coords
-}
-
-func NewPreviewPathEvent(
-	entity ecs.EntityID,
-) PreviewPathEvent {
-	return PreviewPathEvent{
-		Entity: entity,
-	}
-}
-
-func (e PreviewPathEvent) ApplyCoords(coords grid.Coords) any {
-	e.Coords = coords
-	return e
-}
-
-//
-
-// Adds [TargetComponent] to entity
 type FindPathEvent struct {
 	Entity ecs.EntityID
 	Coords grid.Coords
 }
 
-func NewFindPathEvent(
-	entity ecs.EntityID,
-) FindPathEvent {
-	return FindPathEvent{
-		Entity: entity,
-	}
+func NewFeatureFindPathEvent() interactions.FeatureEvent[FindPathEvent] {
+	return interactions.FeatureEvent[FindPathEvent]{}
 }
-
-func (e FindPathEvent) ApplyCoords(coords grid.Coords) any {
-	e.Coords = coords
-	return e
+func NewFindPathEvent(entity ecs.EntityID, coords grid.Coords) FindPathEvent {
+	return FindPathEvent{Entity: entity, Coords: coords}
 }

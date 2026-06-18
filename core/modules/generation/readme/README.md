@@ -35,15 +35,12 @@ Type: `func() error`
 
 `core/modules/tile`:
   - `core/modules/tile.Component`
-  - `core/modules/tile.Config`
   - `core/modules/tile.Coords`
-  - `core/modules/tile.GetConfig`
   - `core/modules/tile.GetTile`
   - `core/modules/tile.GetTileSize`
   - `core/modules/tile.Grid`
   - `core/modules/tile.ID`
   - `core/modules/tile.MissingChunkEvent`
-  - `core/modules/tile.Seed`
 
 `engine/modules/batcher`:
   - `engine/modules/batcher.AddConcurrentBatch`

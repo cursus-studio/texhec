@@ -5,7 +5,6 @@ import (
 	"core/game"
 	"core/modules/definitions"
 	"core/modules/tile"
-	clicksystem "core/modules/tile/internal/clickSystem"
 	"core/modules/tile/internal/tilerenderer"
 	"core/modules/tile/internal/tileservice"
 	"core/modules/tile/internal/tilesystem"
@@ -14,6 +13,7 @@ import (
 	"engine/modules/entityregistry"
 	"engine/modules/graphics"
 	gridpkg "engine/modules/grid/pkg"
+	interactionspkg "engine/modules/interactions/pkg"
 	relationpkg "engine/modules/relation/pkg"
 	"engine/modules/render"
 	typeregistrypkg "engine/modules/typeregistry/pkg"
@@ -65,7 +65,9 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 			},
 			func(index tile.ID) uint32 { return uint32(index) },
 		),
-		typeregistrypkg.PkgT[tile.HoverEvent],
+		interactionspkg.InteractionPkg[tile.CoordsInteraction]("coords"),
+		interactionspkg.InteractionPkg[tile.ObjectInteraction]("object"),
+		interactionspkg.InteractionPkg[tile.SourceObjectInteraction]("source object"),
 
 		typeregistrypkg.PkgT[tile.Component],
 		typeregistrypkg.PkgT[tile.PosComponent],
@@ -79,9 +81,6 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 
 	ioc.Register(b, func(c ioc.Dic) Config {
 		return NewConfig()
-	})
-	ioc.Wrap(b, func(c ioc.Dic, config gridpkg.ConfigT[tile.ID]) {
-		config.SetHoverEvent(tile.NewHoverEvent)
 	})
 
 	ioc.Register(b, func(c ioc.Dic) graphics.VBOFactory[tile.ID] {
@@ -102,7 +101,6 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 			ecs.NewSystemRegister(func() error {
 				errs := ecs.RegisterSystems(
 					tilesystem.NewSystem(c),
-					clicksystem.NewSystem(c),
 				)
 				if len(errs) != 0 {
 					return errs[0]
