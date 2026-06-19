@@ -22,20 +22,17 @@ They allow to instantly act on data modification but:
 - they are heavy and called for every single entity
 - using them can cause calling them too much in dependency loops
 
-Active listeners might be discarded in the future.
-
 ### Why golang GC (garbage collector) isn't a problem
 We follow **DOD** there for GC isn't laden with managing pointers because there are little pointers to manage.\
 This makes golang a perfect candidate for this project because of high developer efficiency and low performance overhead.
 
 ### Architecture changes to revise in the future
 Change architecture to:
-- remove active listeners
 - add entity mechanism to wait until entity is released in all systems
 - call before get on all components
 
 This would **simplify** codebase and would make it follow **DOD** more.
-This would depracate `EnsureExists`, `OnUpsert`, `OnRemove`.
+This would depracate `EnsureExists`.
 
 ## Usage examples
 ### World

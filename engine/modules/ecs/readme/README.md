@@ -24,20 +24,17 @@ They allow to instantly act on data modification but:
 - they are heavy and called for every single entity
 - using them can cause calling them too much in dependency loops
 
-Active listeners might be discarded in the future.
-
 ### Why golang GC (garbage collector) isn't a problem
 We follow **DOD** there for GC isn't laden with managing pointers because there are little pointers to manage.\
 This makes golang a perfect candidate for this project because of high developer efficiency and low performance overhead.
 
 ### Architecture changes to revise in the future
 Change architecture to:
-- remove active listeners
 - add entity mechanism to wait until entity is released in all systems
 - call before get on all components
 
 This would **simplify** codebase and would make it follow **DOD** more.
-This would depracate `EnsureExists`, `OnUpsert`, `OnRemove`.
+This would depracate `EnsureExists`.
 
 ## Usage examples
 ### World
@@ -212,26 +209,26 @@ goos: linux
 goarch: amd64
 pkg: engine/modules/ecs/test
 cpu: Intel(R) Core(TM) i5-8350U CPU @ 1.70GHz
-BenchmarkDirtySetDirty-8               	152136242	         8.671 ns/op
-BenchmarkDirtySetDirtyInversed-8       	187939358	         9.197 ns/op
-BenchmarkDirtySetGet-8                 	573585558	         1.988 ns/op
-BenchmarkDirtySetDirtyAndGet-8         	172546597	         6.753 ns/op
-BenchmarkDirtySetDirtyAnd1Get-8        	148700736	         9.966 ns/op
-Benchmark4SavesWith7Systems-8          	28443537	        42.54 ns/op
-Benchmark16SavesWith7Systems-8         	 7055868	       169.1 ns/op
-Benchmark256SavesWith7Systems-8        	  464947	      2588 ns/op
-Benchmark4096SavesWith7Systems-8       	   29133	     41993 ns/op
-Benchmark16384SavesWith7Systems-8      	    7377	    163505 ns/op
-Benchmark65536SavesWith7Systems-8      	    1816	    659059 ns/op
-Benchmark262144SavesWith7Systems-8     	     463	   2651741 ns/op
-BenchmarkGetComponent-8                	79746793	        15.08 ns/op
-BenchmarkCreateComponents-8            	45341176	        28.54 ns/op
-BenchmarkUpdateComponents-8            	100000000	        10.37 ns/op
-BenchmarkRemoveComponent-8             	80871230	        15.04 ns/op
-BenchmarkRemoveEntityWithComponent-8   	35932664	        32.94 ns/op
-BenchmarkRemoveEntity-8                	69057307	        18.25 ns/op
+BenchmarkDirtySetDirty-8               	149872676	         7.644 ns/op
+BenchmarkDirtySetDirtyInversed-8       	163930392	         7.049 ns/op
+BenchmarkDirtySetGet-8                 	589861136	         2.023 ns/op
+BenchmarkDirtySetDirtyAndGet-8         	175179516	         6.879 ns/op
+BenchmarkDirtySetDirtyAnd1Get-8        	140824688	         7.889 ns/op
+Benchmark4SavesWith7Systems-8          	27718790	        42.80 ns/op
+Benchmark16SavesWith7Systems-8         	 7071218	       169.3 ns/op
+Benchmark256SavesWith7Systems-8        	  466713	      2582 ns/op
+Benchmark4096SavesWith7Systems-8       	   29527	     41096 ns/op
+Benchmark16384SavesWith7Systems-8      	    7364	    164349 ns/op
+Benchmark65536SavesWith7Systems-8      	    1772	    646827 ns/op
+Benchmark262144SavesWith7Systems-8     	     457	   2615852 ns/op
+BenchmarkGetComponent-8                	79807720	        15.08 ns/op
+BenchmarkCreateComponents-8            	43131111	        26.52 ns/op
+BenchmarkUpdateComponents-8            	100000000	        10.34 ns/op
+BenchmarkRemoveComponent-8             	82392286	        15.01 ns/op
+BenchmarkRemoveEntityWithComponent-8   	33849508	        34.43 ns/op
+BenchmarkRemoveEntity-8                	67489118	        17.67 ns/op
 PASS
-ok  	engine/modules/ecs/test	38.990s
+ok  	engine/modules/ecs/test	38.008s
 ```
 ## Lines of code
 ```
@@ -240,9 +237,9 @@ github.com/AlDanial/cloc
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
 Go                              13            212             44            909
-Markdown                         1             45              0            159
+Markdown                         1             44              0            157
 -------------------------------------------------------------------------------
-SUM:                            14            257             44           1068
+SUM:                            14            256             44           1066
 -------------------------------------------------------------------------------
 ```
 ## Types
