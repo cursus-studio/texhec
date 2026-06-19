@@ -30,53 +30,53 @@ Implement a proper input cursor and improve focusing and unfocusing on input
 Type: `engine/modules/inputs.Service`
 
 #### method Service DoubleLeftClick
-Type: `func() engine/services/ecs.ComponentsArray[engine/modules/inputs.DoubleLeftClickComponent]`
+Type: `func() engine/modules/ecs.ComponentArray[engine/modules/inputs.DoubleLeftClickComponent]`
 
 #### method Service DoubleRightClick
-Type: `func() engine/services/ecs.ComponentsArray[engine/modules/inputs.DoubleRightClickComponent]`
+Type: `func() engine/modules/ecs.ComponentArray[engine/modules/inputs.DoubleRightClickComponent]`
 
 #### method Service Drag
-Type: `func() engine/services/ecs.ComponentsArray[engine/modules/inputs.DragComponent]`
+Type: `func() engine/modules/ecs.ComponentArray[engine/modules/inputs.DragComponent]`
 
 #### method Service Dragged
-Type: `func() engine/services/ecs.ComponentsArray[engine/modules/inputs.DraggedComponent]`
+Type: `func() engine/modules/ecs.ComponentArray[engine/modules/inputs.DraggedComponent]`
 
 #### method Service Hover
-Type: `func() engine/services/ecs.ComponentsArray[engine/modules/inputs.HoverComponent]`
+Type: `func() engine/modules/ecs.ComponentArray[engine/modules/inputs.HoverComponent]`
 
 #### method Service Hovered
-Type: `func() engine/services/ecs.ComponentsArray[engine/modules/inputs.HoveredComponent]`
+Type: `func() engine/modules/ecs.ComponentArray[engine/modules/inputs.HoveredComponent]`
 
 #### method Service KeepSelected
-Type: `func() engine/services/ecs.ComponentsArray[engine/modules/inputs.KeepSelectedComponent]`
+Type: `func() engine/modules/ecs.ComponentArray[engine/modules/inputs.KeepSelectedComponent]`
 
 #### method Service LeftClick
-Type: `func() engine/services/ecs.ComponentsArray[engine/modules/inputs.LeftClickComponent]`
+Type: `func() engine/modules/ecs.ComponentArray[engine/modules/inputs.LeftClickComponent]`
 
 #### method Service MouseEnter
-Type: `func() engine/services/ecs.ComponentsArray[engine/modules/inputs.MouseEnterComponent]`
+Type: `func() engine/modules/ecs.ComponentArray[engine/modules/inputs.MouseEnterComponent]`
 
 #### method Service MouseLeave
-Type: `func() engine/services/ecs.ComponentsArray[engine/modules/inputs.MouseLeaveComponent]`
+Type: `func() engine/modules/ecs.ComponentArray[engine/modules/inputs.MouseLeaveComponent]`
 
 #### method Service Register
 Type: `func() error`
 
 #### method Service RightClick
-Type: `func() engine/services/ecs.ComponentsArray[engine/modules/inputs.RightClickComponent]`
+Type: `func() engine/modules/ecs.ComponentArray[engine/modules/inputs.RightClickComponent]`
 
 #### method Service Stack
-Type: `func() engine/services/ecs.ComponentsArray[engine/modules/inputs.StackComponent]`
+Type: `func() engine/modules/ecs.ComponentArray[engine/modules/inputs.StackComponent]`
 
 #### method Service Stacked
-Type: `func() engine/services/ecs.ComponentsArray[engine/modules/inputs.StackedComponent]`
+Type: `func() engine/modules/ecs.ComponentArray[engine/modules/inputs.StackedComponent]`
 
 #### method Service StackedData
 Type: `func() []engine/modules/inputs.Target`
 returns ordered targets with additional data
 
 #### method Service TextInput
-Type: `func() engine/services/ecs.ComponentsArray[engine/modules/inputs.TextInputComponent]`
+Type: `func() engine/modules/ecs.ComponentArray[engine/modules/inputs.TextInputComponent]`
 
 ### type ApplyDragEvent
 Type: `engine/modules/inputs.ApplyDragEvent`
@@ -118,7 +118,7 @@ Type: `engine/modules/inputs.TextInputEvent`
 handles inputs and saves change in component
 
 #### property TextInputEvent Entity
-Type: `engine/services/ecs.EntityID`
+Type: `engine/modules/ecs.EntityID`
 
 #### property TextInputEvent KeyboardEvent
 Type: `engine/modules/inputs.KeyboardEvent`
@@ -130,7 +130,7 @@ Type: `func() engine/services/datastructures.SetReader[reflect.Type]`
 Type: `func(event any) any`
 
 #### method TextInputEvent ApplyEntity
-Type: `func(entity engine/services/ecs.EntityID) any`
+Type: `func(entity engine/modules/ecs.EntityID) any`
 
 #### method TextInputEvent Fallthrough
 Type: `func() bool`
@@ -140,13 +140,13 @@ Type: `engine/modules/inputs.HoveredComponent`
 many elements can be hovered at once
 
 #### property HoveredComponent Camera
-Type: `engine/services/ecs.EntityID`
+Type: `engine/modules/ecs.EntityID`
 
 ### type DraggedComponent
 Type: `engine/modules/inputs.DraggedComponent`
 
 #### property DraggedComponent Camera
-Type: `engine/services/ecs.EntityID`
+Type: `engine/modules/ecs.EntityID`
 
 ### type KeepSelectedComponent
 Type: `engine/modules/inputs.KeepSelectedComponent`
@@ -213,7 +213,7 @@ Type: `engine/modules/inputs.DragEvent`
 this event is called when nothing is dragged
 
 #### property DragEvent Camera
-Type: `engine/services/ecs.EntityID`
+Type: `engine/modules/ecs.EntityID`
 
 #### property DragEvent From
 Type: `engine/modules/window.MousePos`
@@ -227,7 +227,7 @@ from and to is normalized
 Type: `engine/modules/inputs.SynchronizePositionEvent`
 
 #### property SynchronizePositionEvent Camera
-Type: `engine/services/ecs.EntityID`
+Type: `engine/modules/ecs.EntityID`
 
 #### property SynchronizePositionEvent From
 Type: `engine/modules/window.MousePos`
@@ -247,7 +247,7 @@ Type: `engine/modules/inputs.Target`
 Type: `engine/modules/collider.ObjectRayCollision`
 
 #### property Target Camera
-Type: `engine/services/ecs.EntityID`
+Type: `engine/modules/ecs.EntityID`
 
 ## Functions
 ### func NewKeyboardEvent
@@ -257,10 +257,10 @@ Type: `func(e github.com/veandco/go-sdl2/sdl.KeyboardEvent) engine/modules/input
 Type: `func() engine/modules/inputs.TextInputEvent`
 
 ### func NewHovered
-Type: `func(camera engine/services/ecs.EntityID) engine/modules/inputs.HoveredComponent`
+Type: `func(camera engine/modules/ecs.EntityID) engine/modules/inputs.HoveredComponent`
 
 ### func NewDragged
-Type: `func(camera engine/services/ecs.EntityID) engine/modules/inputs.DraggedComponent`
+Type: `func(camera engine/modules/ecs.EntityID) engine/modules/inputs.DraggedComponent`
 
 ### func NewLeftClick
 Type: `func(e any) engine/modules/inputs.LeftClickComponent`
@@ -306,6 +306,16 @@ Type: `func(event any) engine/modules/inputs.DragComponent`
   - `engine/modules/collider.Hit`
   - `engine/modules/collider.ObjectRayCollision`
   - `engine/modules/collider.RaycastAll`
+
+`engine/modules/ecs`:
+  - `engine/modules/ecs.ApplyEntity`
+  - `engine/modules/ecs.ApplyEntityEvent`
+  - `engine/modules/ecs.ComponentArray`
+  - `engine/modules/ecs.EntityID`
+  - `engine/modules/ecs.GetComponentArray`
+  - `engine/modules/ecs.NewSystemRegister`
+  - `engine/modules/ecs.RegisterSystems`
+  - `engine/modules/ecs.SystemRegister`
 
 `engine/modules/focus/pkg`:
   - `engine/modules/focus/pkg.BubblePkgT`
@@ -379,22 +389,6 @@ Type: `func(event any) engine/modules/inputs.DragComponent`
   - `engine/services/datastructures.Add`
   - `engine/services/datastructures.NewSet`
   - `engine/services/datastructures.SetReader`
-
-`engine/services/ecs`:
-  - `engine/services/ecs.ApplyEntity`
-  - `engine/services/ecs.ApplyEntityEvent`
-  - `engine/services/ecs.ComponentsArray`
-  - `engine/services/ecs.EntityExists`
-  - `engine/services/ecs.EntityID`
-  - `engine/services/ecs.Get`
-  - `engine/services/ecs.GetComponentsArray`
-  - `engine/services/ecs.GetEntities`
-  - `engine/services/ecs.NewSystemRegister`
-  - `engine/services/ecs.OnMod`
-  - `engine/services/ecs.RegisterSystems`
-  - `engine/services/ecs.Remove`
-  - `engine/services/ecs.Set`
-  - `engine/services/ecs.SystemRegister`
 
 ### Third Party
 - `github.com/go-gl/mathgl/mgl32`

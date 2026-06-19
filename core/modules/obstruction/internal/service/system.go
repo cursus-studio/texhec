@@ -3,8 +3,8 @@ package service
 import (
 	"core/modules/obstruction"
 	"core/modules/tile"
+	"engine/modules/ecs"
 	"engine/modules/grid"
-	"engine/services/ecs"
 )
 
 func (s *service) Register() error {

@@ -11,12 +11,12 @@ goos: linux
 goarch: amd64
 pkg: engine/modules/transform/test
 cpu: Intel(R) Core(TM) i5-8350U CPU @ 1.70GHz
-BenchmarkGetPos-8                 	43698514	        26.72 ns/op
-BenchmarkRawGetPos-8              	100000000	        10.92 ns/op
-BenchmarkSetAbsolutePos-8         	 1879580	       612.0 ns/op
-BenchmarkSetAndGetAbsolutePos-8   	 1994540	       596.2 ns/op
+BenchmarkGetPos-8                 	43811241	        27.50 ns/op
+BenchmarkRawGetPos-8              	100000000	        10.97 ns/op
+BenchmarkSetAbsolutePos-8         	 1908158	       619.5 ns/op
+BenchmarkSetAndGetAbsolutePos-8   	 1968898	       603.7 ns/op
 PASS
-ok  	engine/modules/transform/test	5.918s
+ok  	engine/modules/transform/test	5.949s
 ```
 ## Lines of code
 ```
@@ -38,46 +38,46 @@ Start using Fixed-Point math
 Type: `engine/modules/transform.Service`
 
 #### method Service AbsolutePos
-Type: `func() engine/services/ecs.ComponentsArray[engine/modules/transform.AbsolutePosComponent]`
+Type: `func() engine/modules/ecs.ComponentArray[engine/modules/transform.AbsolutePosComponent]`
 
 #### method Service AbsoluteRotation
-Type: `func() engine/services/ecs.ComponentsArray[engine/modules/transform.AbsoluteRotationComponent]`
+Type: `func() engine/modules/ecs.ComponentArray[engine/modules/transform.AbsoluteRotationComponent]`
 
 #### method Service AbsoluteSize
-Type: `func() engine/services/ecs.ComponentsArray[engine/modules/transform.AbsoluteSizeComponent]`
+Type: `func() engine/modules/ecs.ComponentArray[engine/modules/transform.AbsoluteSizeComponent]`
 
 #### method Service AddDirtySet
-Type: `func(engine/services/ecs.DirtySet)`
+Type: `func(engine/modules/ecs.DirtySet)`
 
 #### method Service AspectRatio
-Type: `func() engine/services/ecs.ComponentsArray[engine/modules/transform.AspectRatioComponent]`
+Type: `func() engine/modules/ecs.ComponentArray[engine/modules/transform.AspectRatioComponent]`
 
 #### method Service Mat4
-Type: `func(engine/services/ecs.EntityID) github.com/go-gl/mathgl/mgl32.Mat4`
+Type: `func(engine/modules/ecs.EntityID) github.com/go-gl/mathgl/mgl32.Mat4`
 
 #### method Service MaxSize
-Type: `func() engine/services/ecs.ComponentsArray[engine/modules/transform.MaxSizeComponent]`
+Type: `func() engine/modules/ecs.ComponentArray[engine/modules/transform.MaxSizeComponent]`
 
 #### method Service MinSize
-Type: `func() engine/services/ecs.ComponentsArray[engine/modules/transform.MinSizeComponent]`
+Type: `func() engine/modules/ecs.ComponentArray[engine/modules/transform.MinSizeComponent]`
 
 #### method Service Parent
-Type: `func() engine/services/ecs.ComponentsArray[engine/modules/transform.ParentComponent]`
+Type: `func() engine/modules/ecs.ComponentArray[engine/modules/transform.ParentComponent]`
 
 #### method Service ParentPivotPoint
-Type: `func() engine/services/ecs.ComponentsArray[engine/modules/transform.ParentPivotPointComponent]`
+Type: `func() engine/modules/ecs.ComponentArray[engine/modules/transform.ParentPivotPointComponent]`
 
 #### method Service PivotPoint
-Type: `func() engine/services/ecs.ComponentsArray[engine/modules/transform.PivotPointComponent]`
+Type: `func() engine/modules/ecs.ComponentArray[engine/modules/transform.PivotPointComponent]`
 
 #### method Service Pos
-Type: `func() engine/services/ecs.ComponentsArray[engine/modules/transform.PosComponent]`
+Type: `func() engine/modules/ecs.ComponentArray[engine/modules/transform.PosComponent]`
 
 #### method Service Rotation
-Type: `func() engine/services/ecs.ComponentsArray[engine/modules/transform.RotationComponent]`
+Type: `func() engine/modules/ecs.ComponentArray[engine/modules/transform.RotationComponent]`
 
 #### method Service Size
-Type: `func() engine/services/ecs.ComponentsArray[engine/modules/transform.SizeComponent]`
+Type: `func() engine/modules/ecs.ComponentArray[engine/modules/transform.SizeComponent]`
 
 ### type ParentFlag
 Type: `engine/modules/transform.ParentFlag`
@@ -294,6 +294,15 @@ Type: `func(x float32, y float32, z float32) engine/modules/transform.ParentPivo
   - `engine.Hierarchy`
   - `engine.World`
 
+`engine/modules/ecs`:
+  - `engine/modules/ecs.AnyComponentArray`
+  - `engine/modules/ecs.ComponentArray`
+  - `engine/modules/ecs.DirtySet`
+  - `engine/modules/ecs.EntityID`
+  - `engine/modules/ecs.GetComponentArray`
+  - `engine/modules/ecs.NewDirtySet`
+  - `engine/modules/ecs.World`
+
 `engine/modules/hierarchy`:
   - `engine/modules/hierarchy.Children`
   - `engine/modules/hierarchy.Component`
@@ -347,23 +356,6 @@ Type: `func(x float32, y float32, z float32) engine/modules/transform.ParentPivo
 
 `engine/pkg`:
   - `engine/pkg.Pkg`
-
-`engine/services/ecs`:
-  - `engine/services/ecs.AddDependency`
-  - `engine/services/ecs.AddDirtySet`
-  - `engine/services/ecs.AnyComponentArray`
-  - `engine/services/ecs.BeforeGet`
-  - `engine/services/ecs.Clear`
-  - `engine/services/ecs.ComponentsArray`
-  - `engine/services/ecs.DirtySet`
-  - `engine/services/ecs.EntityExists`
-  - `engine/services/ecs.EntityID`
-  - `engine/services/ecs.Get`
-  - `engine/services/ecs.GetComponentsArray`
-  - `engine/services/ecs.NewDirtySet`
-  - `engine/services/ecs.Set`
-  - `engine/services/ecs.SetEmpty`
-  - `engine/services/ecs.World`
 
 ### Third Party
 - `github.com/go-gl/mathgl/mgl32`

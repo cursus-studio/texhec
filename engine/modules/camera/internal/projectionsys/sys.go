@@ -3,8 +3,8 @@ package projectionsys
 import (
 	"engine"
 	"engine/modules/camera"
+	"engine/modules/ecs"
 	"engine/modules/transform"
-	"engine/services/ecs"
 
 	"github.com/go-gl/mathgl/mgl32"
 	"github.com/ogiusek/events"
@@ -31,10 +31,10 @@ func NewUpdateProjectionsSystem(c ioc.Dic) ecs.SystemRegister {
 		s.Camera().Perspective().BeforeGet(s.UpsertPerspective)
 		s.Camera().DynamicPerspective().AddDirtySet(s.perspectivesDirtySet)
 
-		ecs.GetComponentsArray[camera.OrthoComponent](s.World()).AddDirtySet(s.orthoDirtySet)
-		ecs.GetComponentsArray[camera.OrthoResolutionComponent](s.World()).AddDirtySet(s.orthoDirtySet)
-		ecs.GetComponentsArray[camera.ViewportComponent](s.World()).AddDirtySet(s.orthoDirtySet)
-		ecs.GetComponentsArray[camera.NormalizedViewportComponent](s.World()).AddDirtySet(s.orthoDirtySet)
+		ecs.GetComponentArray[camera.OrthoComponent](s.World()).AddDirtySet(s.orthoDirtySet)
+		ecs.GetComponentArray[camera.OrthoResolutionComponent](s.World()).AddDirtySet(s.orthoDirtySet)
+		ecs.GetComponentArray[camera.ViewportComponent](s.World()).AddDirtySet(s.orthoDirtySet)
+		ecs.GetComponentArray[camera.NormalizedViewportComponent](s.World()).AddDirtySet(s.orthoDirtySet)
 
 		s.Camera().Ortho().AddDirtySet(s.orthoDirtySet)
 		s.Camera().Ortho().BeforeGet(s.UpsertOrtho)

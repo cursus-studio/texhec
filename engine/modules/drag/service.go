@@ -2,8 +2,8 @@
 package drag
 
 import (
+	"engine/modules/ecs"
 	"engine/modules/inputs"
-	"engine/services/ecs"
 )
 
 type DraggableEvent struct {

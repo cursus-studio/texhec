@@ -18,13 +18,13 @@ SUM:                             6             51              6            260
 Type: `engine/modules/audio.Service`
 
 #### method Service Play
-Type: `func(engine/modules/audio.Channel, engine/services/ecs.EntityID) error`
+Type: `func(engine/modules/audio.Channel, engine/modules/ecs.EntityID) error`
 
 #### method Service Queue
-Type: `func(engine/modules/audio.Channel, engine/services/ecs.EntityID) error`
+Type: `func(engine/modules/audio.Channel, engine/modules/ecs.EntityID) error`
 
 #### method Service QueueEndless
-Type: `func(engine/modules/audio.Channel, engine/services/ecs.EntityID) error`
+Type: `func(engine/modules/audio.Channel, engine/modules/ecs.EntityID) error`
 
 #### method Service Register
 Type: `func() error`
@@ -51,13 +51,13 @@ Type: `func()`
 Type: `engine/modules/audio.PlayerService`
 
 #### method PlayerService Play
-Type: `func(engine/modules/audio.Channel, engine/services/ecs.EntityID) error`
+Type: `func(engine/modules/audio.Channel, engine/modules/ecs.EntityID) error`
 
 #### method PlayerService Queue
-Type: `func(engine/modules/audio.Channel, engine/services/ecs.EntityID) error`
+Type: `func(engine/modules/audio.Channel, engine/modules/ecs.EntityID) error`
 
 #### method PlayerService QueueEndless
-Type: `func(engine/modules/audio.Channel, engine/services/ecs.EntityID) error`
+Type: `func(engine/modules/audio.Channel, engine/modules/ecs.EntityID) error`
 
 #### method PlayerService Stop
 Type: `func(engine/modules/audio.Channel) error`
@@ -84,7 +84,7 @@ Type: `engine/modules/audio.PlayEvent`
 Type: `engine/modules/audio.Channel`
 
 #### property PlayEvent Asset
-Type: `engine/services/ecs.EntityID`
+Type: `engine/modules/ecs.EntityID`
 
 ### type QueueEvent
 Type: `engine/modules/audio.QueueEvent`
@@ -93,7 +93,7 @@ Type: `engine/modules/audio.QueueEvent`
 Type: `engine/modules/audio.Channel`
 
 #### property QueueEvent Asset
-Type: `engine/services/ecs.EntityID`
+Type: `engine/modules/ecs.EntityID`
 
 ### type QueueEndlessEvent
 Type: `engine/modules/audio.QueueEndlessEvent`
@@ -102,7 +102,7 @@ Type: `engine/modules/audio.QueueEndlessEvent`
 Type: `engine/modules/audio.Channel`
 
 #### property QueueEndlessEvent Asset
-Type: `engine/services/ecs.EntityID`
+Type: `engine/modules/ecs.EntityID`
 
 ### type SetMasterVolumeEvent
 Type: `engine/modules/audio.SetMasterVolumeEvent`
@@ -133,13 +133,13 @@ Type: `func(chunk *github.com/veandco/go-sdl2/mix.Chunk, source []byte) engine/m
 Type: `func(channel engine/modules/audio.Channel) engine/modules/audio.StopEvent`
 
 ### func NewPlayEvent
-Type: `func(channel engine/modules/audio.Channel, assetID engine/services/ecs.EntityID) engine/modules/audio.PlayEvent`
+Type: `func(channel engine/modules/audio.Channel, assetID engine/modules/ecs.EntityID) engine/modules/audio.PlayEvent`
 
 ### func NewQueueEvent
-Type: `func(channel engine/modules/audio.Channel, assetID engine/services/ecs.EntityID) engine/modules/audio.QueueEvent`
+Type: `func(channel engine/modules/audio.Channel, assetID engine/modules/ecs.EntityID) engine/modules/audio.QueueEvent`
 
 ### func NewQueueEndlessEvent
-Type: `func(channel engine/modules/audio.Channel, assetID engine/services/ecs.EntityID) engine/modules/audio.QueueEndlessEvent`
+Type: `func(channel engine/modules/audio.Channel, assetID engine/modules/ecs.EntityID) engine/modules/audio.QueueEndlessEvent`
 
 ### func NewSetMasterVolumeEvent
 Type: `func(volume engine/modules/audio.Volume) engine/modules/audio.SetMasterVolumeEvent`
@@ -180,6 +180,11 @@ Type: `func(channel engine/modules/audio.Channel, volume engine/modules/audio.Vo
   - `engine/modules/audio.Volume`
   - `engine/modules/audio.VolumeService`
 
+`engine/modules/ecs`:
+  - `engine/modules/ecs.EntityID`
+  - `engine/modules/ecs.NewSystemRegister`
+  - `engine/modules/ecs.SystemRegister`
+
 `engine/modules/typeregistry/pkg`:
   - `engine/modules/typeregistry/pkg.PkgT`
 
@@ -188,11 +193,6 @@ Type: `func(channel engine/modules/audio.Channel, volume engine/modules/audio.Vo
   - `engine/services/datastructures.GetIndices`
   - `engine/services/datastructures.NewSparseArray`
   - `engine/services/datastructures.SparseArray`
-
-`engine/services/ecs`:
-  - `engine/services/ecs.EntityID`
-  - `engine/services/ecs.NewSystemRegister`
-  - `engine/services/ecs.SystemRegister`
 
 ### Third Party
 - `github.com/ogiusek/events`

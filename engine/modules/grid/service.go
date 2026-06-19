@@ -3,7 +3,7 @@
 package grid
 
 import (
-	"engine/services/ecs"
+	"engine/modules/ecs"
 
 	"golang.org/x/exp/constraints"
 )
@@ -90,7 +90,7 @@ func NewCoordsData[Tile TileConstraint](
 
 type Service interface {
 	// arrays
-	Coords() ecs.ComponentsArray[ChunkCoordsComponent]
+	Coords() ecs.ComponentArray[ChunkCoordsComponent]
 	GetChunk(ChunkCoordsComponent) (ecs.EntityID, bool)
 
 	// getters within chunk
@@ -106,7 +106,7 @@ type Service interface {
 
 type ServiceT[Tile TileConstraint] interface {
 	// arrays
-	Chunk() ecs.ComponentsArray[ChunkComponent[Tile]]
+	Chunk() ecs.ComponentArray[ChunkComponent[Tile]]
 
 	// ctors
 	NewChunk() ChunkComponent[Tile]

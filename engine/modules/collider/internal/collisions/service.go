@@ -4,9 +4,9 @@ import (
 	"engine"
 	"engine/modules/assets"
 	"engine/modules/collider"
+	"engine/modules/ecs"
 	"engine/modules/groups"
 	"engine/services/datastructures"
-	"engine/services/ecs"
 	"errors"
 	"slices"
 
@@ -18,7 +18,7 @@ type service struct {
 	// shared
 	engine.EngineWorld `inject:""`
 
-	collider ecs.ComponentsArray[collider.Component]
+	collider ecs.ComponentArray[collider.Component]
 
 	// tracking
 	collidersDirtySet ecs.DirtySet
@@ -34,7 +34,7 @@ func NewService(c ioc.Dic,
 ) collider.Service {
 	t := ioc.GetServices[*service](c)
 
-	t.collider = ecs.GetComponentsArray[collider.Component](t.World())
+	t.collider = ecs.GetComponentArray[collider.Component](t.World())
 
 	t.collidersDirtySet = ecs.NewDirtySet()
 	t.Transform().AddDirtySet(t.collidersDirtySet)
@@ -123,7 +123,7 @@ func (t *service) Remove(entities ...ecs.EntityID) {
 
 //
 
-func (t *service) Component() ecs.ComponentsArray[collider.Component] { return t.collider }
+func (t *service) Component() ecs.ComponentArray[collider.Component] { return t.collider }
 
 func (t *service) CollidesWithRay(entity ecs.EntityID, ray collider.Ray) *collider.ObjectRayCollision {
 	t.ApplyChanges()

@@ -2,8 +2,8 @@ package test
 
 import (
 	"engine"
+	"engine/modules/ecs"
 	enginepkg "engine/pkg"
-	"engine/services/ecs"
 	"testing"
 
 	"github.com/go-gl/mathgl/mgl32"

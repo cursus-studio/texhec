@@ -1,7 +1,7 @@
 package ecs_test
 
 import (
-	"engine/services/ecs"
+	"engine/modules/ecs"
 	"testing"
 )
 

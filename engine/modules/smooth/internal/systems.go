@@ -2,10 +2,10 @@ package internal
 
 import (
 	"engine"
+	"engine/modules/ecs"
 	"engine/modules/loop"
 	"engine/modules/record"
 	"engine/modules/transition"
-	"engine/services/ecs"
 
 	"github.com/ogiusek/events"
 	"github.com/ogiusek/ioc/v2"
@@ -17,8 +17,8 @@ type ServiceT[Component any] struct {
 	recordingID        record.RecordingID
 	config             record.Config
 
-	componentArray ecs.ComponentsArray[Component]
-	lerpArray      ecs.ComponentsArray[transition.TransitionComponent[Component]]
+	componentArray ecs.ComponentArray[Component]
+	lerpArray      ecs.ComponentArray[transition.TransitionComponent[Component]]
 }
 
 // func NewServiceT[Component smooth.SmoothConstraint[Component]](c ioc.Dic) *Service[Component] {
@@ -30,8 +30,8 @@ func NewServiceT[Component any](c ioc.Dic) *ServiceT[Component] {
 
 	s.recordingID = 0
 	s.config = config
-	s.componentArray = ecs.GetComponentsArray[Component](s.World())
-	s.lerpArray = ecs.GetComponentsArray[transition.TransitionComponent[Component]](s.World())
+	s.componentArray = ecs.GetComponentArray[Component](s.World())
+	s.lerpArray = ecs.GetComponentArray[transition.TransitionComponent[Component]](s.World())
 	return s
 }
 

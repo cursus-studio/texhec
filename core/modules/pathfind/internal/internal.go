@@ -5,8 +5,8 @@ import (
 	"core/modules/obstruction"
 	"core/modules/pathfind"
 	"core/modules/tile"
+	"engine/modules/ecs"
 	"engine/modules/grid"
-	"engine/services/ecs"
 
 	"github.com/ogiusek/events"
 	"github.com/ogiusek/ioc/v2"
@@ -16,16 +16,16 @@ import (
 type service struct {
 	game.GameWorld `inject:""`
 
-	target ecs.ComponentsArray[pathfind.TargetComponent]
-	speed  ecs.ComponentsArray[pathfind.SpeedComponent]
-	step   ecs.ComponentsArray[pathfind.StepComponent]
+	target ecs.ComponentArray[pathfind.TargetComponent]
+	speed  ecs.ComponentArray[pathfind.SpeedComponent]
+	step   ecs.ComponentArray[pathfind.StepComponent]
 }
 
 func NewService(c ioc.Dic) pathfind.Service {
 	s := ioc.GetServices[*service](c)
-	s.target = ecs.GetComponentsArray[pathfind.TargetComponent](s.World())
-	s.speed = ecs.GetComponentsArray[pathfind.SpeedComponent](s.World())
-	s.step = ecs.GetComponentsArray[pathfind.StepComponent](s.World())
+	s.target = ecs.GetComponentArray[pathfind.TargetComponent](s.World())
+	s.speed = ecs.GetComponentArray[pathfind.SpeedComponent](s.World())
+	s.step = ecs.GetComponentArray[pathfind.StepComponent](s.World())
 	return s
 }
 
@@ -40,9 +40,9 @@ func (s *service) Register() error {
 	return nil
 }
 
-func (s *service) Target() ecs.ComponentsArray[pathfind.TargetComponent] { return s.target }
-func (s *service) Speed() ecs.ComponentsArray[pathfind.SpeedComponent]   { return s.speed }
-func (s *service) Step() ecs.ComponentsArray[pathfind.StepComponent]     { return s.step }
+func (s *service) Target() ecs.ComponentArray[pathfind.TargetComponent] { return s.target }
+func (s *service) Speed() ecs.ComponentArray[pathfind.SpeedComponent]   { return s.speed }
+func (s *service) Step() ecs.ComponentArray[pathfind.StepComponent]     { return s.step }
 
 func abs[Number constraints.Float | constraints.Integer](n Number) Number { return max(-n, n) }
 

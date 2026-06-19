@@ -3,9 +3,9 @@ package internal
 import (
 	"core/modules/pathfind"
 	"core/modules/tile"
+	"engine/modules/ecs"
 	"engine/modules/grid"
 	"engine/modules/loop"
-	"engine/services/ecs"
 	"fmt"
 
 	"github.com/go-gl/mathgl/mgl32"

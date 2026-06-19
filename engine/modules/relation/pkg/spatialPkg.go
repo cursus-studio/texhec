@@ -1,10 +1,10 @@
 package relationpkg
 
 import (
+	"engine/modules/ecs"
 	"engine/modules/relation"
 	"engine/modules/relation/internal/onetokey"
 	"engine/modules/warmup"
-	"engine/services/ecs"
 
 	"github.com/ogiusek/events"
 	"github.com/ogiusek/ioc/v2"

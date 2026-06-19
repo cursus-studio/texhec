@@ -15,6 +15,7 @@ It follows **DOD** (data oriented design) and stores all game objects using **EC
 - [collider](/engine/modules/collider/readme/README.md)
 - [connection](/engine/modules/connection/readme/README.md)
 - [drag](/engine/modules/drag/readme/README.md)
+- [ecs](/engine/modules/ecs/readme/README.md)
 - [entityregistry](/engine/modules/entityregistry/readme/README.md)
 - [focus](/engine/modules/focus/readme/README.md)
 - [graphics](/engine/modules/graphics/readme/README.md)
@@ -48,7 +49,6 @@ It follows **DOD** (data oriented design) and stores all game objects using **EC
 - [clock](/engine/services/clock/readme/README.md)
 - [console](/engine/services/console/readme/README.md)
 - [datastructures](/engine/services/datastructures/readme/README.md)
-- [ecs](/engine/services/ecs/readme/README.md)
 
 ## Challenges
 Biggest challenge was creating framework while building on top of it.
@@ -60,11 +60,11 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                             278           3026            877          14305
+Go                             279           3027            873          14320
+Markdown                        18             50              0            231
 GLSL                             5             35              4             99
-Markdown                        17              6              0             74
 -------------------------------------------------------------------------------
-SUM:                           300           3067            881          14478
+SUM:                           302           3112            877          14650
 -------------------------------------------------------------------------------
 ```
 ## Dependencies

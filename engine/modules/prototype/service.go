@@ -3,7 +3,7 @@
 // its to create copies of entities. its equivalent of unity prefabs (unity semantics)
 package prototype
 
-import "engine/services/ecs"
+import "engine/modules/ecs"
 
 type CloneEvent struct {
 	Cloned,

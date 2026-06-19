@@ -2,7 +2,7 @@
 package transition
 
 import (
-	"engine/services/ecs"
+	"engine/modules/ecs"
 	"time"
 
 	"golang.org/x/exp/constraints"
@@ -10,8 +10,8 @@ import (
 
 type Service interface {
 	ecs.SystemRegister
-	Easing() ecs.ComponentsArray[EasingComponent]
-	EasingFunction() ecs.ComponentsArray[EasingFunctionComponent]
+	Easing() ecs.ComponentArray[EasingComponent]
+	EasingFunction() ecs.ComponentArray[EasingFunctionComponent]
 }
 
 //

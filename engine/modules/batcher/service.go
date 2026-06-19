@@ -1,7 +1,7 @@
 // this module allows us to write tasks and to progress them across frames without stuterring
 package batcher
 
-import "engine/services/ecs"
+import "engine/modules/ecs"
 
 type Batch struct {
 	Steps   int

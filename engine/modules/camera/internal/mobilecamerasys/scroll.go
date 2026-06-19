@@ -2,7 +2,7 @@ package mobilecamerasys
 
 import (
 	"engine"
-	"engine/services/ecs"
+	"engine/modules/ecs"
 	"math"
 
 	"github.com/go-gl/mathgl/mgl32"

@@ -2,7 +2,7 @@
 package ui
 
 import (
-	"engine/services/ecs"
+	"engine/modules/ecs"
 )
 
 // marker which says module relative to which element to position
@@ -15,9 +15,9 @@ type CursorCameraComponent struct{}
 type Service interface {
 	ecs.SystemRegister
 
-	UiCamera() ecs.ComponentsArray[UiCameraComponent]
-	AnimatedBackground() ecs.ComponentsArray[AnimatedBackgroundComponent]
-	CursorCamera() ecs.ComponentsArray[CursorCameraComponent]
+	UiCamera() ecs.ComponentArray[UiCameraComponent]
+	AnimatedBackground() ecs.ComponentArray[AnimatedBackgroundComponent]
+	CursorCamera() ecs.ComponentArray[CursorCameraComponent]
 
 	// returns parent to attach ui elements
 	// potentially with enter animation

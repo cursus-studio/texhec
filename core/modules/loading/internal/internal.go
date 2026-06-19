@@ -5,10 +5,10 @@ import (
 	"core/modules/loading"
 	"core/modules/ui"
 	"engine/modules/camera"
+	"engine/modules/ecs"
 	"engine/modules/loop"
 	"engine/modules/text"
 	"engine/modules/transform"
-	"engine/services/ecs"
 	"fmt"
 
 	"github.com/ogiusek/events"
@@ -21,14 +21,14 @@ type TextComp struct{}
 type system struct {
 	game.GameWorld `inject:""`
 
-	CamArr  ecs.ComponentsArray[CamComp]
-	TextArr ecs.ComponentsArray[TextComp]
+	CamArr  ecs.ComponentArray[CamComp]
+	TextArr ecs.ComponentArray[TextComp]
 }
 
 func NewSystem(c ioc.Dic) loading.Service {
 	s := ioc.GetServices[*system](c)
-	s.CamArr = ecs.GetComponentsArray[CamComp](s.World())
-	s.TextArr = ecs.GetComponentsArray[TextComp](s.World())
+	s.CamArr = ecs.GetComponentArray[CamComp](s.World())
+	s.TextArr = ecs.GetComponentArray[TextComp](s.World())
 	return ecs.NewSystemRegister(func() error {
 		events.Listen(s.EventsBuilder(), s.Listen)
 		return nil

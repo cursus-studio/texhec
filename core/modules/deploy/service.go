@@ -3,9 +3,9 @@ package deploy
 
 import (
 	"core/modules/reach"
+	"engine/modules/ecs"
 	"engine/modules/grid"
 	"engine/modules/interactions"
-	"engine/services/ecs"
 )
 
 type Component struct {
@@ -23,7 +23,7 @@ func NewDeploy(deployable ...ecs.EntityID) Component {
 type Service interface {
 	Reach() reach.ServiceT[Component]
 
-	Component() ecs.ComponentsArray[Component]
+	Component() ecs.ComponentArray[Component]
 
 	// deploy differs from execute event by who deploys.
 	// execute adds costs and everything where deploy just deploys without any costs (its deployed by system)

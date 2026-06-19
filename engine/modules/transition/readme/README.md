@@ -18,10 +18,10 @@ SUM:                             6             67             15            265
 Type: `engine/modules/transition.Service`
 
 #### method Service Easing
-Type: `func() engine/services/ecs.ComponentsArray[engine/modules/transition.EasingComponent]`
+Type: `func() engine/modules/ecs.ComponentArray[engine/modules/transition.EasingComponent]`
 
 #### method Service EasingFunction
-Type: `func() engine/services/ecs.ComponentsArray[engine/modules/transition.EasingFunctionComponent]`
+Type: `func() engine/modules/ecs.ComponentArray[engine/modules/transition.EasingFunctionComponent]`
 
 #### method Service Register
 Type: `func() error`
@@ -57,7 +57,7 @@ saves transition component
 type TransitionEvent[Component LerpConstraint[Component]] struct {
 
 #### property TransitionEvent Entity
-Type: `engine/services/ecs.EntityID`
+Type: `engine/modules/ecs.EntityID`
 
 #### property TransitionEvent Component
 Type: `engine/modules/transition.TransitionComponent[Component]`
@@ -75,7 +75,7 @@ Type: `time.Duration`
 Type: `engine/modules/transition.EasingComponent`
 
 #### property EasingComponent ID
-Type: `engine/services/ecs.EntityID`
+Type: `engine/modules/ecs.EntityID`
 
 ### type EasingFunctionComponent
 Type: `engine/modules/transition.EasingFunctionComponent`
@@ -92,13 +92,13 @@ Type: `func[Component any](from Component, to Component, duration time.Duration)
 func NewTransition[Component LerpConstraint[Component]](
 
 ### func NewTransitionEvent
-Type: `func[Component engine/modules/transition.LerpConstraint[Component]](entity engine/services/ecs.EntityID, from Component, to Component, duration time.Duration) engine/modules/transition.TransitionEvent[Component]`
+Type: `func[Component engine/modules/transition.LerpConstraint[Component]](entity engine/modules/ecs.EntityID, from Component, to Component, duration time.Duration) engine/modules/transition.TransitionEvent[Component]`
 
 ### func NewDelayedEvent
 Type: `func(event any, duration time.Duration) engine/modules/transition.DelayedEvent`
 
 ### func NewEasing
-Type: `func(id engine/services/ecs.EntityID) engine/modules/transition.EasingComponent`
+Type: `func(id engine/modules/ecs.EntityID) engine/modules/transition.EasingComponent`
 
 ### func NewEasingFunction
 Type: `func(easingFunction func(t engine/modules/transition.Progress) engine/modules/transition.Progress) engine/modules/transition.EasingFunctionComponent`
@@ -114,6 +114,16 @@ Type: `func(easingFunction func(t engine/modules/transition.Progress) engine/mod
 
 `engine/modules/codec/pkg`:
   - `engine/modules/codec/pkg.PkgT`
+
+`engine/modules/ecs`:
+  - `engine/modules/ecs.ComponentArray`
+  - `engine/modules/ecs.DirtySet`
+  - `engine/modules/ecs.EntityID`
+  - `engine/modules/ecs.GetComponentArray`
+  - `engine/modules/ecs.NewDirtySet`
+  - `engine/modules/ecs.NewSystemRegister`
+  - `engine/modules/ecs.Register`
+  - `engine/modules/ecs.SystemRegister`
 
 `engine/modules/loop`:
   - `engine/modules/loop.Delta`
@@ -140,19 +150,6 @@ Type: `func(easingFunction func(t engine/modules/transition.Progress) engine/mod
   - `engine/modules/transition.To`
   - `engine/modules/transition.TransitionComponent`
   - `engine/modules/transition.TransitionEvent`
-
-`engine/services/ecs`:
-  - `engine/services/ecs.AddDirtySet`
-  - `engine/services/ecs.ComponentsArray`
-  - `engine/services/ecs.DirtySet`
-  - `engine/services/ecs.EntityID`
-  - `engine/services/ecs.Get`
-  - `engine/services/ecs.GetComponentsArray`
-  - `engine/services/ecs.NewDirtySet`
-  - `engine/services/ecs.NewSystemRegister`
-  - `engine/services/ecs.Register`
-  - `engine/services/ecs.Set`
-  - `engine/services/ecs.SystemRegister`
 
 ### Third Party
 - `github.com/ogiusek/events`

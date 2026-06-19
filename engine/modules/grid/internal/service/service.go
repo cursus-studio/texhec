@@ -2,9 +2,9 @@ package service
 
 import (
 	"engine"
+	"engine/modules/ecs"
 	"engine/modules/grid"
 	"engine/modules/relation"
-	"engine/services/ecs"
 
 	"github.com/ogiusek/events"
 	"github.com/ogiusek/ioc/v2"
@@ -15,14 +15,14 @@ type service struct {
 	relation.Service[grid.ChunkCoordsComponent] `inject:""`
 	chunkSize                                   grid.ChunkSize
 	chunkSizeTileMask                           grid.Coord
-	coords                                      ecs.ComponentsArray[grid.ChunkCoordsComponent]
+	coords                                      ecs.ComponentArray[grid.ChunkCoordsComponent]
 }
 
 func NewService(c ioc.Dic, chunkSize grid.ChunkSize) grid.Service {
 	s := ioc.GetServices[*service](c)
 	s.chunkSize = chunkSize
 	s.chunkSizeTileMask = chunkSize.Val() - 1
-	s.coords = ecs.GetComponentsArray[grid.ChunkCoordsComponent](s.World())
+	s.coords = ecs.GetComponentArray[grid.ChunkCoordsComponent](s.World())
 
 	s.Coords().OnUpsert(s.OnUpsert)
 	events.Listen(s.EventsBuilder(), s.OnHover)
@@ -31,7 +31,7 @@ func NewService(c ioc.Dic, chunkSize grid.ChunkSize) grid.Service {
 }
 
 // arrays
-func (s *service) Coords() ecs.ComponentsArray[grid.ChunkCoordsComponent] {
+func (s *service) Coords() ecs.ComponentArray[grid.ChunkCoordsComponent] {
 	return s.coords
 }
 

@@ -2,8 +2,8 @@ package tilesystem
 
 import (
 	"core/game"
+	"engine/modules/ecs"
 	"engine/modules/transform"
-	"engine/services/ecs"
 
 	"github.com/ogiusek/ioc/v2"
 )

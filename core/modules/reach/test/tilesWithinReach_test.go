@@ -6,9 +6,6 @@ import (
 	"testing"
 )
 
-// 	Component() ecs.ComponentsArray[Component[FeatureComponent]]
-// 	Reaches(fromEntity, toEntity ecs.EntityID) bool
-
 func TestTilesWithinReach(t *testing.T) {
 	s := NewSetup()
 

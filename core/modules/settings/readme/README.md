@@ -27,7 +27,7 @@ Type: `core/modules/settings.EnterSettingsEvent`
 Type: `core/modules/settings.EnterSettingsForParentEvent`
 
 #### property EnterSettingsForParentEvent Parent
-Type: `engine/services/ecs.EntityID`
+Type: `engine/modules/ecs.EntityID`
 
 
 ## Dependencies
@@ -52,6 +52,12 @@ Type: `engine/services/ecs.EntityID`
 
 `engine/modules/audio`:
   - `engine/modules/audio.NewPlayEvent`
+
+`engine/modules/ecs`:
+  - `engine/modules/ecs.EntityID`
+  - `engine/modules/ecs.GetComponentArray`
+  - `engine/modules/ecs.NewSystemRegister`
+  - `engine/modules/ecs.SystemRegister`
 
 `engine/modules/inputs`:
   - `engine/modules/inputs.LeftClick`
@@ -81,16 +87,6 @@ Type: `engine/services/ecs.EntityID`
 
 `engine/modules/typeregistry/pkg`:
   - `engine/modules/typeregistry/pkg.PkgT`
-
-`engine/services/ecs`:
-  - `engine/services/ecs.EntityID`
-  - `engine/services/ecs.Get`
-  - `engine/services/ecs.GetComponentsArray`
-  - `engine/services/ecs.GetEntities`
-  - `engine/services/ecs.NewEntity`
-  - `engine/services/ecs.NewSystemRegister`
-  - `engine/services/ecs.Set`
-  - `engine/services/ecs.SystemRegister`
 
 ### Third Party
 - `github.com/go-gl/mathgl/mgl32`

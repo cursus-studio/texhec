@@ -2,10 +2,10 @@ package service
 
 import (
 	"engine"
+	"engine/modules/ecs"
 	"engine/modules/netsync"
 	"engine/modules/netsync/internal/client"
 	"engine/modules/netsync/internal/server"
-	"engine/services/ecs"
 
 	"github.com/ogiusek/ioc/v2"
 )
@@ -14,14 +14,14 @@ type service struct {
 	engine.EngineWorld `inject:""`
 	ClientService      ioc.Lazy[*client.Service] `inject:""`
 	ServerService      ioc.Lazy[*server.Service] `inject:""`
-	server             ecs.ComponentsArray[netsync.ServerComponent]
-	client             ecs.ComponentsArray[netsync.ClientComponent]
+	server             ecs.ComponentArray[netsync.ServerComponent]
+	client             ecs.ComponentArray[netsync.ClientComponent]
 }
 
 func NewService(c ioc.Dic) netsync.Service {
 	t := ioc.GetServices[*service](c)
-	t.server = ecs.GetComponentsArray[netsync.ServerComponent](t.World())
-	t.client = ecs.GetComponentsArray[netsync.ClientComponent](t.World())
+	t.server = ecs.GetComponentArray[netsync.ServerComponent](t.World())
+	t.client = ecs.GetComponentArray[netsync.ClientComponent](t.World())
 	return t
 }
 
@@ -68,5 +68,5 @@ func (s *service) Stop() ecs.SystemRegister {
 	})
 }
 
-func (s *service) Server() ecs.ComponentsArray[netsync.ServerComponent] { return s.server }
-func (s *service) Client() ecs.ComponentsArray[netsync.ClientComponent] { return s.client }
+func (s *service) Server() ecs.ComponentArray[netsync.ServerComponent] { return s.server }
+func (s *service) Client() ecs.ComponentArray[netsync.ClientComponent] { return s.client }

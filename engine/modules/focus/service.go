@@ -1,8 +1,8 @@
 package focus
 
 import (
+	"engine/modules/ecs"
 	"engine/services/datastructures"
-	"engine/services/ecs"
 	"reflect"
 )
 
@@ -73,14 +73,14 @@ func NewDefaultFocused() DefaultFocusedComponent { return DefaultFocusedComponen
 
 type Service interface {
 	// bubbling
-	Bubbling() ecs.ComponentsArray[BubblingComponent]
+	Bubbling() ecs.ComponentArray[BubblingComponent]
 
 	DryRun(BubbleEvent) (bubbles []ecs.EntityID, captured bool)
 	Emit(BubbleEvent)
 
 	// focus
-	DefaultFocused() ecs.ComponentsArray[DefaultFocusedComponent]
-	Focused() ecs.ComponentsArray[FocusedComponent]
+	DefaultFocused() ecs.ComponentArray[DefaultFocusedComponent]
+	Focused() ecs.ComponentArray[FocusedComponent]
 
 	FocusedEntity() (ecs.EntityID, bool)
 	NewFocusedBubbleEvent(event any) (BubbleEvent, bool)

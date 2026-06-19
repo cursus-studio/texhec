@@ -2,25 +2,25 @@ package service
 
 import (
 	"engine"
+	"engine/modules/ecs"
 	"engine/modules/grid"
-	"engine/services/ecs"
 
 	"github.com/ogiusek/ioc/v2"
 )
 
 type serviceT[Tile grid.TileConstraint] struct {
 	engine.EngineWorld `inject:""`
-	chunk              ecs.ComponentsArray[grid.ChunkComponent[Tile]]
+	chunk              ecs.ComponentArray[grid.ChunkComponent[Tile]]
 }
 
 func NewServiceT[Tile grid.TileConstraint](c ioc.Dic) grid.ServiceT[Tile] {
 	s := ioc.GetServices[*serviceT[Tile]](c)
-	s.chunk = ecs.GetComponentsArray[grid.ChunkComponent[Tile]](s.World())
+	s.chunk = ecs.GetComponentArray[grid.ChunkComponent[Tile]](s.World())
 	return s
 }
 
 // arrays
-func (s *serviceT[Tile]) Chunk() ecs.ComponentsArray[grid.ChunkComponent[Tile]] { return s.chunk }
+func (s *serviceT[Tile]) Chunk() ecs.ComponentArray[grid.ChunkComponent[Tile]] { return s.chunk }
 
 // ctors
 func (s *serviceT[Tile]) NewChunk() grid.ChunkComponent[Tile] {

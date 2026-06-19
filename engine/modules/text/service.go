@@ -2,7 +2,7 @@
 package text
 
 import (
-	"engine/services/ecs"
+	"engine/modules/ecs"
 
 	"github.com/go-gl/mathgl/mgl32"
 )
@@ -51,12 +51,12 @@ func NewBreak(b uint8) BreakComponent             { return BreakComponent{b} }
 type Service interface {
 	Renderer() ecs.SystemRegister
 
-	Break() ecs.ComponentsArray[BreakComponent]
-	Content() ecs.ComponentsArray[TextComponent]
-	Align() ecs.ComponentsArray[AlignComponent]
-	Color() ecs.ComponentsArray[ColorComponent]
-	FontFamily() ecs.ComponentsArray[FontFamilyComponent]
-	FontSize() ecs.ComponentsArray[FontSizeComponent]
+	Break() ecs.ComponentArray[BreakComponent]
+	Content() ecs.ComponentArray[TextComponent]
+	Align() ecs.ComponentArray[AlignComponent]
+	Color() ecs.ComponentArray[ColorComponent]
+	FontFamily() ecs.ComponentArray[FontFamilyComponent]
+	FontSize() ecs.ComponentArray[FontSizeComponent]
 
 	AddDirtySet(ecs.DirtySet)
 }

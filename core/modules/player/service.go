@@ -1,7 +1,7 @@
 // allowes objects to be owned
 package player
 
-import "engine/services/ecs"
+import "engine/modules/ecs"
 
 type OwnerComponent struct {
 	Owner ecs.EntityID
@@ -14,5 +14,5 @@ func NewOwner(owner ecs.EntityID) OwnerComponent {
 //
 
 type Service interface {
-	Owner() ecs.ComponentsArray[OwnerComponent]
+	Owner() ecs.ComponentArray[OwnerComponent]
 }

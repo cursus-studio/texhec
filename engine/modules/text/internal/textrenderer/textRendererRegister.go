@@ -3,10 +3,10 @@ package textrenderer
 import (
 	_ "embed"
 	"engine"
+	"engine/modules/ecs"
 	"engine/modules/graphics"
 	"engine/modules/text"
 	"engine/services/datastructures"
-	"engine/services/ecs"
 
 	"github.com/go-gl/gl/v4.5-core/gl"
 	"github.com/ogiusek/events"
@@ -90,12 +90,12 @@ func (f *textRendererRegister) Register() error {
 	renderer.Transform().AddDirtySet(renderer.dirtyEntities)
 
 	arrays := []ecs.AnyComponentArray{
-		ecs.GetComponentsArray[text.TextComponent](f.World()),
-		ecs.GetComponentsArray[text.BreakComponent](f.World()),
-		ecs.GetComponentsArray[text.FontFamilyComponent](f.World()),
-		// ecs.GetComponentsArray[text.Overflow](w),
-		ecs.GetComponentsArray[text.FontSizeComponent](f.World()),
-		ecs.GetComponentsArray[text.AlignComponent](f.World()),
+		ecs.GetComponentArray[text.TextComponent](f.World()),
+		ecs.GetComponentArray[text.BreakComponent](f.World()),
+		ecs.GetComponentArray[text.FontFamilyComponent](f.World()),
+		// ecs.GetComponentArray[text.Overflow](w),
+		ecs.GetComponentArray[text.FontSizeComponent](f.World()),
+		ecs.GetComponentArray[text.AlignComponent](f.World()),
 	}
 
 	for _, array := range arrays {

@@ -5,10 +5,10 @@ import (
 	"core/modules/definitions"
 	"core/modules/obstruction"
 	"core/modules/obstruction/internal/service"
+	"engine/modules/ecs"
 	"engine/modules/entityregistry"
 	gridpkg "engine/modules/grid/pkg"
 	typeregistrypkg "engine/modules/typeregistry/pkg"
-	"engine/services/ecs"
 	"strings"
 
 	"github.com/ogiusek/ioc/v2"

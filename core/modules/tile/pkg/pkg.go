@@ -10,6 +10,7 @@ import (
 	"core/modules/tile/internal/tilesystem"
 	"engine/modules/assets"
 	"engine/modules/collider"
+	"engine/modules/ecs"
 	"engine/modules/entityregistry"
 	"engine/modules/graphics"
 	gridpkg "engine/modules/grid/pkg"
@@ -17,7 +18,6 @@ import (
 	relationpkg "engine/modules/relation/pkg"
 	"engine/modules/render"
 	typeregistrypkg "engine/modules/typeregistry/pkg"
-	"engine/services/ecs"
 	"fmt"
 	"image"
 	"os"
@@ -53,11 +53,11 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 		relationpkg.SpatialRelationPkg(
 			func(w ecs.World) ecs.DirtySet {
 				dirtySet := ecs.NewDirtySet()
-				ecs.GetComponentsArray[tile.Component](w).AddDirtySet(dirtySet)
+				ecs.GetComponentArray[tile.Component](w).AddDirtySet(dirtySet)
 				return dirtySet
 			},
 			func(w ecs.World) func(entity ecs.EntityID) (tile.ID, bool) {
-				componentArray := ecs.GetComponentsArray[tile.Component](w)
+				componentArray := ecs.GetComponentArray[tile.Component](w)
 				return func(entity ecs.EntityID) (tile.ID, bool) {
 					comp, ok := componentArray.Get(entity)
 					return comp.ID, ok

@@ -4,8 +4,8 @@ import (
 	"core/modules/ui"
 	"core/modules/ui/internal/systems"
 	"core/modules/ui/internal/uiservice"
+	"engine/modules/ecs"
 	typeregistrypkg "engine/modules/typeregistry/pkg"
-	"engine/services/ecs"
 	"time"
 
 	"github.com/ogiusek/ioc/v2"

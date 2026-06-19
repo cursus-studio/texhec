@@ -2,11 +2,11 @@ package test
 
 import (
 	"engine/modules/codec"
+	"engine/modules/ecs"
 	"engine/modules/record"
 	typeregistrypkg "engine/modules/typeregistry/pkg"
 	"engine/modules/uuid"
 	enginepkg "engine/pkg"
-	"engine/services/ecs"
 
 	"github.com/ogiusek/ioc/v2"
 )
@@ -22,7 +22,7 @@ type Setup struct {
 	World          ecs.World
 	UUID           uuid.Service
 	Record         record.Service
-	ComponentArray ecs.ComponentsArray[Component]
+	ComponentArray ecs.ComponentArray[Component]
 }
 
 func NewSetup() Setup {
@@ -40,7 +40,7 @@ func NewSetup() Setup {
 		Record: ioc.Get[record.Service](c),
 	}
 
-	s.ComponentArray = ecs.GetComponentsArray[Component](s.World)
+	s.ComponentArray = ecs.GetComponentArray[Component](s.World)
 
 	record.AddToConfig[Component](s.Config)
 

@@ -2,10 +2,10 @@ package tileservice
 
 import (
 	"core/modules/tile"
+	"engine/modules/ecs"
 	"engine/modules/inputs"
 	"engine/modules/interactions"
 	"engine/modules/text"
-	"engine/services/ecs"
 	"errors"
 	"fmt"
 )

@@ -1,15 +1,15 @@
 package internal
 
 import (
+	"engine/modules/ecs"
 	"engine/modules/focus"
-	"engine/services/ecs"
 	"fmt"
 )
 
-func (s *service) DefaultFocused() ecs.ComponentsArray[focus.DefaultFocusedComponent] {
+func (s *service) DefaultFocused() ecs.ComponentArray[focus.DefaultFocusedComponent] {
 	return s.defaultFocused
 }
-func (s *service) Focused() ecs.ComponentsArray[focus.FocusedComponent] {
+func (s *service) Focused() ecs.ComponentArray[focus.FocusedComponent] {
 	return s.focused
 }
 func (s *service) FocusedEntity() (ecs.EntityID, bool) {

@@ -3,8 +3,8 @@ package assetspkg
 import (
 	"engine/modules/assets"
 	"engine/modules/assets/internal"
+	"engine/modules/ecs"
 	"engine/modules/entityregistry"
-	"engine/services/ecs"
 
 	"github.com/ogiusek/ioc/v2"
 )

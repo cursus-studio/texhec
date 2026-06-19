@@ -2,10 +2,10 @@ package instancing
 
 import (
 	"engine/modules/assets"
+	"engine/modules/ecs"
 	"engine/modules/graphics"
 	"engine/modules/render"
 	"engine/services/datastructures"
-	"engine/services/ecs"
 	"fmt"
 	"math"
 

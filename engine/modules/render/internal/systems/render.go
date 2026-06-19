@@ -2,9 +2,9 @@ package systems
 
 import (
 	"engine"
+	"engine/modules/ecs"
 	"engine/modules/loop"
 	"engine/modules/render"
-	"engine/services/ecs"
 
 	"github.com/go-gl/gl/v4.5-core/gl"
 	"github.com/ogiusek/events"

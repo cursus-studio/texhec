@@ -50,110 +50,110 @@ In DI container
 Assets have fewer dependencies
 
 #### property Assets ExampleAudio
-Type: `engine/services/ecs.EntityID`
+Type: `engine/modules/ecs.EntityID`
 
 #### property Assets Blank
-Type: `engine/services/ecs.EntityID`
+Type: `engine/modules/ecs.EntityID`
 
 #### property Assets Border
-Type: `engine/services/ecs.EntityID`
+Type: `engine/modules/ecs.EntityID`
 
 #### property Assets SquareMesh
-Type: `engine/services/ecs.EntityID`
+Type: `engine/modules/ecs.EntityID`
 
 #### property Assets SquareCollider
-Type: `engine/services/ecs.EntityID`
+Type: `engine/modules/ecs.EntityID`
 
 #### property Assets FontAsset
-Type: `engine/services/ecs.EntityID`
+Type: `engine/modules/ecs.EntityID`
 
 ### type Hud
 Type: `core/modules/definitions.Hud`
 
 #### property Hud Btn
-Type: `engine/services/ecs.EntityID`
+Type: `engine/modules/ecs.EntityID`
 
 #### property Hud Text
-Type: `engine/services/ecs.EntityID`
+Type: `engine/modules/ecs.EntityID`
 
 #### property Hud Input
-Type: `engine/services/ecs.EntityID`
+Type: `engine/modules/ecs.EntityID`
 
 #### property Hud Cursor
-Type: `engine/services/ecs.EntityID`
+Type: `engine/modules/ecs.EntityID`
 
 #### property Hud Settings
-Type: `engine/services/ecs.EntityID`
+Type: `engine/modules/ecs.EntityID`
 
 #### property Hud Background1
-Type: `engine/services/ecs.EntityID`
+Type: `engine/modules/ecs.EntityID`
 
 #### property Hud Background2
-Type: `engine/services/ecs.EntityID`
+Type: `engine/modules/ecs.EntityID`
 
 #### property Hud Selected
-Type: `engine/services/ecs.EntityID`
+Type: `engine/modules/ecs.EntityID`
 
 #### property Hud Target
-Type: `engine/services/ecs.EntityID`
+Type: `engine/modules/ecs.EntityID`
 
 #### property Hud Can
-Type: `engine/services/ecs.EntityID`
+Type: `engine/modules/ecs.EntityID`
 
 #### property Hud Cannot
-Type: `engine/services/ecs.EntityID`
+Type: `engine/modules/ecs.EntityID`
 
 ### type Transitions
 Type: `core/modules/definitions.Transitions`
 
 #### property Transitions Linear
-Type: `engine/services/ecs.EntityID`
+Type: `engine/modules/ecs.EntityID`
 
 #### property Transitions MyEasing
-Type: `engine/services/ecs.EntityID`
+Type: `engine/modules/ecs.EntityID`
 
 #### property Transitions EaseOutElastic
-Type: `engine/services/ecs.EntityID`
+Type: `engine/modules/ecs.EntityID`
 
 ### type Tiles
 Type: `core/modules/definitions.Tiles`
 generation configs should be in registry or in destined path and dispatched instantly on initialization
 
 #### property Tiles Water
-Type: `engine/services/ecs.EntityID`
+Type: `engine/modules/ecs.EntityID`
 
 #### property Tiles Sand
-Type: `engine/services/ecs.EntityID`
+Type: `engine/modules/ecs.EntityID`
 
 #### property Tiles Texhec
-Type: `engine/services/ecs.EntityID`
+Type: `engine/modules/ecs.EntityID`
 
 #### property Tiles Grass
-Type: `engine/services/ecs.EntityID`
+Type: `engine/modules/ecs.EntityID`
 
 #### property Tiles Mountain
-Type: `engine/services/ecs.EntityID`
+Type: `engine/modules/ecs.EntityID`
 
 ### type Objects
 Type: `core/modules/definitions.Objects`
 
 #### property Objects Farm
-Type: `engine/services/ecs.EntityID`
+Type: `engine/modules/ecs.EntityID`
 
 #### property Objects HouseT1
-Type: `engine/services/ecs.EntityID`
+Type: `engine/modules/ecs.EntityID`
 
 #### property Objects HouseT2
-Type: `engine/services/ecs.EntityID`
+Type: `engine/modules/ecs.EntityID`
 
 #### property Objects HouseT3
-Type: `engine/services/ecs.EntityID`
+Type: `engine/modules/ecs.EntityID`
 
 #### property Objects HouseT4
-Type: `engine/services/ecs.EntityID`
+Type: `engine/modules/ecs.EntityID`
 
 #### property Objects Tank
-Type: `engine/services/ecs.EntityID`
+Type: `engine/modules/ecs.EntityID`
 
 ## Variables
 ### var MenuID
@@ -277,6 +277,9 @@ Type: `core/modules/obstruction.Obstruction`
   - `engine/modules/collider.Polygon`
   - `engine/modules/collider.Range`
 
+`engine/modules/ecs`:
+  - `engine/modules/ecs.EntityID`
+
 `engine/modules/entityregistry`:
   - `engine/modules/entityregistry.GetRegistry`
 
@@ -340,11 +343,6 @@ Type: `core/modules/obstruction.Obstruction`
   - `engine/modules/transition.EasingFunction`
   - `engine/modules/transition.NewEasingFunction`
   - `engine/modules/transition.Progress`
-
-`engine/services/ecs`:
-  - `engine/services/ecs.EntityID`
-  - `engine/services/ecs.NewEntity`
-  - `engine/services/ecs.Set`
 
 ### Third Party
 - `github.com/go-gl/mathgl/mgl32`

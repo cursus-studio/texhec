@@ -1,7 +1,7 @@
 package textrenderer
 
 import (
-	"engine/services/ecs"
+	"engine/modules/ecs"
 	"sync"
 )
 

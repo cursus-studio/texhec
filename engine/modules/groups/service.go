@@ -3,12 +3,12 @@
 package groups
 
 import (
+	"engine/modules/ecs"
 	"engine/modules/hierarchy"
-	"engine/services/ecs"
 )
 
 type Service interface {
-	Component() ecs.ComponentsArray[GroupsComponent]
-	Inherit() ecs.ComponentsArray[hierarchy.InheritComponent[GroupsComponent]]
+	Component() ecs.ComponentArray[GroupsComponent]
+	Inherit() ecs.ComponentArray[hierarchy.InheritComponent[GroupsComponent]]
 	InheritGroups(ecs.EntityID)
 }

@@ -1,8 +1,8 @@
-package ecs
+package internal
 
 import (
+	"engine/modules/ecs/internal/ecstypes"
 	"engine/services/datastructures"
-	"errors"
 	"reflect"
 )
 
@@ -35,20 +35,6 @@ func getComponentType(component Component) componentType {
 //
 //
 
-var (
-	ErrComponentDoNotExists error = errors.New("component do not exists")
-	ErrEntityDoNotExists    error = errors.New("entity do not exists")
-)
-
-type componentsInterface interface {
-	// any is ComponentArray[ComponentType]
-	// GetArray(ComponentType) (any, error)
-	Components() ComponentsStorage
-
-	// returns for with all listed component types
-	// the same live query should be returned for the same input
-}
-
 // impl
 
 type componentsImpl struct {
@@ -57,13 +43,13 @@ type componentsImpl struct {
 
 func (components *componentsImpl) Components() ComponentsStorage { return components.storage }
 
-func (components *componentsImpl) RemoveEntity(entity EntityID) {
+func (components *componentsImpl) RemoveEntity(entity ecstypes.EntityID) {
 	for _, arr := range components.storage.arraySlice {
 		arr.Remove(entity)
 	}
 }
 
-func newComponents(entities datastructures.SparseSet[EntityID]) *componentsImpl {
+func newComponents(entities datastructures.SparseSet[ecstypes.EntityID]) *componentsImpl {
 	return &componentsImpl{
 		storage: newComponentsStorage(entities),
 	}
@@ -72,20 +58,20 @@ func newComponents(entities datastructures.SparseSet[EntityID]) *componentsImpl 
 //
 
 type arraysSharedInterface interface {
-	AnyComponentArray
+	ecstypes.AnyComponentArray
 	// this adds listeners for change and remove
 }
 
 type componentsStorage struct {
 	arrays              map[componentType]arraysSharedInterface // any is *componentsArray[ComponentType]
 	arraySlice          []arraysSharedInterface
-	entities            datastructures.SparseSet[EntityID]
+	entities            datastructures.SparseSet[ecstypes.EntityID]
 	onArrayAddListeners map[componentType][]func(arraysSharedInterface)
 }
 
 type ComponentsStorage *componentsStorage
 
-func newComponentsStorage(entities datastructures.SparseSet[EntityID]) ComponentsStorage {
+func newComponentsStorage(entities datastructures.SparseSet[ecstypes.EntityID]) ComponentsStorage {
 	return &componentsStorage{
 		arrays:              make(map[componentType]arraysSharedInterface),
 		arraySlice:          make([]arraysSharedInterface, 0),
@@ -94,20 +80,16 @@ func newComponentsStorage(entities datastructures.SparseSet[EntityID]) Component
 	}
 }
 
-type worldInterface interface {
-	componentsInterface
-	entitiesInterface
-}
-
-func GetComponentsArray[Component any](world worldInterface) ComponentsArray[Component] {
+func GetComponentArray[Component any](rawWorld ecstypes.World) ecstypes.ComponentArray[Component] {
+	world := rawWorld.(*world)
 	components := world.Components()
 	var zero Component
 	componentType := getComponentType(zero)
 
 	if array, ok := components.arrays[componentType]; ok {
-		return array.(ComponentsArray[Component])
+		return array.(ecstypes.ComponentArray[Component])
 	}
-	array := newComponentsArray[Component](world)
+	array := newComponentArray[Component](*world.entitiesImpl)
 	components.arrays[componentType] = array
 	components.arraySlice = append(components.arraySlice, array)
 	//
@@ -120,33 +102,33 @@ func GetComponentsArray[Component any](world worldInterface) ComponentsArray[Com
 }
 
 func SaveComponent[Component any](
-	w World,
-	entity EntityID,
+	w ecstypes.World,
+	entity ecstypes.EntityID,
 	component Component,
 ) {
-	GetComponentsArray[Component](w).Set(entity, component)
+	GetComponentArray[Component](w).Set(entity, component)
 }
 
 func GetComponent[Component any](
-	w World,
-	entity EntityID,
+	w ecstypes.World,
+	entity ecstypes.EntityID,
 ) (Component, bool) {
-	return GetComponentsArray[Component](w).
+	return GetComponentArray[Component](w).
 		Get(entity)
 }
 
 func RemoveComponent[Component any](
-	w World,
-	entity EntityID,
+	w ecstypes.World,
+	entity ecstypes.EntityID,
 ) {
-	GetComponentsArray[Component](w).
+	GetComponentArray[Component](w).
 		Remove(entity)
 }
 
 func GetEntitiesWithComponents(
 	components ComponentsStorage,
 	componentTypes ...componentType,
-) []EntityID {
+) []ecstypes.EntityID {
 	if len(componentTypes) == 0 {
 		return nil
 	}
@@ -162,7 +144,7 @@ func GetEntitiesWithComponents(
 
 	arrayEntities := arrays[0].GetEntities()
 	arrays = arrays[1:]
-	finalEntities := []EntityID{}
+	finalEntities := []ecstypes.EntityID{}
 arrayEntities:
 	for _, entity := range arrayEntities {
 		for _, array := range arrays {

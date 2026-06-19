@@ -9,6 +9,7 @@ import (
 	"engine/modules/collider"
 	"engine/modules/connection"
 	"engine/modules/drag"
+	"engine/modules/ecs"
 	"engine/modules/entityregistry"
 	"engine/modules/focus"
 	"engine/modules/graphics"
@@ -37,7 +38,6 @@ import (
 	"engine/modules/window"
 	"engine/services/clock"
 	"engine/services/console"
-	"engine/services/ecs"
 
 	"github.com/ogiusek/events"
 	"github.com/ogiusek/ioc/v2"

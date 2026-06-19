@@ -2,7 +2,7 @@
 package connection
 
 import (
-	"engine/services/ecs"
+	"engine/modules/ecs"
 	"net"
 )
 
@@ -48,8 +48,8 @@ func (comp *ConnectionComponent) Conn() Conn {
 
 type Service interface {
 	ecs.SystemRegister
-	Component() ecs.ComponentsArray[ConnectionComponent]
-	Listener() ecs.ComponentsArray[ListenerComponent]
+	Component() ecs.ComponentArray[ConnectionComponent]
+	Listener() ecs.ComponentArray[ListenerComponent]
 
 	Host(addr string) error
 	Connect(addr string) error

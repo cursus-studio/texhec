@@ -3,9 +3,9 @@ package uiservice
 import (
 	"core/game"
 	"core/modules/ui"
+	"engine/modules/ecs"
 	"engine/modules/transform"
 	"engine/modules/transition"
-	"engine/services/ecs"
 	"time"
 
 	"github.com/ogiusek/events"
@@ -24,12 +24,12 @@ type service struct {
 
 	animationDuration time.Duration
 
-	uiCameraArray           ecs.ComponentsArray[ui.UiCameraComponent]
-	animatedBackgroundArray ecs.ComponentsArray[ui.AnimatedBackgroundComponent]
-	cursorCameraArray       ecs.ComponentsArray[ui.CursorCameraComponent]
+	uiCameraArray           ecs.ComponentArray[ui.UiCameraComponent]
+	animatedBackgroundArray ecs.ComponentArray[ui.AnimatedBackgroundComponent]
+	cursorCameraArray       ecs.ComponentArray[ui.CursorCameraComponent]
 
-	menuArray            ecs.ComponentsArray[menuComponent]
-	childrenWrapperArray ecs.ComponentsArray[childrenComponent]
+	menuArray            ecs.ComponentArray[menuComponent]
+	childrenWrapperArray ecs.ComponentArray[childrenComponent]
 }
 
 func NewService(
@@ -41,12 +41,12 @@ func NewService(
 	s.systems = systems
 	s.animationDuration = animationDuration
 
-	s.uiCameraArray = ecs.GetComponentsArray[ui.UiCameraComponent](s.World())
-	s.animatedBackgroundArray = ecs.GetComponentsArray[ui.AnimatedBackgroundComponent](s.World())
-	s.cursorCameraArray = ecs.GetComponentsArray[ui.CursorCameraComponent](s.World())
+	s.uiCameraArray = ecs.GetComponentArray[ui.UiCameraComponent](s.World())
+	s.animatedBackgroundArray = ecs.GetComponentArray[ui.AnimatedBackgroundComponent](s.World())
+	s.cursorCameraArray = ecs.GetComponentArray[ui.CursorCameraComponent](s.World())
 
-	s.menuArray = ecs.GetComponentsArray[menuComponent](s.World())
-	s.childrenWrapperArray = ecs.GetComponentsArray[childrenComponent](s.World())
+	s.menuArray = ecs.GetComponentArray[menuComponent](s.World())
+	s.childrenWrapperArray = ecs.GetComponentArray[childrenComponent](s.World())
 
 	s.systems = append(s.systems, ecs.NewSystemRegister(func() error {
 		events.Listen(s.EventsBuilder(), func(e sdl.MouseButtonEvent) {
@@ -86,11 +86,11 @@ func (s *service) ResetChildWrapper() {
 	}
 }
 
-func (s *service) UiCamera() ecs.ComponentsArray[ui.UiCameraComponent] { return s.uiCameraArray }
-func (s *service) AnimatedBackground() ecs.ComponentsArray[ui.AnimatedBackgroundComponent] {
+func (s *service) UiCamera() ecs.ComponentArray[ui.UiCameraComponent] { return s.uiCameraArray }
+func (s *service) AnimatedBackground() ecs.ComponentArray[ui.AnimatedBackgroundComponent] {
 	return s.animatedBackgroundArray
 }
-func (s *service) CursorCamera() ecs.ComponentsArray[ui.CursorCameraComponent] {
+func (s *service) CursorCamera() ecs.ComponentArray[ui.CursorCameraComponent] {
 	return s.cursorCameraArray
 }
 

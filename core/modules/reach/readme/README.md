@@ -9,11 +9,11 @@ goos: linux
 goarch: amd64
 pkg: core/modules/reach/test
 cpu: Intel(R) Core(TM) i5-8350U CPU @ 1.70GHz
-BenchmarkDist-8                 	100000000	        11.28 ns/op
-Benchmark4TilesWithinReach-8    	13511037	        91.67 ns/op
-Benchmark12TilesWithinReach-8   	 7572405	       137.8 ns/op
+BenchmarkDist-8                 	100000000	        11.24 ns/op
+Benchmark4TilesWithinReach-8    	13350830	        87.64 ns/op
+Benchmark12TilesWithinReach-8   	 9518014	       133.7 ns/op
 PASS
-ok  	core/modules/reach/test	3.432s
+ok  	core/modules/reach/test	3.582s
 ```
 ## Lines of code
 ```
@@ -21,10 +21,10 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                               8             61             30            365
+Go                               8             60             28            365
 Markdown                         2              0              0              2
 -------------------------------------------------------------------------------
-SUM:                            10             61             30            367
+SUM:                            10             60             28            367
 -------------------------------------------------------------------------------
 ```
 ## TODO
@@ -42,13 +42,13 @@ returns rounded up distance between nearest coordinates
 Type: `core/modules/reach.ServiceT[FeatureComponent any]`
 
 #### method ServiceT Component
-Type: `func() engine/services/ecs.ComponentsArray[core/modules/reach.Component[FeatureComponent]]`
+Type: `func() engine/modules/ecs.ComponentArray[core/modules/reach.Component[FeatureComponent]]`
 
 #### method ServiceT Reaches
-Type: `func(fromEntity engine/services/ecs.EntityID, toEntity engine/services/ecs.EntityID) bool`
+Type: `func(fromEntity engine/modules/ecs.EntityID, toEntity engine/modules/ecs.EntityID) bool`
 
 #### method ServiceT TilesWithinReach
-Type: `func(entity engine/services/ecs.EntityID) []engine/modules/grid.Coords`
+Type: `func(entity engine/modules/ecs.EntityID) []engine/modules/grid.Coords`
 
 ### type Component
 Type: `core/modules/reach.Component[FeatureComponent any]`
@@ -97,6 +97,11 @@ takes square of distnace
 `core/pkg`:
   - `core/pkg.Pkg`
 
+`engine/modules/ecs`:
+  - `engine/modules/ecs.ComponentArray`
+  - `engine/modules/ecs.EntityID`
+  - `engine/modules/ecs.GetComponentArray`
+
 `engine/modules/grid`:
   - `engine/modules/grid.Coord`
   - `engine/modules/grid.Coords`
@@ -106,15 +111,6 @@ takes square of distnace
 
 `engine/modules/typeregistry/pkg`:
   - `engine/modules/typeregistry/pkg.PkgT`
-
-`engine/services/ecs`:
-  - `engine/services/ecs.ComponentsArray`
-  - `engine/services/ecs.EntityID`
-  - `engine/services/ecs.Get`
-  - `engine/services/ecs.GetComponentsArray`
-  - `engine/services/ecs.NewEntity`
-  - `engine/services/ecs.RemoveEntity`
-  - `engine/services/ecs.Set`
 
 ### Third Party
 - `github.com/ogiusek/ioc/v2`

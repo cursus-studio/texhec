@@ -2,8 +2,8 @@ package internal
 
 import (
 	"engine"
+	"engine/modules/ecs"
 	"engine/modules/interactions"
-	"engine/services/ecs"
 	"fmt"
 	"reflect"
 
@@ -13,9 +13,9 @@ import (
 
 type interactionService[State any] struct {
 	engine.EngineWorld `inject:""`
-	interactionGUI     ecs.ComponentsArray[interactions.InteractionGUIComponent[State]]
-	missingInteraction ecs.ComponentsArray[interactions.MissingInteractionComponent[State]]
-	interaction        ecs.ComponentsArray[interactions.InteractionComponent[State]]
+	interactionGUI     ecs.ComponentArray[interactions.InteractionGUIComponent[State]]
+	missingInteraction ecs.ComponentArray[interactions.MissingInteractionComponent[State]]
+	interaction        ecs.ComponentArray[interactions.InteractionComponent[State]]
 	name               interactions.Name
 }
 
@@ -24,9 +24,9 @@ func NewInteractionService[State any](
 	name interactions.Name,
 ) interactions.InteractionService[State] {
 	s := ioc.GetServices[*interactionService[State]](c)
-	s.interactionGUI = ecs.GetComponentsArray[interactions.InteractionGUIComponent[State]](s.World())
-	s.missingInteraction = ecs.GetComponentsArray[interactions.MissingInteractionComponent[State]](s.World())
-	s.interaction = ecs.GetComponentsArray[interactions.InteractionComponent[State]](s.World())
+	s.interactionGUI = ecs.GetComponentArray[interactions.InteractionGUIComponent[State]](s.World())
+	s.missingInteraction = ecs.GetComponentArray[interactions.MissingInteractionComponent[State]](s.World())
+	s.interaction = ecs.GetComponentArray[interactions.InteractionComponent[State]](s.World())
 	s.name = name
 
 	s.missingInteraction.OnRemove(s.Interactions().Proceed)
@@ -43,13 +43,13 @@ func (s *interactionService[State]) onInteractionRemove(ecs.EntityID) {
 	}
 }
 
-func (s *interactionService[State]) InteractionGUI() ecs.ComponentsArray[interactions.InteractionGUIComponent[State]] {
+func (s *interactionService[State]) InteractionGUI() ecs.ComponentArray[interactions.InteractionGUIComponent[State]] {
 	return s.interactionGUI
 }
-func (s *interactionService[State]) MissingInteraction() ecs.ComponentsArray[interactions.MissingInteractionComponent[State]] {
+func (s *interactionService[State]) MissingInteraction() ecs.ComponentArray[interactions.MissingInteractionComponent[State]] {
 	return s.missingInteraction
 }
-func (s *interactionService[State]) Interaction() ecs.ComponentsArray[interactions.InteractionComponent[State]] {
+func (s *interactionService[State]) Interaction() ecs.ComponentArray[interactions.InteractionComponent[State]] {
 	return s.interaction
 }
 func (s *interactionService[State]) MissingInteractionAny() ecs.AnyComponentArray {

@@ -4,7 +4,7 @@
 package uuid
 
 import (
-	"engine/services/ecs"
+	"engine/modules/ecs"
 
 	"github.com/google/uuid"
 )
@@ -21,7 +21,7 @@ func New(id UUID) Component {
 
 type Service interface {
 	Factory
-	Component() ecs.ComponentsArray[Component]
+	Component() ecs.ComponentArray[Component]
 	Entity(UUID) (ecs.EntityID, bool)
 }
 

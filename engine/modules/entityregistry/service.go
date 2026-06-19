@@ -10,7 +10,7 @@
 package entityregistry
 
 import (
-	"engine/services/ecs"
+	"engine/modules/ecs"
 	"fmt"
 )
 

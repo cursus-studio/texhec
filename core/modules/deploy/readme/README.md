@@ -18,10 +18,10 @@ SUM:                             3             36             14            200
 Type: `core/modules/deploy.Service`
 
 #### method Service Component
-Type: `func() engine/services/ecs.ComponentsArray[core/modules/deploy.Component]`
+Type: `func() engine/modules/ecs.ComponentArray[core/modules/deploy.Component]`
 
 #### method Service Deploy
-Type: `func(blueprint engine/services/ecs.EntityID, owner engine/services/ecs.EntityID, coords engine/modules/grid.Coords) (engine/services/ecs.EntityID, error)`
+Type: `func(blueprint engine/modules/ecs.EntityID, owner engine/modules/ecs.EntityID, coords engine/modules/grid.Coords) (engine/modules/ecs.EntityID, error)`
 deploy differs from execute event by who deploys.
 execute adds costs and everything where deploy just deploys without any costs (its deployed by system)
 
@@ -35,29 +35,29 @@ Type: `func() core/modules/reach.ServiceT[core/modules/deploy.Component]`
 Type: `core/modules/deploy.Component`
 
 #### property Component Deployable
-Type: `[]engine/services/ecs.EntityID`
+Type: `[]engine/modules/ecs.EntityID`
 
 ### type DeployEvent
 Type: `core/modules/deploy.DeployEvent`
 
 #### property DeployEvent By
-Type: `engine/services/ecs.EntityID`
+Type: `engine/modules/ecs.EntityID`
 
 #### property DeployEvent Blueprint
-Type: `engine/services/ecs.EntityID`
+Type: `engine/modules/ecs.EntityID`
 
 #### property DeployEvent Coords
 Type: `engine/modules/grid.Coords`
 
 ## Functions
 ### func NewDeploy
-Type: `func(deployable ...engine/services/ecs.EntityID) core/modules/deploy.Component`
+Type: `func(deployable ...engine/modules/ecs.EntityID) core/modules/deploy.Component`
 
 ### func NewFeatureDeployEvent
 Type: `func() engine/modules/interactions.FeatureEvent[core/modules/deploy.DeployEvent]`
 
 ### func NewDeployEvent
-Type: `func(by engine/services/ecs.EntityID, blueprint engine/services/ecs.EntityID, coords engine/modules/grid.Coords) core/modules/deploy.DeployEvent`
+Type: `func(by engine/modules/ecs.EntityID, blueprint engine/modules/ecs.EntityID, coords engine/modules/grid.Coords) core/modules/deploy.DeployEvent`
 
 
 ## Dependencies
@@ -114,6 +114,11 @@ Type: `func(by engine/services/ecs.EntityID, blueprint engine/services/ecs.Entit
   - `core/modules/tile.Size`
   - `core/modules/tile.SourceObjectInteraction`
 
+`engine/modules/ecs`:
+  - `engine/modules/ecs.ComponentArray`
+  - `engine/modules/ecs.EntityID`
+  - `engine/modules/ecs.GetComponentArray`
+
 `engine/modules/entityregistry`:
   - `engine/modules/entityregistry.Register`
   - `engine/modules/entityregistry.Service`
@@ -139,14 +144,6 @@ Type: `func(by engine/services/ecs.EntityID, blueprint engine/services/ecs.Entit
 `engine/modules/seed`:
   - `engine/modules/seed.ErrWorldCanHaveOneSeed`
   - `engine/modules/seed.WorldSeed`
-
-`engine/services/ecs`:
-  - `engine/services/ecs.ComponentsArray`
-  - `engine/services/ecs.EntityID`
-  - `engine/services/ecs.Get`
-  - `engine/services/ecs.GetComponentsArray`
-  - `engine/services/ecs.Set`
-  - `engine/services/ecs.SetEmpty`
 
 ### Third Party
 - `github.com/ogiusek/events`

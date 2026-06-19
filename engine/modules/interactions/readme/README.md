@@ -22,17 +22,17 @@ Add feature and interaction history
 Type: `engine/modules/interactions.Service`
 
 #### method Service FeatureEntity
-Type: `func() engine/services/ecs.EntityID`
+Type: `func() engine/modules/ecs.EntityID`
 
 #### method Service FeatureEvent
-Type: `func() engine/services/ecs.ComponentsArray[engine/modules/interactions.FeatureEventComponent]`
+Type: `func() engine/modules/ecs.ComponentArray[engine/modules/interactions.FeatureEventComponent]`
 
 #### method Service Instance
-Type: `func() engine/services/ecs.ComponentsArray[engine/modules/interactions.InstanceComponent]`
+Type: `func() engine/modules/ecs.ComponentArray[engine/modules/interactions.InstanceComponent]`
 entity with this stores all components with interactions and selected feature
 
 #### method Service Proceed
-Type: `func(engine/services/ecs.EntityID)`
+Type: `func(engine/modules/ecs.EntityID)`
 entity here isn't used
 it's here just to make calling it easier by OnUpsert because only there it should be used
 
@@ -43,14 +43,14 @@ Type: `engine/modules/interactions.Event`
 Type: `engine/modules/interactions.AnyInteractionService`
 
 #### method AnyInteractionService InteractionAny
-Type: `func() engine/services/ecs.AnyComponentArray`
+Type: `func() engine/modules/ecs.AnyComponentArray`
 
 #### method AnyInteractionService Measure
 Type: `func() (alreadyMeasured bool)`
 saves [MissingInteractionComponent] if it there is no [InteractionComponent]
 
 #### method AnyInteractionService MissingInteractionAny
-Type: `func() engine/services/ecs.AnyComponentArray`
+Type: `func() engine/modules/ecs.AnyComponentArray`
 
 #### method AnyInteractionService Name
 Type: `func() engine/modules/interactions.Name`
@@ -65,13 +65,13 @@ Type: `engine/modules/interactions.InteractionService[State any]`
 Type: `func(engine/modules/interactions.FinishMeasurementEvent[State])`
 
 #### method InteractionService Interaction
-Type: `func() engine/services/ecs.ComponentsArray[engine/modules/interactions.InteractionComponent[State]]`
+Type: `func() engine/modules/ecs.ComponentArray[engine/modules/interactions.InteractionComponent[State]]`
 
 #### method InteractionService InteractionAny
-Type: `func() engine/services/ecs.AnyComponentArray`
+Type: `func() engine/modules/ecs.AnyComponentArray`
 
 #### method InteractionService InteractionGUI
-Type: `func() engine/services/ecs.ComponentsArray[engine/modules/interactions.InteractionGUIComponent[State]]`
+Type: `func() engine/modules/ecs.ComponentArray[engine/modules/interactions.InteractionGUIComponent[State]]`
 elements are removed when interaction is removed.
 they can be used to indicate that element is used.
 
@@ -80,10 +80,10 @@ Type: `func() (alreadyMeasured bool)`
 saves [MissingInteractionComponent] if it there is no [InteractionComponent]
 
 #### method InteractionService MissingInteraction
-Type: `func() engine/services/ecs.ComponentsArray[engine/modules/interactions.MissingInteractionComponent[State]]`
+Type: `func() engine/modules/ecs.ComponentArray[engine/modules/interactions.MissingInteractionComponent[State]]`
 
 #### method InteractionService MissingInteractionAny
-Type: `func() engine/services/ecs.AnyComponentArray`
+Type: `func() engine/modules/ecs.AnyComponentArray`
 
 #### method InteractionService Name
 Type: `func() engine/modules/interactions.Name`
@@ -172,6 +172,12 @@ Type: `func[Event any](event Event) engine/modules/interactions.FeatureEvent[Eve
   - `engine.Logger`
   - `engine.World`
 
+`engine/modules/ecs`:
+  - `engine/modules/ecs.AnyComponentArray`
+  - `engine/modules/ecs.ComponentArray`
+  - `engine/modules/ecs.EntityID`
+  - `engine/modules/ecs.GetComponentArray`
+
 `engine/modules/interactions`:
   - `engine/modules/interactions.AnyFeatureService`
   - `engine/modules/interactions.AnyInteractionService`
@@ -197,23 +203,6 @@ Type: `func[Event any](event Event) engine/modules/interactions.FeatureEvent[Eve
   - `engine/modules/interactions.Service`
   - `engine/modules/interactions.State`
   - `engine/modules/interactions.StateType`
-
-`engine/services/ecs`:
-  - `engine/services/ecs.AnyComponentArray`
-  - `engine/services/ecs.ComponentsArray`
-  - `engine/services/ecs.EntityID`
-  - `engine/services/ecs.Get`
-  - `engine/services/ecs.GetAny`
-  - `engine/services/ecs.GetComponentsArray`
-  - `engine/services/ecs.GetEmpty`
-  - `engine/services/ecs.GetEntities`
-  - `engine/services/ecs.NewEntity`
-  - `engine/services/ecs.OnRemove`
-  - `engine/services/ecs.OnUpsert`
-  - `engine/services/ecs.Remove`
-  - `engine/services/ecs.RemoveEntity`
-  - `engine/services/ecs.Set`
-  - `engine/services/ecs.SetAny`
 
 ### Third Party
 - `github.com/ogiusek/events`

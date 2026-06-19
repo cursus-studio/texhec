@@ -1,11 +1,11 @@
 package gridpkg
 
 import (
+	"engine/modules/ecs"
 	"engine/modules/grid"
 	"engine/modules/grid/internal/service"
 	relationpkg "engine/modules/relation/pkg"
 	typeregistrypkg "engine/modules/typeregistry/pkg"
-	"engine/services/ecs"
 
 	"github.com/ogiusek/ioc/v2"
 )
@@ -35,11 +35,11 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 		relationpkg.MapRelationPkg(
 			func(w ecs.World) ecs.DirtySet {
 				set := ecs.NewDirtySet()
-				ecs.GetComponentsArray[grid.ChunkCoordsComponent](w).AddDirtySet(set)
+				ecs.GetComponentArray[grid.ChunkCoordsComponent](w).AddDirtySet(set)
 				return set
 			},
 			func(w ecs.World) func(entity ecs.EntityID) (indexType grid.ChunkCoordsComponent, ok bool) {
-				arr := ecs.GetComponentsArray[grid.ChunkCoordsComponent](w)
+				arr := ecs.GetComponentArray[grid.ChunkCoordsComponent](w)
 				return func(entity ecs.EntityID) (indexType grid.ChunkCoordsComponent, ok bool) {
 					return arr.Get(entity)
 				}

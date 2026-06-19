@@ -1,7 +1,7 @@
 package ecs_test
 
 import (
-	"engine/services/ecs"
+	"engine/modules/ecs"
 	"testing"
 )
 
@@ -14,45 +14,46 @@ var secondComponent = Component{Counter: 8}
 
 func TestComponents(t *testing.T) {
 	world := ecs.NewWorld()
+	arr := ecs.GetComponentArray[Component](world)
 
-	if _, ok := ecs.GetComponent[Component](world, ecs.EntityID(0)); ok {
+	if _, ok := arr.Get(ecs.EntityID(0)); ok {
 		t.Errorf("retrieved not existing component")
 	}
 
-	entityId := world.NewEntity()
-	ecs.SaveComponent(world, entityId, component)
+	entityID := world.NewEntity()
+	arr.Set(entityID, component)
 
-	if retrievedComponent, ok := ecs.GetComponent[Component](world, entityId); !ok {
+	if retrievedComponent, ok := arr.Get(entityID); !ok {
 		t.Errorf("expected component")
 	} else if retrievedComponent != component {
 		t.Errorf("retrieved component isn't equal to saved component")
 	}
 
-	ecs.SaveComponent(world, entityId, secondComponent)
+	arr.Set(entityID, secondComponent)
 
-	if retrievedComponent, ok := ecs.GetComponent[Component](world, entityId); !ok {
+	if retrievedComponent, ok := arr.Get(entityID); !ok {
 		t.Errorf("expected component")
 	} else if retrievedComponent != secondComponent {
 		t.Errorf("retrieved component isn't equal to saved component")
 	}
 
-	ecs.RemoveComponent[Component](world, entityId)
+	arr.Remove(entityID)
 
-	if _, ok := ecs.GetComponent[Component](world, entityId); ok {
+	if _, ok := arr.Get(entityID); ok {
 		t.Errorf("retrieved removed component")
 	}
 
-	ecs.SaveComponent(world, entityId, component)
-	world.RemoveEntity(entityId)
+	arr.Set(entityID, component)
+	world.RemoveEntity(entityID)
 
-	if _, ok := ecs.GetComponent[Component](world, entityId); ok {
+	if _, ok := arr.Get(entityID); ok {
 		t.Errorf("retrieved removed component")
 	}
 }
 
-func TestComponentsArrays(t *testing.T) {
+func TestComponentArray(t *testing.T) {
 	world := ecs.NewWorld()
-	componentArray := ecs.GetComponentsArray[Component](world)
+	componentArray := ecs.GetComponentArray[Component](world)
 
 	entityId := world.NewEntity()
 	componentArray.Set(entityId, component)
@@ -89,8 +90,8 @@ func TestComponentsQuery(t *testing.T) {
 	type Component2 struct{}
 	world := ecs.NewWorld()
 
-	component := ecs.GetComponentsArray[Component](world)
-	component2 := ecs.GetComponentsArray[Component2](world)
+	component := ecs.GetComponentArray[Component](world)
+	component2 := ecs.GetComponentArray[Component2](world)
 
 	set := ecs.NewDirtySet()
 	component.AddDirtySet(set)

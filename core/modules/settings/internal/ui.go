@@ -5,12 +5,12 @@ import (
 	"core/modules/definitions"
 	"core/modules/settings"
 	"engine/modules/audio"
+	"engine/modules/ecs"
 	"engine/modules/inputs"
 	"engine/modules/loop"
 	"engine/modules/scene"
 	"engine/modules/text"
 	"engine/modules/transform"
-	"engine/services/ecs"
 
 	"github.com/go-gl/mathgl/mgl32"
 	"github.com/ogiusek/events"
@@ -46,7 +46,7 @@ func NewSystem(c ioc.Dic) settings.Service {
 }
 
 func (s *system) ListenOnTick(loop.TickEvent) {
-	toggleArray := ecs.GetComponentsArray[temporaryToggleColorComponent](s.World())
+	toggleArray := ecs.GetComponentArray[temporaryToggleColorComponent](s.World())
 	for _, entity := range toggleArray.GetEntities() {
 		color, ok := s.Render().Color().Get(entity)
 		if !ok {
@@ -95,7 +95,7 @@ func (s *system) ListenRender(parent ecs.EntityID) error {
 		btnEntity := s.Prototype().Clone(s.Definitions().Hud().Btn)
 		s.Hierarchy().SetParent(btnEntity, parent)
 
-		ecs.GetComponentsArray[temporaryToggleColorComponent](s.World()).Set(btnEntity, temporaryToggleColorComponent{})
+		ecs.GetComponentArray[temporaryToggleColorComponent](s.World()).Set(btnEntity, temporaryToggleColorComponent{})
 
 		s.Text().Content().Set(btnEntity, text.NewText(btn.text))
 		s.Inputs().LeftClick().Set(btnEntity, inputs.NewLeftClick(btn.event))

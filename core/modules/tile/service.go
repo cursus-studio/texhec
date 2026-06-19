@@ -1,11 +1,11 @@
 package tile
 
 import (
+	"engine/modules/ecs"
 	"engine/modules/grid"
 	"engine/modules/interactions"
 	"engine/modules/transform"
 	"engine/modules/transition"
-	"engine/services/ecs"
 	"errors"
 	"image"
 	"math"
@@ -126,17 +126,17 @@ type Service interface {
 	ecs.SystemRegister
 	Renderer() ecs.SystemRegister
 
-	Component() ecs.ComponentsArray[Component]
+	Component() ecs.ComponentArray[Component]
 	Grid() grid.ServiceT[ID]
 	GetTile(ID) (ecs.EntityID, bool)
 
-	Pos() ecs.ComponentsArray[PosComponent]
-	Size() ecs.ComponentsArray[SizeComponent]
-	Rot() ecs.ComponentsArray[RotComponent]
-	Layer() ecs.ComponentsArray[LayerComponent]
+	Pos() ecs.ComponentArray[PosComponent]
+	Size() ecs.ComponentArray[SizeComponent]
+	Rot() ecs.ComponentArray[RotComponent]
+	Layer() ecs.ComponentArray[LayerComponent]
 
-	CoordsCursor() ecs.ComponentsArray[CoordsCursorComponent]
-	CoordsCursorRange() ecs.ComponentsArray[CoordsCursorRangeComponent]
+	CoordsCursor() ecs.ComponentArray[CoordsCursorComponent]
+	CoordsCursorRange() ecs.ComponentArray[CoordsCursorRangeComponent]
 
 	// src images should be:
 	// - 1111

@@ -18,7 +18,7 @@ SUM:                             3             24              7             83
 Type: `engine/modules/scene.Service`
 
 #### method Service Scene
-Type: `func() engine/services/ecs.EntityID`
+Type: `func() engine/modules/ecs.EntityID`
 
 #### method Service SetScene
 Type: `func(engine/modules/scene.ID, engine/modules/scene.Scene)`
@@ -61,6 +61,12 @@ Type: `func(id string) engine/modules/scene.ID`
   - `engine.Logger`
   - `engine.World`
 
+`engine/modules/ecs`:
+  - `engine/modules/ecs.ComponentArray`
+  - `engine/modules/ecs.EntityID`
+  - `engine/modules/ecs.GetComponentArray`
+  - `engine/modules/ecs.SystemRegister`
+
 `engine/modules/scene`:
   - `engine/modules/scene.ChangeSceneEvent`
   - `engine/modules/scene.ID`
@@ -69,16 +75,6 @@ Type: `func(id string) engine/modules/scene.ID`
 
 `engine/modules/typeregistry/pkg`:
   - `engine/modules/typeregistry/pkg.PkgT`
-
-`engine/services/ecs`:
-  - `engine/services/ecs.ComponentsArray`
-  - `engine/services/ecs.EntityID`
-  - `engine/services/ecs.GetComponentsArray`
-  - `engine/services/ecs.GetEntities`
-  - `engine/services/ecs.NewEntity`
-  - `engine/services/ecs.RemoveEntity`
-  - `engine/services/ecs.Set`
-  - `engine/services/ecs.SystemRegister`
 
 ### Third Party
 - `github.com/ogiusek/events`

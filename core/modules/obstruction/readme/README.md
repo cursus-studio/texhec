@@ -27,10 +27,10 @@ Type: `core/modules/obstruction.Service`
 Type: `func(core/modules/obstruction.AABB, core/modules/obstruction.Obstruction) []engine/modules/grid.Coords`
 
 #### method Service Component
-Type: `func() engine/services/ecs.ComponentsArray[core/modules/obstruction.Component]`
+Type: `func() engine/modules/ecs.ComponentArray[core/modules/obstruction.Component]`
 
 #### method Service Deployed
-Type: `func() engine/services/ecs.ComponentsArray[core/modules/obstruction.DeployedComponent]`
+Type: `func() engine/modules/ecs.ComponentArray[core/modules/obstruction.DeployedComponent]`
 
 #### method Service Grid
 Type: `func() engine/modules/grid.ServiceT[core/modules/obstruction.Obstruction]`
@@ -119,6 +119,14 @@ Type: `func() core/modules/obstruction.DeployedComponent`
 `core/pkg`:
   - `core/pkg.Pkg`
 
+`engine/modules/ecs`:
+  - `engine/modules/ecs.ComponentArray`
+  - `engine/modules/ecs.DirtySet`
+  - `engine/modules/ecs.EntityID`
+  - `engine/modules/ecs.GetComponentArray`
+  - `engine/modules/ecs.NewDirtySet`
+  - `engine/modules/ecs.SystemRegister`
+
 `engine/modules/entityregistry`:
   - `engine/modules/entityregistry.Register`
   - `engine/modules/entityregistry.Service`
@@ -156,22 +164,6 @@ Type: `func() core/modules/obstruction.DeployedComponent`
 
 `engine/modules/typeregistry/pkg`:
   - `engine/modules/typeregistry/pkg.PkgT`
-
-`engine/services/ecs`:
-  - `engine/services/ecs.AddDirtySet`
-  - `engine/services/ecs.BeforeGet`
-  - `engine/services/ecs.ComponentsArray`
-  - `engine/services/ecs.DirtySet`
-  - `engine/services/ecs.EntityID`
-  - `engine/services/ecs.Get`
-  - `engine/services/ecs.GetComponentsArray`
-  - `engine/services/ecs.GetEntities`
-  - `engine/services/ecs.NewDirtySet`
-  - `engine/services/ecs.OnUpsert`
-  - `engine/services/ecs.RemoveEntity`
-  - `engine/services/ecs.Set`
-  - `engine/services/ecs.SetEmpty`
-  - `engine/services/ecs.SystemRegister`
 
 ### Third Party
 - `github.com/ogiusek/ioc/v2`

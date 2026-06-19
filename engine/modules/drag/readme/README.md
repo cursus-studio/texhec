@@ -24,7 +24,7 @@ Type: `func() error`
 Type: `engine/modules/drag.DraggableEvent`
 
 #### property DraggableEvent Entity
-Type: `engine/services/ecs.EntityID`
+Type: `engine/modules/ecs.EntityID`
 
 #### property DraggableEvent Drag
 Type: `engine/modules/inputs.DragEvent`
@@ -34,7 +34,7 @@ Type: `func(dragEvent engine/modules/inputs.DragEvent) any`
 
 ## Functions
 ### func NewDraggable
-Type: `func(entity engine/services/ecs.EntityID) engine/modules/drag.DraggableEvent`
+Type: `func(entity engine/modules/ecs.EntityID) engine/modules/drag.DraggableEvent`
 
 
 ## Dependencies
@@ -50,6 +50,10 @@ Type: `func(entity engine/services/ecs.EntityID) engine/modules/drag.DraggableEv
   - `engine/modules/drag.Entity`
   - `engine/modules/drag.Service`
 
+`engine/modules/ecs`:
+  - `engine/modules/ecs.EntityID`
+  - `engine/modules/ecs.SystemRegister`
+
 `engine/modules/inputs`:
   - `engine/modules/inputs.Camera`
   - `engine/modules/inputs.DragEvent`
@@ -58,12 +62,6 @@ Type: `func(entity engine/services/ecs.EntityID) engine/modules/drag.DraggableEv
 
 `engine/modules/typeregistry/pkg`:
   - `engine/modules/typeregistry/pkg.PkgT`
-
-`engine/services/ecs`:
-  - `engine/services/ecs.EntityID`
-  - `engine/services/ecs.Get`
-  - `engine/services/ecs.Set`
-  - `engine/services/ecs.SystemRegister`
 
 ### Third Party
 - `github.com/go-gl/mathgl/mgl32`

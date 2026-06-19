@@ -25,13 +25,13 @@ SUM:                             7             43             75            158
 Type: `engine/modules/groups.Service`
 
 #### method Service Component
-Type: `func() engine/services/ecs.ComponentsArray[engine/modules/groups.GroupsComponent]`
+Type: `func() engine/modules/ecs.ComponentArray[engine/modules/groups.GroupsComponent]`
 
 #### method Service Inherit
-Type: `func() engine/services/ecs.ComponentsArray[engine/modules/hierarchy.InheritComponent[engine/modules/groups.GroupsComponent]]`
+Type: `func() engine/modules/ecs.ComponentArray[engine/modules/hierarchy.InheritComponent[engine/modules/groups.GroupsComponent]]`
 
 #### method Service InheritGroups
-Type: `func(engine/services/ecs.EntityID)`
+Type: `func(engine/modules/ecs.EntityID)`
 
 ### type Group
 Type: `engine/modules/groups.Group`
@@ -81,6 +81,12 @@ Type: `func() engine/modules/groups.GroupsComponent`
   - `engine.EngineWorld`
   - `engine.World`
 
+`engine/modules/ecs`:
+  - `engine/modules/ecs.ComponentArray`
+  - `engine/modules/ecs.EntityID`
+  - `engine/modules/ecs.GetComponentArray`
+  - `engine/modules/ecs.World`
+
 `engine/modules/groups`:
   - `engine/modules/groups.Component`
   - `engine/modules/groups.DefaultGroups`
@@ -101,15 +107,6 @@ Type: `func() engine/modules/groups.GroupsComponent`
 
 `engine/pkg`:
   - `engine/pkg.Pkg`
-
-`engine/services/ecs`:
-  - `engine/services/ecs.ComponentsArray`
-  - `engine/services/ecs.EntityID`
-  - `engine/services/ecs.Get`
-  - `engine/services/ecs.GetComponentsArray`
-  - `engine/services/ecs.Set`
-  - `engine/services/ecs.SetEmpty`
-  - `engine/services/ecs.World`
 
 ### Third Party
 - `github.com/ogiusek/ioc/v2`

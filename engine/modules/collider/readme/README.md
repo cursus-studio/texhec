@@ -29,18 +29,18 @@ Type: `engine/modules/collider.Service`
 Type: `func(engine/modules/collider.FallTroughPolicy)`
 
 #### method Service CollidesWithObject
-Type: `func(engine/services/ecs.EntityID, engine/services/ecs.EntityID) *engine/modules/collider.ObjectObjectCollision`
+Type: `func(engine/modules/ecs.EntityID, engine/modules/ecs.EntityID) *engine/modules/collider.ObjectObjectCollision`
 
 #### method Service CollidesWithRay
-Type: `func(engine/services/ecs.EntityID, engine/modules/collider.Ray) *engine/modules/collider.ObjectRayCollision`
+Type: `func(engine/modules/ecs.EntityID, engine/modules/collider.Ray) *engine/modules/collider.ObjectRayCollision`
 todo add collision groups
 narrow
 
 #### method Service Component
-Type: `func() engine/services/ecs.ComponentsArray[engine/modules/collider.Component]`
+Type: `func() engine/modules/ecs.ComponentArray[engine/modules/collider.Component]`
 
 #### method Service NarrowCollisions
-Type: `func(engine/services/ecs.EntityID) []engine/services/ecs.EntityID`
+Type: `func(engine/modules/ecs.EntityID) []engine/modules/ecs.EntityID`
 
 #### method Service Raycast
 Type: `func(engine/modules/collider.Ray) *engine/modules/collider.ObjectRayCollision`
@@ -105,7 +105,7 @@ Type: `github.com/go-gl/mathgl/mgl32.Vec3`
 Type: `engine/modules/collider.ObjectRayCollision`
 
 #### property ObjectRayCollision Entity
-Type: `engine/services/ecs.EntityID`
+Type: `engine/modules/ecs.EntityID`
 
 #### property ObjectRayCollision Hit
 Type: `engine/modules/collider.RayHit`
@@ -120,7 +120,7 @@ Type: `[][2]engine/modules/collider.Polygon`
 Type: `engine/modules/collider.Component`
 
 #### property Component ID
-Type: `engine/services/ecs.EntityID`
+Type: `engine/modules/ecs.EntityID`
 
 ### type AABB
 Type: `engine/modules/collider.AABB`
@@ -184,13 +184,13 @@ Type: `func(a github.com/go-gl/mathgl/mgl32.Vec3, b github.com/go-gl/mathgl/mgl3
 Type: `func(aabbs []engine/modules/collider.AABB, ranges []engine/modules/collider.Range, polygons []engine/modules/collider.Polygon) engine/modules/collider.ColliderAsset`
 
 ### func NewObjectRayCollision
-Type: `func(entity engine/services/ecs.EntityID, hit engine/modules/collider.RayHit) engine/modules/collider.ObjectRayCollision`
+Type: `func(entity engine/modules/ecs.EntityID, hit engine/modules/collider.RayHit) engine/modules/collider.ObjectRayCollision`
 
 ### func NewObjectObjectCollision
 Type: `func(pairs [][2]engine/modules/collider.Polygon) engine/modules/collider.ObjectObjectCollision`
 
 ### func NewCollider
-Type: `func(id engine/services/ecs.EntityID) engine/modules/collider.Component`
+Type: `func(id engine/modules/ecs.EntityID) engine/modules/collider.Component`
 
 ### func NewAABB
 Type: `func(min github.com/go-gl/mathgl/mgl32.Vec3, max github.com/go-gl/mathgl/mgl32.Vec3) engine/modules/collider.AABB`
@@ -254,6 +254,13 @@ Type: `func(ray engine/modules/collider.Ray, normal github.com/go-gl/mathgl/mgl3
   - `engine/modules/collider.Service`
   - `engine/modules/collider.Target`
 
+`engine/modules/ecs`:
+  - `engine/modules/ecs.ComponentArray`
+  - `engine/modules/ecs.DirtySet`
+  - `engine/modules/ecs.EntityID`
+  - `engine/modules/ecs.GetComponentArray`
+  - `engine/modules/ecs.NewDirtySet`
+
 `engine/modules/groups`:
   - `engine/modules/groups.Component`
   - `engine/modules/groups.DefaultGroups`
@@ -281,15 +288,6 @@ Type: `func(ray engine/modules/collider.Ray, normal github.com/go-gl/mathgl/mgl3
   - `engine/services/datastructures.NewSet`
   - `engine/services/datastructures.RemoveElements`
   - `engine/services/datastructures.Set`
-
-`engine/services/ecs`:
-  - `engine/services/ecs.AddDirtySet`
-  - `engine/services/ecs.ComponentsArray`
-  - `engine/services/ecs.DirtySet`
-  - `engine/services/ecs.EntityID`
-  - `engine/services/ecs.Get`
-  - `engine/services/ecs.GetComponentsArray`
-  - `engine/services/ecs.NewDirtySet`
 
 ### Third Party
 - `github.com/go-gl/mathgl/mgl32`

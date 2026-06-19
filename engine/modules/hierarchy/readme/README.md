@@ -13,18 +13,18 @@ goos: linux
 goarch: amd64
 pkg: engine/modules/hierarchy/test
 cpu: Intel(R) Core(TM) i5-8350U CPU @ 1.70GHz
-BenchmarkChildren_1-8                          	204298142	         5.754 ns/op
-BenchmarkChildren_10-8                         	205309812	         5.704 ns/op
-BenchmarkChildren_100-8                        	205420506	         5.983 ns/op
-BenchmarkFlatChildren_1_1-8                    	164552872	         7.289 ns/op
-BenchmarkFlatChildren_10_10-8                  	164600490	         7.427 ns/op
-BenchmarkAddChildToParentWithGrandParent-8     	 6845421	       160.1 ns/op
-BenchmarkAddChildToParentWith5GrandParents-8   	 7143522	       167.6 ns/op
-BenchmarkRemoveChild-8                         	 1297357	       911.9 ns/op
-BenchmarkRemoveParentWith1Children-8           	   90379	     15252 ns/op
-BenchmarkRemoveParentWith100Children-8         	    9372	    111371 ns/op
+BenchmarkChildren_1-8                          	205889980	         5.834 ns/op
+BenchmarkChildren_10-8                         	212853939	         5.617 ns/op
+BenchmarkChildren_100-8                        	213152613	         5.650 ns/op
+BenchmarkFlatChildren_1_1-8                    	171669391	         6.918 ns/op
+BenchmarkFlatChildren_10_10-8                  	175153734	         6.857 ns/op
+BenchmarkAddChildToParentWithGrandParent-8     	 7280642	       157.9 ns/op
+BenchmarkAddChildToParentWith5GrandParents-8   	 6859143	       177.0 ns/op
+BenchmarkRemoveChild-8                         	 1530729	       802.2 ns/op
+BenchmarkRemoveParentWith1Children-8           	  120369	     11490 ns/op
+BenchmarkRemoveParentWith100Children-8         	   10777	    112716 ns/op
 PASS
-ok  	engine/modules/hierarchy/test	16.594s
+ok  	engine/modules/hierarchy/test	17.004s
 ```
 ## Lines of code
 ```
@@ -42,48 +42,48 @@ SUM:                             9            127             22            587
 Type: `engine/modules/hierarchy.Service`
 
 #### method Service Children
-Type: `func(parent engine/services/ecs.EntityID) engine/services/datastructures.SparseSetReader[engine/services/ecs.EntityID]`
+Type: `func(parent engine/modules/ecs.EntityID) engine/services/datastructures.SparseSetReader[engine/modules/ecs.EntityID]`
 
 #### method Service Component
-Type: `func() engine/services/ecs.ComponentsArray[engine/modules/hierarchy.Component]`
+Type: `func() engine/modules/ecs.ComponentArray[engine/modules/hierarchy.Component]`
 
 #### method Service FlatChildren
-Type: `func(parent engine/services/ecs.EntityID) engine/services/datastructures.SparseSetReader[engine/services/ecs.EntityID]`
+Type: `func(parent engine/modules/ecs.EntityID) engine/services/datastructures.SparseSetReader[engine/modules/ecs.EntityID]`
 includes children of children
 
 #### method Service GetOrderedParents
-Type: `func(child engine/services/ecs.EntityID) []engine/services/ecs.EntityID`
+Type: `func(child engine/modules/ecs.EntityID) []engine/modules/ecs.EntityID`
 
 #### method Service GetParents
-Type: `func(child engine/services/ecs.EntityID) engine/services/datastructures.SparseSetReader[engine/services/ecs.EntityID]`
+Type: `func(child engine/modules/ecs.EntityID) engine/services/datastructures.SparseSetReader[engine/modules/ecs.EntityID]`
 from closest to furthest
 
 #### method Service IsChildOf
-Type: `func(child engine/services/ecs.EntityID, parent engine/services/ecs.EntityID) bool`
+Type: `func(child engine/modules/ecs.EntityID, parent engine/modules/ecs.EntityID) bool`
 returns true if is child of any parent doesn't matter the depth
 
 #### method Service Parent
-Type: `func(child engine/services/ecs.EntityID) (engine/services/ecs.EntityID, bool)`
+Type: `func(child engine/modules/ecs.EntityID) (engine/modules/ecs.EntityID, bool)`
 
 #### method Service SetChildren
-Type: `func(parent engine/services/ecs.EntityID, children ...engine/services/ecs.EntityID)`
+Type: `func(parent engine/modules/ecs.EntityID, children ...engine/modules/ecs.EntityID)`
 maintains order of children and adds component to children
 even if children doesn't exist
 
 #### method Service SetParent
-Type: `func(child engine/services/ecs.EntityID, parent engine/services/ecs.EntityID)`
+Type: `func(child engine/modules/ecs.EntityID, parent engine/modules/ecs.EntityID)`
 
 ### type ServiceT
 Type: `engine/modules/hierarchy.ServiceT[Component any]`
 
 #### method ServiceT Inherit
-Type: `func() engine/services/ecs.ComponentsArray[engine/modules/hierarchy.InheritComponent[Component]]`
+Type: `func() engine/modules/ecs.ComponentArray[engine/modules/hierarchy.InheritComponent[Component]]`
 
 ### type Component
 Type: `engine/modules/hierarchy.Component`
 
 #### property Component Parent
-Type: `engine/services/ecs.EntityID`
+Type: `engine/modules/ecs.EntityID`
 
 ### type InheritComponent
 Type: `engine/modules/hierarchy.InheritComponent[Component any]`
@@ -94,7 +94,7 @@ Type: `error`
 
 ## Functions
 ### func NewParent
-Type: `func(parent engine/services/ecs.EntityID) engine/modules/hierarchy.Component`
+Type: `func(parent engine/modules/ecs.EntityID) engine/modules/hierarchy.Component`
 
 ### func NewInherit
 Type: `func[Component any]() engine/modules/hierarchy.InheritComponent[Component]`
@@ -105,6 +105,14 @@ Type: `func[Component any]() engine/modules/hierarchy.InheritComponent[Component
   - `engine.EngineWorld`
   - `engine.Hierarchy`
   - `engine.World`
+
+`engine/modules/ecs`:
+  - `engine/modules/ecs.ComponentArray`
+  - `engine/modules/ecs.ComponentComparator`
+  - `engine/modules/ecs.EntityID`
+  - `engine/modules/ecs.GetComponentArray`
+  - `engine/modules/ecs.NewDirtySet`
+  - `engine/modules/ecs.World`
 
 `engine/modules/hierarchy`:
   - `engine/modules/hierarchy.Children`
@@ -132,25 +140,6 @@ Type: `func[Component any]() engine/modules/hierarchy.InheritComponent[Component
   - `engine/services/datastructures.SparseArray`
   - `engine/services/datastructures.SparseSet`
   - `engine/services/datastructures.SparseSetReader`
-
-`engine/services/ecs`:
-  - `engine/services/ecs.AddDependency`
-  - `engine/services/ecs.AddDirtySet`
-  - `engine/services/ecs.BeforeGet`
-  - `engine/services/ecs.Clear`
-  - `engine/services/ecs.ComponentComparator`
-  - `engine/services/ecs.ComponentsArray`
-  - `engine/services/ecs.EntityID`
-  - `engine/services/ecs.Get`
-  - `engine/services/ecs.GetComponentsArray`
-  - `engine/services/ecs.GetEmpty`
-  - `engine/services/ecs.NewDirtySet`
-  - `engine/services/ecs.OnRemove`
-  - `engine/services/ecs.OnUpsert`
-  - `engine/services/ecs.Remove`
-  - `engine/services/ecs.RemoveEntity`
-  - `engine/services/ecs.Set`
-  - `engine/services/ecs.World`
 
 ### Third Party
 - `github.com/ogiusek/ioc/v2`

@@ -2,9 +2,9 @@ package service
 
 import (
 	"engine"
+	"engine/modules/ecs"
 	"engine/modules/loop"
 	"engine/modules/transition"
-	"engine/services/ecs"
 	"slices"
 
 	"github.com/ogiusek/events"
@@ -13,8 +13,8 @@ import (
 
 type service struct {
 	engine.EngineWorld `inject:""`
-	easing             ecs.ComponentsArray[transition.EasingComponent]
-	easingFunction     ecs.ComponentsArray[transition.EasingFunctionComponent]
+	easing             ecs.ComponentArray[transition.EasingComponent]
+	easingFunction     ecs.ComponentArray[transition.EasingFunctionComponent]
 	register           ecs.SystemRegister
 
 	delayed []*transition.DelayedEvent
@@ -22,8 +22,8 @@ type service struct {
 
 func NewService(c ioc.Dic, register ecs.SystemRegister) transition.Service {
 	s := ioc.GetServices[*service](c)
-	s.easing = ecs.GetComponentsArray[transition.EasingComponent](s.World())
-	s.easingFunction = ecs.GetComponentsArray[transition.EasingFunctionComponent](s.World())
+	s.easing = ecs.GetComponentArray[transition.EasingComponent](s.World())
+	s.easingFunction = ecs.GetComponentArray[transition.EasingFunctionComponent](s.World())
 	s.register = register
 
 	return s
@@ -34,10 +34,10 @@ func (s *service) Register() error {
 	events.Listen(s.EventsBuilder(), s.ListenFrame)
 	return s.register.Register()
 }
-func (s *service) Easing() ecs.ComponentsArray[transition.EasingComponent] {
+func (s *service) Easing() ecs.ComponentArray[transition.EasingComponent] {
 	return s.easing
 }
-func (s *service) EasingFunction() ecs.ComponentsArray[transition.EasingFunctionComponent] {
+func (s *service) EasingFunction() ecs.ComponentArray[transition.EasingFunctionComponent] {
 	return s.easingFunction
 }
 

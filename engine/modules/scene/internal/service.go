@@ -2,8 +2,8 @@ package internal
 
 import (
 	"engine"
+	"engine/modules/ecs"
 	"engine/modules/scene"
-	"engine/services/ecs"
 	"fmt"
 
 	"github.com/ogiusek/events"
@@ -19,13 +19,13 @@ type SceneComp struct{}
 type service struct {
 	engine.EngineWorld `inject:""`
 	scenes             map[scene.ID]scene.Scene
-	SceneArr           ecs.ComponentsArray[SceneComp]
+	SceneArr           ecs.ComponentArray[SceneComp]
 }
 
 func NewService(c ioc.Dic) scene.Service {
 	s := ioc.GetServices[*service](c)
 	s.scenes = make(map[scene.ID]scene.Scene)
-	s.SceneArr = ecs.GetComponentsArray[SceneComp](s.World())
+	s.SceneArr = ecs.GetComponentArray[SceneComp](s.World())
 	entity := s.World().NewEntity()
 	s.SceneArr.Set(entity, SceneComp{})
 

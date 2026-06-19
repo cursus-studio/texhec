@@ -19,10 +19,10 @@ SUM:                             7             87             11            406
 Type: `core/modules/ui.Service`
 
 #### method Service AnimatedBackground
-Type: `func() engine/services/ecs.ComponentsArray[core/modules/ui.AnimatedBackgroundComponent]`
+Type: `func() engine/modules/ecs.ComponentArray[core/modules/ui.AnimatedBackgroundComponent]`
 
 #### method Service CursorCamera
-Type: `func() engine/services/ecs.ComponentsArray[core/modules/ui.CursorCameraComponent]`
+Type: `func() engine/modules/ecs.ComponentArray[core/modules/ui.CursorCameraComponent]`
 
 #### method Service HideMenu
 Type: `func()`
@@ -32,12 +32,12 @@ removes all children
 Type: `func() error`
 
 #### method Service ShowMenu
-Type: `func() (parents []engine/services/ecs.EntityID)`
+Type: `func() (parents []engine/modules/ecs.EntityID)`
 returns parent to attach ui elements
 potentially with enter animation
 
 #### method Service UiCamera
-Type: `func() engine/services/ecs.ComponentsArray[core/modules/ui.UiCameraComponent]`
+Type: `func() engine/modules/ecs.ComponentArray[core/modules/ui.UiCameraComponent]`
 
 ### type UiCameraComponent
 Type: `core/modules/ui.UiCameraComponent`
@@ -72,6 +72,17 @@ Type: `core/modules/ui.CursorCameraComponent`
   - `engine/modules/collider.Direction`
   - `engine/modules/collider.NewCollider`
   - `engine/modules/collider.Pos`
+
+`engine/modules/ecs`:
+  - `engine/modules/ecs.ComponentArray`
+  - `engine/modules/ecs.DirtySet`
+  - `engine/modules/ecs.EntityID`
+  - `engine/modules/ecs.GetComponentArray`
+  - `engine/modules/ecs.NewDirtySet`
+  - `engine/modules/ecs.NewRemoveEntityEvent`
+  - `engine/modules/ecs.NewSystemRegister`
+  - `engine/modules/ecs.RegisterSystems`
+  - `engine/modules/ecs.SystemRegister`
 
 `engine/modules/inputs`:
   - `engine/modules/inputs.KeepSelected`
@@ -134,25 +145,6 @@ Type: `core/modules/ui.CursorCameraComponent`
 
 `engine/modules/typeregistry/pkg`:
   - `engine/modules/typeregistry/pkg.PkgT`
-
-`engine/services/ecs`:
-  - `engine/services/ecs.AddDirtySet`
-  - `engine/services/ecs.ComponentsArray`
-  - `engine/services/ecs.DirtySet`
-  - `engine/services/ecs.EntityID`
-  - `engine/services/ecs.Get`
-  - `engine/services/ecs.GetComponentsArray`
-  - `engine/services/ecs.GetEntities`
-  - `engine/services/ecs.NewDirtySet`
-  - `engine/services/ecs.NewEntity`
-  - `engine/services/ecs.NewRemoveEntityEvent`
-  - `engine/services/ecs.NewSystemRegister`
-  - `engine/services/ecs.OnRemove`
-  - `engine/services/ecs.OnUpsert`
-  - `engine/services/ecs.RegisterSystems`
-  - `engine/services/ecs.RemoveEntity`
-  - `engine/services/ecs.Set`
-  - `engine/services/ecs.SystemRegister`
 
 ### Third Party
 - `github.com/go-gl/mathgl/mgl32`

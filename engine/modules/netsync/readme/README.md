@@ -22,23 +22,23 @@ Create more features to allow more specific features to allow more specific call
 Type: `engine/modules/netsync.Service`
 
 #### method Service Client
-Type: `func() engine/services/ecs.ComponentsArray[engine/modules/netsync.ClientComponent]`
+Type: `func() engine/modules/ecs.ComponentArray[engine/modules/netsync.ClientComponent]`
 
 #### method Service Server
-Type: `func() engine/services/ecs.ComponentsArray[engine/modules/netsync.ServerComponent]`
+Type: `func() engine/modules/ecs.ComponentArray[engine/modules/netsync.ServerComponent]`
 
 #### method Service Start
-Type: `func() engine/services/ecs.SystemRegister`
+Type: `func() engine/modules/ecs.SystemRegister`
 
 #### method Service Stop
-Type: `func() engine/services/ecs.SystemRegister`
+Type: `func() engine/modules/ecs.SystemRegister`
 
 ### type AuthorizedEvent
 Type: `engine/modules/netsync.AuthorizedEvent`
 event pointer should implement it
 
 #### method AuthorizedEvent SetConnection
-Type: `func(engine/services/ecs.EntityID)`
+Type: `func(engine/modules/ecs.EntityID)`
 
 ### type ServerComponent
 Type: `engine/modules/netsync.ServerComponent`
@@ -67,6 +67,15 @@ entity with this component and connection will get notifications about changes
   - `engine/modules/connection.Conn`
   - `engine/modules/connection.Messages`
   - `engine/modules/connection.Send`
+
+`engine/modules/ecs`:
+  - `engine/modules/ecs.ComponentArray`
+  - `engine/modules/ecs.DirtySet`
+  - `engine/modules/ecs.EntityID`
+  - `engine/modules/ecs.GetComponentArray`
+  - `engine/modules/ecs.NewDirtySet`
+  - `engine/modules/ecs.NewSystemRegister`
+  - `engine/modules/ecs.SystemRegister`
 
 `engine/modules/loop`:
   - `engine/modules/loop.FrameEvent`
@@ -106,19 +115,6 @@ entity with this component and connection will get notifications about changes
   - `engine/services/datastructures.NewSparseSet`
   - `engine/services/datastructures.Remove`
   - `engine/services/datastructures.SparseSet`
-
-`engine/services/ecs`:
-  - `engine/services/ecs.AddDirtySet`
-  - `engine/services/ecs.ComponentsArray`
-  - `engine/services/ecs.DirtySet`
-  - `engine/services/ecs.EntityID`
-  - `engine/services/ecs.Get`
-  - `engine/services/ecs.GetComponentsArray`
-  - `engine/services/ecs.GetEntities`
-  - `engine/services/ecs.NewDirtySet`
-  - `engine/services/ecs.NewSystemRegister`
-  - `engine/services/ecs.RemoveEntity`
-  - `engine/services/ecs.SystemRegister`
 
 ### Third Party
 - `github.com/ogiusek/events`

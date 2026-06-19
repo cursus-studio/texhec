@@ -8,9 +8,9 @@ import (
 	"engine/modules/camera/internal/projectionsys"
 	"engine/modules/camera/internal/service"
 	"engine/modules/collider"
+	"engine/modules/ecs"
 	typeregistrypkg "engine/modules/typeregistry/pkg"
 	"engine/modules/window"
-	"engine/services/ecs"
 	"errors"
 	"reflect"
 

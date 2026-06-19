@@ -4,11 +4,11 @@ import (
 	"core/modules/definitions"
 	"core/modules/obstruction"
 	"core/modules/tile"
+	"engine/modules/ecs"
 	"engine/modules/grid"
 	"engine/modules/interactions"
 	"engine/modules/render"
 	"engine/modules/transform"
-	"engine/services/ecs"
 
 	"github.com/go-gl/mathgl/mgl32"
 )

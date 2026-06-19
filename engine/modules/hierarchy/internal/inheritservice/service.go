@@ -2,31 +2,31 @@ package inheritservice
 
 import (
 	"engine"
+	"engine/modules/ecs"
 	"engine/modules/hierarchy"
-	"engine/services/ecs"
 
 	"github.com/ogiusek/ioc/v2"
 )
 
 type service[Component any] struct {
 	engine.EngineWorld `inject:""`
-	component          ecs.ComponentsArray[Component]
-	inherit            ecs.ComponentsArray[hierarchy.InheritComponent[Component]]
+	component          ecs.ComponentArray[Component]
+	inherit            ecs.ComponentArray[hierarchy.InheritComponent[Component]]
 
 	equal func(Component, Component) bool
 }
 
 func NewService[Component any](c ioc.Dic) hierarchy.ServiceT[Component] {
 	s := ioc.GetServices[*service[Component]](c)
-	s.component = ecs.GetComponentsArray[Component](s.World())
-	s.inherit = ecs.GetComponentsArray[hierarchy.InheritComponent[Component]](s.World())
+	s.component = ecs.GetComponentArray[Component](s.World())
+	s.inherit = ecs.GetComponentArray[hierarchy.InheritComponent[Component]](s.World())
 
 	s.equal = ecs.ComponentComparator[Component]()
 	s.Init()
 	return s
 }
 
-func (s *service[Component]) Inherit() ecs.ComponentsArray[hierarchy.InheritComponent[Component]] {
+func (s *service[Component]) Inherit() ecs.ComponentArray[hierarchy.InheritComponent[Component]] {
 	return s.inherit
 }
 

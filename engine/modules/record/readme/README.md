@@ -89,10 +89,10 @@ Type: `*[]reflect.Type`
 Type: `map[reflect.Type]int`
 
 #### property Config RecordedComponents
-Type: `map[reflect.Type]func(engine/services/ecs.World) engine/services/ecs.AnyComponentArray`
+Type: `map[reflect.Type]func(engine/modules/ecs.World) engine/modules/ecs.AnyComponentArray`
 
 #### property Config InheritZero
-Type: `map[reflect.Type]func(engine/services/ecs.World)`
+Type: `map[reflect.Type]func(engine/modules/ecs.World)`
 
 ### type ComponentGetter
 Type: `engine/modules/record.ComponentGetter[Component any]`
@@ -105,7 +105,7 @@ Type: `engine/modules/record.Recording`
 recording cannot be encoded
 
 #### property Recording Entities
-Type: `engine/services/datastructures.SparseArray[engine/services/ecs.EntityID, []any]`
+Type: `engine/services/datastructures.SparseArray[engine/modules/ecs.EntityID, []any]`
 map[componentUUID][componentArrayLayoutID]any component
 map[componentUUID]nil is when entity is removed
 
@@ -136,6 +136,16 @@ Type: `func[Component any](config engine/modules/record.Config) engine/modules/r
 
 `engine/modules/codec`:
   - `engine/modules/codec.Service`
+
+`engine/modules/ecs`:
+  - `engine/modules/ecs.AnyComponentArray`
+  - `engine/modules/ecs.ComponentArray`
+  - `engine/modules/ecs.DirtySet`
+  - `engine/modules/ecs.EntityID`
+  - `engine/modules/ecs.GetComponentArray`
+  - `engine/modules/ecs.NewDirtySet`
+  - `engine/modules/ecs.NewWorld`
+  - `engine/modules/ecs.World`
 
 `engine/modules/record`:
   - `engine/modules/record.AddToConfig`
@@ -181,30 +191,6 @@ Type: `func[Component any](config engine/modules/record.Config) engine/modules/r
   - `engine/services/datastructures.Set`
   - `engine/services/datastructures.SparseArray`
   - `engine/services/datastructures.SparseSet`
-
-`engine/services/ecs`:
-  - `engine/services/ecs.AddDirtySet`
-  - `engine/services/ecs.AnyComponentArray`
-  - `engine/services/ecs.Clear`
-  - `engine/services/ecs.ComponentsArray`
-  - `engine/services/ecs.DirtySet`
-  - `engine/services/ecs.EnsureExists`
-  - `engine/services/ecs.EntityExists`
-  - `engine/services/ecs.EntityID`
-  - `engine/services/ecs.Get`
-  - `engine/services/ecs.GetAny`
-  - `engine/services/ecs.GetComponentsArray`
-  - `engine/services/ecs.GetEmpty`
-  - `engine/services/ecs.GetEntities`
-  - `engine/services/ecs.NewDirtySet`
-  - `engine/services/ecs.NewEntity`
-  - `engine/services/ecs.NewWorld`
-  - `engine/services/ecs.Release`
-  - `engine/services/ecs.Remove`
-  - `engine/services/ecs.RemoveEntity`
-  - `engine/services/ecs.Set`
-  - `engine/services/ecs.SetAny`
-  - `engine/services/ecs.World`
 
 ### Third Party
 - `github.com/ogiusek/ioc/v2`

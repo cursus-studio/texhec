@@ -93,13 +93,13 @@ Type: `func(steps int, handler func(int)) engine/modules/batcher.Batch`
   - `engine/modules/batcher.Task`
   - `engine/modules/batcher.TaskFactory`
 
+`engine/modules/ecs`:
+  - `engine/modules/ecs.SystemRegister`
+
 `engine/modules/loop`:
   - `engine/modules/loop.FrameBudgetLeft`
   - `engine/modules/loop.FrameEvent`
   - `engine/modules/loop.Stats`
-
-`engine/services/ecs`:
-  - `engine/services/ecs.SystemRegister`
 
 ### Third Party
 - `github.com/ogiusek/events`

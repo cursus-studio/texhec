@@ -1,8 +1,8 @@
 package test
 
 import (
+	"engine/modules/ecs"
 	"engine/modules/entityregistry"
-	"engine/services/ecs"
 	"errors"
 	"testing"
 )

@@ -30,13 +30,12 @@ Type: `engine/modules/warmup.Event`
   - `engine.EngineWorld`
   - `engine.Events`
 
+`engine/modules/ecs`:
+  - `engine/modules/ecs.World`
+
 `engine/modules/warmup`:
   - `engine/modules/warmup.Event`
   - `engine/modules/warmup.Service`
-
-`engine/services/ecs`:
-  - `engine/services/ecs.WarmUp`
-  - `engine/services/ecs.World`
 
 ### Third Party
 - `github.com/ogiusek/events`

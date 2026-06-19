@@ -2,8 +2,8 @@ package internal
 
 import (
 	"engine"
+	"engine/modules/ecs"
 	"engine/modules/interactions"
-	"engine/services/ecs"
 	"fmt"
 	"reflect"
 
@@ -22,8 +22,8 @@ type Service interface {
 
 type service struct {
 	engine.EngineWorld `inject:""`
-	feature            ecs.ComponentsArray[interactions.InstanceComponent]
-	featureEvent       ecs.ComponentsArray[interactions.FeatureEventComponent]
+	feature            ecs.ComponentArray[interactions.InstanceComponent]
+	featureEvent       ecs.ComponentArray[interactions.FeatureEventComponent]
 
 	features     map[reflect.Type]interactions.AnyFeatureService
 	interactions map[reflect.Type]interactions.AnyInteractionService
@@ -31,8 +31,8 @@ type service struct {
 
 func NewService(c ioc.Dic) Service {
 	s := ioc.GetServices[*service](c)
-	s.feature = ecs.GetComponentsArray[interactions.InstanceComponent](s.World())
-	s.featureEvent = ecs.GetComponentsArray[interactions.FeatureEventComponent](s.World())
+	s.feature = ecs.GetComponentArray[interactions.InstanceComponent](s.World())
+	s.featureEvent = ecs.GetComponentArray[interactions.FeatureEventComponent](s.World())
 
 	s.features = make(map[reflect.Type]interactions.AnyFeatureService)
 	s.interactions = make(map[reflect.Type]interactions.AnyInteractionService)
@@ -54,8 +54,8 @@ func (s *service) Interactions() map[reflect.Type]interactions.AnyInteractionSer
 
 // }
 
-func (s *service) Instance() ecs.ComponentsArray[interactions.InstanceComponent] { return s.feature }
-func (s *service) FeatureEvent() ecs.ComponentsArray[interactions.FeatureEventComponent] {
+func (s *service) Instance() ecs.ComponentArray[interactions.InstanceComponent] { return s.feature }
+func (s *service) FeatureEvent() ecs.ComponentArray[interactions.FeatureEventComponent] {
 	return s.featureEvent
 }
 

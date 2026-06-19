@@ -1,8 +1,8 @@
 package inputs
 
 import (
+	"engine/modules/ecs"
 	"engine/modules/window"
-	"engine/services/ecs"
 )
 
 // many elements can be hovered at once

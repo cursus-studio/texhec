@@ -3,11 +3,11 @@
 package collider
 
 import (
-	"engine/services/ecs"
+	"engine/modules/ecs"
 )
 
 type Service interface {
-	Component() ecs.ComponentsArray[Component]
+	Component() ecs.ComponentArray[Component]
 
 	// todo add collision groups
 	// narrow

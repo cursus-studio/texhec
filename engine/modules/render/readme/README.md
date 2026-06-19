@@ -26,25 +26,25 @@ Abstract shaders.
 Type: `engine/modules/render.Service`
 
 #### method Service Color
-Type: `func() engine/services/ecs.ComponentsArray[engine/modules/render.ColorComponent]`
+Type: `func() engine/modules/ecs.ComponentArray[engine/modules/render.ColorComponent]`
 
 #### method Service Error
 Type: `func() error`
 
 #### method Service Mesh
-Type: `func() engine/services/ecs.ComponentsArray[engine/modules/render.MeshComponent]`
+Type: `func() engine/modules/ecs.ComponentArray[engine/modules/render.MeshComponent]`
 
 #### method Service Register
 Type: `func() error`
 
 #### method Service Renderer
-Type: `func() engine/services/ecs.SystemRegister`
+Type: `func() engine/modules/ecs.SystemRegister`
 
 #### method Service Texture
-Type: `func() engine/services/ecs.ComponentsArray[engine/modules/render.TextureComponent]`
+Type: `func() engine/modules/ecs.ComponentArray[engine/modules/render.TextureComponent]`
 
 #### method Service TextureFrame
-Type: `func() engine/services/ecs.ComponentsArray[engine/modules/render.TextureFrameComponent]`
+Type: `func() engine/modules/ecs.ComponentArray[engine/modules/render.TextureFrameComponent]`
 
 ### type MeshAsset
 Type: `engine/modules/render.MeshAsset`
@@ -91,7 +91,7 @@ Type: `func(c2 engine/modules/render.ColorComponent, mix32 float32) engine/modul
 Type: `engine/modules/render.MeshComponent`
 
 #### property MeshComponent ID
-Type: `engine/services/ecs.EntityID`
+Type: `engine/modules/ecs.EntityID`
 
 ### type Vertex
 Type: `engine/modules/render.Vertex`
@@ -107,7 +107,7 @@ normal [3]float32
 Type: `engine/modules/render.TextureComponent`
 
 #### property TextureComponent Asset
-Type: `engine/services/ecs.EntityID`
+Type: `engine/modules/ecs.EntityID`
 
 ### type TextureFrameComponent
 Type: `engine/modules/render.TextureFrameComponent`
@@ -126,7 +126,7 @@ Type: `func(c2 engine/modules/render.TextureFrameComponent, mix32 float32) engin
 Type: `engine/modules/render.RenderEvent`
 
 #### property RenderEvent Camera
-Type: `engine/services/ecs.EntityID`
+Type: `engine/modules/ecs.EntityID`
 
 ## Variables
 ### var ErrTextureAssetRequiresImages
@@ -140,13 +140,13 @@ Type: `error`
 Type: `func(color github.com/go-gl/mathgl/mgl32.Vec4) engine/modules/render.ColorComponent`
 
 ### func NewMesh
-Type: `func(id engine/services/ecs.EntityID) engine/modules/render.MeshComponent`
+Type: `func(id engine/modules/ecs.EntityID) engine/modules/render.MeshComponent`
 
 ### func NewMeshAsset
 Type: `func(vertices []engine/modules/render.Vertex, indices []engine/modules/graphics.Index) engine/modules/render.MeshAsset`
 
 ### func NewTexture
-Type: `func(asset engine/services/ecs.EntityID) engine/modules/render.TextureComponent`
+Type: `func(asset engine/modules/ecs.EntityID) engine/modules/render.TextureComponent`
 
 ### func NewTextureFrame
 Type: `func(frameNormalized float64) engine/modules/render.TextureFrameComponent`
@@ -177,6 +177,16 @@ Type: `func(images ...image.Image) (engine/modules/render.TextureAsset, error)`
   - `engine/modules/assets.PathComponent`
   - `engine/modules/assets.Register`
   - `engine/modules/assets.Service`
+
+`engine/modules/ecs`:
+  - `engine/modules/ecs.ComponentArray`
+  - `engine/modules/ecs.DirtySet`
+  - `engine/modules/ecs.EntityID`
+  - `engine/modules/ecs.GetComponentArray`
+  - `engine/modules/ecs.NewDirtySet`
+  - `engine/modules/ecs.NewSystemRegister`
+  - `engine/modules/ecs.RegisterSystems`
+  - `engine/modules/ecs.SystemRegister`
 
 `engine/modules/graphics`:
   - `engine/modules/graphics.Bind`
@@ -258,19 +268,6 @@ Type: `func(images ...image.Image) (engine/modules/render.TextureAsset, error)`
   - `engine/services/datastructures.Remove`
   - `engine/services/datastructures.Set`
   - `engine/services/datastructures.SparseArray`
-
-`engine/services/ecs`:
-  - `engine/services/ecs.AddDirtySet`
-  - `engine/services/ecs.ComponentsArray`
-  - `engine/services/ecs.DirtySet`
-  - `engine/services/ecs.EntityID`
-  - `engine/services/ecs.Get`
-  - `engine/services/ecs.GetComponentsArray`
-  - `engine/services/ecs.NewDirtySet`
-  - `engine/services/ecs.NewSystemRegister`
-  - `engine/services/ecs.RegisterSystems`
-  - `engine/services/ecs.SetEmpty`
-  - `engine/services/ecs.SystemRegister`
 
 ### Third Party
 - `github.com/go-gl/gl/v4.5-core/gl`

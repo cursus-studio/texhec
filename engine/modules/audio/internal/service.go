@@ -3,8 +3,8 @@ package internal
 import (
 	"engine/modules/assets"
 	"engine/modules/audio"
+	"engine/modules/ecs"
 	"engine/services/datastructures"
-	"engine/services/ecs"
 	"sync"
 
 	"github.com/ogiusek/ioc/v2"

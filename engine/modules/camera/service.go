@@ -7,8 +7,8 @@ package camera
 
 import (
 	"engine/modules/collider"
+	"engine/modules/ecs"
 	"engine/modules/window"
-	"engine/services/ecs"
 	"errors"
 
 	"github.com/go-gl/mathgl/mgl32"
@@ -27,18 +27,18 @@ var (
 
 type Service interface {
 	ecs.SystemRegister
-	Component() ecs.ComponentsArray[Component]
-	Priority() ecs.ComponentsArray[PriorityComponent]
+	Component() ecs.ComponentArray[Component]
+	Priority() ecs.ComponentArray[PriorityComponent]
 
-	Mobile() ecs.ComponentsArray[MobileCameraComponent]
-	Limits() ecs.ComponentsArray[CameraLimitsComponent]
-	Viewport() ecs.ComponentsArray[ViewportComponent]
-	NormalizedViewport() ecs.ComponentsArray[NormalizedViewportComponent]
+	Mobile() ecs.ComponentArray[MobileCameraComponent]
+	Limits() ecs.ComponentArray[CameraLimitsComponent]
+	Viewport() ecs.ComponentArray[ViewportComponent]
+	NormalizedViewport() ecs.ComponentArray[NormalizedViewportComponent]
 
-	Ortho() ecs.ComponentsArray[OrthoComponent]
-	OrthoResolution() ecs.ComponentsArray[OrthoResolutionComponent]
-	Perspective() ecs.ComponentsArray[PerspectiveComponent]
-	DynamicPerspective() ecs.ComponentsArray[DynamicPerspectiveComponent]
+	Ortho() ecs.ComponentArray[OrthoComponent]
+	OrthoResolution() ecs.ComponentArray[OrthoResolutionComponent]
+	Perspective() ecs.ComponentArray[PerspectiveComponent]
+	DynamicPerspective() ecs.ComponentArray[DynamicPerspectiveComponent]
 
 	// returns cameras from smallest to biggest
 	OrderedCameras() []ecs.EntityID

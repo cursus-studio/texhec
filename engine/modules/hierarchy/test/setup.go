@@ -1,9 +1,9 @@
 package test
 
 import (
+	"engine/modules/ecs"
 	"engine/modules/hierarchy"
 	enginepkg "engine/pkg"
-	"engine/services/ecs"
 
 	"github.com/ogiusek/ioc/v2"
 )
