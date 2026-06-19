@@ -2,8 +2,8 @@ package systems
 
 import (
 	"engine"
+	"engine/modules/ecs"
 	"engine/modules/loop"
-	"engine/services/ecs"
 	"fmt"
 
 	"github.com/ogiusek/events"

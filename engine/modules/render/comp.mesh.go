@@ -1,8 +1,8 @@
 package render
 
 import (
+	"engine/modules/ecs"
 	"engine/modules/graphics"
-	"engine/services/ecs"
 )
 
 type MeshComponent struct {

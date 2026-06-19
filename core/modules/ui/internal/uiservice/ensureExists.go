@@ -3,12 +3,12 @@ package uiservice
 import (
 	"core/modules/ui"
 	"engine/modules/collider"
+	"engine/modules/ecs"
 	"engine/modules/inputs"
 	"engine/modules/layout"
 	"engine/modules/render"
 	"engine/modules/text"
 	"engine/modules/transform"
-	"engine/services/ecs"
 
 	"github.com/go-gl/mathgl/mgl32"
 )

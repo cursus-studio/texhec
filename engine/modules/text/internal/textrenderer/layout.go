@@ -2,8 +2,8 @@ package textrenderer
 
 import (
 	"engine"
+	"engine/modules/ecs"
 	"engine/modules/text"
-	"engine/services/ecs"
 	"fmt"
 	"math"
 	"unicode/utf8"

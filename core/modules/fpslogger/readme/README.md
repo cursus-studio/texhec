@@ -28,13 +28,12 @@ Type: `func() error`
 `core/modules/fpslogger`:
   - `core/modules/fpslogger.Service`
 
+`engine/modules/ecs`:
+  - `engine/modules/ecs.NewSystemRegister`
+  - `engine/modules/ecs.SystemRegister`
+
 `engine/modules/loop`:
   - `engine/modules/loop.FrameEvent`
-
-`engine/services/ecs`:
-  - `engine/services/ecs.GetEntities`
-  - `engine/services/ecs.NewSystemRegister`
-  - `engine/services/ecs.SystemRegister`
 
 ### Third Party
 - `github.com/ogiusek/events`

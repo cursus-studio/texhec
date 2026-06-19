@@ -2,8 +2,8 @@ package internal
 
 import (
 	"engine/modules/assets"
+	"engine/modules/ecs"
 	"engine/services/datastructures"
-	"engine/services/ecs"
 
 	"github.com/ogiusek/ioc/v2"
 )
@@ -12,8 +12,8 @@ import (
 
 type assetsService struct {
 	*extensions
-	path  ecs.ComponentsArray[assets.PathComponent]
-	cache ecs.ComponentsArray[assets.CacheComponent]
+	path  ecs.ComponentArray[assets.PathComponent]
+	cache ecs.ComponentArray[assets.CacheComponent]
 
 	cached datastructures.SparseArray[ecs.EntityID, assets.Asset]
 }
@@ -23,8 +23,8 @@ func NewService(c ioc.Dic) assets.Service {
 	s.extensions = NewExtensions(c)
 
 	s.extensions = NewExtensions(c)
-	s.path = ecs.GetComponentsArray[assets.PathComponent](s.World())
-	s.cache = ecs.GetComponentsArray[assets.CacheComponent](s.World())
+	s.path = ecs.GetComponentArray[assets.PathComponent](s.World())
+	s.cache = ecs.GetComponentArray[assets.CacheComponent](s.World())
 
 	s.cached = datastructures.NewSparseArray[ecs.EntityID, assets.Asset]()
 
@@ -49,8 +49,8 @@ func (s *assetsService) OnRemove(e ecs.EntityID) {
 	}
 }
 
-func (s *assetsService) Path() ecs.ComponentsArray[assets.PathComponent]   { return s.path }
-func (s *assetsService) Cache() ecs.ComponentsArray[assets.CacheComponent] { return s.cache }
+func (s *assetsService) Path() ecs.ComponentArray[assets.PathComponent]   { return s.path }
+func (s *assetsService) Cache() ecs.ComponentArray[assets.CacheComponent] { return s.cache }
 
 func (s *assetsService) Get(entity ecs.EntityID) (assets.Asset, error) {
 	if cache, ok := s.cache.Get(entity); ok {

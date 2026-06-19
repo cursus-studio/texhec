@@ -26,50 +26,50 @@ clean up pkg and move logic to internal
 Type: `engine/modules/camera.Service`
 
 #### method Service Component
-Type: `func() engine/services/ecs.ComponentsArray[engine/modules/camera.Component]`
+Type: `func() engine/modules/ecs.ComponentArray[engine/modules/camera.Component]`
 
 #### method Service DynamicPerspective
-Type: `func() engine/services/ecs.ComponentsArray[engine/modules/camera.DynamicPerspectiveComponent]`
+Type: `func() engine/modules/ecs.ComponentArray[engine/modules/camera.DynamicPerspectiveComponent]`
 
 #### method Service GetViewport
-Type: `func(camera engine/services/ecs.EntityID) (x int32, y int32, w int32, h int32)`
+Type: `func(camera engine/modules/ecs.EntityID) (x int32, y int32, w int32, h int32)`
 
 #### method Service Limits
-Type: `func() engine/services/ecs.ComponentsArray[engine/modules/camera.CameraLimitsComponent]`
+Type: `func() engine/modules/ecs.ComponentArray[engine/modules/camera.CameraLimitsComponent]`
 
 #### method Service Mat4
-Type: `func(caemra engine/services/ecs.EntityID) github.com/go-gl/mathgl/mgl32.Mat4`
+Type: `func(caemra engine/modules/ecs.EntityID) github.com/go-gl/mathgl/mgl32.Mat4`
 
 #### method Service Mobile
-Type: `func() engine/services/ecs.ComponentsArray[engine/modules/camera.MobileCameraComponent]`
+Type: `func() engine/modules/ecs.ComponentArray[engine/modules/camera.MobileCameraComponent]`
 
 #### method Service NormalizedViewport
-Type: `func() engine/services/ecs.ComponentsArray[engine/modules/camera.NormalizedViewportComponent]`
+Type: `func() engine/modules/ecs.ComponentArray[engine/modules/camera.NormalizedViewportComponent]`
 
 #### method Service OrderedCameras
-Type: `func() []engine/services/ecs.EntityID`
+Type: `func() []engine/modules/ecs.EntityID`
 returns cameras from smallest to biggest
 
 #### method Service Ortho
-Type: `func() engine/services/ecs.ComponentsArray[engine/modules/camera.OrthoComponent]`
+Type: `func() engine/modules/ecs.ComponentArray[engine/modules/camera.OrthoComponent]`
 
 #### method Service OrthoResolution
-Type: `func() engine/services/ecs.ComponentsArray[engine/modules/camera.OrthoResolutionComponent]`
+Type: `func() engine/modules/ecs.ComponentArray[engine/modules/camera.OrthoResolutionComponent]`
 
 #### method Service Perspective
-Type: `func() engine/services/ecs.ComponentsArray[engine/modules/camera.PerspectiveComponent]`
+Type: `func() engine/modules/ecs.ComponentArray[engine/modules/camera.PerspectiveComponent]`
 
 #### method Service Priority
-Type: `func() engine/services/ecs.ComponentsArray[engine/modules/camera.PriorityComponent]`
+Type: `func() engine/modules/ecs.ComponentArray[engine/modules/camera.PriorityComponent]`
 
 #### method Service Register
 Type: `func() error`
 
 #### method Service ShootRay
-Type: `func(camera engine/services/ecs.EntityID, mousePos engine/modules/window.MousePos) engine/modules/collider.Ray`
+Type: `func(camera engine/modules/ecs.EntityID, mousePos engine/modules/window.MousePos) engine/modules/collider.Ray`
 
 #### method Service Viewport
-Type: `func() engine/services/ecs.ComponentsArray[engine/modules/camera.ViewportComponent]`
+Type: `func() engine/modules/ecs.ComponentArray[engine/modules/camera.ViewportComponent]`
 
 ### type Component
 Type: `engine/modules/camera.Component`
@@ -308,6 +308,16 @@ Type: `func() engine/modules/camera.ChangedResolutionEvent`
   - `engine/modules/collider.Pos`
   - `engine/modules/collider.Ray`
 
+`engine/modules/ecs`:
+  - `engine/modules/ecs.ComponentArray`
+  - `engine/modules/ecs.DirtySet`
+  - `engine/modules/ecs.EntityID`
+  - `engine/modules/ecs.GetComponentArray`
+  - `engine/modules/ecs.NewDirtySet`
+  - `engine/modules/ecs.NewSystemRegister`
+  - `engine/modules/ecs.RegisterSystems`
+  - `engine/modules/ecs.SystemRegister`
+
 `engine/modules/groups`:
   - `engine/modules/groups.Component`
   - `engine/modules/groups.DefaultGroups`
@@ -348,26 +358,6 @@ Type: `func() engine/modules/camera.ChangedResolutionEvent`
   - `engine/services/datastructures.NewSparseArray`
   - `engine/services/datastructures.Set`
   - `engine/services/datastructures.SparseArray`
-
-`engine/services/ecs`:
-  - `engine/services/ecs.AddDependency`
-  - `engine/services/ecs.AddDirtySet`
-  - `engine/services/ecs.BeforeGet`
-  - `engine/services/ecs.ComponentsArray`
-  - `engine/services/ecs.Dirty`
-  - `engine/services/ecs.DirtySet`
-  - `engine/services/ecs.EntityExists`
-  - `engine/services/ecs.EntityID`
-  - `engine/services/ecs.Get`
-  - `engine/services/ecs.GetComponentsArray`
-  - `engine/services/ecs.GetEntities`
-  - `engine/services/ecs.NewDirtySet`
-  - `engine/services/ecs.NewSystemRegister`
-  - `engine/services/ecs.OnUpsert`
-  - `engine/services/ecs.RegisterSystems`
-  - `engine/services/ecs.Remove`
-  - `engine/services/ecs.Set`
-  - `engine/services/ecs.SystemRegister`
 
 ### Third Party
 - `github.com/go-gl/mathgl/mgl32`

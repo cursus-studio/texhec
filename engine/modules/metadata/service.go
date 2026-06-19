@@ -2,7 +2,7 @@
 // its extremely useful when having in game documentation of objects
 package metadata
 
-import "engine/services/ecs"
+import "engine/modules/ecs"
 
 type NameComponent struct {
 	Name string
@@ -35,7 +35,7 @@ func NewLink(entity ecs.EntityID) LinkComponent {
 //
 
 type Service interface {
-	Name() ecs.ComponentsArray[NameComponent]
-	Description() ecs.ComponentsArray[DescriptionComponent]
-	Link() ecs.ComponentsArray[LinkComponent]
+	Name() ecs.ComponentArray[NameComponent]
+	Description() ecs.ComponentArray[DescriptionComponent]
+	Link() ecs.ComponentArray[LinkComponent]
 }

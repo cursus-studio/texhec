@@ -3,7 +3,7 @@
 package render
 
 import (
-	"engine/services/ecs"
+	"engine/modules/ecs"
 )
 
 type RenderEvent struct {
@@ -14,10 +14,10 @@ type Service interface {
 	ecs.SystemRegister
 	Renderer() ecs.SystemRegister
 
-	Color() ecs.ComponentsArray[ColorComponent]
-	Mesh() ecs.ComponentsArray[MeshComponent]
-	Texture() ecs.ComponentsArray[TextureComponent]
-	TextureFrame() ecs.ComponentsArray[TextureFrameComponent]
+	Color() ecs.ComponentArray[ColorComponent]
+	Mesh() ecs.ComponentArray[MeshComponent]
+	Texture() ecs.ComponentArray[TextureComponent]
+	TextureFrame() ecs.ComponentArray[TextureFrameComponent]
 
 	Error() error
 }

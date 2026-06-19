@@ -2,7 +2,7 @@
 package relation
 
 import (
-	"engine/services/ecs"
+	"engine/modules/ecs"
 )
 
 type Service[Key any] interface {

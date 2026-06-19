@@ -2,24 +2,24 @@ package internal
 
 import (
 	"engine"
+	"engine/modules/ecs"
 	"engine/modules/seed"
-	"engine/services/ecs"
 
 	"github.com/ogiusek/ioc/v2"
 )
 
 type service struct {
 	engine.EngineWorld `inject:""`
-	seed               ecs.ComponentsArray[seed.SeedComponent]
+	seed               ecs.ComponentArray[seed.SeedComponent]
 }
 
 func NewService(c ioc.Dic) seed.Service {
 	s := ioc.GetServices[*service](c)
-	s.seed = ecs.GetComponentsArray[seed.SeedComponent](s.World())
+	s.seed = ecs.GetComponentArray[seed.SeedComponent](s.World())
 	return s
 }
 
-func (s *service) Seed() ecs.ComponentsArray[seed.SeedComponent] {
+func (s *service) Seed() ecs.ComponentArray[seed.SeedComponent] {
 	return s.seed
 }
 func (s *service) WorldSeed() (ecs.EntityID, bool) {

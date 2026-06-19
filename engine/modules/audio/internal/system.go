@@ -2,7 +2,7 @@ package internal
 
 import (
 	"engine/modules/audio"
-	"engine/services/ecs"
+	"engine/modules/ecs"
 
 	"github.com/ogiusek/events"
 	"github.com/ogiusek/ioc/v2"

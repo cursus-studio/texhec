@@ -2,14 +2,14 @@
 package layout
 
 import (
-	"engine/services/ecs"
+	"engine/modules/ecs"
 )
 
 type Service interface {
-	Align() ecs.ComponentsArray[AlignComponent]
-	Order() ecs.ComponentsArray[OrderComponent]
-	// Wrap() ecs.ComponentsArray[WrapComponent]
-	Gap() ecs.ComponentsArray[GapComponent]
+	Align() ecs.ComponentArray[AlignComponent]
+	Order() ecs.ComponentArray[OrderComponent]
+	// Wrap() ecs.ComponentArray[WrapComponent]
+	Gap() ecs.ComponentArray[GapComponent]
 }
 
 // all components are components for parent:

@@ -1,22 +1,14 @@
-package ecs
+package internal
 
-type DirtySet interface {
-	// get also clears
-	Get() []EntityID
-	Dirty(EntityID)
-	Clear()
-
-	Ok() bool
-	Release()
-}
+import "engine/modules/ecs/internal/ecstypes"
 
 type dirtySet struct {
-	entities []EntityID
+	entities []ecstypes.EntityID
 	set      []uint8
 	ok       bool
 }
 
-func NewDirtySet() DirtySet {
+func NewDirtySet() ecstypes.DirtySet {
 	return &dirtySet{
 		entities: nil,
 		set:      nil,
@@ -24,7 +16,7 @@ func NewDirtySet() DirtySet {
 	}
 }
 
-func (f *dirtySet) Get() []EntityID {
+func (f *dirtySet) Get() []ecstypes.EntityID {
 	if !f.ok {
 		return nil
 	}
@@ -33,7 +25,7 @@ func (f *dirtySet) Get() []EntityID {
 	return values
 }
 
-func (f *dirtySet) Dirty(entity EntityID) {
+func (f *dirtySet) Dirty(entity ecstypes.EntityID) {
 	if !f.ok {
 		return
 	}

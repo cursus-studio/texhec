@@ -2,9 +2,9 @@ package service
 
 import (
 	"engine"
+	"engine/modules/ecs"
 	"engine/modules/layout"
 	"engine/modules/transform"
-	"engine/services/ecs"
 
 	"github.com/ogiusek/ioc/v2"
 )
@@ -12,9 +12,9 @@ import (
 type service struct {
 	engine.EngineWorld `inject:""`
 
-	align         ecs.ComponentsArray[layout.AlignComponent]
-	order         ecs.ComponentsArray[layout.OrderComponent]
-	gap           ecs.ComponentsArray[layout.GapComponent]
+	align         ecs.ComponentArray[layout.AlignComponent]
+	order         ecs.ComponentArray[layout.OrderComponent]
+	gap           ecs.ComponentArray[layout.GapComponent]
 	dirtyParents  ecs.DirtySet
 	dirtyChildren ecs.DirtySet
 }
@@ -22,18 +22,18 @@ type service struct {
 func NewLayoutService(c ioc.Dic,
 ) layout.Service {
 	t := ioc.GetServices[*service](c)
-	t.align = ecs.GetComponentsArray[layout.AlignComponent](t.World())
-	t.order = ecs.GetComponentsArray[layout.OrderComponent](t.World())
-	t.gap = ecs.GetComponentsArray[layout.GapComponent](t.World())
+	t.align = ecs.GetComponentArray[layout.AlignComponent](t.World())
+	t.order = ecs.GetComponentArray[layout.OrderComponent](t.World())
+	t.gap = ecs.GetComponentArray[layout.GapComponent](t.World())
 	t.dirtyParents = ecs.NewDirtySet()
 	t.dirtyChildren = ecs.NewDirtySet()
 	t.Init()
 	return t
 }
 
-func (t *service) Align() ecs.ComponentsArray[layout.AlignComponent] { return t.align }
-func (t *service) Order() ecs.ComponentsArray[layout.OrderComponent] { return t.order }
-func (t *service) Gap() ecs.ComponentsArray[layout.GapComponent]     { return t.gap }
+func (t *service) Align() ecs.ComponentArray[layout.AlignComponent] { return t.align }
+func (t *service) Order() ecs.ComponentArray[layout.OrderComponent] { return t.order }
+func (t *service) Gap() ecs.ComponentArray[layout.GapComponent]     { return t.gap }
 
 //
 

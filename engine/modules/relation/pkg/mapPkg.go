@@ -1,9 +1,9 @@
 package relationpkg
 
 import (
+	"engine/modules/ecs"
 	"engine/modules/relation"
 	"engine/modules/relation/internal/onetokey"
-	"engine/services/ecs"
 
 	"github.com/ogiusek/ioc/v2"
 )

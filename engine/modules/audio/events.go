@@ -1,7 +1,7 @@
 package audio
 
 import (
-	"engine/services/ecs"
+	"engine/modules/ecs"
 )
 
 type StopEvent struct {

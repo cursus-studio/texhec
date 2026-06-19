@@ -2,7 +2,7 @@
 package seed
 
 import (
-	"engine/services/ecs"
+	"engine/modules/ecs"
 	"errors"
 	"math/rand/v2"
 
@@ -43,6 +43,6 @@ func NewSeed[Number constraints.Integer](s Number) SeedComponent {
 }
 
 type Service interface {
-	Seed() ecs.ComponentsArray[SeedComponent]
+	Seed() ecs.ComponentArray[SeedComponent]
 	WorldSeed() (ecs.EntityID, bool)
 }

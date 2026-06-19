@@ -5,6 +5,7 @@ import (
 	"core/modules/definitions"
 	"core/modules/ui"
 	"engine/modules/camera"
+	"engine/modules/ecs"
 	"engine/modules/groups"
 	"engine/modules/inputs"
 	"engine/modules/layout"
@@ -12,7 +13,6 @@ import (
 	"engine/modules/scene"
 	"engine/modules/text"
 	"engine/modules/transform"
-	"engine/services/ecs"
 	"strings"
 
 	"github.com/ogiusek/ioc/v2"

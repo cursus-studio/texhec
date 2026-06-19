@@ -23,17 +23,17 @@ Perhaps attach `PlayerComponent` to camera.
 Type: `core/modules/player.Service`
 
 #### method Service Owner
-Type: `func() engine/services/ecs.ComponentsArray[core/modules/player.OwnerComponent]`
+Type: `func() engine/modules/ecs.ComponentArray[core/modules/player.OwnerComponent]`
 
 ### type OwnerComponent
 Type: `core/modules/player.OwnerComponent`
 
 #### property OwnerComponent Owner
-Type: `engine/services/ecs.EntityID`
+Type: `engine/modules/ecs.EntityID`
 
 ## Functions
 ### func NewOwner
-Type: `func(owner engine/services/ecs.EntityID) core/modules/player.OwnerComponent`
+Type: `func(owner engine/modules/ecs.EntityID) core/modules/player.OwnerComponent`
 
 
 ## Dependencies
@@ -44,13 +44,13 @@ Type: `func(owner engine/services/ecs.EntityID) core/modules/player.OwnerCompone
   - `core/modules/player.OwnerComponent`
   - `core/modules/player.Service`
 
+`engine/modules/ecs`:
+  - `engine/modules/ecs.ComponentArray`
+  - `engine/modules/ecs.EntityID`
+  - `engine/modules/ecs.GetComponentArray`
+
 `engine/modules/typeregistry/pkg`:
   - `engine/modules/typeregistry/pkg.PkgT`
-
-`engine/services/ecs`:
-  - `engine/services/ecs.ComponentsArray`
-  - `engine/services/ecs.EntityID`
-  - `engine/services/ecs.GetComponentsArray`
 
 ### Third Party
 - `github.com/ogiusek/ioc/v2`

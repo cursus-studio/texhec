@@ -1,9 +1,9 @@
 package onetokey
 
 import (
+	"engine/modules/ecs"
 	"engine/modules/relation"
 	"engine/services/datastructures"
-	"engine/services/ecs"
 )
 
 type mapRelation[IndexType comparable] struct {

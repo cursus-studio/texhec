@@ -19,24 +19,24 @@ SUM:                             6             47             22            215
 Type: `engine/modules/focus.Service`
 
 #### method Service Bubbling
-Type: `func() engine/services/ecs.ComponentsArray[engine/modules/focus.BubblingComponent]`
+Type: `func() engine/modules/ecs.ComponentArray[engine/modules/focus.BubblingComponent]`
 bubbling
 
 #### method Service DefaultFocused
-Type: `func() engine/services/ecs.ComponentsArray[engine/modules/focus.DefaultFocusedComponent]`
+Type: `func() engine/modules/ecs.ComponentArray[engine/modules/focus.DefaultFocusedComponent]`
 focus
 
 #### method Service DryRun
-Type: `func(engine/modules/focus.BubbleEvent) (bubbles []engine/services/ecs.EntityID, captured bool)`
+Type: `func(engine/modules/focus.BubbleEvent) (bubbles []engine/modules/ecs.EntityID, captured bool)`
 
 #### method Service Emit
 Type: `func(engine/modules/focus.BubbleEvent)`
 
 #### method Service Focused
-Type: `func() engine/services/ecs.ComponentsArray[engine/modules/focus.FocusedComponent]`
+Type: `func() engine/modules/ecs.ComponentArray[engine/modules/focus.FocusedComponent]`
 
 #### method Service FocusedEntity
-Type: `func() (engine/services/ecs.EntityID, bool)`
+Type: `func() (engine/modules/ecs.EntityID, bool)`
 
 #### method Service NewFocusedBubbleEvent
 Type: `func(event any) (engine/modules/focus.BubbleEvent, bool)`
@@ -72,7 +72,7 @@ Type: `engine/modules/focus.BubblingConstraint`
 Type: `engine/modules/focus.BubbleEvent`
 
 #### property BubbleEvent Entity
-Type: `engine/services/ecs.EntityID`
+Type: `engine/modules/ecs.EntityID`
 
 #### property BubbleEvent Event
 Type: `any`
@@ -91,16 +91,16 @@ Type: `engine/modules/focus.FocusEvent`
 unfocuses all elements and only focuses specific one
 
 #### property FocusEvent Entity
-Type: `engine/services/ecs.EntityID`
+Type: `engine/modules/ecs.EntityID`
 
 #### method FocusEvent ApplyEntity
-Type: `func(entity engine/services/ecs.EntityID) any`
+Type: `func(entity engine/modules/ecs.EntityID) any`
 
 ### type DefaultFocusEvent
 Type: `engine/modules/focus.DefaultFocusEvent`
 
 #### property DefaultFocusEvent Entity
-Type: `engine/services/ecs.EntityID`
+Type: `engine/modules/ecs.EntityID`
 
 ### type FocusedComponent
 Type: `engine/modules/focus.FocusedComponent`
@@ -115,16 +115,16 @@ Type: `engine/modules/focus.DefaultFocusedComponent`
 Type: `func(event engine/modules/focus.BubblingConstraint) engine/modules/focus.BubblingComponent`
 
 ### func NewBubbleEvent
-Type: `func(entity engine/services/ecs.EntityID, event any) engine/modules/focus.BubbleEvent`
+Type: `func(entity engine/modules/ecs.EntityID, event any) engine/modules/focus.BubbleEvent`
 
 ### func NewUnfocusEvent
 Type: `func() engine/modules/focus.UnfocusEvent`
 
 ### func NewFocusEvent
-Type: `func(entity engine/services/ecs.EntityID) engine/modules/focus.FocusEvent`
+Type: `func(entity engine/modules/ecs.EntityID) engine/modules/focus.FocusEvent`
 
 ### func NewDefaultFocusEvent
-Type: `func(entity engine/services/ecs.EntityID) engine/modules/focus.DefaultFocusEvent`
+Type: `func(entity engine/modules/ecs.EntityID) engine/modules/focus.DefaultFocusEvent`
 
 ### func NewFocused
 Type: `func() engine/modules/focus.FocusedComponent`
@@ -143,6 +143,13 @@ Type: `func() engine/modules/focus.DefaultFocusedComponent`
   - `engine.Logger`
   - `engine.Scene`
   - `engine.World`
+
+`engine/modules/ecs`:
+  - `engine/modules/ecs.ApplyEntity`
+  - `engine/modules/ecs.ApplyEntityEvent`
+  - `engine/modules/ecs.ComponentArray`
+  - `engine/modules/ecs.EntityID`
+  - `engine/modules/ecs.GetComponentArray`
 
 `engine/modules/focus`:
   - `engine/modules/focus.BubbleEvent`
@@ -178,17 +185,6 @@ Type: `func() engine/modules/focus.DefaultFocusedComponent`
 `engine/services/datastructures`:
   - `engine/services/datastructures.GetIndex`
   - `engine/services/datastructures.SetReader`
-
-`engine/services/ecs`:
-  - `engine/services/ecs.ApplyEntity`
-  - `engine/services/ecs.ApplyEntityEvent`
-  - `engine/services/ecs.ComponentsArray`
-  - `engine/services/ecs.EntityID`
-  - `engine/services/ecs.Get`
-  - `engine/services/ecs.GetComponentsArray`
-  - `engine/services/ecs.GetEntities`
-  - `engine/services/ecs.Remove`
-  - `engine/services/ecs.Set`
 
 ### Third Party
 - `github.com/ogiusek/events`

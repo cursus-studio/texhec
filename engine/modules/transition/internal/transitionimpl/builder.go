@@ -1,7 +1,7 @@
 package transitionimpl
 
 import (
-	"engine/services/ecs"
+	"engine/modules/ecs"
 )
 
 type Builder interface {

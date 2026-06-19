@@ -24,28 +24,28 @@ SUM:                            15            177             53            835
 Type: `engine/modules/text.Service`
 
 #### method Service AddDirtySet
-Type: `func(engine/services/ecs.DirtySet)`
+Type: `func(engine/modules/ecs.DirtySet)`
 
 #### method Service Align
-Type: `func() engine/services/ecs.ComponentsArray[engine/modules/text.AlignComponent]`
+Type: `func() engine/modules/ecs.ComponentArray[engine/modules/text.AlignComponent]`
 
 #### method Service Break
-Type: `func() engine/services/ecs.ComponentsArray[engine/modules/text.BreakComponent]`
+Type: `func() engine/modules/ecs.ComponentArray[engine/modules/text.BreakComponent]`
 
 #### method Service Color
-Type: `func() engine/services/ecs.ComponentsArray[engine/modules/text.ColorComponent]`
+Type: `func() engine/modules/ecs.ComponentArray[engine/modules/text.ColorComponent]`
 
 #### method Service Content
-Type: `func() engine/services/ecs.ComponentsArray[engine/modules/text.TextComponent]`
+Type: `func() engine/modules/ecs.ComponentArray[engine/modules/text.TextComponent]`
 
 #### method Service FontFamily
-Type: `func() engine/services/ecs.ComponentsArray[engine/modules/text.FontFamilyComponent]`
+Type: `func() engine/modules/ecs.ComponentArray[engine/modules/text.FontFamilyComponent]`
 
 #### method Service FontSize
-Type: `func() engine/services/ecs.ComponentsArray[engine/modules/text.FontSizeComponent]`
+Type: `func() engine/modules/ecs.ComponentArray[engine/modules/text.FontSizeComponent]`
 
 #### method Service Renderer
-Type: `func() engine/services/ecs.SystemRegister`
+Type: `func() engine/modules/ecs.SystemRegister`
 
 ### type FontFaceAsset
 Type: `engine/modules/text.FontFaceAsset`
@@ -97,7 +97,7 @@ Type: `github.com/go-gl/mathgl/mgl32.Vec4`
 Type: `engine/modules/text.FontFamilyComponent`
 
 #### property FontFamilyComponent FontFamily
-Type: `engine/services/ecs.EntityID`
+Type: `engine/modules/ecs.EntityID`
 
 ### type FontSizeComponent
 Type: `engine/modules/text.FontSizeComponent`
@@ -135,7 +135,7 @@ Type: `func(vertical float32, horizontal float32) engine/modules/text.AlignCompo
 Type: `func(color github.com/go-gl/mathgl/mgl32.Vec4) engine/modules/text.ColorComponent`
 
 ### func NewFontFamily
-Type: `func(fontFamily engine/services/ecs.EntityID) engine/modules/text.FontFamilyComponent`
+Type: `func(fontFamily engine/modules/ecs.EntityID) engine/modules/text.FontFamilyComponent`
 
 ### func NewFontSize
 Type: `func(fontSize uint) engine/modules/text.FontSizeComponent`
@@ -164,6 +164,15 @@ Type: `func(b uint8) engine/modules/text.BreakComponent`
   - `engine/modules/assets.PathComponent`
   - `engine/modules/assets.Register`
   - `engine/modules/assets.Service`
+
+`engine/modules/ecs`:
+  - `engine/modules/ecs.AnyComponentArray`
+  - `engine/modules/ecs.ComponentArray`
+  - `engine/modules/ecs.DirtySet`
+  - `engine/modules/ecs.EntityID`
+  - `engine/modules/ecs.GetComponentArray`
+  - `engine/modules/ecs.NewDirtySet`
+  - `engine/modules/ecs.SystemRegister`
 
 `engine/modules/graphics`:
   - `engine/modules/graphics.Bind`
@@ -240,20 +249,6 @@ Type: `func(b uint8) engine/modules/text.BreakComponent`
   - `engine/services/datastructures.Set`
   - `engine/services/datastructures.SparseArray`
   - `engine/services/datastructures.SparseSet`
-
-`engine/services/ecs`:
-  - `engine/services/ecs.AddDirtySet`
-  - `engine/services/ecs.AnyComponentArray`
-  - `engine/services/ecs.ComponentsArray`
-  - `engine/services/ecs.DirtySet`
-  - `engine/services/ecs.EntityID`
-  - `engine/services/ecs.Get`
-  - `engine/services/ecs.GetComponentsArray`
-  - `engine/services/ecs.GetEmpty`
-  - `engine/services/ecs.GetEntities`
-  - `engine/services/ecs.NewDirtySet`
-  - `engine/services/ecs.SetEmpty`
-  - `engine/services/ecs.SystemRegister`
 
 ### Third Party
 - `github.com/go-gl/gl/v4.5-core/gl`

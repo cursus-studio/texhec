@@ -4,28 +4,28 @@
 package transform
 
 import (
-	"engine/services/ecs"
+	"engine/modules/ecs"
 
 	"github.com/go-gl/mathgl/mgl32"
 )
 
 type Service interface {
-	AbsolutePos() ecs.ComponentsArray[AbsolutePosComponent]
-	AbsoluteRotation() ecs.ComponentsArray[AbsoluteRotationComponent]
-	AbsoluteSize() ecs.ComponentsArray[AbsoluteSizeComponent]
+	AbsolutePos() ecs.ComponentArray[AbsolutePosComponent]
+	AbsoluteRotation() ecs.ComponentArray[AbsoluteRotationComponent]
+	AbsoluteSize() ecs.ComponentArray[AbsoluteSizeComponent]
 
-	Pos() ecs.ComponentsArray[PosComponent]
-	Rotation() ecs.ComponentsArray[RotationComponent]
-	Size() ecs.ComponentsArray[SizeComponent]
+	Pos() ecs.ComponentArray[PosComponent]
+	Rotation() ecs.ComponentArray[RotationComponent]
+	Size() ecs.ComponentArray[SizeComponent]
 
-	MaxSize() ecs.ComponentsArray[MaxSizeComponent]
-	MinSize() ecs.ComponentsArray[MinSizeComponent]
+	MaxSize() ecs.ComponentArray[MaxSizeComponent]
+	MinSize() ecs.ComponentArray[MinSizeComponent]
 
-	AspectRatio() ecs.ComponentsArray[AspectRatioComponent]
-	PivotPoint() ecs.ComponentsArray[PivotPointComponent]
+	AspectRatio() ecs.ComponentArray[AspectRatioComponent]
+	PivotPoint() ecs.ComponentArray[PivotPointComponent]
 
-	Parent() ecs.ComponentsArray[ParentComponent]
-	ParentPivotPoint() ecs.ComponentsArray[ParentPivotPointComponent]
+	Parent() ecs.ComponentArray[ParentComponent]
+	ParentPivotPoint() ecs.ComponentArray[ParentPivotPointComponent]
 
 	Mat4(ecs.EntityID) mgl32.Mat4
 	AddDirtySet(ecs.DirtySet)

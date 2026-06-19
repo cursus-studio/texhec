@@ -18,10 +18,15 @@ SUM:                             8             49              1            266
 Type: `engine/modules/relation.Service[Key any]`
 
 #### method Service Get
-Type: `func(Key) (engine/services/ecs.EntityID, bool)`
+Type: `func(Key) (engine/modules/ecs.EntityID, bool)`
 
 
 ## Dependencies
+`engine/modules/ecs`:
+  - `engine/modules/ecs.DirtySet`
+  - `engine/modules/ecs.EntityID`
+  - `engine/modules/ecs.World`
+
 `engine/modules/relation`:
   - `engine/modules/relation.Get`
   - `engine/modules/relation.Service`
@@ -35,12 +40,6 @@ Type: `func(Key) (engine/services/ecs.EntityID, bool)`
   - `engine/services/datastructures.Remove`
   - `engine/services/datastructures.Set`
   - `engine/services/datastructures.SparseArray`
-
-`engine/services/ecs`:
-  - `engine/services/ecs.DirtySet`
-  - `engine/services/ecs.EntityID`
-  - `engine/services/ecs.Get`
-  - `engine/services/ecs.World`
 
 ### Third Party
 - `github.com/ogiusek/events`

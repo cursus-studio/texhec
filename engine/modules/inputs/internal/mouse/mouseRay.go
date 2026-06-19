@@ -2,9 +2,9 @@ package mouse
 
 import (
 	"engine"
+	"engine/modules/ecs"
 	"engine/modules/inputs"
 	"engine/modules/inputs/internal"
-	"engine/services/ecs"
 	"slices"
 
 	"github.com/ogiusek/events"

@@ -6,8 +6,8 @@
 package hierarchy
 
 import (
+	"engine/modules/ecs"
 	"engine/services/datastructures"
-	"engine/services/ecs"
 	"errors"
 )
 
@@ -24,7 +24,7 @@ func NewParent(parent ecs.EntityID) Component { return Component{parent} }
 //
 
 type Service interface {
-	Component() ecs.ComponentsArray[Component]
+	Component() ecs.ComponentArray[Component]
 
 	// returns true if is child of any parent doesn't matter the depth
 	IsChildOf(child ecs.EntityID, parent ecs.EntityID) bool

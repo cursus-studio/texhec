@@ -1,11 +1,11 @@
 package metadatapkg
 
 import (
+	"engine/modules/ecs"
 	"engine/modules/entityregistry"
 	"engine/modules/metadata"
 	"engine/modules/metadata/internal"
 	typeregistrypkg "engine/modules/typeregistry/pkg"
-	"engine/services/ecs"
 
 	"github.com/ogiusek/ioc/v2"
 )

@@ -2,6 +2,7 @@ package server
 
 import (
 	"engine"
+	"engine/modules/ecs"
 	"engine/modules/loop"
 	"engine/modules/netsync/internal/clienttypes"
 	"engine/modules/netsync/internal/config"
@@ -9,7 +10,6 @@ import (
 	"engine/modules/record"
 	"engine/modules/uuid"
 	"engine/services/datastructures"
-	"engine/services/ecs"
 	"fmt"
 	"reflect"
 	"sync"

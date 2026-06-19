@@ -2,8 +2,8 @@ package reach
 
 import (
 	"core/modules/tile"
+	"engine/modules/ecs"
 	"engine/modules/grid"
-	"engine/services/ecs"
 	"errors"
 )
 
@@ -32,7 +32,7 @@ type Service interface {
 }
 
 type ServiceT[FeatureComponent any] interface {
-	Component() ecs.ComponentsArray[Component[FeatureComponent]]
+	Component() ecs.ComponentArray[Component[FeatureComponent]]
 	Reaches(fromEntity, toEntity ecs.EntityID) bool
 	TilesWithinReach(entity ecs.EntityID) []grid.Coords
 }

@@ -2,9 +2,9 @@ package transitionimpl
 
 import (
 	"engine"
+	"engine/modules/ecs"
 	"engine/modules/loop"
 	"engine/modules/transition"
-	"engine/services/ecs"
 
 	"github.com/ogiusek/events"
 	"github.com/ogiusek/ioc/v2"
@@ -16,9 +16,9 @@ type sysT[Component any] struct {
 
 	dirtySet ecs.DirtySet
 
-	transitionArray ecs.ComponentsArray[transition.TransitionComponent[Component]]
-	easingArray     ecs.ComponentsArray[transition.EasingComponent]
-	componentArray  ecs.ComponentsArray[Component]
+	transitionArray ecs.ComponentArray[transition.TransitionComponent[Component]]
+	easingArray     ecs.ComponentArray[transition.EasingComponent]
+	componentArray  ecs.ComponentArray[Component]
 }
 
 // func NewSysT[Component transition.LerpConstraint[Component]](c ioc.Dic) transition.System {
@@ -27,9 +27,9 @@ func NewSysT[Component any](c ioc.Dic) ecs.SystemRegister {
 		s := ioc.GetServices[*sysT[Component]](c)
 
 		s.dirtySet = ecs.NewDirtySet()
-		s.transitionArray = ecs.GetComponentsArray[transition.TransitionComponent[Component]](s.World())
-		s.easingArray = ecs.GetComponentsArray[transition.EasingComponent](s.World())
-		s.componentArray = ecs.GetComponentsArray[Component](s.World())
+		s.transitionArray = ecs.GetComponentArray[transition.TransitionComponent[Component]](s.World())
+		s.easingArray = ecs.GetComponentArray[transition.EasingComponent](s.World())
+		s.componentArray = ecs.GetComponentArray[Component](s.World())
 
 		events.Listen(s.EventsBuilder(), s.ListenTransition)
 

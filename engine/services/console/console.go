@@ -31,12 +31,12 @@ func (console *console) Print(text string) {
 }
 
 func (console *console) Flush() {
-	flushed := ""
-	flushed += clearCurrentLine()
+	var builder strings.Builder
+	builder.WriteString(clearCurrentLine())
 	for i := 0; i < console.previousDrawnLines; i++ {
-		flushed += goToPreviousLine()
-		flushed += clearCurrentLine()
+		builder.WriteString(goToPreviousLine() + clearCurrentLine())
 	}
+	flushed := builder.String()
 	console.print(flushed + console.permanent + console.toPrint)
 	console.permanent = ""
 	console.previousDrawnLines = strings.Count(console.toPrint, "\n")

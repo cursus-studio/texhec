@@ -4,9 +4,9 @@ package pathfind
 import (
 	"core/modules/obstruction"
 	"core/modules/tile"
+	"engine/modules/ecs"
 	"engine/modules/grid"
 	"engine/modules/interactions"
-	"engine/services/ecs"
 	"errors"
 
 	"golang.org/x/exp/constraints"
@@ -47,9 +47,9 @@ func NewStep(x, y grid.Coord) StepComponent { return StepComponent{grid.NewCoord
 
 type Service interface {
 	ecs.SystemRegister
-	Target() ecs.ComponentsArray[TargetComponent]
-	Speed() ecs.ComponentsArray[SpeedComponent]
-	Step() ecs.ComponentsArray[StepComponent]
+	Target() ecs.ComponentArray[TargetComponent]
+	Speed() ecs.ComponentArray[SpeedComponent]
+	Step() ecs.ComponentArray[StepComponent]
 
 	FindPath(FindPathEvent)
 

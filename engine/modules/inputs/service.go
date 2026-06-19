@@ -11,33 +11,33 @@ package inputs
 
 import (
 	"engine/modules/collider"
-	"engine/services/ecs"
+	"engine/modules/ecs"
 )
 
 type Service interface {
 	ecs.SystemRegister
 
-	TextInput() ecs.ComponentsArray[TextInputComponent]
+	TextInput() ecs.ComponentArray[TextInputComponent]
 
-	Hovered() ecs.ComponentsArray[HoveredComponent]
-	Dragged() ecs.ComponentsArray[DraggedComponent]
-	Stacked() ecs.ComponentsArray[StackedComponent]
+	Hovered() ecs.ComponentArray[HoveredComponent]
+	Dragged() ecs.ComponentArray[DraggedComponent]
+	Stacked() ecs.ComponentArray[StackedComponent]
 
-	KeepSelected() ecs.ComponentsArray[KeepSelectedComponent]
+	KeepSelected() ecs.ComponentArray[KeepSelectedComponent]
 
-	LeftClick() ecs.ComponentsArray[LeftClickComponent]
-	DoubleLeftClick() ecs.ComponentsArray[DoubleLeftClickComponent]
+	LeftClick() ecs.ComponentArray[LeftClickComponent]
+	DoubleLeftClick() ecs.ComponentArray[DoubleLeftClickComponent]
 
-	RightClick() ecs.ComponentsArray[RightClickComponent]
-	DoubleRightClick() ecs.ComponentsArray[DoubleRightClickComponent]
+	RightClick() ecs.ComponentArray[RightClickComponent]
+	DoubleRightClick() ecs.ComponentArray[DoubleRightClickComponent]
 
-	MouseEnter() ecs.ComponentsArray[MouseEnterComponent]
-	MouseLeave() ecs.ComponentsArray[MouseLeaveComponent]
+	MouseEnter() ecs.ComponentArray[MouseEnterComponent]
+	MouseLeave() ecs.ComponentArray[MouseLeaveComponent]
 
-	Hover() ecs.ComponentsArray[HoverComponent]
-	Drag() ecs.ComponentsArray[DragComponent]
+	Hover() ecs.ComponentArray[HoverComponent]
+	Drag() ecs.ComponentArray[DragComponent]
 
-	Stack() ecs.ComponentsArray[StackComponent]
+	Stack() ecs.ComponentArray[StackComponent]
 
 	// returns ordered targets with additional data
 	StackedData() []Target

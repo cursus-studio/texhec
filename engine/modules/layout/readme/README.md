@@ -24,14 +24,14 @@ SUM:                             6             68             25            264
 Type: `engine/modules/layout.Service`
 
 #### method Service Align
-Type: `func() engine/services/ecs.ComponentsArray[engine/modules/layout.AlignComponent]`
+Type: `func() engine/modules/ecs.ComponentArray[engine/modules/layout.AlignComponent]`
 
 #### method Service Gap
-Type: `func() engine/services/ecs.ComponentsArray[engine/modules/layout.GapComponent]`
-Wrap() ecs.ComponentsArray[WrapComponent]
+Type: `func() engine/modules/ecs.ComponentArray[engine/modules/layout.GapComponent]`
+Wrap() ecs.ComponentArray[WrapComponent]
 
 #### method Service Order
-Type: `func() engine/services/ecs.ComponentsArray[engine/modules/layout.OrderComponent]`
+Type: `func() engine/modules/ecs.ComponentArray[engine/modules/layout.OrderComponent]`
 
 ### type AlignComponent
 Type: `engine/modules/layout.AlignComponent`
@@ -95,6 +95,13 @@ Type: `func(x float32) engine/modules/layout.GapComponent`
   - `engine.Transform`
   - `engine.World`
 
+`engine/modules/ecs`:
+  - `engine/modules/ecs.ComponentArray`
+  - `engine/modules/ecs.DirtySet`
+  - `engine/modules/ecs.EntityID`
+  - `engine/modules/ecs.GetComponentArray`
+  - `engine/modules/ecs.NewDirtySet`
+
 `engine/modules/layout`:
   - `engine/modules/layout.AlignComponent`
   - `engine/modules/layout.Gap`
@@ -128,21 +135,6 @@ Type: `func(x float32) engine/modules/layout.GapComponent`
 
 `engine/pkg`:
   - `engine/pkg.Pkg`
-
-`engine/services/ecs`:
-  - `engine/services/ecs.AddDependency`
-  - `engine/services/ecs.AddDirtySet`
-  - `engine/services/ecs.BeforeGet`
-  - `engine/services/ecs.Clear`
-  - `engine/services/ecs.ComponentsArray`
-  - `engine/services/ecs.Dirty`
-  - `engine/services/ecs.DirtySet`
-  - `engine/services/ecs.EntityID`
-  - `engine/services/ecs.Get`
-  - `engine/services/ecs.GetComponentsArray`
-  - `engine/services/ecs.NewDirtySet`
-  - `engine/services/ecs.Set`
-  - `engine/services/ecs.SetEmpty`
 
 ### Third Party
 - `github.com/go-gl/mathgl/mgl32`

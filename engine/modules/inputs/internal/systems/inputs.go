@@ -2,9 +2,9 @@ package systems
 
 import (
 	"engine"
+	"engine/modules/ecs"
 	"engine/modules/inputs"
 	"engine/modules/text"
-	"engine/services/ecs"
 	"errors"
 	"strings"
 

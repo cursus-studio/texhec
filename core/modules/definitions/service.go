@@ -5,9 +5,9 @@ import (
 	"core/modules/obstruction"
 	"core/modules/tile"
 	"engine/modules/audio"
+	"engine/modules/ecs"
 	"engine/modules/groups"
 	"engine/modules/scene"
-	"engine/services/ecs"
 )
 
 // In DI container

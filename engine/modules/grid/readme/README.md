@@ -27,14 +27,14 @@ Type: `func() engine/modules/grid.Coord`
 getters within chunk
 
 #### method Service Coords
-Type: `func() engine/services/ecs.ComponentsArray[engine/modules/grid.ChunkCoordsComponent]`
+Type: `func() engine/modules/ecs.ComponentArray[engine/modules/grid.ChunkCoordsComponent]`
 arrays
 
 #### method Service CoordsIndex
 Type: `func(engine/modules/grid.Coords) (engine/modules/grid.Index, bool)`
 
 #### method Service GetChunk
-Type: `func(engine/modules/grid.ChunkCoordsComponent) (engine/services/ecs.EntityID, bool)`
+Type: `func(engine/modules/grid.ChunkCoordsComponent) (engine/modules/ecs.EntityID, bool)`
 
 #### method Service GetLastIndex
 Type: `func() engine/modules/grid.Index`
@@ -52,7 +52,7 @@ Type: `engine/modules/grid.TileConstraint`
 Type: `engine/modules/grid.ServiceT[Tile engine/modules/grid.TileConstraint]`
 
 #### method ServiceT Chunk
-Type: `func() engine/services/ecs.ComponentsArray[engine/modules/grid.ChunkComponent[Tile]]`
+Type: `func() engine/modules/ecs.ComponentArray[engine/modules/grid.ChunkComponent[Tile]]`
 arrays
 
 #### method ServiceT CoordsData
@@ -115,7 +115,7 @@ Type: `engine/modules/grid.Coord`
 Type: `engine/modules/grid.ClickEvent`
 
 #### property ClickEvent Chunk
-Type: `engine/services/ecs.EntityID`
+Type: `engine/modules/ecs.EntityID`
 
 #### property ClickEvent Coords
 Type: `engine/modules/grid.Coords`
@@ -124,7 +124,7 @@ Type: `engine/modules/grid.Coords`
 Type: `engine/modules/grid.HoverEvent`
 
 #### property HoverEvent Chunk
-Type: `engine/services/ecs.EntityID`
+Type: `engine/modules/ecs.EntityID`
 
 #### property HoverEvent Coords
 Type: `engine/modules/grid.Coords`
@@ -134,7 +134,7 @@ Type: `engine/modules/grid.CoordsData[Tile engine/modules/grid.TileConstraint]`
 stores coords chunk data
 
 #### property CoordsData Entity
-Type: `engine/services/ecs.EntityID`
+Type: `engine/modules/ecs.EntityID`
 
 #### property CoordsData Component
 Type: `engine/modules/grid.ChunkComponent[Tile]`
@@ -161,13 +161,13 @@ Type: `func[Tile engine/modules/grid.TileConstraint](s engine/modules/grid.Coord
 Type: `func(x engine/modules/grid.Coord, y engine/modules/grid.Coord) engine/modules/grid.ChunkCoordsComponent`
 
 ### func NewClickEvent
-Type: `func(chunk engine/services/ecs.EntityID, tile engine/modules/grid.Coords) engine/modules/grid.ClickEvent`
+Type: `func(chunk engine/modules/ecs.EntityID, tile engine/modules/grid.Coords) engine/modules/grid.ClickEvent`
 
 ### func NewHoverEvent
-Type: `func(chunk engine/services/ecs.EntityID, tile engine/modules/grid.Coords) engine/modules/grid.HoverEvent`
+Type: `func(chunk engine/modules/ecs.EntityID, tile engine/modules/grid.Coords) engine/modules/grid.HoverEvent`
 
 ### func NewCoordsData
-Type: `func[Tile engine/modules/grid.TileConstraint](entity engine/services/ecs.EntityID, component engine/modules/grid.ChunkComponent[Tile], index engine/modules/grid.Index) engine/modules/grid.CoordsData[Tile]`
+Type: `func[Tile engine/modules/grid.TileConstraint](entity engine/modules/ecs.EntityID, component engine/modules/grid.ChunkComponent[Tile], index engine/modules/grid.Index) engine/modules/grid.CoordsData[Tile]`
 
 
 ## Dependencies
@@ -184,6 +184,14 @@ Type: `func[Tile engine/modules/grid.TileConstraint](entity engine/services/ecs.
   - `engine/modules/collider.Hit`
   - `engine/modules/collider.ObjectRayCollision`
   - `engine/modules/collider.Point`
+
+`engine/modules/ecs`:
+  - `engine/modules/ecs.ComponentArray`
+  - `engine/modules/ecs.DirtySet`
+  - `engine/modules/ecs.EntityID`
+  - `engine/modules/ecs.GetComponentArray`
+  - `engine/modules/ecs.NewDirtySet`
+  - `engine/modules/ecs.World`
 
 `engine/modules/grid`:
   - `engine/modules/grid.ChunkComponent`
@@ -229,18 +237,6 @@ Type: `func[Tile engine/modules/grid.TileConstraint](entity engine/services/ecs.
 
 `engine/modules/typeregistry/pkg`:
   - `engine/modules/typeregistry/pkg.PkgT`
-
-`engine/services/ecs`:
-  - `engine/services/ecs.AddDirtySet`
-  - `engine/services/ecs.ComponentsArray`
-  - `engine/services/ecs.DirtySet`
-  - `engine/services/ecs.EntityID`
-  - `engine/services/ecs.Get`
-  - `engine/services/ecs.GetComponentsArray`
-  - `engine/services/ecs.NewDirtySet`
-  - `engine/services/ecs.OnUpsert`
-  - `engine/services/ecs.Set`
-  - `engine/services/ecs.World`
 
 ### Third Party
 - `github.com/ogiusek/events`

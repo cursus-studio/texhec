@@ -1,7 +1,7 @@
 package test
 
 import (
-	"engine/services/ecs"
+	"engine/modules/ecs"
 	"slices"
 	"testing"
 )

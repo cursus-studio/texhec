@@ -1,10 +1,10 @@
 package test
 
 import (
+	"engine/modules/ecs"
 	"engine/modules/groups"
 	"engine/modules/hierarchy"
 	enginepkg "engine/pkg"
-	"engine/services/ecs"
 	"testing"
 
 	"github.com/ogiusek/ioc/v2"

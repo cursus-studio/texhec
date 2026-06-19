@@ -6,7 +6,7 @@ defines connection and stores it in component
 ```
 $ go test ./... -bench=.
 PASS
-ok  	engine/modules/connection/test	0.056s
+ok  	engine/modules/connection/test	0.051s
 ```
 ## Lines of code
 ```
@@ -24,7 +24,7 @@ SUM:                             7             89             17            411
 Type: `engine/modules/connection.Service`
 
 #### method Service Component
-Type: `func() engine/services/ecs.ComponentsArray[engine/modules/connection.ConnectionComponent]`
+Type: `func() engine/modules/ecs.ComponentArray[engine/modules/connection.ConnectionComponent]`
 
 #### method Service Connect
 Type: `func(addr string) error`
@@ -33,13 +33,13 @@ Type: `func(addr string) error`
 Type: `func(addr string) error`
 
 #### method Service Listener
-Type: `func() engine/services/ecs.ComponentsArray[engine/modules/connection.ListenerComponent]`
+Type: `func() engine/modules/ecs.ComponentArray[engine/modules/connection.ListenerComponent]`
 
 #### method Service Register
 Type: `func() error`
 
 #### method Service TransferConnection
-Type: `func(fromEntity engine/services/ecs.EntityID, toEntity engine/services/ecs.EntityID) error`
+Type: `func(fromEntity engine/modules/ecs.EntityID, toEntity engine/modules/ecs.EntityID) error`
 
 ### type Conn
 Type: `engine/modules/connection.Conn`
@@ -94,6 +94,14 @@ Type: `func(conn engine/modules/connection.Conn) engine/modules/connection.Conne
   - `engine/modules/connection.NewListener`
   - `engine/modules/connection.Service`
 
+`engine/modules/ecs`:
+  - `engine/modules/ecs.ComponentArray`
+  - `engine/modules/ecs.DirtySet`
+  - `engine/modules/ecs.EntityID`
+  - `engine/modules/ecs.GetComponentArray`
+  - `engine/modules/ecs.NewDirtySet`
+  - `engine/modules/ecs.SystemRegister`
+
 `engine/modules/typeregistry/pkg`:
   - `engine/modules/typeregistry/pkg.PkgT`
 
@@ -107,22 +115,6 @@ Type: `func(conn engine/modules/connection.Conn) engine/modules/connection.Conne
   - `engine/services/datastructures.NewSet`
   - `engine/services/datastructures.RemoveElements`
   - `engine/services/datastructures.Set`
-
-`engine/services/ecs`:
-  - `engine/services/ecs.AddDirtySet`
-  - `engine/services/ecs.ComponentsArray`
-  - `engine/services/ecs.DirtySet`
-  - `engine/services/ecs.EntityID`
-  - `engine/services/ecs.Get`
-  - `engine/services/ecs.GetComponentsArray`
-  - `engine/services/ecs.GetEntities`
-  - `engine/services/ecs.NewDirtySet`
-  - `engine/services/ecs.NewEntity`
-  - `engine/services/ecs.OnUpsert`
-  - `engine/services/ecs.Remove`
-  - `engine/services/ecs.RemoveEntity`
-  - `engine/services/ecs.Set`
-  - `engine/services/ecs.SystemRegister`
 
 ### Third Party
 - `github.com/ogiusek/ioc/v2`

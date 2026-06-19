@@ -2,10 +2,10 @@ package recordimpl
 
 import (
 	"engine"
+	"engine/modules/ecs"
 	"engine/modules/record"
 	"engine/modules/uuid"
 	"engine/services/datastructures"
-	"engine/services/ecs"
 	"reflect"
 	"sync"
 
@@ -27,7 +27,7 @@ type service struct {
 	worldArrays        map[string]entityArray
 
 	worldCopy       ecs.World
-	worldCopyUUID   ecs.ComponentsArray[uuid.Component]
+	worldCopyUUID   ecs.ComponentArray[uuid.Component]
 	worldCopyArrays map[string]ecs.AnyComponentArray
 
 	mutex  *sync.Mutex
@@ -40,7 +40,7 @@ func NewService(c ioc.Dic) record.Service {
 	t.worldArrays = make(map[string]entityArray)
 
 	t.worldCopy = ecs.NewWorld()
-	t.worldCopyUUID = ecs.GetComponentsArray[uuid.Component](t.worldCopy)
+	t.worldCopyUUID = ecs.GetComponentArray[uuid.Component](t.worldCopy)
 	t.worldCopyArrays = make(map[string]ecs.AnyComponentArray)
 
 	t.mutex = &sync.Mutex{}

@@ -10,6 +10,7 @@ import (
 	colliderpkg "engine/modules/collider/pkg"
 	connectionpkg "engine/modules/connection/pkg"
 	dragpkg "engine/modules/drag/pkg"
+	ecspkg "engine/modules/ecs/pkg"
 	entityregistrypkg "engine/modules/entityregistry/pkg"
 	focuspkg "engine/modules/focus/pkg"
 	graphicspkg "engine/modules/graphics/pkg"
@@ -38,7 +39,6 @@ import (
 	windowpkg "engine/modules/window/pkg"
 	"engine/services/clock"
 	"engine/services/console"
-	"engine/services/ecs"
 
 	"github.com/ogiusek/ioc/v2"
 )
@@ -53,6 +53,7 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 		colliderpkg.Pkg,
 		connectionpkg.Pkg,
 		dragpkg.Pkg,
+		ecspkg.Pkg,
 		entityregistrypkg.Pkg,
 		focuspkg.Pkg,
 		graphicspkg.Pkg,
@@ -82,7 +83,6 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 
 		clock.Pkg,
 		console.Pkg,
-		ecs.Pkg,
 		func(b ioc.Builder) {
 			ioc.Register(b, func(c ioc.Dic) engine.EngineWorld {
 				return ioc.GetServices[engine.EngineWorld](c)

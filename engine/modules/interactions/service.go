@@ -1,7 +1,7 @@
 package interactions
 
 import (
-	"engine/services/ecs"
+	"engine/modules/ecs"
 	"reflect"
 )
 
@@ -34,10 +34,10 @@ type AnyInteractionService interface {
 type InteractionService[State any] interface {
 	// elements are removed when interaction is removed.
 	// they can be used to indicate that element is used.
-	InteractionGUI() ecs.ComponentsArray[InteractionGUIComponent[State]]
+	InteractionGUI() ecs.ComponentArray[InteractionGUIComponent[State]]
 
-	MissingInteraction() ecs.ComponentsArray[MissingInteractionComponent[State]]
-	Interaction() ecs.ComponentsArray[InteractionComponent[State]]
+	MissingInteraction() ecs.ComponentArray[MissingInteractionComponent[State]]
+	Interaction() ecs.ComponentArray[InteractionComponent[State]]
 	AnyInteractionService
 	FinishMeasurement(FinishMeasurementEvent[State])
 }
@@ -63,8 +63,8 @@ type AnyFeatureService interface {
 type FeatureService[Event any] interface{ AnyFeatureService }
 type Service interface {
 	// entity with this stores all components with interactions and selected feature
-	Instance() ecs.ComponentsArray[InstanceComponent]
-	FeatureEvent() ecs.ComponentsArray[FeatureEventComponent]
+	Instance() ecs.ComponentArray[InstanceComponent]
+	FeatureEvent() ecs.ComponentArray[FeatureEventComponent]
 
 	FeatureEntity() ecs.EntityID
 

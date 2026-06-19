@@ -2,10 +2,10 @@ package systems
 
 import (
 	"core/game"
+	"engine/modules/ecs"
 	"engine/modules/loop"
 	"engine/modules/render"
 	"engine/modules/transform"
-	"engine/services/ecs"
 	"fmt"
 
 	"github.com/ogiusek/events"
@@ -18,14 +18,14 @@ type CursorComponent struct{}
 type cursorSystem struct {
 	game.GameWorld `inject:""`
 
-	CursorComponent ecs.ComponentsArray[CursorComponent]
+	CursorComponent ecs.ComponentArray[CursorComponent]
 }
 
 func NewCursorSystem(c ioc.Dic) ecs.SystemRegister {
 	return ecs.NewSystemRegister(func() error {
 		s := ioc.GetServices[*cursorSystem](c)
 
-		s.CursorComponent = ecs.GetComponentsArray[CursorComponent](s.World())
+		s.CursorComponent = ecs.GetComponentArray[CursorComponent](s.World())
 
 		events.Listen(s.EventsBuilder(), s.Listen)
 		return nil

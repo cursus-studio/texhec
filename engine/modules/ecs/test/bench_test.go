@@ -1,7 +1,7 @@
 package ecs_test
 
 import (
-	"engine/services/ecs"
+	"engine/modules/ecs"
 	"testing"
 )
 
@@ -15,7 +15,7 @@ func BenchmarkGetComponent(b *testing.B) {
 
 	entitiesCount := min(b.N, 10000)
 	entities := make([]ecs.EntityID, entitiesCount)
-	arr := ecs.GetComponentsArray[Component](world)
+	arr := ecs.GetComponentArray[Component](world)
 	for i := range entitiesCount {
 		entity := world.NewEntity()
 		arr.Set(entity, Component{})
@@ -32,7 +32,7 @@ func BenchmarkGetComponent(b *testing.B) {
 
 func BenchmarkCreateComponents(b *testing.B) {
 	world := ecs.NewWorld()
-	arr := ecs.GetComponentsArray[Component](world)
+	arr := ecs.GetComponentArray[Component](world)
 
 	entities := make([]ecs.EntityID, b.N)
 	for i := 0; i < b.N; i++ {
@@ -50,7 +50,7 @@ func BenchmarkCreateComponents(b *testing.B) {
 
 func BenchmarkUpdateComponents(b *testing.B) {
 	world := ecs.NewWorld()
-	arr := ecs.GetComponentsArray[Component](world)
+	arr := ecs.GetComponentArray[Component](world)
 
 	entities := make([]ecs.EntityID, b.N)
 	for i := 0; i < b.N; i++ {
@@ -69,7 +69,7 @@ func BenchmarkUpdateComponents(b *testing.B) {
 
 func BenchmarkRemoveComponent(b *testing.B) {
 	world := ecs.NewWorld()
-	arr := ecs.GetComponentsArray[Component](world)
+	arr := ecs.GetComponentArray[Component](world)
 
 	entities := make([]ecs.EntityID, b.N)
 	for i := 0; i < b.N; i++ {
@@ -87,7 +87,7 @@ func BenchmarkRemoveComponent(b *testing.B) {
 }
 func BenchmarkRemoveEntityWithComponent(b *testing.B) {
 	world := ecs.NewWorld()
-	arr := ecs.GetComponentsArray[Component](world)
+	arr := ecs.GetComponentArray[Component](world)
 
 	entities := make([]ecs.EntityID, b.N)
 	for i := 0; i < b.N; i++ {

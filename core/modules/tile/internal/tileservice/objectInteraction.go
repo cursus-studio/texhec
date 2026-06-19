@@ -5,12 +5,12 @@ import (
 	"core/modules/deploy"
 	"core/modules/pathfind"
 	"core/modules/tile"
+	"engine/modules/ecs"
 	"engine/modules/inputs"
 	"engine/modules/interactions"
 	"engine/modules/render"
 	"engine/modules/text"
 	"engine/modules/transform"
-	"engine/services/ecs"
 	"errors"
 	"fmt"
 )

@@ -2,9 +2,9 @@ package service
 
 import (
 	"engine/modules/collider"
+	"engine/modules/ecs"
 	"engine/modules/grid"
 	"engine/modules/inputs"
-	"engine/services/ecs"
 
 	"github.com/ogiusek/events"
 )

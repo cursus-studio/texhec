@@ -1,7 +1,7 @@
 package assets
 
 import (
-	"engine/services/ecs"
+	"engine/modules/ecs"
 	"errors"
 	"fmt"
 	"reflect"
@@ -27,8 +27,8 @@ func (s *PathComponent) Extension() string {
 // add asset struct
 
 type Service interface {
-	Path() ecs.ComponentsArray[PathComponent]
-	Cache() ecs.ComponentsArray[CacheComponent]
+	Path() ecs.ComponentArray[PathComponent]
+	Cache() ecs.ComponentArray[CacheComponent]
 
 	Register(
 		/* shouldn't have dots and be after dots in asset */ extension string,

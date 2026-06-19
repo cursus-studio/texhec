@@ -1,9 +1,9 @@
 package warmuppkg
 
 import (
+	"engine/modules/ecs"
 	"engine/modules/warmup"
 	"engine/modules/warmup/internal"
-	"engine/services/ecs"
 
 	"github.com/ogiusek/events"
 	"github.com/ogiusek/ioc/v2"

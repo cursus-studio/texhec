@@ -2,8 +2,8 @@ package internal
 
 import (
 	"engine"
+	"engine/modules/ecs"
 	"engine/modules/metadata"
-	"engine/services/ecs"
 
 	"github.com/ogiusek/ioc/v2"
 )
@@ -11,25 +11,25 @@ import (
 type service struct {
 	engine.EngineWorld `inject:""`
 
-	name        ecs.ComponentsArray[metadata.NameComponent]
-	description ecs.ComponentsArray[metadata.DescriptionComponent]
-	link        ecs.ComponentsArray[metadata.LinkComponent]
+	name        ecs.ComponentArray[metadata.NameComponent]
+	description ecs.ComponentArray[metadata.DescriptionComponent]
+	link        ecs.ComponentArray[metadata.LinkComponent]
 }
 
 func NewService(c ioc.Dic) metadata.Service {
 	s := ioc.GetServices[*service](c)
-	s.name = ecs.GetComponentsArray[metadata.NameComponent](s.World())
-	s.description = ecs.GetComponentsArray[metadata.DescriptionComponent](s.World())
-	s.link = ecs.GetComponentsArray[metadata.LinkComponent](s.World())
+	s.name = ecs.GetComponentArray[metadata.NameComponent](s.World())
+	s.description = ecs.GetComponentArray[metadata.DescriptionComponent](s.World())
+	s.link = ecs.GetComponentArray[metadata.LinkComponent](s.World())
 	return s
 }
 
-func (s *service) Name() ecs.ComponentsArray[metadata.NameComponent] {
+func (s *service) Name() ecs.ComponentArray[metadata.NameComponent] {
 	return s.name
 }
-func (s *service) Description() ecs.ComponentsArray[metadata.DescriptionComponent] {
+func (s *service) Description() ecs.ComponentArray[metadata.DescriptionComponent] {
 	return s.description
 }
-func (s *service) Link() ecs.ComponentsArray[metadata.LinkComponent] {
+func (s *service) Link() ecs.ComponentArray[metadata.LinkComponent] {
 	return s.link
 }

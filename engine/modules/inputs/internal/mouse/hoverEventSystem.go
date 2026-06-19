@@ -2,9 +2,9 @@ package mouse
 
 import (
 	"engine"
+	"engine/modules/ecs"
 	"engine/modules/inputs"
 	"engine/modules/loop"
-	"engine/services/ecs"
 
 	"github.com/ogiusek/events"
 	"github.com/ogiusek/ioc/v2"

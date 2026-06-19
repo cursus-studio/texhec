@@ -2,9 +2,9 @@ package internal
 
 import (
 	"engine"
+	"engine/modules/ecs"
 	"engine/modules/entityregistry"
 	"engine/modules/uuid"
-	"engine/services/ecs"
 	"errors"
 	"fmt"
 	"reflect"

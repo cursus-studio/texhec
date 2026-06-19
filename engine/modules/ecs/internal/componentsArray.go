@@ -1,60 +1,24 @@
-package ecs
+package internal
 
 import (
+	"engine/modules/ecs/internal/ecstypes"
 	"engine/services/datastructures"
 	"reflect"
 )
 
-// interface
-
-type BeforeGet func()
-type OnMod func(EntityID)
-
-type AnyComponentArray interface {
-	GetAny(entity EntityID) (any, bool)
-	GetEntities() []EntityID
-
-	// when type doesn't match error is returned
-	SetAny(EntityID, any)
-	Remove(EntityID)
-
-	// configuration
-	// on dependency change its also applied here
-	AddDependency(AnyComponentArray)
-	AddDirtySet(DirtySet)
-	BeforeGet(BeforeGet)
-
-	OnUpsert(OnMod)
-	OnRemove(OnMod)
-	// is called OnUpsert and OnRemove
-	OnMod(OnMod)
-}
-
-type ComponentsArray[Component any] interface {
-	AnyComponentArray
-	Get(entity EntityID) (Component, bool)
-
-	Set(EntityID, Component)
-
-	// configuration
-	SetEmpty(Component)
-	// it gets called imidiately with current empty
-	GetEmpty() Component
-}
-
 // impl
 
-type componentsArray[Component any] struct {
-	entities   entitiesInterface
+type componentArray[Component any] struct {
+	entities   entitiesImpl
 	equal      func(Component, Component) bool
 	empty      Component
-	components datastructures.SparseArray[EntityID, Component]
+	components datastructures.SparseArray[ecstypes.EntityID, Component]
 
-	dependencies []AnyComponentArray
-	dirtySets    datastructures.Set[DirtySet]
-	beforeGets   []BeforeGet
-	onUpsert     []OnMod
-	onRemove     []OnMod
+	dependencies []ecstypes.AnyComponentArray
+	dirtySets    datastructures.Set[ecstypes.DirtySet]
+	beforeGets   []ecstypes.BeforeGet
+	onUpsert     []ecstypes.OnMod
+	onRemove     []ecstypes.OnMod
 }
 
 func ComponentComparator[Component any]() func(c1, c2 Component) bool {
@@ -65,15 +29,15 @@ func ComponentComparator[Component any]() func(c1, c2 Component) bool {
 	return equal
 }
 
-func newComponentsArray[Component any](entities entitiesInterface) *componentsArray[Component] {
-	array := &componentsArray[Component]{
+func newComponentArray[Component any](entities entitiesImpl) *componentArray[Component] {
+	array := &componentArray[Component]{
 		entities: entities,
 		equal:    ComponentComparator[Component](),
 		// empty: default,
-		components: datastructures.NewSparseArray[EntityID, Component](),
+		components: datastructures.NewSparseArray[ecstypes.EntityID, Component](),
 
 		dependencies: nil,
-		dirtySets:    datastructures.NewSet[DirtySet](),
+		dirtySets:    datastructures.NewSet[ecstypes.DirtySet](),
 		beforeGets:   nil,
 		onUpsert:     nil,
 		onRemove:     nil,
@@ -81,7 +45,7 @@ func newComponentsArray[Component any](entities entitiesInterface) *componentsAr
 	return array
 }
 
-func (c *componentsArray[Component]) Set(entity EntityID, component Component) {
+func (c *componentArray[Component]) Set(entity ecstypes.EntityID, component Component) {
 	value, ok := c.components.Get(entity)
 	if ok && c.equal(value, component) {
 		return
@@ -100,16 +64,16 @@ func (c *componentsArray[Component]) Set(entity EntityID, component Component) {
 	}
 }
 
-func (c *componentsArray[Component]) SetAny(entity EntityID, anyComponent any) {
+func (c *componentArray[Component]) SetAny(entity ecstypes.EntityID, anyComponent any) {
 	// we use zero in case of invalid call
 	component, _ := anyComponent.(Component)
 	c.Set(entity, component)
 }
 
-func (c *componentsArray[Component]) SetEmpty(empty Component) { c.empty = empty }
-func (c *componentsArray[Component]) GetEmpty() Component      { return c.empty }
+func (c *componentArray[Component]) SetEmpty(empty Component) { c.empty = empty }
+func (c *componentArray[Component]) GetEmpty() Component      { return c.empty }
 
-func (c *componentsArray[Component]) Remove(entity EntityID) {
+func (c *componentArray[Component]) Remove(entity ecstypes.EntityID) {
 	if _, ok := c.components.Get(entity); !ok {
 		return
 	}
@@ -126,7 +90,7 @@ func (c *componentsArray[Component]) Remove(entity EntityID) {
 	}
 }
 
-func (c *componentsArray[Component]) Get(entity EntityID) (Component, bool) {
+func (c *componentArray[Component]) Get(entity ecstypes.EntityID) (Component, bool) {
 	for _, beforeGet := range c.beforeGets {
 		beforeGet()
 	}
@@ -137,20 +101,20 @@ func (c *componentsArray[Component]) Get(entity EntityID) (Component, bool) {
 	}
 }
 
-func (c *componentsArray[Component]) GetEntities() []EntityID {
+func (c *componentArray[Component]) GetEntities() []ecstypes.EntityID {
 	for _, beforeGet := range c.beforeGets {
 		beforeGet()
 	}
 	return c.components.GetIndices()
 }
 
-func (c *componentsArray[Component]) GetAny(entity EntityID) (any, bool) {
+func (c *componentArray[Component]) GetAny(entity ecstypes.EntityID) (any, bool) {
 	return c.Get(entity)
 }
 
 //
 
-func (c *componentsArray[Component]) AddDependency(dependency AnyComponentArray) {
+func (c *componentArray[Component]) AddDependency(dependency ecstypes.AnyComponentArray) {
 	c.dependencies = append(c.dependencies, dependency)
 	for _, dirtySet := range c.dirtySets.Get() {
 		if !dirtySet.Ok() {
@@ -160,7 +124,7 @@ func (c *componentsArray[Component]) AddDependency(dependency AnyComponentArray)
 		dependency.AddDirtySet(dirtySet)
 	}
 }
-func (c *componentsArray[Component]) AddDirtySet(dirtySet DirtySet) {
+func (c *componentArray[Component]) AddDirtySet(dirtySet ecstypes.DirtySet) {
 	if !dirtySet.Ok() {
 		c.dirtySets.RemoveElements(dirtySet)
 		return
@@ -176,24 +140,24 @@ func (c *componentsArray[Component]) AddDirtySet(dirtySet DirtySet) {
 	}
 	c.dirtySets.Add(dirtySet)
 }
-func (c *componentsArray[Component]) BeforeGet(listener BeforeGet) {
+func (c *componentArray[Component]) BeforeGet(listener ecstypes.BeforeGet) {
 	// we prepend listener so they are triggered first.
 	// if they are truely dependent they will call get again
 	//   and BeforeGet will trigger again triggering other listeners
 	// else if they won't be called again
 	//   then nothing will change
-	c.beforeGets = append([]BeforeGet{listener}, c.beforeGets...)
+	c.beforeGets = append([]ecstypes.BeforeGet{listener}, c.beforeGets...)
 }
 
-func (c *componentsArray[Component]) OnUpsert(onUpsert OnMod) {
+func (c *componentArray[Component]) OnUpsert(onUpsert ecstypes.OnMod) {
 	c.onUpsert = append(c.onUpsert, onUpsert)
 }
 
-func (c *componentsArray[Component]) OnRemove(onRemove OnMod) {
+func (c *componentArray[Component]) OnRemove(onRemove ecstypes.OnMod) {
 	c.onRemove = append(c.onRemove, onRemove)
 }
 
-func (c *componentsArray[Component]) OnMod(onMod OnMod) {
+func (c *componentArray[Component]) OnMod(onMod ecstypes.OnMod) {
 	c.OnUpsert(onMod)
 	c.OnRemove(onMod)
 }

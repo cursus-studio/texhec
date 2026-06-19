@@ -1,8 +1,8 @@
 package render
 
 import (
+	"engine/modules/ecs"
 	"engine/modules/transition"
-	"engine/services/ecs"
 	"errors"
 	"image"
 )

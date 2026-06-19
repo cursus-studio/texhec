@@ -4,9 +4,9 @@ import (
 	"engine"
 	"engine/modules/camera"
 	"engine/modules/collider"
+	"engine/modules/ecs"
 	"engine/modules/window"
 	"engine/services/datastructures"
-	"engine/services/ecs"
 	"fmt"
 	"reflect"
 	"slices"
@@ -46,43 +46,43 @@ type service struct {
 	engine.EngineWorld `inject:""`
 	ecs.SystemRegister
 
-	cameraArray      ecs.ComponentsArray[camera.Component]
-	priorityArray    ecs.ComponentsArray[camera.PriorityComponent]
-	projectionsArray ecs.ComponentsArray[projectionComponent]
+	cameraArray      ecs.ComponentArray[camera.Component]
+	priorityArray    ecs.ComponentArray[camera.PriorityComponent]
+	projectionsArray ecs.ComponentArray[projectionComponent]
 
 	projectionIDs map[reflect.Type]projectionID
 	projections   datastructures.SparseArray[projectionID, ProjectionData]
 
-	mobileCamera       ecs.ComponentsArray[camera.MobileCameraComponent]
-	cameraLimits       ecs.ComponentsArray[camera.CameraLimitsComponent]
-	viewport           ecs.ComponentsArray[camera.ViewportComponent]
-	normalizedViewport ecs.ComponentsArray[camera.NormalizedViewportComponent]
+	mobileCamera       ecs.ComponentArray[camera.MobileCameraComponent]
+	cameraLimits       ecs.ComponentArray[camera.CameraLimitsComponent]
+	viewport           ecs.ComponentArray[camera.ViewportComponent]
+	normalizedViewport ecs.ComponentArray[camera.NormalizedViewportComponent]
 
-	ortho              ecs.ComponentsArray[camera.OrthoComponent]
-	orthoResolution    ecs.ComponentsArray[camera.OrthoResolutionComponent]
-	perspective        ecs.ComponentsArray[camera.PerspectiveComponent]
-	dynamicPerspective ecs.ComponentsArray[camera.DynamicPerspectiveComponent]
+	ortho              ecs.ComponentArray[camera.OrthoComponent]
+	orthoResolution    ecs.ComponentArray[camera.OrthoResolutionComponent]
+	perspective        ecs.ComponentArray[camera.PerspectiveComponent]
+	dynamicPerspective ecs.ComponentArray[camera.DynamicPerspectiveComponent]
 }
 
 func NewService(c ioc.Dic, register ecs.SystemRegister) Service {
 	s := ioc.GetServices[*service](c)
 	s.SystemRegister = register
-	s.cameraArray = ecs.GetComponentsArray[camera.Component](s.World())
-	s.priorityArray = ecs.GetComponentsArray[camera.PriorityComponent](s.World())
-	s.projectionsArray = ecs.GetComponentsArray[projectionComponent](s.World())
+	s.cameraArray = ecs.GetComponentArray[camera.Component](s.World())
+	s.priorityArray = ecs.GetComponentArray[camera.PriorityComponent](s.World())
+	s.projectionsArray = ecs.GetComponentArray[projectionComponent](s.World())
 
 	s.projectionIDs = make(map[reflect.Type]projectionID)
 	s.projections = datastructures.NewSparseArray[projectionID, ProjectionData]()
 
-	s.mobileCamera = ecs.GetComponentsArray[camera.MobileCameraComponent](s.World())
-	s.cameraLimits = ecs.GetComponentsArray[camera.CameraLimitsComponent](s.World())
-	s.viewport = ecs.GetComponentsArray[camera.ViewportComponent](s.World())
-	s.normalizedViewport = ecs.GetComponentsArray[camera.NormalizedViewportComponent](s.World())
+	s.mobileCamera = ecs.GetComponentArray[camera.MobileCameraComponent](s.World())
+	s.cameraLimits = ecs.GetComponentArray[camera.CameraLimitsComponent](s.World())
+	s.viewport = ecs.GetComponentArray[camera.ViewportComponent](s.World())
+	s.normalizedViewport = ecs.GetComponentArray[camera.NormalizedViewportComponent](s.World())
 
-	s.ortho = ecs.GetComponentsArray[camera.OrthoComponent](s.World())
-	s.orthoResolution = ecs.GetComponentsArray[camera.OrthoResolutionComponent](s.World())
-	s.perspective = ecs.GetComponentsArray[camera.PerspectiveComponent](s.World())
-	s.dynamicPerspective = ecs.GetComponentsArray[camera.DynamicPerspectiveComponent](s.World())
+	s.ortho = ecs.GetComponentArray[camera.OrthoComponent](s.World())
+	s.orthoResolution = ecs.GetComponentArray[camera.OrthoResolutionComponent](s.World())
+	s.perspective = ecs.GetComponentArray[camera.PerspectiveComponent](s.World())
+	s.dynamicPerspective = ecs.GetComponentArray[camera.DynamicPerspectiveComponent](s.World())
 
 	s.cameraArray.OnUpsert(s.OnCameraUpsert)
 
@@ -126,37 +126,37 @@ func NewService(c ioc.Dic, register ecs.SystemRegister) Service {
 	return s
 }
 
-func (t *service) Component() ecs.ComponentsArray[camera.Component] {
+func (t *service) Component() ecs.ComponentArray[camera.Component] {
 	return t.cameraArray
 }
 
-func (t *service) Priority() ecs.ComponentsArray[camera.PriorityComponent] {
+func (t *service) Priority() ecs.ComponentArray[camera.PriorityComponent] {
 	return t.priorityArray
 }
 
-func (t *service) Mobile() ecs.ComponentsArray[camera.MobileCameraComponent] {
+func (t *service) Mobile() ecs.ComponentArray[camera.MobileCameraComponent] {
 	return t.mobileCamera
 }
-func (t *service) Limits() ecs.ComponentsArray[camera.CameraLimitsComponent] {
+func (t *service) Limits() ecs.ComponentArray[camera.CameraLimitsComponent] {
 	return t.cameraLimits
 }
-func (t *service) Viewport() ecs.ComponentsArray[camera.ViewportComponent] {
+func (t *service) Viewport() ecs.ComponentArray[camera.ViewportComponent] {
 	return t.viewport
 }
-func (t *service) NormalizedViewport() ecs.ComponentsArray[camera.NormalizedViewportComponent] {
+func (t *service) NormalizedViewport() ecs.ComponentArray[camera.NormalizedViewportComponent] {
 	return t.normalizedViewport
 }
 
-func (t *service) Ortho() ecs.ComponentsArray[camera.OrthoComponent] {
+func (t *service) Ortho() ecs.ComponentArray[camera.OrthoComponent] {
 	return t.ortho
 }
-func (t *service) OrthoResolution() ecs.ComponentsArray[camera.OrthoResolutionComponent] {
+func (t *service) OrthoResolution() ecs.ComponentArray[camera.OrthoResolutionComponent] {
 	return t.orthoResolution
 }
-func (t *service) Perspective() ecs.ComponentsArray[camera.PerspectiveComponent] {
+func (t *service) Perspective() ecs.ComponentArray[camera.PerspectiveComponent] {
 	return t.perspective
 }
-func (t *service) DynamicPerspective() ecs.ComponentsArray[camera.DynamicPerspectiveComponent] {
+func (t *service) DynamicPerspective() ecs.ComponentArray[camera.DynamicPerspectiveComponent] {
 	return t.dynamicPerspective
 }
 

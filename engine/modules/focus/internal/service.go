@@ -2,8 +2,8 @@ package internal
 
 import (
 	"engine"
+	"engine/modules/ecs"
 	"engine/modules/focus"
-	"engine/services/ecs"
 
 	"github.com/ogiusek/events"
 	"github.com/ogiusek/ioc/v2"
@@ -12,16 +12,16 @@ import (
 type service struct {
 	engine.EngineWorld `inject:""`
 
-	bubbling       ecs.ComponentsArray[focus.BubblingComponent]
-	defaultFocused ecs.ComponentsArray[focus.DefaultFocusedComponent]
-	focused        ecs.ComponentsArray[focus.FocusedComponent]
+	bubbling       ecs.ComponentArray[focus.BubblingComponent]
+	defaultFocused ecs.ComponentArray[focus.DefaultFocusedComponent]
+	focused        ecs.ComponentArray[focus.FocusedComponent]
 }
 
 func NewService(c ioc.Dic) focus.Service {
 	s := ioc.GetServices[*service](c)
-	s.bubbling = ecs.GetComponentsArray[focus.BubblingComponent](s.World())
-	s.defaultFocused = ecs.GetComponentsArray[focus.DefaultFocusedComponent](s.World())
-	s.focused = ecs.GetComponentsArray[focus.FocusedComponent](s.World())
+	s.bubbling = ecs.GetComponentArray[focus.BubblingComponent](s.World())
+	s.defaultFocused = ecs.GetComponentArray[focus.DefaultFocusedComponent](s.World())
+	s.focused = ecs.GetComponentArray[focus.FocusedComponent](s.World())
 
 	events.Listen(s.EventsBuilder(), s.OnDefaultFocus)
 	events.Listen(s.EventsBuilder(), s.OnFocus)

@@ -2,8 +2,8 @@ package cameralimitsys
 
 import (
 	"engine"
+	"engine/modules/ecs"
 	"engine/modules/transform"
-	"engine/services/ecs"
 
 	"github.com/go-gl/mathgl/mgl32"
 	"github.com/ogiusek/ioc/v2"

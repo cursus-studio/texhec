@@ -1,52 +1,36 @@
-package ecs
+package internal
 
 import (
+	"engine/modules/ecs/internal/ecstypes"
 	"engine/services/datastructures"
 )
-
-// interface
-
-type EntityID uint32
-
-func (id EntityID) Index() int { return int(id) }
-
-//
-
-type entitiesInterface interface {
-	GetEntities() []EntityID
-	EntityExists(EntityID) bool
-
-	NewEntity() EntityID
-	EnsureExists(EntityID)
-	RemoveEntity(EntityID)
-}
 
 // impl
 
 type entitiesImpl struct {
-	counter EntityID
-	holes   datastructures.SparseSet[EntityID]
+	counter ecstypes.EntityID
+	holes   datastructures.SparseSet[ecstypes.EntityID]
 
-	entities datastructures.SparseSet[EntityID]
+	entities datastructures.SparseSet[ecstypes.EntityID]
 }
 
 func newEntities() *entitiesImpl {
 	return &entitiesImpl{
 		counter:  0,
-		holes:    datastructures.NewSparseSet[EntityID](),
-		entities: datastructures.NewSparseSet[EntityID](),
+		holes:    datastructures.NewSparseSet[ecstypes.EntityID](),
+		entities: datastructures.NewSparseSet[ecstypes.EntityID](),
 	}
 }
 
-func (entitiesStorage *entitiesImpl) GetEntities() []EntityID {
+func (entitiesStorage *entitiesImpl) GetEntities() []ecstypes.EntityID {
 	return entitiesStorage.entities.GetIndices()
 }
 
-func (entitiesStorage *entitiesImpl) EntityExists(entity EntityID) bool {
+func (entitiesStorage *entitiesImpl) EntityExists(entity ecstypes.EntityID) bool {
 	return entitiesStorage.entities.Get(entity)
 }
 
-func (entitiesStorage *entitiesImpl) NewEntity() EntityID {
+func (entitiesStorage *entitiesImpl) NewEntity() ecstypes.EntityID {
 	if holes := entitiesStorage.holes.GetIndices(); len(holes) != 0 {
 		id := holes[0]
 		_ = entitiesStorage.holes.Remove(id)
@@ -59,7 +43,7 @@ func (entitiesStorage *entitiesImpl) NewEntity() EntityID {
 	return id
 }
 
-func (entitiesStorage *entitiesImpl) EnsureExists(entity EntityID) {
+func (entitiesStorage *entitiesImpl) EnsureExists(entity ecstypes.EntityID) {
 	if ok := entitiesStorage.entities.Get(entity); ok {
 		return
 	}
@@ -73,7 +57,7 @@ func (entitiesStorage *entitiesImpl) EnsureExists(entity EntityID) {
 	entitiesStorage.holes.Remove(entity)
 }
 
-func (entitiesStorage *entitiesImpl) RemoveEntity(entity EntityID) {
+func (entitiesStorage *entitiesImpl) RemoveEntity(entity ecstypes.EntityID) {
 	entitiesStorage.holes.Add(entity)
 	entitiesStorage.entities.Remove(entity)
 }

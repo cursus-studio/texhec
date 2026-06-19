@@ -1,9 +1,9 @@
 package recordimpl
 
 import (
+	"engine/modules/ecs"
 	"engine/modules/record"
 	"engine/services/datastructures"
-	"engine/services/ecs"
 )
 
 type FowardRecording struct {

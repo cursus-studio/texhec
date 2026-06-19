@@ -8,6 +8,7 @@ import (
 	"core/modules/ui"
 	"engine/modules/camera"
 	"engine/modules/collider"
+	"engine/modules/ecs"
 	"engine/modules/grid"
 	"engine/modules/groups"
 	"engine/modules/inputs"
@@ -15,7 +16,6 @@ import (
 	"engine/modules/seed"
 	"engine/modules/transform"
 	"engine/modules/uuid"
-	"engine/services/ecs"
 
 	"github.com/go-gl/mathgl/mgl32"
 	"github.com/ogiusek/events"

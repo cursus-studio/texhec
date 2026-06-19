@@ -2,9 +2,9 @@ package hierarchyservice
 
 import (
 	"engine"
+	"engine/modules/ecs"
 	"engine/modules/hierarchy"
 	"engine/services/datastructures"
-	"engine/services/ecs"
 
 	"github.com/ogiusek/ioc/v2"
 )
@@ -13,8 +13,8 @@ type parentComponent struct{}
 
 type service struct {
 	engine.EngineWorld `inject:""`
-	hierarchyArray     ecs.ComponentsArray[hierarchy.Component]
-	parentArray        ecs.ComponentsArray[parentComponent]
+	hierarchyArray     ecs.ComponentArray[hierarchy.Component]
+	parentArray        ecs.ComponentArray[parentComponent]
 
 	parents      datastructures.SparseArray[ecs.EntityID, ecs.EntityID]
 	children     datastructures.SparseArray[ecs.EntityID, datastructures.SparseSet[ecs.EntityID]]
@@ -24,8 +24,8 @@ type service struct {
 func NewService(c ioc.Dic) hierarchy.Service {
 	t := ioc.GetServices[*service](c)
 
-	t.hierarchyArray = ecs.GetComponentsArray[hierarchy.Component](t.World())
-	t.parentArray = ecs.GetComponentsArray[parentComponent](t.World())
+	t.hierarchyArray = ecs.GetComponentArray[hierarchy.Component](t.World())
+	t.parentArray = ecs.GetComponentArray[parentComponent](t.World())
 	t.parents = datastructures.NewSparseArray[ecs.EntityID, ecs.EntityID]()
 	t.children = datastructures.NewSparseArray[ecs.EntityID, datastructures.SparseSet[ecs.EntityID]]()
 	t.flatChildren = datastructures.NewSparseArray[ecs.EntityID, datastructures.SparseSet[ecs.EntityID]]()
@@ -37,7 +37,7 @@ func NewService(c ioc.Dic) hierarchy.Service {
 	return t
 }
 
-func (t *service) Component() ecs.ComponentsArray[hierarchy.Component] {
+func (t *service) Component() ecs.ComponentArray[hierarchy.Component] {
 	return t.hierarchyArray
 }
 

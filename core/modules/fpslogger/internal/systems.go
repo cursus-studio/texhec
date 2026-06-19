@@ -2,8 +2,8 @@ package internal
 
 import (
 	"core/game"
+	"engine/modules/ecs"
 	"engine/modules/loop"
-	"engine/services/ecs"
 	"fmt"
 	"time"
 

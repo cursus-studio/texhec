@@ -2,7 +2,7 @@
 package generation
 
 import (
-	"engine/services/ecs"
+	"engine/modules/ecs"
 )
 
 type Service interface {

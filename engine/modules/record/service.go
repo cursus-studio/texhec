@@ -10,9 +10,9 @@
 package record
 
 import (
+	"engine/modules/ecs"
 	"engine/modules/uuid"
 	"engine/services/datastructures"
-	"engine/services/ecs"
 	"reflect"
 )
 
@@ -56,10 +56,10 @@ func AddToConfig[Component any](config Config) ComponentGetter[Component] {
 	*config.ComponentsOrder = append(*config.ComponentsOrder, componentType)
 	config.ComponentsIndices[componentType] = i
 	config.RecordedComponents[componentType] = func(w ecs.World) ecs.AnyComponentArray {
-		return ecs.GetComponentsArray[Component](w)
+		return ecs.GetComponentArray[Component](w)
 	}
 	config.InheritZero[componentType] = func(inherit ecs.World) {
-		zero = ecs.GetComponentsArray[Component](inherit).GetEmpty
+		zero = ecs.GetComponentArray[Component](inherit).GetEmpty
 	}
 
 cleanup:

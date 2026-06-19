@@ -20,10 +20,10 @@ SUM:                             4             25              6             96
 Type: `engine/modules/uuid.Service`
 
 #### method Service Component
-Type: `func() engine/services/ecs.ComponentsArray[engine/modules/uuid.Component]`
+Type: `func() engine/modules/ecs.ComponentArray[engine/modules/uuid.Component]`
 
 #### method Service Entity
-Type: `func(engine/modules/uuid.UUID) (engine/services/ecs.EntityID, bool)`
+Type: `func(engine/modules/uuid.UUID) (engine/modules/ecs.EntityID, bool)`
 
 #### method Service NewUUID
 Type: `func() engine/modules/uuid.UUID`
@@ -59,6 +59,14 @@ Type: `func(id engine/modules/uuid.UUID) engine/modules/uuid.Component`
   - `engine.EngineWorld`
   - `engine.World`
 
+`engine/modules/ecs`:
+  - `engine/modules/ecs.ComponentArray`
+  - `engine/modules/ecs.DirtySet`
+  - `engine/modules/ecs.EntityID`
+  - `engine/modules/ecs.GetComponentArray`
+  - `engine/modules/ecs.NewDirtySet`
+  - `engine/modules/ecs.World`
+
 `engine/modules/relation`:
   - `engine/modules/relation.Get`
   - `engine/modules/relation.Service`
@@ -75,16 +83,6 @@ Type: `func(id engine/modules/uuid.UUID) engine/modules/uuid.Component`
   - `engine/modules/uuid.ID`
   - `engine/modules/uuid.Service`
   - `engine/modules/uuid.UUID`
-
-`engine/services/ecs`:
-  - `engine/services/ecs.AddDirtySet`
-  - `engine/services/ecs.ComponentsArray`
-  - `engine/services/ecs.DirtySet`
-  - `engine/services/ecs.EntityID`
-  - `engine/services/ecs.Get`
-  - `engine/services/ecs.GetComponentsArray`
-  - `engine/services/ecs.NewDirtySet`
-  - `engine/services/ecs.World`
 
 ### Third Party
 - `github.com/google/uuid`

@@ -19,13 +19,13 @@ SUM:                             3             21              5             85
 Type: `engine/modules/metadata.Service`
 
 #### method Service Description
-Type: `func() engine/services/ecs.ComponentsArray[engine/modules/metadata.DescriptionComponent]`
+Type: `func() engine/modules/ecs.ComponentArray[engine/modules/metadata.DescriptionComponent]`
 
 #### method Service Link
-Type: `func() engine/services/ecs.ComponentsArray[engine/modules/metadata.LinkComponent]`
+Type: `func() engine/modules/ecs.ComponentArray[engine/modules/metadata.LinkComponent]`
 
 #### method Service Name
-Type: `func() engine/services/ecs.ComponentsArray[engine/modules/metadata.NameComponent]`
+Type: `func() engine/modules/ecs.ComponentArray[engine/modules/metadata.NameComponent]`
 
 ### type NameComponent
 Type: `engine/modules/metadata.NameComponent`
@@ -43,7 +43,7 @@ Type: `string`
 Type: `engine/modules/metadata.LinkComponent`
 
 #### property LinkComponent Entity
-Type: `engine/services/ecs.EntityID`
+Type: `engine/modules/ecs.EntityID`
 
 ## Functions
 ### func NewName
@@ -53,13 +53,18 @@ Type: `func(name string) engine/modules/metadata.NameComponent`
 Type: `func(description string) engine/modules/metadata.DescriptionComponent`
 
 ### func NewLink
-Type: `func(entity engine/services/ecs.EntityID) engine/modules/metadata.LinkComponent`
+Type: `func(entity engine/modules/ecs.EntityID) engine/modules/metadata.LinkComponent`
 
 
 ## Dependencies
 `engine`:
   - `engine.EngineWorld`
   - `engine.World`
+
+`engine/modules/ecs`:
+  - `engine/modules/ecs.ComponentArray`
+  - `engine/modules/ecs.EntityID`
+  - `engine/modules/ecs.GetComponentArray`
 
 `engine/modules/entityregistry`:
   - `engine/modules/entityregistry.Register`
@@ -79,12 +84,6 @@ Type: `func(entity engine/services/ecs.EntityID) engine/modules/metadata.LinkCom
 
 `engine/modules/typeregistry/pkg`:
   - `engine/modules/typeregistry/pkg.PkgT`
-
-`engine/services/ecs`:
-  - `engine/services/ecs.ComponentsArray`
-  - `engine/services/ecs.EntityID`
-  - `engine/services/ecs.GetComponentsArray`
-  - `engine/services/ecs.Set`
 
 ### Third Party
 - `github.com/ogiusek/ioc/v2`

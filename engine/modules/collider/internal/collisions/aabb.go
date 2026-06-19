@@ -2,8 +2,8 @@ package collisions
 
 import (
 	"engine/modules/collider"
+	"engine/modules/ecs"
 	"engine/modules/transform"
-	"engine/services/ecs"
 
 	"github.com/go-gl/mathgl/mgl32"
 )

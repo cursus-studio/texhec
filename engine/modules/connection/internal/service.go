@@ -4,8 +4,8 @@ import (
 	"encoding/binary"
 	"engine"
 	"engine/modules/connection"
+	"engine/modules/ecs"
 	"engine/services/datastructures"
-	"engine/services/ecs"
 	"io"
 	"net"
 
@@ -17,22 +17,22 @@ type service struct {
 
 	listenersDirtySet ecs.DirtySet
 	listeners         datastructures.Set[net.Listener]
-	listenersArray    ecs.ComponentsArray[connection.ListenerComponent]
+	listenersArray    ecs.ComponentArray[connection.ListenerComponent]
 
 	connectionDirtySet ecs.DirtySet
 	connections        datastructures.Set[connection.Conn]
-	connectionArray    ecs.ComponentsArray[connection.ConnectionComponent]
+	connectionArray    ecs.ComponentArray[connection.ConnectionComponent]
 }
 
 func NewService(c ioc.Dic) connection.Service {
 	s := ioc.GetServices[*service](c)
 	s.listenersDirtySet = ecs.NewDirtySet()
 	s.listeners = datastructures.NewSet[net.Listener]()
-	s.listenersArray = ecs.GetComponentsArray[connection.ListenerComponent](s.World())
+	s.listenersArray = ecs.GetComponentArray[connection.ListenerComponent](s.World())
 
 	s.connectionDirtySet = ecs.NewDirtySet()
 	s.connections = datastructures.NewSet[connection.Conn]()
-	s.connectionArray = ecs.GetComponentsArray[connection.ConnectionComponent](s.World())
+	s.connectionArray = ecs.GetComponentArray[connection.ConnectionComponent](s.World())
 
 	s.listenersArray.AddDirtySet(s.listenersDirtySet)
 	s.listenersArray.OnUpsert(s.BeforeListenerGet)
@@ -101,10 +101,10 @@ func (s *service) Register() error {
 	return nil
 }
 
-func (s *service) Component() ecs.ComponentsArray[connection.ConnectionComponent] {
+func (s *service) Component() ecs.ComponentArray[connection.ConnectionComponent] {
 	return s.connectionArray
 }
-func (s *service) Listener() ecs.ComponentsArray[connection.ListenerComponent] {
+func (s *service) Listener() ecs.ComponentArray[connection.ListenerComponent] {
 	return s.listenersArray
 }
 

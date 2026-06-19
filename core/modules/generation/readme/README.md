@@ -54,6 +54,10 @@ Type: `func() error`
   - `engine/modules/collider.Component`
   - `engine/modules/collider.NewCollider`
 
+`engine/modules/ecs`:
+  - `engine/modules/ecs.EntityID`
+  - `engine/modules/ecs.SystemRegister`
+
 `engine/modules/entityregistry`:
   - `engine/modules/entityregistry.Register`
   - `engine/modules/entityregistry.Service`
@@ -104,13 +108,6 @@ Type: `func() error`
   - `engine/services/datastructures.GetIndices`
   - `engine/services/datastructures.NewSparseArray`
   - `engine/services/datastructures.Set`
-
-`engine/services/ecs`:
-  - `engine/services/ecs.EntityID`
-  - `engine/services/ecs.Get`
-  - `engine/services/ecs.NewEntity`
-  - `engine/services/ecs.Set`
-  - `engine/services/ecs.SystemRegister`
 
 ### Third Party
 - `github.com/go-gl/mathgl/mgl64`

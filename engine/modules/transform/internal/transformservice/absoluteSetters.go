@@ -1,13 +1,13 @@
 package transformservice
 
 import (
+	"engine/modules/ecs"
 	"engine/modules/transform"
-	"engine/services/ecs"
 )
 
 type absolutePosArray struct {
 	t *service
-	ecs.ComponentsArray[transform.AbsolutePosComponent]
+	ecs.ComponentArray[transform.AbsolutePosComponent]
 }
 
 func (t *absolutePosArray) Set(entity ecs.EntityID, absolutePos transform.AbsolutePosComponent) {
@@ -23,7 +23,7 @@ func (t *absolutePosArray) Set(entity ecs.EntityID, absolutePos transform.Absolu
 
 type absoluteSizeArray struct {
 	t *service
-	ecs.ComponentsArray[transform.AbsoluteSizeComponent]
+	ecs.ComponentArray[transform.AbsoluteSizeComponent]
 }
 
 func (t *absoluteSizeArray) Set(entity ecs.EntityID, absoluteSize transform.AbsoluteSizeComponent) {
@@ -41,7 +41,7 @@ func (t *absoluteSizeArray) Set(entity ecs.EntityID, absoluteSize transform.Abso
 
 type absoluteRotationArray struct {
 	t *service
-	ecs.ComponentsArray[transform.AbsoluteRotationComponent]
+	ecs.ComponentArray[transform.AbsoluteRotationComponent]
 }
 
 func (t *absoluteRotationArray) Set(entity ecs.EntityID, absoluteRot transform.AbsoluteRotationComponent) {

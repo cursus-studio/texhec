@@ -1,9 +1,9 @@
 package config
 
 import (
+	"engine/modules/ecs"
 	"engine/modules/netsync"
 	"engine/modules/record"
-	"engine/services/ecs"
 	"reflect"
 
 	"github.com/ogiusek/events"

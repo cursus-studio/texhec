@@ -4,11 +4,11 @@ import (
 	"core/game"
 	"core/modules/definitions"
 	"core/modules/tile"
+	"engine/modules/ecs"
 	"engine/modules/grid"
 	"engine/modules/interactions"
 	"engine/modules/relation"
 	"engine/modules/transform"
-	"engine/services/ecs"
 
 	"github.com/ogiusek/events"
 	"github.com/ogiusek/ioc/v2"
@@ -26,15 +26,15 @@ type service struct {
 	ecs.SystemRegister
 	renderer ecs.SystemRegister
 
-	tile ecs.ComponentsArray[tile.Component]
+	tile ecs.ComponentArray[tile.Component]
 
-	pos   ecs.ComponentsArray[tile.PosComponent]
-	size  ecs.ComponentsArray[tile.SizeComponent]
-	rot   ecs.ComponentsArray[tile.RotComponent]
-	layer ecs.ComponentsArray[tile.LayerComponent]
+	pos   ecs.ComponentArray[tile.PosComponent]
+	size  ecs.ComponentArray[tile.SizeComponent]
+	rot   ecs.ComponentArray[tile.RotComponent]
+	layer ecs.ComponentArray[tile.LayerComponent]
 
-	coordsCursor      ecs.ComponentsArray[tile.CoordsCursorComponent]
-	coordsCursorRange ecs.ComponentsArray[tile.CoordsCursorRangeComponent]
+	coordsCursor      ecs.ComponentArray[tile.CoordsCursorComponent]
+	coordsCursorRange ecs.ComponentArray[tile.CoordsCursorRangeComponent]
 
 	tileSize float32
 }
@@ -44,15 +44,15 @@ func NewService(c ioc.Dic, system, renderer ecs.SystemRegister, tileSize float32
 	s.SystemRegister = system
 	s.renderer = renderer
 
-	s.tile = ecs.GetComponentsArray[tile.Component](s.World())
+	s.tile = ecs.GetComponentArray[tile.Component](s.World())
 
-	s.pos = ecs.GetComponentsArray[tile.PosComponent](s.World())
-	s.size = ecs.GetComponentsArray[tile.SizeComponent](s.World())
-	s.rot = ecs.GetComponentsArray[tile.RotComponent](s.World())
-	s.layer = ecs.GetComponentsArray[tile.LayerComponent](s.World())
+	s.pos = ecs.GetComponentArray[tile.PosComponent](s.World())
+	s.size = ecs.GetComponentArray[tile.SizeComponent](s.World())
+	s.rot = ecs.GetComponentArray[tile.RotComponent](s.World())
+	s.layer = ecs.GetComponentArray[tile.LayerComponent](s.World())
 
-	s.coordsCursor = ecs.GetComponentsArray[tile.CoordsCursorComponent](s.World())
-	s.coordsCursorRange = ecs.GetComponentsArray[tile.CoordsCursorRangeComponent](s.World())
+	s.coordsCursor = ecs.GetComponentArray[tile.CoordsCursorComponent](s.World())
+	s.coordsCursorRange = ecs.GetComponentArray[tile.CoordsCursorRangeComponent](s.World())
 
 	s.size.SetEmpty(tile.NewSize(1, 1))
 	s.layer.SetEmpty(tile.NewLayer(definitions.TileLayer))
@@ -79,7 +79,7 @@ func NewService(c ioc.Dic, system, renderer ecs.SystemRegister, tileSize float32
 
 func (s *service) Renderer() ecs.SystemRegister { return s.renderer }
 
-func (s *service) Component() ecs.ComponentsArray[tile.Component] {
+func (s *service) Component() ecs.ComponentArray[tile.Component] {
 	return s.tile
 }
 func (s *service) Grid() grid.ServiceT[tile.ID] { return s.TileGridService }
@@ -87,15 +87,15 @@ func (s *service) GetTile(id tile.ID) (ecs.EntityID, bool) {
 	return s.TileTypeRelation.Get(id)
 }
 
-func (s *service) Pos() ecs.ComponentsArray[tile.PosComponent]     { return s.pos }
-func (s *service) Size() ecs.ComponentsArray[tile.SizeComponent]   { return s.size }
-func (s *service) Rot() ecs.ComponentsArray[tile.RotComponent]     { return s.rot }
-func (s *service) Layer() ecs.ComponentsArray[tile.LayerComponent] { return s.layer }
+func (s *service) Pos() ecs.ComponentArray[tile.PosComponent]     { return s.pos }
+func (s *service) Size() ecs.ComponentArray[tile.SizeComponent]   { return s.size }
+func (s *service) Rot() ecs.ComponentArray[tile.RotComponent]     { return s.rot }
+func (s *service) Layer() ecs.ComponentArray[tile.LayerComponent] { return s.layer }
 
-func (s *service) CoordsCursor() ecs.ComponentsArray[tile.CoordsCursorComponent] {
+func (s *service) CoordsCursor() ecs.ComponentArray[tile.CoordsCursorComponent] {
 	return s.coordsCursor
 }
-func (s *service) CoordsCursorRange() ecs.ComponentsArray[tile.CoordsCursorRangeComponent] {
+func (s *service) CoordsCursorRange() ecs.ComponentArray[tile.CoordsCursorRangeComponent] {
 	return s.coordsCursorRange
 }
 

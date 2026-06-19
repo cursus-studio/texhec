@@ -2,8 +2,8 @@ package transformservice
 
 import (
 	"engine"
+	"engine/modules/ecs"
 	"engine/modules/transform"
-	"engine/services/ecs"
 	"slices"
 
 	"github.com/go-gl/mathgl/mgl32"
@@ -14,25 +14,25 @@ type service struct {
 	engine.EngineWorld `inject:""`
 	DirtySet           ecs.DirtySet
 
-	AbsolutePosArray      ecs.ComponentsArray[transform.AbsolutePosComponent]
-	AbsoluteSizeArray     ecs.ComponentsArray[transform.AbsoluteSizeComponent]
-	AbsoluteRotationArray ecs.ComponentsArray[transform.AbsoluteRotationComponent]
+	AbsolutePosArray      ecs.ComponentArray[transform.AbsolutePosComponent]
+	AbsoluteSizeArray     ecs.ComponentArray[transform.AbsoluteSizeComponent]
+	AbsoluteRotationArray ecs.ComponentArray[transform.AbsoluteRotationComponent]
 
-	AbsolutePosWrapper      ecs.ComponentsArray[transform.AbsolutePosComponent]
-	AbsoluteSizeWrapper     ecs.ComponentsArray[transform.AbsoluteSizeComponent]
-	AbsoluteRotationWrapper ecs.ComponentsArray[transform.AbsoluteRotationComponent]
+	AbsolutePosWrapper      ecs.ComponentArray[transform.AbsolutePosComponent]
+	AbsoluteSizeWrapper     ecs.ComponentArray[transform.AbsoluteSizeComponent]
+	AbsoluteRotationWrapper ecs.ComponentArray[transform.AbsoluteRotationComponent]
 
-	PosArray      ecs.ComponentsArray[transform.PosComponent]
-	RotationArray ecs.ComponentsArray[transform.RotationComponent]
-	SizeArray     ecs.ComponentsArray[transform.SizeComponent]
+	PosArray      ecs.ComponentArray[transform.PosComponent]
+	RotationArray ecs.ComponentArray[transform.RotationComponent]
+	SizeArray     ecs.ComponentArray[transform.SizeComponent]
 
-	MaxSizeArray     ecs.ComponentsArray[transform.MaxSizeComponent]
-	MinSizeArray     ecs.ComponentsArray[transform.MinSizeComponent]
-	AspectRatioArray ecs.ComponentsArray[transform.AspectRatioComponent]
+	MaxSizeArray     ecs.ComponentArray[transform.MaxSizeComponent]
+	MinSizeArray     ecs.ComponentArray[transform.MinSizeComponent]
+	AspectRatioArray ecs.ComponentArray[transform.AspectRatioComponent]
 
-	PivotPointArray       ecs.ComponentsArray[transform.PivotPointComponent]
-	ParentMaskArray       ecs.ComponentsArray[transform.ParentComponent]
-	ParentPivotPointArray ecs.ComponentsArray[transform.ParentPivotPointComponent]
+	PivotPointArray       ecs.ComponentArray[transform.PivotPointComponent]
+	ParentMaskArray       ecs.ComponentArray[transform.ParentComponent]
+	ParentPivotPointArray ecs.ComponentArray[transform.ParentPivotPointComponent]
 
 	defaultRot         transform.RotationComponent
 	defaultSize        transform.SizeComponent
@@ -51,25 +51,25 @@ func NewService(
 
 	s.DirtySet = ecs.NewDirtySet()
 
-	s.AbsolutePosArray = ecs.GetComponentsArray[transform.AbsolutePosComponent](s.World())
-	s.AbsoluteSizeArray = ecs.GetComponentsArray[transform.AbsoluteSizeComponent](s.World())
-	s.AbsoluteRotationArray = ecs.GetComponentsArray[transform.AbsoluteRotationComponent](s.World())
+	s.AbsolutePosArray = ecs.GetComponentArray[transform.AbsolutePosComponent](s.World())
+	s.AbsoluteSizeArray = ecs.GetComponentArray[transform.AbsoluteSizeComponent](s.World())
+	s.AbsoluteRotationArray = ecs.GetComponentArray[transform.AbsoluteRotationComponent](s.World())
 
 	s.AbsolutePosWrapper = &absolutePosArray{s, s.AbsolutePosArray}
 	s.AbsoluteSizeWrapper = &absoluteSizeArray{s, s.AbsoluteSizeArray}
 	s.AbsoluteRotationWrapper = &absoluteRotationArray{s, s.AbsoluteRotationArray}
 
-	s.PosArray = ecs.GetComponentsArray[transform.PosComponent](s.World())
-	s.SizeArray = ecs.GetComponentsArray[transform.SizeComponent](s.World())
-	s.RotationArray = ecs.GetComponentsArray[transform.RotationComponent](s.World())
+	s.PosArray = ecs.GetComponentArray[transform.PosComponent](s.World())
+	s.SizeArray = ecs.GetComponentArray[transform.SizeComponent](s.World())
+	s.RotationArray = ecs.GetComponentArray[transform.RotationComponent](s.World())
 
-	s.MaxSizeArray = ecs.GetComponentsArray[transform.MaxSizeComponent](s.World())
-	s.MinSizeArray = ecs.GetComponentsArray[transform.MinSizeComponent](s.World())
-	s.AspectRatioArray = ecs.GetComponentsArray[transform.AspectRatioComponent](s.World())
+	s.MaxSizeArray = ecs.GetComponentArray[transform.MaxSizeComponent](s.World())
+	s.MinSizeArray = ecs.GetComponentArray[transform.MinSizeComponent](s.World())
+	s.AspectRatioArray = ecs.GetComponentArray[transform.AspectRatioComponent](s.World())
 
-	s.PivotPointArray = ecs.GetComponentsArray[transform.PivotPointComponent](s.World())
-	s.ParentMaskArray = ecs.GetComponentsArray[transform.ParentComponent](s.World())
-	s.ParentPivotPointArray = ecs.GetComponentsArray[transform.ParentPivotPointComponent](s.World())
+	s.PivotPointArray = ecs.GetComponentArray[transform.PivotPointComponent](s.World())
+	s.ParentMaskArray = ecs.GetComponentArray[transform.ParentComponent](s.World())
+	s.ParentPivotPointArray = ecs.GetComponentArray[transform.ParentPivotPointComponent](s.World())
 
 	s.defaultRot = transform.NewRotation(mgl32.QuatIdent())
 	s.defaultSize = transform.NewSize(1, 1, 1)
@@ -135,40 +135,40 @@ func (t *service) BeforeGet() {
 	t.DirtySet.Clear()
 }
 
-func (t *service) AbsolutePos() ecs.ComponentsArray[transform.AbsolutePosComponent] {
+func (t *service) AbsolutePos() ecs.ComponentArray[transform.AbsolutePosComponent] {
 	return t.AbsolutePosWrapper
 }
-func (t *service) AbsoluteRotation() ecs.ComponentsArray[transform.AbsoluteRotationComponent] {
+func (t *service) AbsoluteRotation() ecs.ComponentArray[transform.AbsoluteRotationComponent] {
 	return t.AbsoluteRotationWrapper
 }
-func (t *service) AbsoluteSize() ecs.ComponentsArray[transform.AbsoluteSizeComponent] {
+func (t *service) AbsoluteSize() ecs.ComponentArray[transform.AbsoluteSizeComponent] {
 	return t.AbsoluteSizeWrapper
 }
-func (t *service) Pos() ecs.ComponentsArray[transform.PosComponent] {
+func (t *service) Pos() ecs.ComponentArray[transform.PosComponent] {
 	return t.PosArray
 }
-func (t *service) Rotation() ecs.ComponentsArray[transform.RotationComponent] {
+func (t *service) Rotation() ecs.ComponentArray[transform.RotationComponent] {
 	return t.RotationArray
 }
-func (t *service) Size() ecs.ComponentsArray[transform.SizeComponent] {
+func (t *service) Size() ecs.ComponentArray[transform.SizeComponent] {
 	return t.SizeArray
 }
-func (t *service) MaxSize() ecs.ComponentsArray[transform.MaxSizeComponent] {
+func (t *service) MaxSize() ecs.ComponentArray[transform.MaxSizeComponent] {
 	return t.MaxSizeArray
 }
-func (t *service) MinSize() ecs.ComponentsArray[transform.MinSizeComponent] {
+func (t *service) MinSize() ecs.ComponentArray[transform.MinSizeComponent] {
 	return t.MinSizeArray
 }
-func (t *service) AspectRatio() ecs.ComponentsArray[transform.AspectRatioComponent] {
+func (t *service) AspectRatio() ecs.ComponentArray[transform.AspectRatioComponent] {
 	return t.AspectRatioArray
 }
-func (t *service) PivotPoint() ecs.ComponentsArray[transform.PivotPointComponent] {
+func (t *service) PivotPoint() ecs.ComponentArray[transform.PivotPointComponent] {
 	return t.PivotPointArray
 }
-func (t *service) Parent() ecs.ComponentsArray[transform.ParentComponent] {
+func (t *service) Parent() ecs.ComponentArray[transform.ParentComponent] {
 	return t.ParentMaskArray
 }
-func (t *service) ParentPivotPoint() ecs.ComponentsArray[transform.ParentPivotPointComponent] {
+func (t *service) ParentPivotPoint() ecs.ComponentArray[transform.ParentPivotPointComponent] {
 	return t.ParentPivotPointArray
 }
 

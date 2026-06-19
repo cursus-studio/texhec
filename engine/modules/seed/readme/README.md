@@ -18,10 +18,10 @@ SUM:                             3             19              3             78
 Type: `engine/modules/seed.Service`
 
 #### method Service Seed
-Type: `func() engine/services/ecs.ComponentsArray[engine/modules/seed.SeedComponent]`
+Type: `func() engine/modules/ecs.ComponentArray[engine/modules/seed.SeedComponent]`
 
 #### method Service WorldSeed
-Type: `func() (engine/services/ecs.EntityID, bool)`
+Type: `func() (engine/modules/ecs.EntityID, bool)`
 
 ### type Seed
 Type: `engine/modules/seed.Seed`
@@ -59,17 +59,15 @@ Type: `func[Number golang.org/x/exp/constraints.Integer](s Number) engine/module
   - `engine.Logger`
   - `engine.World`
 
+`engine/modules/ecs`:
+  - `engine/modules/ecs.ComponentArray`
+  - `engine/modules/ecs.EntityID`
+  - `engine/modules/ecs.GetComponentArray`
+
 `engine/modules/seed`:
   - `engine/modules/seed.ErrWorldCanHaveOneSeed`
   - `engine/modules/seed.SeedComponent`
   - `engine/modules/seed.Service`
-
-`engine/services/ecs`:
-  - `engine/services/ecs.ComponentsArray`
-  - `engine/services/ecs.EntityID`
-  - `engine/services/ecs.GetComponentsArray`
-  - `engine/services/ecs.GetEntities`
-  - `engine/services/ecs.RemoveEntity`
 
 ### Third Party
 - `github.com/ogiusek/ioc/v2`

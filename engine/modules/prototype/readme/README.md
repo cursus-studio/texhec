@@ -11,12 +11,12 @@ goos: linux
 goarch: amd64
 pkg: engine/modules/prototype/test
 cpu: Intel(R) Core(TM) i5-8350U CPU @ 1.70GHz
-BenchmarkClone1-8         	  606054	      2022 ns/op
-BenchmarkClone2-8         	  551721	      2111 ns/op
-BenchmarkManual1Clone-8   	53633864	        21.77 ns/op
-BenchmarkManual2Clone-8   	35382292	        28.28 ns/op
+BenchmarkClone1-8         	  562868	      2056 ns/op
+BenchmarkClone2-8         	  549718	      2155 ns/op
+BenchmarkManual1Clone-8   	56688926	        21.39 ns/op
+BenchmarkManual2Clone-8   	43662589	        26.95 ns/op
 PASS
-ok  	engine/modules/prototype/test	4.577s
+ok  	engine/modules/prototype/test	4.749s
 ```
 ## Lines of code
 ```
@@ -34,23 +34,23 @@ SUM:                             7             46              4            194
 Type: `engine/modules/prototype.Service`
 
 #### method Service Clone
-Type: `func(cloned engine/services/ecs.EntityID) engine/services/ecs.EntityID`
+Type: `func(cloned engine/modules/ecs.EntityID) engine/modules/ecs.EntityID`
 
 #### method Service CloneTo
-Type: `func(cloned engine/services/ecs.EntityID, clone engine/services/ecs.EntityID)`
+Type: `func(cloned engine/modules/ecs.EntityID, clone engine/modules/ecs.EntityID)`
 
 ### type CloneEvent
 Type: `engine/modules/prototype.CloneEvent`
 
 #### property CloneEvent Cloned
-Type: `engine/services/ecs.EntityID`
+Type: `engine/modules/ecs.EntityID`
 
 #### property CloneEvent Clone
-Type: `engine/services/ecs.EntityID`
+Type: `engine/modules/ecs.EntityID`
 
 ## Functions
 ### func NewCloneEvent
-Type: `func(cloned engine/services/ecs.EntityID, clone engine/services/ecs.EntityID) engine/modules/prototype.CloneEvent`
+Type: `func(cloned engine/modules/ecs.EntityID, clone engine/modules/ecs.EntityID) engine/modules/prototype.CloneEvent`
 
 
 ## Dependencies
@@ -58,6 +58,13 @@ Type: `func(cloned engine/services/ecs.EntityID, clone engine/services/ecs.Entit
   - `engine.EngineWorld`
   - `engine.Events`
   - `engine.World`
+
+`engine/modules/ecs`:
+  - `engine/modules/ecs.AnyComponentArray`
+  - `engine/modules/ecs.ComponentArray`
+  - `engine/modules/ecs.EntityID`
+  - `engine/modules/ecs.GetComponentArray`
+  - `engine/modules/ecs.World`
 
 `engine/modules/prototype`:
   - `engine/modules/prototype.NewCloneEvent`
@@ -68,16 +75,6 @@ Type: `func(cloned engine/services/ecs.EntityID, clone engine/services/ecs.Entit
 
 `engine/pkg`:
   - `engine/pkg.Pkg`
-
-`engine/services/ecs`:
-  - `engine/services/ecs.AnyComponentArray`
-  - `engine/services/ecs.ComponentsArray`
-  - `engine/services/ecs.EntityID`
-  - `engine/services/ecs.GetAny`
-  - `engine/services/ecs.GetComponentsArray`
-  - `engine/services/ecs.NewEntity`
-  - `engine/services/ecs.SetAny`
-  - `engine/services/ecs.World`
 
 ### Third Party
 - `github.com/ogiusek/events`

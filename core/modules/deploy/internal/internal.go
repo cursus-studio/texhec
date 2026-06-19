@@ -7,10 +7,10 @@ import (
 	"core/modules/player"
 	"core/modules/reach"
 	"core/modules/tile"
+	"engine/modules/ecs"
 	"engine/modules/grid"
 	"engine/modules/inputs"
 	"engine/modules/seed"
-	"engine/services/ecs"
 
 	"github.com/ogiusek/events"
 	"github.com/ogiusek/ioc/v2"
@@ -20,22 +20,22 @@ type service struct {
 	game.GameWorld `inject:""`
 	ReachT         reach.ServiceT[deploy.Component] `inject:""`
 
-	component ecs.ComponentsArray[deploy.Component]
+	component ecs.ComponentArray[deploy.Component]
 }
 
 func NewService(c ioc.Dic) deploy.Service {
 	s := ioc.GetServices[*service](c)
 	s.ReachT.Component().SetEmpty(reach.NewReach[deploy.Component](1))
 
-	s.component = ecs.GetComponentsArray[deploy.Component](s.World())
+	s.component = ecs.GetComponentArray[deploy.Component](s.World())
 
 	events.Listen(s.EventsBuilder(), s.DeployEvent)
 
 	return s
 }
 
-func (s *service) Component() ecs.ComponentsArray[deploy.Component] { return s.component }
-func (s *service) Reach() reach.ServiceT[deploy.Component]          { return s.ReachT }
+func (s *service) Component() ecs.ComponentArray[deploy.Component] { return s.component }
+func (s *service) Reach() reach.ServiceT[deploy.Component]         { return s.ReachT }
 
 func (s *service) Deploy(
 	blueprint,

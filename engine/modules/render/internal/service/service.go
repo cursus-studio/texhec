@@ -2,10 +2,10 @@ package service
 
 import (
 	"engine"
+	"engine/modules/ecs"
 	"engine/modules/render"
 	"engine/modules/render/internal/instancing"
 	"engine/modules/render/internal/systems"
-	"engine/services/ecs"
 	"fmt"
 
 	"github.com/go-gl/gl/v4.5-core/gl"
@@ -18,10 +18,10 @@ type service struct {
 	ecs.SystemRegister
 	renderer ecs.SystemRegister
 
-	colorArray        ecs.ComponentsArray[render.ColorComponent]
-	meshArray         ecs.ComponentsArray[render.MeshComponent]
-	textureArray      ecs.ComponentsArray[render.TextureComponent]
-	textureFrameArray ecs.ComponentsArray[render.TextureFrameComponent]
+	colorArray        ecs.ComponentArray[render.ColorComponent]
+	meshArray         ecs.ComponentArray[render.MeshComponent]
+	textureArray      ecs.ComponentArray[render.TextureComponent]
+	textureFrameArray ecs.ComponentArray[render.TextureFrameComponent]
 }
 
 func NewService(c ioc.Dic) render.Service {
@@ -40,10 +40,10 @@ func NewService(c ioc.Dic) render.Service {
 
 	s.renderer = instancing.NewSystem(c)
 
-	s.colorArray = ecs.GetComponentsArray[render.ColorComponent](s.World())
-	s.meshArray = ecs.GetComponentsArray[render.MeshComponent](s.World())
-	s.textureArray = ecs.GetComponentsArray[render.TextureComponent](s.World())
-	s.textureFrameArray = ecs.GetComponentsArray[render.TextureFrameComponent](s.World())
+	s.colorArray = ecs.GetComponentArray[render.ColorComponent](s.World())
+	s.meshArray = ecs.GetComponentArray[render.MeshComponent](s.World())
+	s.textureArray = ecs.GetComponentArray[render.TextureComponent](s.World())
+	s.textureFrameArray = ecs.GetComponentArray[render.TextureFrameComponent](s.World())
 
 	// defaults
 	s.colorArray.SetEmpty(render.NewColor(mgl32.Vec4{1, 1, 1, 1}))
@@ -71,16 +71,16 @@ var GlErrorStrings = map[uint32]string{
 
 func (s *service) Renderer() ecs.SystemRegister { return s.renderer }
 
-func (s *service) Color() ecs.ComponentsArray[render.ColorComponent] {
+func (s *service) Color() ecs.ComponentArray[render.ColorComponent] {
 	return s.colorArray
 }
-func (s *service) Mesh() ecs.ComponentsArray[render.MeshComponent] {
+func (s *service) Mesh() ecs.ComponentArray[render.MeshComponent] {
 	return s.meshArray
 }
-func (s *service) Texture() ecs.ComponentsArray[render.TextureComponent] {
+func (s *service) Texture() ecs.ComponentArray[render.TextureComponent] {
 	return s.textureArray
 }
-func (s *service) TextureFrame() ecs.ComponentsArray[render.TextureFrameComponent] {
+func (s *service) TextureFrame() ecs.ComponentArray[render.TextureFrameComponent] {
 	return s.textureFrameArray
 }
 

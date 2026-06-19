@@ -118,13 +118,13 @@ Currently animated tiles aren't supported and there is a big chance that they wo
 Type: `core/modules/tile.Service`
 
 #### method Service Component
-Type: `func() engine/services/ecs.ComponentsArray[core/modules/tile.Component]`
+Type: `func() engine/modules/ecs.ComponentArray[core/modules/tile.Component]`
 
 #### method Service CoordsCursor
-Type: `func() engine/services/ecs.ComponentsArray[core/modules/tile.CoordsCursorComponent]`
+Type: `func() engine/modules/ecs.ComponentArray[core/modules/tile.CoordsCursorComponent]`
 
 #### method Service CoordsCursorRange
-Type: `func() engine/services/ecs.ComponentsArray[core/modules/tile.CoordsCursorRangeComponent]`
+Type: `func() engine/modules/ecs.ComponentArray[core/modules/tile.CoordsCursorRangeComponent]`
 
 #### method Service CoordsInteraction
 Type: `func() engine/modules/interactions.InteractionService[core/modules/tile.CoordsInteraction]`
@@ -133,7 +133,7 @@ Type: `func() engine/modules/interactions.InteractionService[core/modules/tile.C
 Type: `func(coords engine/modules/grid.Coords) engine/modules/transform.PosComponent`
 
 #### method Service GetTile
-Type: `func(core/modules/tile.ID) (engine/services/ecs.EntityID, bool)`
+Type: `func(core/modules/tile.ID) (engine/modules/ecs.EntityID, bool)`
 
 #### method Service GetTileSize
 Type: `func() engine/modules/transform.SizeComponent`
@@ -144,7 +144,7 @@ can be used for graphics or collisions.
 Type: `func() engine/modules/grid.ServiceT[core/modules/tile.ID]`
 
 #### method Service Layer
-Type: `func() engine/services/ecs.ComponentsArray[core/modules/tile.LayerComponent]`
+Type: `func() engine/modules/ecs.ComponentArray[core/modules/tile.LayerComponent]`
 
 #### method Service NewBiomeAsset
 Type: `func(srcImages [6][]image.Image) (core/modules/tile.BiomeAsset, error)`
@@ -159,19 +159,19 @@ src images should be:
 Type: `func() engine/modules/interactions.InteractionService[core/modules/tile.ObjectInteraction]`
 
 #### method Service Pos
-Type: `func() engine/services/ecs.ComponentsArray[core/modules/tile.PosComponent]`
+Type: `func() engine/modules/ecs.ComponentArray[core/modules/tile.PosComponent]`
 
 #### method Service Register
 Type: `func() error`
 
 #### method Service Renderer
-Type: `func() engine/services/ecs.SystemRegister`
+Type: `func() engine/modules/ecs.SystemRegister`
 
 #### method Service Rot
-Type: `func() engine/services/ecs.ComponentsArray[core/modules/tile.RotComponent]`
+Type: `func() engine/modules/ecs.ComponentArray[core/modules/tile.RotComponent]`
 
 #### method Service Size
-Type: `func() engine/services/ecs.ComponentsArray[core/modules/tile.SizeComponent]`
+Type: `func() engine/modules/ecs.ComponentArray[core/modules/tile.SizeComponent]`
 
 #### method Service SourceObjectInteraction
 Type: `func() engine/modules/interactions.InteractionService[core/modules/tile.SourceObjectInteraction]`
@@ -276,13 +276,13 @@ Type: `engine/modules/grid.ChunkCoordsComponent`
 Type: `core/modules/tile.CoordsCursorRangeComponent`
 
 #### property CoordsCursorRangeComponent Entity
-Type: `engine/services/ecs.EntityID`
+Type: `engine/modules/ecs.EntityID`
 
 ### type CoordsCursorComponent
 Type: `core/modules/tile.CoordsCursorComponent`
 
 #### property CoordsCursorComponent PropertiesEntity
-Type: `engine/services/ecs.EntityID`
+Type: `engine/modules/ecs.EntityID`
 
 #### property CoordsCursorComponent CustomImage
 Type: `bool`
@@ -298,22 +298,22 @@ Type: `engine/modules/grid.Coords`
 Type: `core/modules/tile.ObjectInteraction`
 
 #### property ObjectInteraction Entity
-Type: `engine/services/ecs.EntityID`
+Type: `engine/modules/ecs.EntityID`
 
 ### type SourceObjectInteraction
 Type: `core/modules/tile.SourceObjectInteraction`
 
 #### property SourceObjectInteraction Entity
-Type: `engine/services/ecs.EntityID`
+Type: `engine/modules/ecs.EntityID`
 
 ### type ClickEntityEvent
 Type: `core/modules/tile.ClickEntityEvent`
 
 #### property ClickEntityEvent Entity
-Type: `engine/services/ecs.EntityID`
+Type: `engine/modules/ecs.EntityID`
 
 #### method ClickEntityEvent ApplyEntity
-Type: `func(entity engine/services/ecs.EntityID) any`
+Type: `func(entity engine/modules/ecs.EntityID) any`
 
 ## Variables
 ### var ErrInvalidPosition
@@ -352,19 +352,19 @@ Type: `func(coords engine/modules/grid.ChunkCoordsComponent) core/modules/tile.M
 Type: `func(coords engine/modules/grid.ChunkCoordsComponent) core/modules/tile.UnloadChunkEvent`
 
 ### func NewCoordsCursorRange
-Type: `func(rangeEntity engine/services/ecs.EntityID) core/modules/tile.CoordsCursorRangeComponent`
+Type: `func(rangeEntity engine/modules/ecs.EntityID) core/modules/tile.CoordsCursorRangeComponent`
 
 ### func NewCoordsCursor
-Type: `func(propertiesEntity engine/services/ecs.EntityID, customImage bool) core/modules/tile.CoordsCursorComponent`
+Type: `func(propertiesEntity engine/modules/ecs.EntityID, customImage bool) core/modules/tile.CoordsCursorComponent`
 
 ### func NewCoordsInteraction
 Type: `func(coords engine/modules/grid.Coords) core/modules/tile.CoordsInteraction`
 
 ### func NewObjectInteraction
-Type: `func(entity engine/services/ecs.EntityID) core/modules/tile.ObjectInteraction`
+Type: `func(entity engine/modules/ecs.EntityID) core/modules/tile.ObjectInteraction`
 
 ### func NewSourceObjectInteraction
-Type: `func(entity engine/services/ecs.EntityID) core/modules/tile.SourceObjectInteraction`
+Type: `func(entity engine/modules/ecs.EntityID) core/modules/tile.SourceObjectInteraction`
 
 ### func NewClickEntityEvent
 Type: `func() core/modules/tile.ClickEntityEvent`
@@ -471,6 +471,17 @@ Type: `func() core/modules/tile.ClickEntityEvent`
 `engine/modules/collider`:
   - `engine/modules/collider.Component`
   - `engine/modules/collider.NewCollider`
+
+`engine/modules/ecs`:
+  - `engine/modules/ecs.ComponentArray`
+  - `engine/modules/ecs.DirtySet`
+  - `engine/modules/ecs.EntityID`
+  - `engine/modules/ecs.GetComponentArray`
+  - `engine/modules/ecs.NewDirtySet`
+  - `engine/modules/ecs.NewSystemRegister`
+  - `engine/modules/ecs.RegisterSystems`
+  - `engine/modules/ecs.SystemRegister`
+  - `engine/modules/ecs.World`
 
 `engine/modules/entityregistry`:
   - `engine/modules/entityregistry.Register`
@@ -599,28 +610,6 @@ Type: `func() core/modules/tile.ClickEntityEvent`
   - `engine/services/datastructures.Set`
   - `engine/services/datastructures.Size`
   - `engine/services/datastructures.SparseArray`
-
-`engine/services/ecs`:
-  - `engine/services/ecs.AddDirtySet`
-  - `engine/services/ecs.ComponentsArray`
-  - `engine/services/ecs.DirtySet`
-  - `engine/services/ecs.EntityID`
-  - `engine/services/ecs.Get`
-  - `engine/services/ecs.GetComponentsArray`
-  - `engine/services/ecs.GetEntities`
-  - `engine/services/ecs.NewDirtySet`
-  - `engine/services/ecs.NewEntity`
-  - `engine/services/ecs.NewSystemRegister`
-  - `engine/services/ecs.OnMod`
-  - `engine/services/ecs.OnRemove`
-  - `engine/services/ecs.OnUpsert`
-  - `engine/services/ecs.RegisterSystems`
-  - `engine/services/ecs.Remove`
-  - `engine/services/ecs.RemoveEntity`
-  - `engine/services/ecs.Set`
-  - `engine/services/ecs.SetEmpty`
-  - `engine/services/ecs.SystemRegister`
-  - `engine/services/ecs.World`
 
 ### Third Party
 - `github.com/go-gl/gl/v4.5-core/gl`

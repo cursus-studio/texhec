@@ -13,7 +13,7 @@ to parse is to our asset type.
 ```
 $ go test ./... -bench=.
 PASS
-ok  	engine/modules/assets/test	0.006s
+ok  	engine/modules/assets/test	0.007s
 ```
 ## Lines of code
 ```
@@ -32,14 +32,14 @@ SUM:                             7             60              5            282
 Type: `engine/modules/assets.Service`
 
 #### method Service Cache
-Type: `func() engine/services/ecs.ComponentsArray[engine/modules/assets.CacheComponent]`
+Type: `func() engine/modules/ecs.ComponentArray[engine/modules/assets.CacheComponent]`
 
 #### method Service Get
-Type: `func(engine/services/ecs.EntityID) (engine/modules/assets.Asset, error)`
+Type: `func(engine/modules/ecs.EntityID) (engine/modules/assets.Asset, error)`
 get also caches asset
 
 #### method Service Path
-Type: `func() engine/services/ecs.ComponentsArray[engine/modules/assets.PathComponent]`
+Type: `func() engine/modules/ecs.ComponentArray[engine/modules/assets.PathComponent]`
 
 #### method Service Register
 Type: `func(extension string, dispatcher func(path engine/modules/assets.PathComponent) (engine/modules/assets.Asset, error))`
@@ -80,7 +80,7 @@ Type: `func(path string) engine/modules/assets.PathComponent`
 Type: `func(cache engine/modules/assets.Asset) engine/modules/assets.CacheComponent`
 
 ### func GetAsset
-Type: `func[Asset any](assets engine/modules/assets.Service, assetID engine/services/ecs.EntityID) (Asset, error)`
+Type: `func[Asset any](assets engine/modules/assets.Service, assetID engine/modules/ecs.EntityID) (Asset, error)`
 
 
 ## Dependencies
@@ -102,6 +102,11 @@ Type: `func[Asset any](assets engine/modules/assets.Service, assetID engine/serv
   - `engine/modules/assets.Release`
   - `engine/modules/assets.Service`
 
+`engine/modules/ecs`:
+  - `engine/modules/ecs.ComponentArray`
+  - `engine/modules/ecs.EntityID`
+  - `engine/modules/ecs.GetComponentArray`
+
 `engine/modules/entityregistry`:
   - `engine/modules/entityregistry.Register`
   - `engine/modules/entityregistry.Service`
@@ -115,15 +120,6 @@ Type: `func[Asset any](assets engine/modules/assets.Service, assetID engine/serv
   - `engine/services/datastructures.Remove`
   - `engine/services/datastructures.Set`
   - `engine/services/datastructures.SparseArray`
-
-`engine/services/ecs`:
-  - `engine/services/ecs.ComponentsArray`
-  - `engine/services/ecs.EntityID`
-  - `engine/services/ecs.Get`
-  - `engine/services/ecs.GetComponentsArray`
-  - `engine/services/ecs.OnRemove`
-  - `engine/services/ecs.OnUpsert`
-  - `engine/services/ecs.Set`
 
 ### Third Party
 - `github.com/ogiusek/ioc/v2`

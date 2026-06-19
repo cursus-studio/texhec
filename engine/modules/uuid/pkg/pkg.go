@@ -1,11 +1,11 @@
 package uuidpkg
 
 import (
+	"engine/modules/ecs"
 	relationpkg "engine/modules/relation/pkg"
 	typeregistrypkg "engine/modules/typeregistry/pkg"
 	uuid "engine/modules/uuid"
 	"engine/modules/uuid/internal"
-	"engine/services/ecs"
 
 	"github.com/ogiusek/ioc/v2"
 )
@@ -17,11 +17,11 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 		relationpkg.MapRelationPkg(
 			func(w ecs.World) ecs.DirtySet {
 				set := ecs.NewDirtySet()
-				ecs.GetComponentsArray[uuid.Component](w).AddDirtySet(set)
+				ecs.GetComponentArray[uuid.Component](w).AddDirtySet(set)
 				return set
 			},
 			func(w ecs.World) func(entity ecs.EntityID) (indexType uuid.UUID, ok bool) {
-				uniqueArray := ecs.GetComponentsArray[uuid.Component](w)
+				uniqueArray := ecs.GetComponentArray[uuid.Component](w)
 				return func(entity ecs.EntityID) (indexType uuid.UUID, ok bool) {
 					component, ok := uniqueArray.Get(entity)
 					if !ok {

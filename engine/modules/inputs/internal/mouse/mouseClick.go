@@ -2,9 +2,9 @@ package mouse
 
 import (
 	"engine"
+	"engine/modules/ecs"
 	"engine/modules/inputs"
 	"engine/modules/window"
-	"engine/services/ecs"
 	"errors"
 	"slices"
 

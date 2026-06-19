@@ -2,8 +2,8 @@ package internal
 
 import (
 	"engine"
+	"engine/modules/ecs"
 	"engine/modules/prototype"
-	"engine/services/ecs"
 
 	"github.com/ogiusek/events"
 	"github.com/ogiusek/ioc/v2"

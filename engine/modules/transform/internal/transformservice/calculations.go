@@ -1,8 +1,8 @@
 package transformservice
 
 import (
+	"engine/modules/ecs"
 	"engine/modules/transform"
-	"engine/services/ecs"
 
 	"github.com/go-gl/mathgl/mgl32"
 )

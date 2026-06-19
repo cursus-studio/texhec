@@ -18,10 +18,10 @@ SUM:                             4             25              8            133
 Type: `engine/modules/smooth.Service`
 
 #### method Service Start
-Type: `func() engine/services/ecs.SystemRegister`
+Type: `func() engine/modules/ecs.SystemRegister`
 
 #### method Service Stop
-Type: `func() engine/services/ecs.SystemRegister`
+Type: `func() engine/modules/ecs.SystemRegister`
 
 ### type SmoothConstraint
 Type: `engine/modules/smooth.SmoothConstraint[Component any]`
@@ -41,6 +41,12 @@ this method is a tag that component is smooothed
   - `engine.EventsBuilder`
   - `engine.Record`
   - `engine.World`
+
+`engine/modules/ecs`:
+  - `engine/modules/ecs.ComponentArray`
+  - `engine/modules/ecs.GetComponentArray`
+  - `engine/modules/ecs.NewSystemRegister`
+  - `engine/modules/ecs.SystemRegister`
 
 `engine/modules/loop`:
   - `engine/modules/loop.Delta`
@@ -65,16 +71,6 @@ this method is a tag that component is smooothed
   - `engine/modules/transition.NewTransition`
   - `engine/modules/transition.To`
   - `engine/modules/transition.TransitionComponent`
-
-`engine/services/ecs`:
-  - `engine/services/ecs.ComponentsArray`
-  - `engine/services/ecs.Get`
-  - `engine/services/ecs.GetComponentsArray`
-  - `engine/services/ecs.GetEntities`
-  - `engine/services/ecs.NewSystemRegister`
-  - `engine/services/ecs.Remove`
-  - `engine/services/ecs.Set`
-  - `engine/services/ecs.SystemRegister`
 
 ### Third Party
 - `github.com/ogiusek/events`

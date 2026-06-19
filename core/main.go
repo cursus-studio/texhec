@@ -3,10 +3,10 @@ package main
 import (
 	"core/game"
 	"core/modules/definitions"
+	"engine/modules/ecs"
 	"engine/modules/inputs"
 	"engine/modules/loop"
 	"engine/modules/scene"
-	"engine/services/ecs"
 	"errors"
 	"fmt"
 	"os"

@@ -4,8 +4,8 @@ import (
 	"core/game"
 	"core/modules/reach"
 	"core/modules/tile"
+	"engine/modules/ecs"
 	"engine/modules/grid"
-	"engine/services/ecs"
 	"math"
 
 	"github.com/ogiusek/ioc/v2"
@@ -13,16 +13,16 @@ import (
 
 type serviceT[Component any] struct {
 	game.GameWorld `inject:""`
-	component      ecs.ComponentsArray[reach.Component[Component]]
+	component      ecs.ComponentArray[reach.Component[Component]]
 }
 
 func NewServiceT[Component any](c ioc.Dic) reach.ServiceT[Component] {
 	s := ioc.GetServices[*serviceT[Component]](c)
-	s.component = ecs.GetComponentsArray[reach.Component[Component]](s.World())
+	s.component = ecs.GetComponentArray[reach.Component[Component]](s.World())
 	return s
 }
 
-func (s *serviceT[Component]) Component() ecs.ComponentsArray[reach.Component[Component]] {
+func (s *serviceT[Component]) Component() ecs.ComponentArray[reach.Component[Component]] {
 	return s.component
 }
 func (s *serviceT[Component]) Reaches(fromEntity, toEntity ecs.EntityID) bool {

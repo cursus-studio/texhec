@@ -37,6 +37,12 @@ Type: `func() error`
   - `engine/modules/camera.NewOrtho`
   - `engine/modules/camera.Ortho`
 
+`engine/modules/ecs`:
+  - `engine/modules/ecs.ComponentArray`
+  - `engine/modules/ecs.GetComponentArray`
+  - `engine/modules/ecs.NewSystemRegister`
+  - `engine/modules/ecs.SystemRegister`
+
 `engine/modules/loop`:
   - `engine/modules/loop.FrameEvent`
 
@@ -61,16 +67,6 @@ Type: `func() error`
   - `engine/modules/transform.PivotPoint`
   - `engine/modules/transform.Pos`
   - `engine/modules/transform.RelativePos`
-
-`engine/services/ecs`:
-  - `engine/services/ecs.ComponentsArray`
-  - `engine/services/ecs.GetComponentsArray`
-  - `engine/services/ecs.GetEntities`
-  - `engine/services/ecs.NewEntity`
-  - `engine/services/ecs.NewSystemRegister`
-  - `engine/services/ecs.RemoveEntity`
-  - `engine/services/ecs.Set`
-  - `engine/services/ecs.SystemRegister`
 
 ### Third Party
 - `github.com/ogiusek/events`

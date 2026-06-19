@@ -3,8 +3,8 @@ package obstruction
 
 import (
 	"core/modules/tile"
+	"engine/modules/ecs"
 	"engine/modules/grid"
-	"engine/services/ecs"
 	"errors"
 )
 
@@ -62,8 +62,8 @@ func NewDeployed() DeployedComponent {
 type Service interface {
 	ecs.SystemRegister
 	Grid() grid.ServiceT[Obstruction]
-	Component() ecs.ComponentsArray[Component]
-	Deployed() ecs.ComponentsArray[DeployedComponent]
+	Component() ecs.ComponentArray[Component]
+	Deployed() ecs.ComponentArray[DeployedComponent]
 
 	Collisions(AABB, Obstruction) []grid.Coords
 }

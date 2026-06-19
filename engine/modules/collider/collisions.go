@@ -1,7 +1,7 @@
 package collider
 
 import (
-	"engine/services/ecs"
+	"engine/modules/ecs"
 )
 
 type ObjectRayCollision struct {

@@ -1,7 +1,7 @@
 package ecs
 
 import (
-	"engine/services/ecs"
+	"engine/modules/ecs"
 	"testing"
 )
 
@@ -43,7 +43,7 @@ func TestDirtyFlagsInWorld(t *testing.T) {
 	type Component struct{}
 	component := Component{}
 
-	components := ecs.GetComponentsArray[Component](world)
+	components := ecs.GetComponentArray[Component](world)
 	components.Set(entity, component)
 
 	if dirty := set.Get(); len(dirty) != 0 {
@@ -77,11 +77,11 @@ func TestDependentDirtySet(t *testing.T) {
 	entity := world.NewEntity()
 
 	type AComponent struct{}
-	aComponents := ecs.GetComponentsArray[AComponent](world)
+	aComponents := ecs.GetComponentArray[AComponent](world)
 
 	type BComponent struct{}
 	// componentDependent := ComponentDependent{}
-	bComponents := ecs.GetComponentsArray[BComponent](world)
+	bComponents := ecs.GetComponentArray[BComponent](world)
 
 	bComponents.AddDirtySet(set)
 	bComponents.AddDependency(aComponents)
@@ -146,13 +146,13 @@ func benchmarkNEntitiesSaveWith7Systems(b *testing.B, entitiesCount int) {
 	world := ecs.NewWorld()
 	set := ecs.NewDirtySet()
 
-	arr1 := ecs.GetComponentsArray[Component1](world)
-	arr2 := ecs.GetComponentsArray[Component2](world)
-	arr3 := ecs.GetComponentsArray[Component3](world)
-	arr4 := ecs.GetComponentsArray[Component4](world)
-	arr5 := ecs.GetComponentsArray[Component5](world)
-	arr6 := ecs.GetComponentsArray[Component6](world)
-	arr7 := ecs.GetComponentsArray[Component7](world)
+	arr1 := ecs.GetComponentArray[Component1](world)
+	arr2 := ecs.GetComponentArray[Component2](world)
+	arr3 := ecs.GetComponentArray[Component3](world)
+	arr4 := ecs.GetComponentArray[Component4](world)
+	arr5 := ecs.GetComponentArray[Component5](world)
+	arr6 := ecs.GetComponentArray[Component6](world)
+	arr7 := ecs.GetComponentArray[Component7](world)
 
 	arr1.AddDirtySet(set)
 	arr2.AddDirtySet(set)

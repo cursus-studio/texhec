@@ -1,5 +1,3 @@
-# ECS
-## Architecture
 This **ECS** framework tries to follow only 2 rules:
 - **DOD** (data oriented design) to ensure highest performance
 - **Simplicity** to ensure developer productivity, scalability and performance
@@ -38,33 +36,6 @@ Change architecture to:
 
 This would **simplify** codebase and would make it follow **DOD** more.
 This would depracate `EnsureExists`, `OnUpsert`, `OnRemove`.
-
-## Benchmarks
-```sh
-$ go test ./... -bench=. -benchmem
-goos: linux
-goarch: amd64
-pkg: engine/services/ecs/test
-cpu: Intel(R) Core(TM) i5-8350U CPU @ 1.70GHz
-BenchmarkDirtySetDirty-8               	162088540	         7.127 ns/op	      23 B/op	       0 allocs/op
-BenchmarkDirtySetDirtyInversed-8       	173312954	         6.332 ns/op	      21 B/op	       0 allocs/op
-BenchmarkDirtySetGet-8                 	599886150	         1.868 ns/op	       0 B/op	       0 allocs/op
-BenchmarkDirtySetDirtyAndGet-8         	242420068	         4.986 ns/op	       0 B/op	       0 allocs/op
-BenchmarkDirtySetDirtyAnd1Get-8        	157544990	         8.248 ns/op	      23 B/op	       0 allocs/op
-Benchmark4SavesWith7Systems-8          	26450721	        39.41 ns/op	       0 B/op	       0 allocs/op
-Benchmark16SavesWith7Systems-8         	 7368591	       161.1 ns/op	       0 B/op	       0 allocs/op
-Benchmark256SavesWith7Systems-8        	  487632	      2466 ns/op	       0 B/op	       0 allocs/op
-Benchmark4096SavesWith7Systems-8       	   30714	     39386 ns/op	       0 B/op	       0 allocs/op
-Benchmark16384SavesWith7Systems-8      	    7208	    155196 ns/op	       0 B/op	       0 allocs/op
-Benchmark65536SavesWith7Systems-8      	    1920	    619240 ns/op	       0 B/op	       0 allocs/op
-Benchmark262144SavesWith7Systems-8     	     480	   2435807 ns/op	       0 B/op	       0 allocs/op
-BenchmarkGetComponent-8                	75503276	        15.28 ns/op	       0 B/op	       0 allocs/op
-BenchmarkCreateComponents-8            	36927805	        30.03 ns/op	      82 B/op	       0 allocs/op
-BenchmarkUpdateComponents-8            	100000000	        10.91 ns/op	       0 B/op	       0 allocs/op
-BenchmarkRemoveComponent-8             	76977810	        14.17 ns/op	       0 B/op	       0 allocs/op
-BenchmarkRemoveEntityWithComponent-8   	15177441	        77.81 ns/op	      41 B/op	       0 allocs/op
-BenchmarkRemoveEntity-8                	48522978	        23.43 ns/op	      49 B/op	       0 allocs/op
-```
 
 ## Usage examples
 ### World
@@ -231,6 +202,3 @@ Returns `false` after being released.
 
 #### `Release`
 Releases dirty set and allows framework to release it properly
-
-## Dependencies
-- [datastructures](/engine/services/datastructures/readme/README.md)

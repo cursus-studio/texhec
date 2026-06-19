@@ -36,13 +36,13 @@ Type: `func(core/modules/pathfind.FindPathEvent)`
 Type: `func() error`
 
 #### method Service Speed
-Type: `func() engine/services/ecs.ComponentsArray[core/modules/pathfind.SpeedComponent]`
+Type: `func() engine/modules/ecs.ComponentArray[core/modules/pathfind.SpeedComponent]`
 
 #### method Service Step
-Type: `func() engine/services/ecs.ComponentsArray[core/modules/pathfind.StepComponent]`
+Type: `func() engine/modules/ecs.ComponentArray[core/modules/pathfind.StepComponent]`
 
 #### method Service Target
-Type: `func() engine/services/ecs.ComponentsArray[core/modules/pathfind.TargetComponent]`
+Type: `func() engine/modules/ecs.ComponentArray[core/modules/pathfind.TargetComponent]`
 
 ### type TargetComponent
 Type: `core/modules/pathfind.TargetComponent`
@@ -70,7 +70,7 @@ Type: `engine/modules/grid.Coords`
 Type: `core/modules/pathfind.FindPathEvent`
 
 #### property FindPathEvent Entity
-Type: `engine/services/ecs.EntityID`
+Type: `engine/modules/ecs.EntityID`
 
 #### property FindPathEvent Coords
 Type: `engine/modules/grid.Coords`
@@ -93,7 +93,7 @@ Type: `func(x engine/modules/grid.Coord, y engine/modules/grid.Coord) core/modul
 Type: `func() engine/modules/interactions.FeatureEvent[core/modules/pathfind.FindPathEvent]`
 
 ### func NewFindPathEvent
-Type: `func(entity engine/services/ecs.EntityID, coords engine/modules/grid.Coords) core/modules/pathfind.FindPathEvent`
+Type: `func(entity engine/modules/ecs.EntityID, coords engine/modules/grid.Coords) core/modules/pathfind.FindPathEvent`
 
 
 ## Dependencies
@@ -149,6 +149,12 @@ Type: `func(entity engine/services/ecs.EntityID, coords engine/modules/grid.Coor
   - `core/modules/tile.X`
   - `core/modules/tile.Y`
 
+`engine/modules/ecs`:
+  - `engine/modules/ecs.ComponentArray`
+  - `engine/modules/ecs.EntityID`
+  - `engine/modules/ecs.GetComponentArray`
+  - `engine/modules/ecs.SystemRegister`
+
 `engine/modules/entityregistry`:
   - `engine/modules/entityregistry.Register`
   - `engine/modules/entityregistry.Service`
@@ -179,16 +185,6 @@ Type: `func(entity engine/services/ecs.EntityID, coords engine/modules/grid.Coor
 
 `engine/modules/typeregistry/pkg`:
   - `engine/modules/typeregistry/pkg.PkgT`
-
-`engine/services/ecs`:
-  - `engine/services/ecs.ComponentsArray`
-  - `engine/services/ecs.EntityID`
-  - `engine/services/ecs.Get`
-  - `engine/services/ecs.GetComponentsArray`
-  - `engine/services/ecs.GetEntities`
-  - `engine/services/ecs.Remove`
-  - `engine/services/ecs.Set`
-  - `engine/services/ecs.SystemRegister`
 
 ### Third Party
 - `github.com/go-gl/mathgl/mgl32`

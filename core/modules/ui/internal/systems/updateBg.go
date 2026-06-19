@@ -4,10 +4,10 @@ import (
 	"core/game"
 	"core/modules/ui"
 	"engine/modules/assets"
+	"engine/modules/ecs"
 	"engine/modules/render"
 	"engine/modules/transform"
 	"engine/modules/transition"
-	"engine/services/ecs"
 	"time"
 
 	"github.com/ogiusek/events"
@@ -21,7 +21,7 @@ type System struct {
 
 	blueprint     ecs.EntityID
 	bgDirtySet    ecs.DirtySet
-	transitionArr ecs.ComponentsArray[transition.TransitionComponent[render.TextureFrameComponent]]
+	transitionArr ecs.ComponentArray[transition.TransitionComponent[render.TextureFrameComponent]]
 
 	bgTimePerFrame time.Duration
 	bgTexture      int
@@ -40,7 +40,7 @@ func NewSystem(c ioc.Dic, bgTimePerFrame time.Duration) ecs.SystemRegister {
 		s.bgDirtySet = ecs.NewDirtySet()
 		s.Ui().AnimatedBackground().AddDirtySet(s.bgDirtySet)
 
-		s.transitionArr = ecs.GetComponentsArray[transition.TransitionComponent[render.TextureFrameComponent]](s.World())
+		s.transitionArr = ecs.GetComponentArray[transition.TransitionComponent[render.TextureFrameComponent]](s.World())
 		s.bgTimePerFrame = bgTimePerFrame
 		s.bgTexture = 0
 

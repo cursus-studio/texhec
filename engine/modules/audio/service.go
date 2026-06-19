@@ -2,7 +2,7 @@
 package audio
 
 import (
-	"engine/services/ecs"
+	"engine/modules/ecs"
 )
 
 type Channel int

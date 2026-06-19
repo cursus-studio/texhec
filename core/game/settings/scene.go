@@ -5,11 +5,11 @@ import (
 	"core/modules/settings"
 	"core/modules/ui"
 	"engine/modules/camera"
+	"engine/modules/ecs"
 	"engine/modules/groups"
 	"engine/modules/layout"
 	"engine/modules/text"
 	"engine/modules/transform"
-	"engine/services/ecs"
 
 	"github.com/ogiusek/events"
 	"github.com/ogiusek/ioc/v2"

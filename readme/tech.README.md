@@ -34,7 +34,7 @@ of writing and maintaining them is well worth it.
 ### DOD
 Following **DOD** creates exceptionally performant software and avoids **GC**.
 #### Zero allocation **ECS** framework
-[ECS benchmark](/engine/services/ecs/readme/README.md#benchmarks)
+[ECS benchmark](/engine/modules/ecs/readme/README.md#benchmarks)
 
 Data oriented ECS framework implemented in Go completely avoids **GC**.
 
@@ -52,7 +52,7 @@ A 1.000.000 tile map is generated in seconds and rendered in less than **5.1ms**
 ![Map scroll](map_scroll.gif)
 
 #### Architecture
-In this project we follow **DOD** by using [ECS](/engine/services/ecs/readme/README.md)
+In this project we follow **DOD** by using [ECS](/engine/modules/ecs/readme/README.md)
 
 ### Determinism
 Using **DOD** alongside **EDD** creates deterministic engine.
@@ -151,7 +151,7 @@ Most of codebase leans towards modules for developer velocity and unification.
 - [pipe](/cicd/modules/pipe/readme/README.md)
 **Foundations**:
 - [tile](/core/modules/tile/readme/README.md)
-- [ecs](/engine/services/ecs/readme/README.md)
+- [ecs](/engine/modules/ecs/readme/README.md)
 **Building Blocks**:
 - [assets](/engine/modules/assets/readme/README.md)
 - [hierarchy](/engine/modules/hierarchy/readme/README.md)

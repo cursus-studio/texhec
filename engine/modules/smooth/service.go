@@ -2,8 +2,8 @@
 package smooth
 
 import (
+	"engine/modules/ecs"
 	"engine/modules/transition"
-	"engine/services/ecs"
 )
 
 type Service interface {

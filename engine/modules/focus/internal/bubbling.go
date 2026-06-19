@@ -1,13 +1,13 @@
 package internal
 
 import (
+	"engine/modules/ecs"
 	"engine/modules/focus"
-	"engine/services/ecs"
 
 	"github.com/ogiusek/events"
 )
 
-func (s *service) Bubbling() ecs.ComponentsArray[focus.BubblingComponent] {
+func (s *service) Bubbling() ecs.ComponentArray[focus.BubblingComponent] {
 	return s.bubbling
 }
 

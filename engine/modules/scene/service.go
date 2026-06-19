@@ -2,7 +2,7 @@
 package scene
 
 import (
-	"engine/services/ecs"
+	"engine/modules/ecs"
 )
 
 // change scene should happen after rendering

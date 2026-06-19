@@ -2,14 +2,14 @@
 package netsync
 
 import (
-	"engine/services/ecs"
+	"engine/modules/ecs"
 )
 
 type Service interface {
 	Start() ecs.SystemRegister
 	Stop() ecs.SystemRegister
-	Server() ecs.ComponentsArray[ServerComponent]
-	Client() ecs.ComponentsArray[ClientComponent]
+	Server() ecs.ComponentArray[ServerComponent]
+	Client() ecs.ComponentArray[ClientComponent]
 }
 
 // entity with this component and with connection component will be one with which we'll synchronize
