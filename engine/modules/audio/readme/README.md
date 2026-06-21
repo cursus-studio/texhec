@@ -180,6 +180,10 @@ Type: `func(channel engine/modules/audio.Channel, volume engine/modules/audio.Vo
   - `engine/modules/audio.Volume`
   - `engine/modules/audio.VolumeService`
 
+`engine/modules/datastructures`:
+  - `engine/modules/datastructures.NewSparseArray`
+  - `engine/modules/datastructures.SparseArray`
+
 `engine/modules/ecs`:
   - `engine/modules/ecs.EntityID`
   - `engine/modules/ecs.NewSystemRegister`
@@ -187,12 +191,6 @@ Type: `func(channel engine/modules/audio.Channel, volume engine/modules/audio.Vo
 
 `engine/modules/typeregistry/pkg`:
   - `engine/modules/typeregistry/pkg.PkgT`
-
-`engine/services/datastructures`:
-  - `engine/services/datastructures.Get`
-  - `engine/services/datastructures.GetIndices`
-  - `engine/services/datastructures.NewSparseArray`
-  - `engine/services/datastructures.SparseArray`
 
 ### Third Party
 - `github.com/ogiusek/events`

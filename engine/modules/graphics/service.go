@@ -2,9 +2,9 @@
 package graphics
 
 import (
+	"engine/modules/datastructures"
 	"engine/modules/graphics/internal/buffers"
 	"engine/modules/graphics/internal/vbo"
-	"engine/services/datastructures"
 	"errors"
 	"image"
 	"reflect"

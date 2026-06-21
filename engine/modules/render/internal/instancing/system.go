@@ -3,10 +3,10 @@ package instancing
 import (
 	_ "embed"
 	"engine"
+	"engine/modules/datastructures"
 	"engine/modules/ecs"
 	"engine/modules/graphics"
 	"engine/modules/render"
-	"engine/services/datastructures"
 
 	"github.com/go-gl/gl/v4.5-core/gl"
 	"github.com/ogiusek/events"

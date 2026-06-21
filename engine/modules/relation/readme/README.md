@@ -22,6 +22,10 @@ Type: `func(Key) (engine/modules/ecs.EntityID, bool)`
 
 
 ## Dependencies
+`engine/modules/datastructures`:
+  - `engine/modules/datastructures.NewSparseArray`
+  - `engine/modules/datastructures.SparseArray`
+
 `engine/modules/ecs`:
   - `engine/modules/ecs.DirtySet`
   - `engine/modules/ecs.EntityID`
@@ -33,13 +37,6 @@ Type: `func(Key) (engine/modules/ecs.EntityID, bool)`
 
 `engine/modules/warmup`:
   - `engine/modules/warmup.Event`
-
-`engine/services/datastructures`:
-  - `engine/services/datastructures.Get`
-  - `engine/services/datastructures.NewSparseArray`
-  - `engine/services/datastructures.Remove`
-  - `engine/services/datastructures.Set`
-  - `engine/services/datastructures.SparseArray`
 
 ### Third Party
 - `github.com/ogiusek/events`

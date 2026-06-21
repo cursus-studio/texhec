@@ -47,7 +47,7 @@ Type: `func() engine/modules/graphics.TextureArrayFactory`
 Type: `engine/modules/graphics.TextureArrayFactory`
 
 #### method TextureArrayFactory New
-Type: `func(engine/services/datastructures.SparseArray[uint32, image.Image]) (engine/modules/graphics.TextureArray, error)`
+Type: `func(engine/modules/datastructures.SparseArray[uint32, image.Image]) (engine/modules/graphics.TextureArray, error)`
 
 #### method TextureArrayFactory NewFromSlice
 Type: `func([]image.Image) (engine/modules/graphics.TextureArray, error)`
@@ -293,6 +293,12 @@ Type: `func[Locations any](p engine/modules/graphics.Program) (Locations, error)
 
 
 ## Dependencies
+`engine/modules/datastructures`:
+  - `engine/modules/datastructures.NewSparseArray`
+  - `engine/modules/datastructures.NewThreadSafeTrackingArray`
+  - `engine/modules/datastructures.SparseArray`
+  - `engine/modules/datastructures.TrackingArray`
+
 `engine/modules/graphics`:
   - `engine/modules/graphics.Configure`
   - `engine/modules/graphics.EBO`
@@ -316,19 +322,6 @@ Type: `func[Locations any](p engine/modules/graphics.Program) (Locations, error)
   - `engine/modules/graphics.VAO`
   - `engine/modules/graphics.VBO`
   - `engine/modules/graphics.Value`
-
-`engine/services/datastructures`:
-  - `engine/services/datastructures.Changes`
-  - `engine/services/datastructures.ClearChanges`
-  - `engine/services/datastructures.Get`
-  - `engine/services/datastructures.GetIndices`
-  - `engine/services/datastructures.GetValues`
-  - `engine/services/datastructures.NewSparseArray`
-  - `engine/services/datastructures.NewThreadSafeTrackingArray`
-  - `engine/services/datastructures.Set`
-  - `engine/services/datastructures.Size`
-  - `engine/services/datastructures.SparseArray`
-  - `engine/services/datastructures.TrackingArray`
 
 ### Third Party
 - `github.com/go-gl/gl/v4.5-core/gl`

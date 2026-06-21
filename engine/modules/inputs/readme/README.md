@@ -124,7 +124,7 @@ Type: `engine/modules/ecs.EntityID`
 Type: `engine/modules/inputs.KeyboardEvent`
 
 #### method TextInputEvent CapturesEvents
-Type: `func() engine/services/datastructures.SetReader[reflect.Type]`
+Type: `func() engine/modules/datastructures.SetReader[reflect.Type]`
 
 #### method TextInputEvent Capture
 Type: `func(event any) any`
@@ -307,6 +307,10 @@ Type: `func(event any) engine/modules/inputs.DragComponent`
   - `engine/modules/collider.ObjectRayCollision`
   - `engine/modules/collider.RaycastAll`
 
+`engine/modules/datastructures`:
+  - `engine/modules/datastructures.NewSet`
+  - `engine/modules/datastructures.SetReader`
+
 `engine/modules/ecs`:
   - `engine/modules/ecs.ApplyEntity`
   - `engine/modules/ecs.ApplyEntityEvent`
@@ -384,11 +388,6 @@ Type: `func(event any) engine/modules/inputs.DragComponent`
   - `engine/modules/window.NewMousePos`
   - `engine/modules/window.X`
   - `engine/modules/window.Y`
-
-`engine/services/datastructures`:
-  - `engine/services/datastructures.Add`
-  - `engine/services/datastructures.NewSet`
-  - `engine/services/datastructures.SetReader`
 
 ### Third Party
 - `github.com/go-gl/mathgl/mgl32`

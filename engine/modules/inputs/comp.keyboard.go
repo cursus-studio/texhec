@@ -1,8 +1,8 @@
 package inputs
 
 import (
+	"engine/modules/datastructures"
 	"engine/modules/ecs"
-	"engine/services/datastructures"
 	"reflect"
 	"strings"
 

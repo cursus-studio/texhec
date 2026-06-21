@@ -3,7 +3,7 @@ package internal
 import (
 	"cicd/modules/projectfs"
 	"cicd/world"
-	"engine/services/datastructures"
+	"engine/modules/datastructures"
 	"os"
 	"path/filepath"
 	"strings"

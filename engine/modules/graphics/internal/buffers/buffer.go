@@ -1,7 +1,7 @@
 package buffers
 
 import (
-	"engine/services/datastructures"
+	"engine/modules/datastructures"
 	"math"
 	"reflect"
 	"sync"

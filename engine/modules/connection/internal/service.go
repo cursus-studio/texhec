@@ -4,8 +4,8 @@ import (
 	"encoding/binary"
 	"engine"
 	"engine/modules/connection"
+	"engine/modules/datastructures"
 	"engine/modules/ecs"
-	"engine/services/datastructures"
 	"io"
 	"net"
 

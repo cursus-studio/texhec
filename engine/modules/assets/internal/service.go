@@ -2,8 +2,8 @@ package internal
 
 import (
 	"engine/modules/assets"
+	"engine/modules/datastructures"
 	"engine/modules/ecs"
-	"engine/services/datastructures"
 
 	"github.com/ogiusek/ioc/v2"
 )

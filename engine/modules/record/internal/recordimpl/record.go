@@ -2,10 +2,10 @@ package recordimpl
 
 import (
 	"engine"
+	"engine/modules/datastructures"
 	"engine/modules/ecs"
 	"engine/modules/record"
 	"engine/modules/uuid"
-	"engine/services/datastructures"
 	"reflect"
 	"sync"
 

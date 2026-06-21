@@ -3,9 +3,9 @@ package textrenderer
 import (
 	"engine"
 	"engine/modules/assets"
+	"engine/modules/datastructures"
 	"engine/modules/ecs"
 	"engine/modules/text"
-	"engine/services/datastructures"
 
 	"github.com/ogiusek/ioc/v2"
 	"golang.org/x/image/font/opentype"

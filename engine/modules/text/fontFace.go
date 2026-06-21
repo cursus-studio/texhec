@@ -1,7 +1,7 @@
 package text
 
 import (
-	"engine/services/datastructures"
+	"engine/modules/datastructures"
 	"image"
 
 	"golang.org/x/image/font/opentype"

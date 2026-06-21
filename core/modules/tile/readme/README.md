@@ -472,6 +472,10 @@ Type: `func() core/modules/tile.ClickEntityEvent`
   - `engine/modules/collider.Component`
   - `engine/modules/collider.NewCollider`
 
+`engine/modules/datastructures`:
+  - `engine/modules/datastructures.NewSparseArray`
+  - `engine/modules/datastructures.SparseArray`
+
 `engine/modules/ecs`:
   - `engine/modules/ecs.ComponentArray`
   - `engine/modules/ecs.DirtySet`
@@ -601,15 +605,6 @@ Type: `func() core/modules/tile.ClickEntityEvent`
 
 `engine/modules/typeregistry/pkg`:
   - `engine/modules/typeregistry/pkg.PkgT`
-
-`engine/services/datastructures`:
-  - `engine/services/datastructures.Get`
-  - `engine/services/datastructures.GetIndices`
-  - `engine/services/datastructures.NewSparseArray`
-  - `engine/services/datastructures.Remove`
-  - `engine/services/datastructures.Set`
-  - `engine/services/datastructures.Size`
-  - `engine/services/datastructures.SparseArray`
 
 ### Third Party
 - `github.com/go-gl/gl/v4.5-core/gl`

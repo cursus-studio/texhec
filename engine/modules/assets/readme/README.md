@@ -13,7 +13,7 @@ to parse is to our asset type.
 ```
 $ go test ./... -bench=.
 PASS
-ok  	engine/modules/assets/test	0.007s
+ok  	engine/modules/assets/test	0.006s
 ```
 ## Lines of code
 ```
@@ -102,6 +102,10 @@ Type: `func[Asset any](assets engine/modules/assets.Service, assetID engine/modu
   - `engine/modules/assets.Release`
   - `engine/modules/assets.Service`
 
+`engine/modules/datastructures`:
+  - `engine/modules/datastructures.NewSparseArray`
+  - `engine/modules/datastructures.SparseArray`
+
 `engine/modules/ecs`:
   - `engine/modules/ecs.ComponentArray`
   - `engine/modules/ecs.EntityID`
@@ -113,13 +117,6 @@ Type: `func[Asset any](assets engine/modules/assets.Service, assetID engine/modu
 
 `engine/pkg`:
   - `engine/pkg.Pkg`
-
-`engine/services/datastructures`:
-  - `engine/services/datastructures.Get`
-  - `engine/services/datastructures.NewSparseArray`
-  - `engine/services/datastructures.Remove`
-  - `engine/services/datastructures.Set`
-  - `engine/services/datastructures.SparseArray`
 
 ### Third Party
 - `github.com/ogiusek/ioc/v2`

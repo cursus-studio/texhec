@@ -3,12 +3,12 @@ package textpkg
 import (
 	"engine"
 	"engine/modules/assets"
+	"engine/modules/datastructures"
 	"engine/modules/graphics"
 	"engine/modules/text"
 	"engine/modules/text/internal/textrenderer"
 	"engine/modules/text/internal/textservice"
 	typeregistrypkg "engine/modules/typeregistry/pkg"
-	"engine/services/datastructures"
 	"image"
 	"image/color"
 	"os"

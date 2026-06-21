@@ -13,18 +13,18 @@ goos: linux
 goarch: amd64
 pkg: engine/modules/hierarchy/test
 cpu: Intel(R) Core(TM) i5-8350U CPU @ 1.70GHz
-BenchmarkChildren_1-8                          	205889980	         5.834 ns/op
-BenchmarkChildren_10-8                         	212853939	         5.617 ns/op
-BenchmarkChildren_100-8                        	213152613	         5.650 ns/op
-BenchmarkFlatChildren_1_1-8                    	171669391	         6.918 ns/op
-BenchmarkFlatChildren_10_10-8                  	175153734	         6.857 ns/op
-BenchmarkAddChildToParentWithGrandParent-8     	 7280642	       157.9 ns/op
-BenchmarkAddChildToParentWith5GrandParents-8   	 6859143	       177.0 ns/op
-BenchmarkRemoveChild-8                         	 1530729	       802.2 ns/op
-BenchmarkRemoveParentWith1Children-8           	  120369	     11490 ns/op
-BenchmarkRemoveParentWith100Children-8         	   10777	    112716 ns/op
+BenchmarkChildren_1-8                          	220374025	         5.467 ns/op
+BenchmarkChildren_10-8                         	217900208	         5.451 ns/op
+BenchmarkChildren_100-8                        	216783740	         5.544 ns/op
+BenchmarkFlatChildren_1_1-8                    	177443100	         6.777 ns/op
+BenchmarkFlatChildren_10_10-8                  	178994012	         6.715 ns/op
+BenchmarkAddChildToParentWithGrandParent-8     	 6624901	       177.3 ns/op
+BenchmarkAddChildToParentWith5GrandParents-8   	 6873151	       173.0 ns/op
+BenchmarkRemoveChild-8                         	 1513824	       822.1 ns/op
+BenchmarkRemoveParentWith1Children-8           	   76370	     15224 ns/op
+BenchmarkRemoveParentWith100Children-8         	   10000	    106306 ns/op
 PASS
-ok  	engine/modules/hierarchy/test	17.004s
+ok  	engine/modules/hierarchy/test	15.598s
 ```
 ## Lines of code
 ```
@@ -42,20 +42,20 @@ SUM:                             9            127             22            587
 Type: `engine/modules/hierarchy.Service`
 
 #### method Service Children
-Type: `func(parent engine/modules/ecs.EntityID) engine/services/datastructures.SparseSetReader[engine/modules/ecs.EntityID]`
+Type: `func(parent engine/modules/ecs.EntityID) engine/modules/datastructures.SparseSetReader[engine/modules/ecs.EntityID]`
 
 #### method Service Component
 Type: `func() engine/modules/ecs.ComponentArray[engine/modules/hierarchy.Component]`
 
 #### method Service FlatChildren
-Type: `func(parent engine/modules/ecs.EntityID) engine/services/datastructures.SparseSetReader[engine/modules/ecs.EntityID]`
+Type: `func(parent engine/modules/ecs.EntityID) engine/modules/datastructures.SparseSetReader[engine/modules/ecs.EntityID]`
 includes children of children
 
 #### method Service GetOrderedParents
 Type: `func(child engine/modules/ecs.EntityID) []engine/modules/ecs.EntityID`
 
 #### method Service GetParents
-Type: `func(child engine/modules/ecs.EntityID) engine/services/datastructures.SparseSetReader[engine/modules/ecs.EntityID]`
+Type: `func(child engine/modules/ecs.EntityID) engine/modules/datastructures.SparseSetReader[engine/modules/ecs.EntityID]`
 from closest to furthest
 
 #### method Service IsChildOf
@@ -106,6 +106,13 @@ Type: `func[Component any]() engine/modules/hierarchy.InheritComponent[Component
   - `engine.Hierarchy`
   - `engine.World`
 
+`engine/modules/datastructures`:
+  - `engine/modules/datastructures.NewSparseArray`
+  - `engine/modules/datastructures.NewSparseSetWithPaging`
+  - `engine/modules/datastructures.SparseArray`
+  - `engine/modules/datastructures.SparseSet`
+  - `engine/modules/datastructures.SparseSetReader`
+
 `engine/modules/ecs`:
   - `engine/modules/ecs.ComponentArray`
   - `engine/modules/ecs.ComponentComparator`
@@ -128,18 +135,6 @@ Type: `func[Component any]() engine/modules/hierarchy.InheritComponent[Component
 
 `engine/pkg`:
   - `engine/pkg.Pkg`
-
-`engine/services/datastructures`:
-  - `engine/services/datastructures.Add`
-  - `engine/services/datastructures.Get`
-  - `engine/services/datastructures.GetIndices`
-  - `engine/services/datastructures.NewSparseArray`
-  - `engine/services/datastructures.NewSparseSetWithPaging`
-  - `engine/services/datastructures.Remove`
-  - `engine/services/datastructures.Set`
-  - `engine/services/datastructures.SparseArray`
-  - `engine/services/datastructures.SparseSet`
-  - `engine/services/datastructures.SparseSetReader`
 
 ### Third Party
 - `github.com/ogiusek/ioc/v2`

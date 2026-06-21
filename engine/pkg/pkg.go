@@ -6,9 +6,11 @@ import (
 	audiopkg "engine/modules/audio/pkg"
 	batcherpkg "engine/modules/batcher/pkg"
 	camerapkg "engine/modules/camera/pkg"
+	clockpkg "engine/modules/clock/pkg"
 	codecpkg "engine/modules/codec/pkg"
 	colliderpkg "engine/modules/collider/pkg"
 	connectionpkg "engine/modules/connection/pkg"
+	consolepkg "engine/modules/console/pkg"
 	dragpkg "engine/modules/drag/pkg"
 	ecspkg "engine/modules/ecs/pkg"
 	entityregistrypkg "engine/modules/entityregistry/pkg"
@@ -37,8 +39,6 @@ import (
 	uuidpkg "engine/modules/uuid/pkg"
 	warmuppkg "engine/modules/warmup/pkg"
 	windowpkg "engine/modules/window/pkg"
-	"engine/services/clock"
-	"engine/services/console"
 
 	"github.com/ogiusek/ioc/v2"
 )
@@ -49,9 +49,11 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 		audiopkg.Pkg,
 		batcherpkg.Pkg,
 		camerapkg.Pkg,
+		clockpkg.Pkg,
 		codecpkg.Pkg,
 		colliderpkg.Pkg,
 		connectionpkg.Pkg,
+		consolepkg.Pkg,
 		dragpkg.Pkg,
 		ecspkg.Pkg,
 		entityregistrypkg.Pkg,
@@ -81,8 +83,6 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 		warmuppkg.Pkg,
 		windowpkg.Pkg,
 
-		clock.Pkg,
-		console.Pkg,
 		func(b ioc.Builder) {
 			ioc.Register(b, func(c ioc.Dic) engine.EngineWorld {
 				return ioc.GetServices[engine.EngineWorld](c)

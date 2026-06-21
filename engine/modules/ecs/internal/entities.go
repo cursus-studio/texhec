@@ -1,8 +1,8 @@
 package internal
 
 import (
+	"engine/modules/datastructures"
 	"engine/modules/ecs/internal/ecstypes"
-	"engine/services/datastructures"
 )
 
 // impl

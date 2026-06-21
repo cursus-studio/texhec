@@ -10,10 +10,14 @@ It follows **DOD** (data oriented design) and stores all game objects using **EC
 - [assets](/engine/modules/assets/readme/README.md)
 - [audio](/engine/modules/audio/readme/README.md)
 - [batcher](/engine/modules/batcher/readme/README.md)
+- [bitmasks](/engine/modules/bitmasks/readme/README.md)
 - [camera](/engine/modules/camera/readme/README.md)
+- [clock](/engine/modules/clock/readme/README.md)
 - [codec](/engine/modules/codec/readme/README.md)
 - [collider](/engine/modules/collider/readme/README.md)
 - [connection](/engine/modules/connection/readme/README.md)
+- [console](/engine/modules/console/readme/README.md)
+- [datastructures](/engine/modules/datastructures/readme/README.md)
 - [drag](/engine/modules/drag/readme/README.md)
 - [ecs](/engine/modules/ecs/readme/README.md)
 - [entityregistry](/engine/modules/entityregistry/readme/README.md)
@@ -44,11 +48,6 @@ It follows **DOD** (data oriented design) and stores all game objects using **EC
 - [uuid](/engine/modules/uuid/readme/README.md)
 - [warmup](/engine/modules/warmup/readme/README.md)
 - [window](/engine/modules/window/readme/README.md)
-## Services
-- [bitmasks](/engine/services/bitmasks/readme/README.md)
-- [clock](/engine/services/clock/readme/README.md)
-- [console](/engine/services/console/readme/README.md)
-- [datastructures](/engine/services/datastructures/readme/README.md)
 
 ## Challenges
 Biggest challenge was creating framework while building on top of it.
@@ -60,11 +59,11 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                             279           3027            873          14320
-Markdown                        18             50              0            231
+Go                             282           3032            877          14343
+Markdown                        22             50              0            237
 GLSL                             5             35              4             99
 -------------------------------------------------------------------------------
-SUM:                           302           3112            877          14650
+SUM:                           309           3117            881          14679
 -------------------------------------------------------------------------------
 ```
 ## Dependencies

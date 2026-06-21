@@ -1,10 +1,10 @@
 package textrenderer
 
 import (
+	"engine/modules/datastructures"
 	"engine/modules/ecs"
 	"engine/modules/graphics"
 	rendersys "engine/modules/render"
-	"engine/services/datastructures"
 
 	"github.com/go-gl/gl/v4.5-core/gl"
 	"github.com/go-gl/mathgl/mgl32"

@@ -6,8 +6,8 @@
 package hierarchy
 
 import (
+	"engine/modules/datastructures"
 	"engine/modules/ecs"
-	"engine/services/datastructures"
 	"errors"
 )
 

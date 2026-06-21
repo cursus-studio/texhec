@@ -2,9 +2,9 @@ package hierarchyservice
 
 import (
 	"engine"
+	"engine/modules/datastructures"
 	"engine/modules/ecs"
 	"engine/modules/hierarchy"
-	"engine/services/datastructures"
 
 	"github.com/ogiusek/ioc/v2"
 )
