@@ -5,9 +5,11 @@ import (
 	"engine/modules/audio"
 	"engine/modules/batcher"
 	"engine/modules/camera"
+	"engine/modules/clock"
 	"engine/modules/codec"
 	"engine/modules/collider"
 	"engine/modules/connection"
+	"engine/modules/console"
 	"engine/modules/drag"
 	"engine/modules/ecs"
 	"engine/modules/entityregistry"
@@ -36,8 +38,6 @@ import (
 	"engine/modules/uuid"
 	"engine/modules/warmup"
 	"engine/modules/window"
-	"engine/services/clock"
-	"engine/services/console"
 
 	"github.com/ogiusek/events"
 	"github.com/ogiusek/ioc/v2"
@@ -52,9 +52,11 @@ type EngineWorld struct {
 	Audio          ioc.Lazy[audio.Service]          `inject:""`
 	Batcher        ioc.Lazy[batcher.Service]        `inject:""`
 	Camera         ioc.Lazy[camera.Service]         `inject:""`
+	Clock          ioc.Lazy[clock.Service]          `inject:""`
 	Codec          ioc.Lazy[codec.Service]          `inject:""`
 	Collider       ioc.Lazy[collider.Service]       `inject:""`
 	Connection     ioc.Lazy[connection.Service]     `inject:""`
+	Console        ioc.Lazy[console.Service]        `inject:""`
 	Drag           ioc.Lazy[drag.Service]           `inject:""`
 	EntityRegistry ioc.Lazy[entityregistry.Service] `inject:""`
 	Focus          ioc.Lazy[focus.Service]          `inject:""`
@@ -82,7 +84,4 @@ type EngineWorld struct {
 	UUID           ioc.Lazy[uuid.Service]           `inject:""`
 	WarmUp         ioc.Lazy[warmup.Service]         `inject:""`
 	Window         ioc.Lazy[window.Service]         `inject:""`
-
-	Clock   ioc.Lazy[clock.Clock]     `inject:""`
-	Console ioc.Lazy[console.Console] `inject:""`
 }

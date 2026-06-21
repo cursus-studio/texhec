@@ -53,7 +53,7 @@ Type: `func(any) any`
 should wrap event and return wrapping event.
 
 #### method BubblingConstraint CapturesEvents
-Type: `func() engine/services/datastructures.SetReader[reflect.Type]`
+Type: `func() engine/modules/datastructures.SetReader[reflect.Type]`
 stores a list of events which can be passed to capture
 this should be a global variable it never should be stored in component
 
@@ -144,6 +144,9 @@ Type: `func() engine/modules/focus.DefaultFocusedComponent`
   - `engine.Scene`
   - `engine.World`
 
+`engine/modules/datastructures`:
+  - `engine/modules/datastructures.SetReader`
+
 `engine/modules/ecs`:
   - `engine/modules/ecs.ApplyEntity`
   - `engine/modules/ecs.ApplyEntityEvent`
@@ -181,10 +184,6 @@ Type: `func() engine/modules/focus.DefaultFocusedComponent`
 
 `engine/modules/typeregistry/pkg`:
   - `engine/modules/typeregistry/pkg.PkgT`
-
-`engine/services/datastructures`:
-  - `engine/services/datastructures.GetIndex`
-  - `engine/services/datastructures.SetReader`
 
 ### Third Party
 - `github.com/ogiusek/events`

@@ -1,10 +1,10 @@
 package recordimpl
 
 import (
+	"engine/modules/datastructures"
 	"engine/modules/ecs"
 	"engine/modules/record"
 	"engine/modules/uuid"
-	"engine/services/datastructures"
 )
 
 type UUIDForwardRecording struct {

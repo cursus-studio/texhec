@@ -308,6 +308,10 @@ Type: `func() engine/modules/camera.ChangedResolutionEvent`
   - `engine/modules/collider.Pos`
   - `engine/modules/collider.Ray`
 
+`engine/modules/datastructures`:
+  - `engine/modules/datastructures.NewSparseArray`
+  - `engine/modules/datastructures.SparseArray`
+
 `engine/modules/ecs`:
   - `engine/modules/ecs.ComponentArray`
   - `engine/modules/ecs.DirtySet`
@@ -351,13 +355,6 @@ Type: `func() engine/modules/camera.ChangedResolutionEvent`
   - `engine/modules/window.GetMousePos`
   - `engine/modules/window.MousePos`
   - `engine/modules/window.Window`
-
-`engine/services/datastructures`:
-  - `engine/services/datastructures.Get`
-  - `engine/services/datastructures.GetIndices`
-  - `engine/services/datastructures.NewSparseArray`
-  - `engine/services/datastructures.Set`
-  - `engine/services/datastructures.SparseArray`
 
 ### Third Party
 - `github.com/go-gl/mathgl/mgl32`

@@ -254,6 +254,10 @@ Type: `func(ray engine/modules/collider.Ray, normal github.com/go-gl/mathgl/mgl3
   - `engine/modules/collider.Service`
   - `engine/modules/collider.Target`
 
+`engine/modules/datastructures`:
+  - `engine/modules/datastructures.NewSet`
+  - `engine/modules/datastructures.Set`
+
 `engine/modules/ecs`:
   - `engine/modules/ecs.ComponentArray`
   - `engine/modules/ecs.DirtySet`
@@ -281,13 +285,6 @@ Type: `func(ray engine/modules/collider.Ray, normal github.com/go-gl/mathgl/mgl3
 
 `engine/modules/typeregistry/pkg`:
   - `engine/modules/typeregistry/pkg.PkgT`
-
-`engine/services/datastructures`:
-  - `engine/services/datastructures.Add`
-  - `engine/services/datastructures.Get`
-  - `engine/services/datastructures.NewSet`
-  - `engine/services/datastructures.RemoveElements`
-  - `engine/services/datastructures.Set`
 
 ### Third Party
 - `github.com/go-gl/mathgl/mgl32`

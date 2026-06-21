@@ -1,9 +1,9 @@
 package onetokey
 
 import (
+	"engine/modules/datastructures"
 	"engine/modules/ecs"
 	"engine/modules/relation"
-	"engine/services/datastructures"
 )
 
 type spatialRelation[IndexType any] struct {

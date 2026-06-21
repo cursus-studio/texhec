@@ -10,9 +10,9 @@
 package record
 
 import (
+	"engine/modules/datastructures"
 	"engine/modules/ecs"
 	"engine/modules/uuid"
-	"engine/services/datastructures"
 	"reflect"
 )
 

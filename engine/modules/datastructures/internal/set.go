@@ -1,0 +1,73 @@
+package internal
+
+import "engine/modules/datastructures/internal/types"
+
+type set[Stored comparable] struct {
+	types.TrackingArray[Stored]
+	Indices map[Stored]int
+}
+
+func NewSet[Stored comparable]() types.Set[Stored] {
+	return &set[Stored]{
+		TrackingArray: NewTrackingArray[Stored](),
+		Indices:       map[Stored]int{},
+	}
+}
+
+func (s *set[Stored]) UpdateIndices() {
+	changes := s.Changes()
+	if len(changes) == 0 {
+		return
+	}
+	elements := s.Get()
+	s.ClearChanges()
+	for _, original := range changes {
+		if original.From != nil {
+			key := *original.From
+			delete(s.Indices, key)
+		}
+		if original.Index < len(elements) {
+			element := elements[original.Index]
+			s.Indices[element] = original.Index
+		}
+	}
+}
+
+func (s *set[Stored]) GetStored(index int) (Stored, bool) {
+	s.UpdateIndices()
+	elements := s.Get()
+	if len(elements) <= index {
+		var zero Stored
+		return zero, false
+	}
+	return elements[index], true
+}
+
+func (s *set[Stored]) GetIndex(e Stored) (int, bool) {
+	s.UpdateIndices()
+	i, ok := s.Indices[e]
+	return i, ok
+}
+
+func (s *set[Stored]) Add(elements ...Stored) {
+	elementsToAdd := make([]Stored, 0, len(elements))
+	for _, element := range elements {
+		_, ok := s.GetIndex(element)
+		if !ok {
+			elementsToAdd = append(elementsToAdd, element)
+		}
+	}
+	s.TrackingArray.Add(elementsToAdd...)
+}
+
+func (s *set[Stored]) RemoveElements(elements ...Stored) {
+	indices := make([]int, 0, len(elements))
+	for _, element := range elements {
+		index, ok := s.GetIndex(element)
+		if !ok {
+			continue
+		}
+		indices = append(indices, index)
+	}
+	s.Remove(indices...)
+}

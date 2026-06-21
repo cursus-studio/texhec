@@ -209,26 +209,26 @@ goos: linux
 goarch: amd64
 pkg: engine/modules/ecs/test
 cpu: Intel(R) Core(TM) i5-8350U CPU @ 1.70GHz
-BenchmarkDirtySetDirty-8               	149872676	         7.644 ns/op
-BenchmarkDirtySetDirtyInversed-8       	163930392	         7.049 ns/op
-BenchmarkDirtySetGet-8                 	589861136	         2.023 ns/op
-BenchmarkDirtySetDirtyAndGet-8         	175179516	         6.879 ns/op
-BenchmarkDirtySetDirtyAnd1Get-8        	140824688	         7.889 ns/op
-Benchmark4SavesWith7Systems-8          	27718790	        42.80 ns/op
-Benchmark16SavesWith7Systems-8         	 7071218	       169.3 ns/op
-Benchmark256SavesWith7Systems-8        	  466713	      2582 ns/op
-Benchmark4096SavesWith7Systems-8       	   29527	     41096 ns/op
-Benchmark16384SavesWith7Systems-8      	    7364	    164349 ns/op
-Benchmark65536SavesWith7Systems-8      	    1772	    646827 ns/op
-Benchmark262144SavesWith7Systems-8     	     457	   2615852 ns/op
-BenchmarkGetComponent-8                	79807720	        15.08 ns/op
-BenchmarkCreateComponents-8            	43131111	        26.52 ns/op
-BenchmarkUpdateComponents-8            	100000000	        10.34 ns/op
-BenchmarkRemoveComponent-8             	82392286	        15.01 ns/op
-BenchmarkRemoveEntityWithComponent-8   	33849508	        34.43 ns/op
-BenchmarkRemoveEntity-8                	67489118	        17.67 ns/op
+BenchmarkDirtySetDirty-8               	133353128	         8.703 ns/op
+BenchmarkDirtySetDirtyInversed-8       	139790804	         7.859 ns/op
+BenchmarkDirtySetGet-8                 	611279708	         1.960 ns/op
+BenchmarkDirtySetDirtyAndGet-8         	174704450	         6.837 ns/op
+BenchmarkDirtySetDirtyAnd1Get-8        	125594482	         9.587 ns/op
+Benchmark4SavesWith7Systems-8          	29055820	        40.50 ns/op
+Benchmark16SavesWith7Systems-8         	 7439270	       161.8 ns/op
+Benchmark256SavesWith7Systems-8        	  472743	      2456 ns/op
+Benchmark4096SavesWith7Systems-8       	   30601	     39440 ns/op
+Benchmark16384SavesWith7Systems-8      	    7056	    157734 ns/op
+Benchmark65536SavesWith7Systems-8      	    1911	    629477 ns/op
+Benchmark262144SavesWith7Systems-8     	     474	   2535487 ns/op
+BenchmarkGetComponent-8                	79833924	        15.08 ns/op
+BenchmarkCreateComponents-8            	38685778	        33.17 ns/op
+BenchmarkUpdateComponents-8            	100000000	        11.01 ns/op
+BenchmarkRemoveComponent-8             	76763899	        15.08 ns/op
+BenchmarkRemoveEntityWithComponent-8   	35550189	        36.09 ns/op
+BenchmarkRemoveEntity-8                	63765102	        19.65 ns/op
 PASS
-ok  	engine/modules/ecs/test	38.008s
+ok  	engine/modules/ecs/test	38.340s
 ```
 ## Lines of code
 ```
@@ -411,25 +411,19 @@ component array getter
 
 
 ## Dependencies
+`engine/modules/datastructures`:
+  - `engine/modules/datastructures.NewSet`
+  - `engine/modules/datastructures.NewSparseArray`
+  - `engine/modules/datastructures.NewSparseSet`
+  - `engine/modules/datastructures.Set`
+  - `engine/modules/datastructures.SparseArray`
+  - `engine/modules/datastructures.SparseSet`
+
 `engine/modules/ecs`:
   - `engine/modules/ecs.Entity`
   - `engine/modules/ecs.NewWorld`
   - `engine/modules/ecs.RemoveEntityEvent`
   - `engine/modules/ecs.World`
-
-`engine/services/datastructures`:
-  - `engine/services/datastructures.Add`
-  - `engine/services/datastructures.Get`
-  - `engine/services/datastructures.GetIndex`
-  - `engine/services/datastructures.GetIndices`
-  - `engine/services/datastructures.NewSet`
-  - `engine/services/datastructures.NewSparseArray`
-  - `engine/services/datastructures.NewSparseSet`
-  - `engine/services/datastructures.Remove`
-  - `engine/services/datastructures.RemoveElements`
-  - `engine/services/datastructures.Set`
-  - `engine/services/datastructures.SparseArray`
-  - `engine/services/datastructures.SparseSet`
 
 ### Third Party
 - `github.com/ogiusek/events`

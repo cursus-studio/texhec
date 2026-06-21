@@ -46,10 +46,8 @@ Type: `func(file string, content string) error`
 `cicd/world`:
   - `cicd/world.CICDWorld`
 
-`engine/services/datastructures`:
-  - `engine/services/datastructures.Add`
-  - `engine/services/datastructures.Get`
-  - `engine/services/datastructures.NewSet`
+`engine/modules/datastructures`:
+  - `engine/modules/datastructures.NewSet`
 
 ### Third Party
 - `github.com/ogiusek/ioc/v2`

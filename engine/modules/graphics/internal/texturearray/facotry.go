@@ -1,8 +1,8 @@
 package texturearray
 
 import (
+	"engine/modules/datastructures"
 	"engine/modules/graphics"
-	"engine/services/datastructures"
 	"fmt"
 	"image"
 	"math"

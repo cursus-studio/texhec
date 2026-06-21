@@ -4,9 +4,9 @@ import (
 	"engine"
 	"engine/modules/assets"
 	"engine/modules/collider"
+	"engine/modules/datastructures"
 	"engine/modules/ecs"
 	"engine/modules/groups"
-	"engine/services/datastructures"
 	"errors"
 	"slices"
 

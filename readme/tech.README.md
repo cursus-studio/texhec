@@ -137,14 +137,6 @@ modules/
                            # Expects interface name `Service` so module name and service purpose were related
 ```
 
-### Module vs Service
-**Module**: integral part of an engine with specific structure.
-It is faster to write, use and has dedicated tooling (in [CI/CD](/cicd/readme/README.md)) but it is harder to separate.
-
-**Service**: separate package which can be used in other projects without modifications.
-
-Most of codebase leans towards modules for developer velocity and unification.
-
 ## Cherry picked readmes
 **CI/CD**:
 - [docs](/cicd/modules/docs/readme/README.md)

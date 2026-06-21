@@ -105,7 +105,7 @@ Type: `engine/modules/record.Recording`
 recording cannot be encoded
 
 #### property Recording Entities
-Type: `engine/services/datastructures.SparseArray[engine/modules/ecs.EntityID, []any]`
+Type: `engine/modules/datastructures.SparseArray[engine/modules/ecs.EntityID, []any]`
 map[componentUUID][componentArrayLayoutID]any component
 map[componentUUID]nil is when entity is removed
 
@@ -136,6 +136,14 @@ Type: `func[Component any](config engine/modules/record.Config) engine/modules/r
 
 `engine/modules/codec`:
   - `engine/modules/codec.Service`
+
+`engine/modules/datastructures`:
+  - `engine/modules/datastructures.NewSet`
+  - `engine/modules/datastructures.NewSparseArray`
+  - `engine/modules/datastructures.NewSparseSet`
+  - `engine/modules/datastructures.Set`
+  - `engine/modules/datastructures.SparseArray`
+  - `engine/modules/datastructures.SparseSet`
 
 `engine/modules/ecs`:
   - `engine/modules/ecs.AnyComponentArray`
@@ -177,20 +185,6 @@ Type: `func[Component any](config engine/modules/record.Config) engine/modules/r
 
 `engine/pkg`:
   - `engine/pkg.Pkg`
-
-`engine/services/datastructures`:
-  - `engine/services/datastructures.Add`
-  - `engine/services/datastructures.Get`
-  - `engine/services/datastructures.GetIndices`
-  - `engine/services/datastructures.GetValues`
-  - `engine/services/datastructures.NewSet`
-  - `engine/services/datastructures.NewSparseArray`
-  - `engine/services/datastructures.NewSparseSet`
-  - `engine/services/datastructures.Remove`
-  - `engine/services/datastructures.RemoveElements`
-  - `engine/services/datastructures.Set`
-  - `engine/services/datastructures.SparseArray`
-  - `engine/services/datastructures.SparseSet`
 
 ### Third Party
 - `github.com/ogiusek/ioc/v2`

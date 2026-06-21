@@ -6,7 +6,7 @@ defines connection and stores it in component
 ```
 $ go test ./... -bench=.
 PASS
-ok  	engine/modules/connection/test	0.051s
+ok  	engine/modules/connection/test	0.052s
 ```
 ## Lines of code
 ```
@@ -94,6 +94,10 @@ Type: `func(conn engine/modules/connection.Conn) engine/modules/connection.Conne
   - `engine/modules/connection.NewListener`
   - `engine/modules/connection.Service`
 
+`engine/modules/datastructures`:
+  - `engine/modules/datastructures.NewSet`
+  - `engine/modules/datastructures.Set`
+
 `engine/modules/ecs`:
   - `engine/modules/ecs.ComponentArray`
   - `engine/modules/ecs.DirtySet`
@@ -107,14 +111,6 @@ Type: `func(conn engine/modules/connection.Conn) engine/modules/connection.Conne
 
 `engine/pkg`:
   - `engine/pkg.Pkg`
-
-`engine/services/datastructures`:
-  - `engine/services/datastructures.Add`
-  - `engine/services/datastructures.Get`
-  - `engine/services/datastructures.GetIndex`
-  - `engine/services/datastructures.NewSet`
-  - `engine/services/datastructures.RemoveElements`
-  - `engine/services/datastructures.Set`
 
 ### Third Party
 - `github.com/ogiusek/ioc/v2`

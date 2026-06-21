@@ -68,6 +68,10 @@ entity with this component and connection will get notifications about changes
   - `engine/modules/connection.Messages`
   - `engine/modules/connection.Send`
 
+`engine/modules/datastructures`:
+  - `engine/modules/datastructures.NewSparseSet`
+  - `engine/modules/datastructures.SparseSet`
+
 `engine/modules/ecs`:
   - `engine/modules/ecs.ComponentArray`
   - `engine/modules/ecs.DirtySet`
@@ -108,13 +112,6 @@ entity with this component and connection will get notifications about changes
 `engine/modules/uuid`:
   - `engine/modules/uuid.NewUUID`
   - `engine/modules/uuid.UUID`
-
-`engine/services/datastructures`:
-  - `engine/services/datastructures.Add`
-  - `engine/services/datastructures.Get`
-  - `engine/services/datastructures.NewSparseSet`
-  - `engine/services/datastructures.Remove`
-  - `engine/services/datastructures.SparseSet`
 
 ### Third Party
 - `github.com/ogiusek/events`

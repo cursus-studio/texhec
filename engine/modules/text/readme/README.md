@@ -63,10 +63,10 @@ Type: `func()`
 Type: `engine/modules/text.Glyphs`
 
 #### property Glyphs GlyphsWidth
-Type: `engine/services/datastructures.SparseArray[uint32, float32]`
+Type: `engine/modules/datastructures.SparseArray[uint32, float32]`
 
 #### property Glyphs Images
-Type: `engine/services/datastructures.SparseArray[uint32, image.Image]`
+Type: `engine/modules/datastructures.SparseArray[uint32, image.Image]`
 
 ### type TextComponent
 Type: `engine/modules/text.TextComponent`
@@ -165,6 +165,12 @@ Type: `func(b uint8) engine/modules/text.BreakComponent`
   - `engine/modules/assets.Register`
   - `engine/modules/assets.Service`
 
+`engine/modules/datastructures`:
+  - `engine/modules/datastructures.NewSparseArray`
+  - `engine/modules/datastructures.NewSparseSet`
+  - `engine/modules/datastructures.SparseArray`
+  - `engine/modules/datastructures.SparseSet`
+
 `engine/modules/ecs`:
   - `engine/modules/ecs.AnyComponentArray`
   - `engine/modules/ecs.ComponentArray`
@@ -238,17 +244,6 @@ Type: `func(b uint8) engine/modules/text.BreakComponent`
 
 `engine/modules/typeregistry/pkg`:
   - `engine/modules/typeregistry/pkg.PkgT`
-
-`engine/services/datastructures`:
-  - `engine/services/datastructures.Get`
-  - `engine/services/datastructures.GetIndices`
-  - `engine/services/datastructures.GetValues`
-  - `engine/services/datastructures.NewSparseArray`
-  - `engine/services/datastructures.NewSparseSet`
-  - `engine/services/datastructures.Remove`
-  - `engine/services/datastructures.Set`
-  - `engine/services/datastructures.SparseArray`
-  - `engine/services/datastructures.SparseSet`
 
 ### Third Party
 - `github.com/go-gl/gl/v4.5-core/gl`

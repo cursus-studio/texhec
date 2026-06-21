@@ -178,6 +178,12 @@ Type: `func(images ...image.Image) (engine/modules/render.TextureAsset, error)`
   - `engine/modules/assets.Register`
   - `engine/modules/assets.Service`
 
+`engine/modules/datastructures`:
+  - `engine/modules/datastructures.NewSet`
+  - `engine/modules/datastructures.NewSparseArray`
+  - `engine/modules/datastructures.Set`
+  - `engine/modules/datastructures.SparseArray`
+
 `engine/modules/ecs`:
   - `engine/modules/ecs.ComponentArray`
   - `engine/modules/ecs.DirtySet`
@@ -258,16 +264,6 @@ Type: `func(images ...image.Image) (engine/modules/render.TextureAsset, error)`
 
 `engine/modules/typeregistry/pkg`:
   - `engine/modules/typeregistry/pkg.PkgT`
-
-`engine/services/datastructures`:
-  - `engine/services/datastructures.Add`
-  - `engine/services/datastructures.Get`
-  - `engine/services/datastructures.GetIndex`
-  - `engine/services/datastructures.NewSet`
-  - `engine/services/datastructures.NewSparseArray`
-  - `engine/services/datastructures.Remove`
-  - `engine/services/datastructures.Set`
-  - `engine/services/datastructures.SparseArray`
 
 ### Third Party
 - `github.com/go-gl/gl/v4.5-core/gl`
