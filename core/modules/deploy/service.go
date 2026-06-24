@@ -37,14 +37,15 @@ type Service interface {
 
 //
 
+type DeployFeature struct{}
 type DeployEvent struct {
 	By,
 	Blueprint ecs.EntityID
 	Coords grid.Coords
 }
 
-func NewFeatureDeployEvent() interactions.FeatureEvent[DeployEvent] {
-	return interactions.NewFeatureEvent(DeployEvent{})
+func NewDeployFeature() interactions.FeatureEvent[DeployFeature] {
+	return interactions.NewFeatureEvent(DeployFeature{})
 }
 func NewDeployEvent(
 	by,

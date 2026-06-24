@@ -29,6 +29,7 @@ func NewService(c ioc.Dic) deploy.Service {
 
 	s.component = ecs.GetComponentArray[deploy.Component](s.World())
 
+	events.Listen(s.EventsBuilder(), s.DeployFeature)
 	events.Listen(s.EventsBuilder(), s.DeployEvent)
 
 	return s
@@ -68,7 +69,8 @@ func (s *service) Deploy(
 	return deployed, nil
 }
 
-func (s *service) LoadDeploy(e *deploy.DeployEvent) {
+func (s *service) DeployFeature(deploy.DeployFeature) {
+	e := deploy.DeployEvent{}
 	featureEntity := s.Interactions().FeatureEntity()
 	if comp, ok := s.Tile().CoordsInteraction().Interaction().Get(featureEntity); ok {
 		e.Coords = comp.State.Coords
@@ -79,10 +81,9 @@ func (s *service) LoadDeploy(e *deploy.DeployEvent) {
 	if comp, ok := s.Tile().SourceObjectInteraction().Interaction().Get(featureEntity); ok {
 		e.Blueprint = comp.State.Entity
 	}
+	events.Emit(s.Events(), e)
 }
-
 func (s *service) DeployEvent(e deploy.DeployEvent) {
-	s.LoadDeploy(&e)
 	worldEntity, ok := s.Seed().WorldSeed()
 	if !ok {
 		return

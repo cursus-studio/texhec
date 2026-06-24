@@ -34,6 +34,7 @@ func (s *service) Register() error {
 		invSpeedTable[i] = 1. / tile.Coord(i)
 	}
 
+	events.Listen(s.EventsBuilder(), s.FindPathFeature)
 	events.Listen(s.EventsBuilder(), s.FindPath)
 	events.Listen(s.EventsBuilder(), s.StepOnTick)
 	events.Listen(s.EventsBuilder(), s.PathfindOnTick)

@@ -22,7 +22,7 @@ import (
 var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 	pkgs := []ioc.Pkg{
 		reachpkg.PkgT[deploy.Component],
-		interactionspkg.FeaturePkg[deploy.DeployEvent]("deploy", []reflect.Type{
+		interactionspkg.FeaturePkg[deploy.DeployFeature]("deploy", []reflect.Type{
 			reflect.TypeFor[tile.ObjectInteraction](),
 			reflect.TypeFor[tile.SourceObjectInteraction](),
 			reflect.TypeFor[tile.CoordsInteraction](),

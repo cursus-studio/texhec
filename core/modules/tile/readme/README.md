@@ -404,7 +404,7 @@ Type: `func() core/modules/tile.ClickEntityEvent`
 `core/modules/deploy`:
   - `core/modules/deploy.Component`
   - `core/modules/deploy.Deployable`
-  - `core/modules/deploy.NewFeatureDeployEvent`
+  - `core/modules/deploy.NewDeployFeature`
   - `core/modules/deploy.Reach`
 
 `core/modules/obstruction`:
@@ -415,7 +415,7 @@ Type: `func() core/modules/tile.ClickEntityEvent`
   - `core/modules/obstruction.Obstruction`
 
 `core/modules/pathfind`:
-  - `core/modules/pathfind.NewFeatureFindPathEvent`
+  - `core/modules/pathfind.NewFindPathFeature`
   - `core/modules/pathfind.Speed`
 
 `core/modules/tile`:

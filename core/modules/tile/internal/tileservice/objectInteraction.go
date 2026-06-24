@@ -71,10 +71,10 @@ func (s *service) OnClickEntityRenderFeatures(e tile.ClickEntityEvent) {
 	}
 
 	if deployed, _ := s.Deploy().Component().Get(link.Entity); len(deployed.Deployable) != 0 {
-		btns = append(btns, Button{"Deploy", deploy.NewFeatureDeployEvent()})
+		btns = append(btns, Button{"Deploy", deploy.NewDeployFeature()})
 	}
 	if _, ok := s.Pathfind().Speed().Get(link.Entity); ok {
-		btns = append(btns, Button{"Move", pathfind.NewFeatureFindPathEvent()})
+		btns = append(btns, Button{"Move", pathfind.NewFindPathFeature()})
 	}
 
 	for _, p := range s.Ui().ShowMenu() {
