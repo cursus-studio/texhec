@@ -11,10 +11,11 @@ import (
 func FeaturePkg[Event any](
 	name interactions.Name,
 	interactionStates []reflect.Type,
+	populate func(c ioc.Dic) func() Event,
 ) ioc.Pkg {
 	return ioc.NewPkg(func(b ioc.Builder) {
 		ioc.Register(b, func(c ioc.Dic) interactions.FeatureService[Event] {
-			return internal.NewFeatureService[Event](c, name, interactionStates)
+			return internal.NewFeatureService(c, name, interactionStates, populate(c))
 		})
 		ioc.Wrap(b, func(c ioc.Dic, s internal.Service) {
 			s.RegisterFeature(ioc.Get[interactions.FeatureService[Event]](c))

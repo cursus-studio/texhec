@@ -3,8 +3,6 @@ package internal
 import (
 	"core/modules/pathfind"
 	"core/modules/tile"
-
-	"github.com/ogiusek/events"
 )
 
 func (s *service) LoadFindPath(e *pathfind.FindPathEvent) {
@@ -17,17 +15,6 @@ func (s *service) LoadFindPath(e *pathfind.FindPathEvent) {
 	}
 }
 
-func (s *service) FindPathFeature(pathfind.FindPathFeature) {
-	e := pathfind.FindPathEvent{}
-	featureEntity := s.Interactions().FeatureEntity()
-	if comp, ok := s.Tile().CoordsInteraction().Interaction().Get(featureEntity); ok {
-		e.Coords = comp.State.Coords
-	}
-	if comp, ok := s.Tile().ObjectInteraction().Interaction().Get(featureEntity); ok {
-		e.Entity = comp.State.Entity
-	}
-	events.Emit(s.Events(), e)
-}
 func (s *service) FindPath(e pathfind.FindPathEvent) {
 	from, ok := s.Tile().Pos().Get(e.Entity)
 	if !ok {

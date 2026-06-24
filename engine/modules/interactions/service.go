@@ -44,14 +44,12 @@ type InteractionService[State any] interface {
 
 //
 
-type FeatureEvent[Event any] struct{ Event Event }
-type FeatureEventComponent struct{ Event Event }
+type FeatureEvent[Event any] struct{}
+type FeatureComponent struct{ Event Event }
 type InstanceComponent struct{}
 
-func NewFeatureEvent[Event any](event Event) FeatureEvent[Event] { return FeatureEvent[Event]{event} }
-func (e *FeatureEvent[Event]) Component() FeatureEventComponent {
-	return FeatureEventComponent{e.Event}
-}
+func NewFeature(event Event) FeatureComponent         { return FeatureComponent{event} }
+func NewFeatureEvent[Event any]() FeatureEvent[Event] { return FeatureEvent[Event]{} }
 
 type AnyFeatureService interface {
 	Name() Name
@@ -64,7 +62,7 @@ type FeatureService[Event any] interface{ AnyFeatureService }
 type Service interface {
 	// entity with this stores all components with interactions and selected feature
 	Instance() ecs.ComponentArray[InstanceComponent]
-	FeatureEvent() ecs.ComponentArray[FeatureEventComponent]
+	Feature() ecs.ComponentArray[FeatureComponent]
 
 	FeatureEntity() ecs.EntityID
 

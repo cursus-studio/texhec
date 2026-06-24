@@ -37,9 +37,6 @@ Type: `core/modules/deploy.Component`
 #### property Component Deployable
 Type: `[]engine/modules/ecs.EntityID`
 
-### type DeployFeature
-Type: `core/modules/deploy.DeployFeature`
-
 ### type DeployEvent
 Type: `core/modules/deploy.DeployEvent`
 
@@ -57,7 +54,7 @@ Type: `engine/modules/grid.Coords`
 Type: `func(deployable ...engine/modules/ecs.EntityID) core/modules/deploy.Component`
 
 ### func NewDeployFeature
-Type: `func() engine/modules/interactions.FeatureEvent[core/modules/deploy.DeployFeature]`
+Type: `func() engine/modules/interactions.FeatureEvent[core/modules/deploy.DeployEvent]`
 
 ### func NewDeployEvent
 Type: `func(by engine/modules/ecs.EntityID, blueprint engine/modules/ecs.EntityID, coords engine/modules/grid.Coords) core/modules/deploy.DeployEvent`
@@ -78,7 +75,6 @@ Type: `func(by engine/modules/ecs.EntityID, blueprint engine/modules/ecs.EntityI
   - `core/modules/deploy.Component`
   - `core/modules/deploy.Coords`
   - `core/modules/deploy.DeployEvent`
-  - `core/modules/deploy.DeployFeature`
   - `core/modules/deploy.Reach`
   - `core/modules/deploy.Service`
 

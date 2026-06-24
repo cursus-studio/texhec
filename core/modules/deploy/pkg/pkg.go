@@ -22,10 +22,26 @@ import (
 var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 	pkgs := []ioc.Pkg{
 		reachpkg.PkgT[deploy.Component],
-		interactionspkg.FeaturePkg[deploy.DeployFeature]("deploy", []reflect.Type{
+		interactionspkg.FeaturePkg("deploy", []reflect.Type{
 			reflect.TypeFor[tile.ObjectInteraction](),
 			reflect.TypeFor[tile.SourceObjectInteraction](),
 			reflect.TypeFor[tile.CoordsInteraction](),
+		}, func(c ioc.Dic) func() deploy.DeployEvent {
+			s := ioc.Get[game.GameWorld](c)
+			return func() deploy.DeployEvent {
+				e := deploy.DeployEvent{}
+				featureEntity := s.Interactions().FeatureEntity()
+				if comp, ok := s.Tile().CoordsInteraction().Interaction().Get(featureEntity); ok {
+					e.Coords = comp.State.Coords
+				}
+				if comp, ok := s.Tile().ObjectInteraction().Interaction().Get(featureEntity); ok {
+					e.By = comp.State.Entity
+				}
+				if comp, ok := s.Tile().SourceObjectInteraction().Interaction().Get(featureEntity); ok {
+					e.Blueprint = comp.State.Entity
+				}
+				return e
+			}
 		}),
 	}
 	for _, pkg := range pkgs {

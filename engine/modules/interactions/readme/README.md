@@ -8,10 +8,10 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                               5             53             15            285
+Go                               5             55             15            294
 Markdown                         2              0              0              2
 -------------------------------------------------------------------------------
-SUM:                             7             53             15            287
+SUM:                             7             55             15            296
 -------------------------------------------------------------------------------
 ```
 ## TODO
@@ -21,11 +21,11 @@ Add feature and interaction history
 ### type Service
 Type: `engine/modules/interactions.Service`
 
+#### method Service Feature
+Type: `func() engine/modules/ecs.ComponentArray[engine/modules/interactions.FeatureComponent]`
+
 #### method Service FeatureEntity
 Type: `func() engine/modules/ecs.EntityID`
-
-#### method Service FeatureEvent
-Type: `func() engine/modules/ecs.ComponentArray[engine/modules/interactions.FeatureEventComponent]`
 
 #### method Service Instance
 Type: `func() engine/modules/ecs.ComponentArray[engine/modules/interactions.InstanceComponent]`
@@ -137,16 +137,10 @@ Type: `State`
 ### type FeatureEvent
 Type: `engine/modules/interactions.FeatureEvent[Event any]`
 
-#### property FeatureEvent Event
-Type: `Event`
+### type FeatureComponent
+Type: `engine/modules/interactions.FeatureComponent`
 
-#### method FeatureEvent Component
-Type: `func() engine/modules/interactions.FeatureEventComponent`
-
-### type FeatureEventComponent
-Type: `engine/modules/interactions.FeatureEventComponent`
-
-#### property FeatureEventComponent Event
+#### property FeatureComponent Event
 Type: `engine/modules/interactions.Event`
 
 ### type InstanceComponent
@@ -159,8 +153,11 @@ Type: `func[State any](state State) engine/modules/interactions.InteractionCompo
 ### func NewFinishMeasurementEvent
 Type: `func[State any](state State) engine/modules/interactions.FinishMeasurementEvent[State]`
 
+### func NewFeature
+Type: `func(event engine/modules/interactions.Event) engine/modules/interactions.FeatureComponent`
+
 ### func NewFeatureEvent
-Type: `func[Event any](event Event) engine/modules/interactions.FeatureEvent[Event]`
+Type: `func[Event any]() engine/modules/interactions.FeatureEvent[Event]`
 
 
 ## Dependencies
@@ -181,12 +178,12 @@ Type: `func[Event any](event Event) engine/modules/interactions.FeatureEvent[Eve
 `engine/modules/interactions`:
   - `engine/modules/interactions.AnyFeatureService`
   - `engine/modules/interactions.AnyInteractionService`
-  - `engine/modules/interactions.Component`
   - `engine/modules/interactions.Event`
   - `engine/modules/interactions.EventType`
+  - `engine/modules/interactions.Feature`
+  - `engine/modules/interactions.FeatureComponent`
   - `engine/modules/interactions.FeatureEntity`
   - `engine/modules/interactions.FeatureEvent`
-  - `engine/modules/interactions.FeatureEventComponent`
   - `engine/modules/interactions.FeatureService`
   - `engine/modules/interactions.FinishMeasurementEvent`
   - `engine/modules/interactions.InstanceComponent`
@@ -198,6 +195,7 @@ Type: `func[Event any](event Event) engine/modules/interactions.FeatureEvent[Eve
   - `engine/modules/interactions.MissingInteractionAny`
   - `engine/modules/interactions.MissingInteractionComponent`
   - `engine/modules/interactions.Name`
+  - `engine/modules/interactions.NewFeature`
   - `engine/modules/interactions.NewInteraction`
   - `engine/modules/interactions.Proceed`
   - `engine/modules/interactions.Service`
