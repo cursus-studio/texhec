@@ -67,13 +67,14 @@ type Service interface {
 // - improve errors
 // - look on `HPA*` and `JPS`
 
+type FindPathFeature struct{}
 type FindPathEvent struct {
 	Entity ecs.EntityID
 	Coords grid.Coords
 }
 
-func NewFeatureFindPathEvent() interactions.FeatureEvent[FindPathEvent] {
-	return interactions.FeatureEvent[FindPathEvent]{}
+func NewFindPathFeature() interactions.FeatureEvent[FindPathFeature] {
+	return interactions.FeatureEvent[FindPathFeature]{}
 }
 func NewFindPathEvent(entity ecs.EntityID, coords grid.Coords) FindPathEvent {
 	return FindPathEvent{Entity: entity, Coords: coords}

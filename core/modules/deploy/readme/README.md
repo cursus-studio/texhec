@@ -8,9 +8,9 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                               3             36             14            200
+Go                               3             35             14            203
 -------------------------------------------------------------------------------
-SUM:                             3             36             14            200
+SUM:                             3             35             14            203
 -------------------------------------------------------------------------------
 ```
 ## Types
@@ -37,6 +37,9 @@ Type: `core/modules/deploy.Component`
 #### property Component Deployable
 Type: `[]engine/modules/ecs.EntityID`
 
+### type DeployFeature
+Type: `core/modules/deploy.DeployFeature`
+
 ### type DeployEvent
 Type: `core/modules/deploy.DeployEvent`
 
@@ -53,8 +56,8 @@ Type: `engine/modules/grid.Coords`
 ### func NewDeploy
 Type: `func(deployable ...engine/modules/ecs.EntityID) core/modules/deploy.Component`
 
-### func NewFeatureDeployEvent
-Type: `func() engine/modules/interactions.FeatureEvent[core/modules/deploy.DeployEvent]`
+### func NewDeployFeature
+Type: `func() engine/modules/interactions.FeatureEvent[core/modules/deploy.DeployFeature]`
 
 ### func NewDeployEvent
 Type: `func(by engine/modules/ecs.EntityID, blueprint engine/modules/ecs.EntityID, coords engine/modules/grid.Coords) core/modules/deploy.DeployEvent`
@@ -75,6 +78,7 @@ Type: `func(by engine/modules/ecs.EntityID, blueprint engine/modules/ecs.EntityI
   - `core/modules/deploy.Component`
   - `core/modules/deploy.Coords`
   - `core/modules/deploy.DeployEvent`
+  - `core/modules/deploy.DeployFeature`
   - `core/modules/deploy.Reach`
   - `core/modules/deploy.Service`
 

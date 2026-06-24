@@ -23,7 +23,7 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 		typeregistrypkg.PkgT[pathfind.StepComponent],
 
 		typeregistrypkg.PkgT[pathfind.FindPathEvent],
-		interactionspkg.FeaturePkg[pathfind.FindPathEvent]("move", []reflect.Type{
+		interactionspkg.FeaturePkg[pathfind.FindPathFeature]("move", []reflect.Type{
 			reflect.TypeFor[tile.ObjectInteraction](),
 			reflect.TypeFor[tile.CoordsInteraction](),
 		}),

@@ -8,10 +8,10 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                               6             71             27            424
+Go                               6             71             27            437
 Markdown                         1              1              0              5
 -------------------------------------------------------------------------------
-SUM:                             7             72             27            429
+SUM:                             7             72             27            442
 -------------------------------------------------------------------------------
 ```
 ## TODO
@@ -66,6 +66,9 @@ Otherwise step will be removed and warning will be logged.
 #### property StepComponent Coords
 Type: `engine/modules/grid.Coords`
 
+### type FindPathFeature
+Type: `core/modules/pathfind.FindPathFeature`
+
 ### type FindPathEvent
 Type: `core/modules/pathfind.FindPathEvent`
 
@@ -89,8 +92,8 @@ Type: `func[Number golang.org/x/exp/constraints.Integer](invSpeed Number) core/m
 ### func NewStep
 Type: `func(x engine/modules/grid.Coord, y engine/modules/grid.Coord) core/modules/pathfind.StepComponent`
 
-### func NewFeatureFindPathEvent
-Type: `func() engine/modules/interactions.FeatureEvent[core/modules/pathfind.FindPathEvent]`
+### func NewFindPathFeature
+Type: `func() engine/modules/interactions.FeatureEvent[core/modules/pathfind.FindPathFeature]`
 
 ### func NewFindPathEvent
 Type: `func(entity engine/modules/ecs.EntityID, coords engine/modules/grid.Coords) core/modules/pathfind.FindPathEvent`
@@ -116,6 +119,7 @@ Type: `func(entity engine/modules/ecs.EntityID, coords engine/modules/grid.Coord
   - `core/modules/pathfind.Entity`
   - `core/modules/pathfind.ErrInvalidPath`
   - `core/modules/pathfind.FindPathEvent`
+  - `core/modules/pathfind.FindPathFeature`
   - `core/modules/pathfind.InvSpeed`
   - `core/modules/pathfind.NewSpeed`
   - `core/modules/pathfind.NewStep`
