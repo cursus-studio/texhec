@@ -1,6 +1,11 @@
 # interactions
 ## Architecture
-Allows to compose features (events) from multiple user interactions
+Allows to compose features (events) from multiple steps.
+It is related to wizzard pattern.
+
+Feature is event emited after collecting multiple steps.
+Step is filtered interaction. For example it isn't only unit click it is friendly unit click.
+Interaction is selecting an single thing like object or coordinates.
 
 ## Lines of code
 ```
@@ -9,9 +14,9 @@ github.com/AlDanial/cloc
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
 Go                               5             55             15            294
-Markdown                         2              0              0              2
+Markdown                         2              1              0              6
 -------------------------------------------------------------------------------
-SUM:                             7             55             15            296
+SUM:                             7             56             15            300
 -------------------------------------------------------------------------------
 ```
 ## TODO
