@@ -13,10 +13,10 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                               8            131             62            666
+Go                               8            131             62            672
 Markdown                         2              1              0              6
 -------------------------------------------------------------------------------
-SUM:                            10            132             62            672
+SUM:                            10            132             62            678
 -------------------------------------------------------------------------------
 ```
 ## TODO
@@ -397,6 +397,9 @@ Type: `engine/modules/interactions.AvailableFeaturesComponent`
 #### property AvailableFeaturesComponent Features
 Type: `[]engine/modules/interactions.FeatureKey`
 
+#### property AvailableFeaturesComponent Selected
+Type: `bool`
+
 #### method AvailableFeaturesComponent Equal
 Type: `func(other engine/modules/interactions.AvailableFeaturesComponent) bool`
 
@@ -415,6 +418,9 @@ Type: `func[State any]() engine/modules/interactions.MissingPreviewComponent[Sta
 
 ### func NewStepT
 Type: `func[StepT engine/modules/interactions.Step[State], State any](state State) StepT`
+
+### func NewSelectedFeature
+Type: `func(feature engine/modules/interactions.FeatureKey) engine/modules/interactions.AvailableFeaturesComponent`
 
 ### func NewAvailableFeatures
 Type: `func(features ...engine/modules/interactions.FeatureKey) engine/modules/interactions.AvailableFeaturesComponent`
@@ -454,9 +460,11 @@ Type: `func() engine/modules/interactions.SelectFeatureEvent`
   - `engine/modules/interactions.MissingPreviewComponent`
   - `engine/modules/interactions.NewAvailableFeatures`
   - `engine/modules/interactions.NewMissingPreview`
+  - `engine/modules/interactions.NewSelectedFeature`
   - `engine/modules/interactions.NewStatePreview`
   - `engine/modules/interactions.NewStepT`
   - `engine/modules/interactions.SelectFeatureEvent`
+  - `engine/modules/interactions.Selected`
   - `engine/modules/interactions.Service`
   - `engine/modules/interactions.StatePreviewComponent`
   - `engine/modules/interactions.Step`

@@ -9,7 +9,7 @@ import (
 
 func (s *service) onAvailableFeaturesMod(entity ecs.EntityID) {
 	availableFeatures, _ := s.Interactions().AvailableFeatures().Get(entity)
-	if len(availableFeatures.Features) < 2 {
+	if len(availableFeatures.Features) == 0 {
 		s.HideMenu()
 		return
 	}

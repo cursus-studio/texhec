@@ -128,7 +128,7 @@ func (s *service) StepByKey(key interactions.StepKey) (AnyStepService, bool) {
 }
 
 func (s *service) Progress() {
-	if features, _ := s.AvailableFeatures().Get(s.FeatureEntity()); len(features.Features) == 1 {
+	if features, _ := s.AvailableFeatures().Get(s.FeatureEntity()); features.Selected {
 		featKey := features.Features[0]
 		feat := s.featuresByKey[featKey]
 		feat.Progress()
@@ -206,6 +206,6 @@ func (s *service) onSelectFeat(event interactions.SelectFeatureEvent) {
 		return
 	}
 	entity := s.FeatureEntity()
-	s.AvailableFeatures().Set(entity, interactions.NewAvailableFeatures(event.FeatureKey))
+	s.AvailableFeatures().Set(entity, interactions.NewSelectedFeature(event.FeatureKey))
 	feat.Progress()
 }

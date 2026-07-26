@@ -44,11 +44,17 @@ func (step stepT[StepT, State]) State() State { return step.Value }
 
 // feature
 type Event = any
-type AvailableFeaturesComponent struct{ Features []FeatureKey }
+type AvailableFeaturesComponent struct {
+	Features []FeatureKey
+	Selected bool
+}
 type SelectFeatureEvent struct{ FeatureKey FeatureKey }
 
+func NewSelectedFeature(feature FeatureKey) AvailableFeaturesComponent {
+	return AvailableFeaturesComponent{[]FeatureKey{feature}, true}
+}
 func NewAvailableFeatures(features ...FeatureKey) AvailableFeaturesComponent {
-	return AvailableFeaturesComponent{features}
+	return AvailableFeaturesComponent{features, false}
 }
 func NewSelectFeatureEvent(featureKey FeatureKey) SelectFeatureEvent {
 	return SelectFeatureEvent{featureKey}
