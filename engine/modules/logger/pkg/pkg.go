@@ -17,6 +17,7 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 		return ioc.Get[internal.Service](c)
 	})
 	ioc.Register(b, func(c ioc.Dic) logger.Service {
+		ioc.Get[Config](c)
 		return ioc.Get[internal.Service](c)
 	})
 })

@@ -3,74 +3,70 @@ package interactions
 import (
 	"engine/modules/ecs"
 	"reflect"
+	"slices"
 )
 
-type Name = string
-type Event = any
+type FeatureKey = reflect.Type
+type StepKey = reflect.Type
+type InteractionKey = reflect.Type
 
-//
+// interaction
+type StatePreviewComponent[State any] struct{ State State }
+type MissingPreviewComponent[State any] struct{}
 
-type MissingInteractionComponent[State any] struct{}
-type InteractionGUIComponent[State any] struct{}
-type InteractionComponent[State any] struct{ State State }
-type FinishMeasurementEvent[State any] struct{ State State }
-
-func NewInteraction[State any](state State) InteractionComponent[State] {
-	return InteractionComponent[State]{State: state}
+func NewStatePreview[State any](state State) StatePreviewComponent[State] {
+	return StatePreviewComponent[State]{state}
 }
-func NewFinishMeasurementEvent[State any](state State) FinishMeasurementEvent[State] {
-	return FinishMeasurementEvent[State]{state}
+func NewMissingPreview[State any]() MissingPreviewComponent[State] {
+	return MissingPreviewComponent[State]{}
 }
 
-type AnyInteractionService interface {
-	MissingInteractionAny() ecs.AnyComponentArray
-	InteractionAny() ecs.AnyComponentArray
-
-	Name() Name
-	StateType() reflect.Type
-	// saves [MissingInteractionComponent] if it there is no [InteractionComponent]
-	Measure() (alreadyMeasured bool)
-}
 type InteractionService[State any] interface {
-	// elements are removed when interaction is removed.
-	// they can be used to indicate that element is used.
-	InteractionGUI() ecs.ComponentArray[InteractionGUIComponent[State]]
+	StatePreview() ecs.ComponentArray[StatePreviewComponent[State]]
+	MissingPreview() ecs.ComponentArray[MissingPreviewComponent[State]]
 
-	MissingInteraction() ecs.ComponentArray[MissingInteractionComponent[State]]
-	Interaction() ecs.ComponentArray[InteractionComponent[State]]
-	AnyInteractionService
-	FinishMeasurement(FinishMeasurementEvent[State])
+	// saves state in entity with [IsMissingComponent] or resets interactions
+	Save(propertiesEntity ecs.EntityID, state State)
 }
 
-//
-
-type FeatureEvent[Event any] struct{ Event Event }
-type FeatureEventComponent struct{ Event Event }
-type InstanceComponent struct{}
-
-func NewFeatureEvent[Event any](event Event) FeatureEvent[Event] { return FeatureEvent[Event]{event} }
-func (e *FeatureEvent[Event]) Component() FeatureEventComponent {
-	return FeatureEventComponent{e.Event}
+// step
+type Step[State any] interface {
+	State() State
+}
+type stepT[StepT Step[State], State any] struct {
+	Value State
 }
 
-type AnyFeatureService interface {
-	Name() Name
-	EventType() reflect.Type
-	Interactions() []AnyInteractionService
+func NewStepT[StepT Step[State], State any](state State) StepT {
+	return any(stepT[StepT, State]{state}).(StepT)
+}
+func (step stepT[StepT, State]) State() State { return step.Value }
+
+// feature
+type Event = any
+type AvailableFeaturesComponent struct {
+	Features []FeatureKey
+	Selected bool
+}
+type SelectFeatureEvent struct{ FeatureKey FeatureKey }
+
+func NewSelectedFeature(feature FeatureKey) AvailableFeaturesComponent {
+	return AvailableFeaturesComponent{[]FeatureKey{feature}, true}
+}
+func NewAvailableFeatures(features ...FeatureKey) AvailableFeaturesComponent {
+	return AvailableFeaturesComponent{features, false}
+}
+func NewSelectFeatureEvent(featureKey FeatureKey) SelectFeatureEvent {
+	return SelectFeatureEvent{featureKey}
+}
+func NewDeselectFeatureEvent() SelectFeatureEvent { return SelectFeatureEvent{} }
+
+func (c AvailableFeaturesComponent) Equal(other AvailableFeaturesComponent) bool {
+	return slices.Equal(c.Features, other.Features)
 }
 
-// listens to [FeatureEvent]
-type FeatureService[Event any] interface{ AnyFeatureService }
+// service
 type Service interface {
-	// entity with this stores all components with interactions and selected feature
-	Instance() ecs.ComponentArray[InstanceComponent]
-	FeatureEvent() ecs.ComponentArray[FeatureEventComponent]
-
-	FeatureEntity() ecs.EntityID
-
-	// entity here isn't used
-	// it's here just to make calling it easier by OnUpsert because only there it should be used
-	Proceed(ecs.EntityID)
-
-	// export features matching any interaction already filled
+	Features() []FeatureKey
+	AvailableFeatures() ecs.ComponentArray[AvailableFeaturesComponent]
 }

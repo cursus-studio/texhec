@@ -3,8 +3,8 @@ package uiservice
 import (
 	"core/modules/ui"
 	"engine/modules/collider"
-	"engine/modules/ecs"
 	"engine/modules/inputs"
+	"engine/modules/interactions"
 	"engine/modules/layout"
 	"engine/modules/render"
 	"engine/modules/text"
@@ -58,8 +58,7 @@ mainLoop:
 		s.Render().Mesh().Set(quit, render.NewMesh(s.Definitions().Assets().SquareMesh))
 		s.Render().Texture().Set(quit, render.NewTexture(s.Definitions().Assets().Blank))
 
-		removeEntityEvent := ecs.NewRemoveEntityEvent(s.Interactions().FeatureEntity())
-		s.Inputs().LeftClick().Set(quit, inputs.NewLeftClick(removeEntityEvent)) // remove entity
+		s.Inputs().LeftClick().Set(quit, inputs.NewLeftClick(interactions.NewDeselectFeatureEvent()))
 		s.Inputs().KeepSelected().Set(quit, inputs.KeepSelectedComponent{})
 		s.Collider().Component().Set(quit, collider.NewCollider(s.Definitions().Assets().SquareCollider))
 

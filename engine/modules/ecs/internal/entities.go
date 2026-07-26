@@ -8,9 +8,8 @@ import (
 // impl
 
 type entitiesImpl struct {
-	counter ecstypes.EntityID
-	holes   datastructures.SparseSet[ecstypes.EntityID]
-
+	counter  ecstypes.EntityID
+	holes    datastructures.SparseSet[ecstypes.EntityID]
 	entities datastructures.SparseSet[ecstypes.EntityID]
 }
 
@@ -47,14 +46,15 @@ func (entitiesStorage *entitiesImpl) EnsureExists(entity ecstypes.EntityID) {
 	if ok := entitiesStorage.entities.Get(entity); ok {
 		return
 	}
-	for entitiesStorage.counter+1 < entity {
-		entitiesStorage.counter += 1
-		holeEntity := entitiesStorage.counter
-		entitiesStorage.holes.Add(holeEntity)
+
+	for entitiesStorage.counter < entity {
+		entitiesStorage.counter++
+		if id := entitiesStorage.counter; !entitiesStorage.entities.Get(id) {
+			entitiesStorage.holes.Add(id)
+		}
 	}
-	entitiesStorage.counter = max(entitiesStorage.counter, entity)
-	entitiesStorage.entities.Add(entity)
 	entitiesStorage.holes.Remove(entity)
+	entitiesStorage.entities.Add(entity)
 }
 
 func (entitiesStorage *entitiesImpl) RemoveEntity(entity ecstypes.EntityID) {

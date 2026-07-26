@@ -10,8 +10,8 @@ import (
 	interactionspkg "engine/modules/interactions/pkg"
 	typeregistrypkg "engine/modules/typeregistry/pkg"
 	"fmt"
-	"reflect"
 	"strconv"
+	"unsafe"
 
 	"github.com/ogiusek/ioc/v2"
 )
@@ -23,10 +23,13 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 		typeregistrypkg.PkgT[pathfind.StepComponent],
 
 		typeregistrypkg.PkgT[pathfind.FindPathEvent],
-		interactionspkg.FeaturePkg[pathfind.FindPathFeature]("move", []reflect.Type{
-			reflect.TypeFor[tile.ObjectInteraction](),
-			reflect.TypeFor[tile.CoordsInteraction](),
-		}),
+
+		interactionspkg.FeaturePkg[pathfind.FindPathEvent](
+			interactionspkg.NewCopyRelation[tile.CoordsCursorComponent](
+				unsafe.Offsetof(pathfind.FindPathEvent{}.Object),
+				unsafe.Offsetof(pathfind.FindPathEvent{}.Coords),
+			),
+		),
 	}
 	for _, pkg := range pkgs {
 		pkg(b)

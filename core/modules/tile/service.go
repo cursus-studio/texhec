@@ -19,6 +19,9 @@ var (
 	ErrInvalidPosition                  error = errors.New("tile:position not found on the grid")
 	ErrInvalidStep                      error = errors.New("tile:invalid step")
 	ErrPositionAndSpeedIsRequiredToStep error = errors.New("tile:to step you need to have speed and position")
+
+	ErrRequiresSpeed  error = errors.New("tile:requires speed")
+	ErrRequiresDeploy error = errors.New("tile:requires deploy")
 )
 
 type ID uint8
@@ -135,8 +138,9 @@ type Service interface {
 	Rot() ecs.ComponentArray[RotComponent]
 	Layer() ecs.ComponentArray[LayerComponent]
 
+	CanDeploy() ecs.ComponentArray[CanDeployComponent]
 	CoordsCursor() ecs.ComponentArray[CoordsCursorComponent]
-	CoordsCursorRange() ecs.ComponentArray[CoordsCursorRangeComponent]
+	CoordsAnchor() ecs.ComponentArray[CoordsAnchorComponent]
 
 	// src images should be:
 	// - 1111
@@ -153,7 +157,7 @@ type Service interface {
 
 	CoordsInteraction() interactions.InteractionService[CoordsInteraction]
 	ObjectInteraction() interactions.InteractionService[ObjectInteraction]
-	SourceObjectInteraction() interactions.InteractionService[SourceObjectInteraction]
+	BlueprintInteraction() interactions.InteractionService[BlueprintInteraction]
 }
 
 //
@@ -164,7 +168,7 @@ type ApplyCoordsEvent interface {
 
 //
 
-type CoordsCursorRangeComponent struct {
+type CanDeployComponent struct {
 	Entity ecs.EntityID
 }
 type CoordsCursorComponent struct {
@@ -172,33 +176,45 @@ type CoordsCursorComponent struct {
 	// if true then entity is used as an image else default icon is used
 	CustomImage bool
 }
+type CoordsAnchorComponent struct {
+	Entity ecs.EntityID
+}
 
-func NewCoordsCursorRange(rangeEntity ecs.EntityID) CoordsCursorRangeComponent {
-	return CoordsCursorRangeComponent{rangeEntity}
+func NewCanDeploy(canDeploy ecs.EntityID) CanDeployComponent {
+	return CanDeployComponent{canDeploy}
 }
 func NewCoordsCursor(propertiesEntity ecs.EntityID, customImage bool) CoordsCursorComponent {
 	return CoordsCursorComponent{propertiesEntity, customImage}
 }
+func NewCoordsAnchor(entity ecs.EntityID) CoordsAnchorComponent {
+	return CoordsAnchorComponent{entity}
+}
 
 type CoordsInteraction struct{ Coords grid.Coords }
 type ObjectInteraction struct{ Entity ecs.EntityID }
-type SourceObjectInteraction struct{ Entity ecs.EntityID }
+type BlueprintInteraction struct{ Entity ecs.EntityID }
 
-func NewCoordsInteraction(coords grid.Coords) CoordsInteraction {
-	return CoordsInteraction{coords}
+func NewCoordsInteraction(coords grid.Coords) CoordsInteraction  { return CoordsInteraction{coords} }
+func NewObjectInteraction(entity ecs.EntityID) ObjectInteraction { return ObjectInteraction{entity} }
+func NewBlueprintInteraction(entity ecs.EntityID) BlueprintInteraction {
+	return BlueprintInteraction{entity}
 }
-func NewObjectInteraction(entity ecs.EntityID) ObjectInteraction {
-	return ObjectInteraction{entity}
-}
-func NewSourceObjectInteraction(entity ecs.EntityID) SourceObjectInteraction {
-	return SourceObjectInteraction{entity}
-}
+
+type CoordsStep interactions.Step[CoordsInteraction]
+type ObjectStep interactions.Step[ObjectInteraction]
+type MovingObjectStep interactions.Step[ObjectInteraction]
+type BuildingObjectStep interactions.Step[ObjectInteraction]
+type BlueprintStep interactions.Step[BlueprintInteraction]
 
 //
 
 type ClickEntityEvent struct{ Entity ecs.EntityID }
+type ClickBlueprintEvent struct{ Entity ecs.EntityID }
 
 func NewClickEntityEvent() ClickEntityEvent { return ClickEntityEvent{} }
+func NewClickBlueprintEvent(deployed ecs.EntityID) ClickBlueprintEvent {
+	return ClickBlueprintEvent{deployed}
+}
 func (e ClickEntityEvent) ApplyEntity(entity ecs.EntityID) any {
 	e.Entity = entity
 	return e

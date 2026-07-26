@@ -19,9 +19,9 @@ type service struct {
 	TileGridService  grid.ServiceT[tile.ID]    `inject:""`
 	TileTypeRelation relation.Service[tile.ID] `inject:""`
 
-	CoordsInteractionService       interactions.InteractionService[tile.CoordsInteraction]       `inject:""`
-	ObjectInteractionService       interactions.InteractionService[tile.ObjectInteraction]       `inject:""`
-	SourceObjectInteractionService interactions.InteractionService[tile.SourceObjectInteraction] `inject:""`
+	CoordsInteractionService    interactions.InteractionService[tile.CoordsInteraction]    `inject:""`
+	ObjectInteractionService    interactions.InteractionService[tile.ObjectInteraction]    `inject:""`
+	BlueprintInteractionService interactions.InteractionService[tile.BlueprintInteraction] `inject:""`
 
 	ecs.SystemRegister
 	renderer ecs.SystemRegister
@@ -33,8 +33,9 @@ type service struct {
 	rot   ecs.ComponentArray[tile.RotComponent]
 	layer ecs.ComponentArray[tile.LayerComponent]
 
-	coordsCursor      ecs.ComponentArray[tile.CoordsCursorComponent]
-	coordsCursorRange ecs.ComponentArray[tile.CoordsCursorRangeComponent]
+	canDeploy    ecs.ComponentArray[tile.CanDeployComponent]
+	coordsCursor ecs.ComponentArray[tile.CoordsCursorComponent]
+	coordsAnchor ecs.ComponentArray[tile.CoordsAnchorComponent]
 
 	tileSize float32
 }
@@ -51,26 +52,26 @@ func NewService(c ioc.Dic, system, renderer ecs.SystemRegister, tileSize float32
 	s.rot = ecs.GetComponentArray[tile.RotComponent](s.World())
 	s.layer = ecs.GetComponentArray[tile.LayerComponent](s.World())
 
+	s.canDeploy = ecs.GetComponentArray[tile.CanDeployComponent](s.World())
 	s.coordsCursor = ecs.GetComponentArray[tile.CoordsCursorComponent](s.World())
-	s.coordsCursorRange = ecs.GetComponentArray[tile.CoordsCursorRangeComponent](s.World())
+	s.coordsAnchor = ecs.GetComponentArray[tile.CoordsAnchorComponent](s.World())
 
 	s.size.SetEmpty(tile.NewSize(1, 1))
 	s.layer.SetEmpty(tile.NewLayer(definitions.TileLayer))
 
-	events.Listen(s.EventsBuilder(), s.OnClickEntityRenderFeatures)
-
+	s.CoordsInteractionService.MissingPreview().OnUpsert(s.OnCoordsMissingUpsert)
+	s.CoordsInteractionService.StatePreview().OnUpsert(s.OnCoordsStateUpsert)
 	events.Listen(s.EventsBuilder(), s.OnTileHover)
 	events.Listen(s.EventsBuilder(), s.OnTileClick)
-	s.CoordsInteractionService.Interaction().OnUpsert(s.OnCoordsInteractionUpsert)
 
-	s.ObjectInteractionService.MissingInteraction().OnUpsert(s.OnMissingObjectInteractionUpsert)
-	s.ObjectInteractionService.MissingInteraction().OnUpsert(s.OnMissingObjectInteractionRemove)
-	s.ObjectInteractionService.Interaction().OnUpsert(s.OnObjectInteractionUpsert)
-	events.Listen(s.EventsBuilder(), s.OnClickEntitySelect)
+	s.ObjectInteractionService.MissingPreview().OnUpsert(s.OnObjectMissingUpsert)
+	s.ObjectInteractionService.StatePreview().OnUpsert(s.OnObjectStateUpsert)
+	events.Listen(s.EventsBuilder(), s.OnClickObject)
 
-	s.SourceObjectInteractionService.MissingInteraction().OnUpsert(s.OnMissingSourceObjectInteractionUpsert)
-	s.SourceObjectInteractionService.MissingInteraction().OnRemove(s.OnMissingSourceObjectInteractionRemove)
-	s.SourceObjectInteractionService.Interaction().OnMod(s.OnSourceObjectMod)
+	s.BlueprintInteractionService.MissingPreview().OnUpsert(s.OnBlueprintMissingUpsert)
+	s.BlueprintInteractionService.MissingPreview().OnRemove(s.OnBlueprintMissingRemove)
+	s.BlueprintInteractionService.StatePreview().OnUpsert(s.OnBlueprintStateUpsert)
+	events.Listen(s.EventsBuilder(), s.OnClickBlueprint)
 
 	s.tileSize = tileSize
 
@@ -92,11 +93,14 @@ func (s *service) Size() ecs.ComponentArray[tile.SizeComponent]   { return s.siz
 func (s *service) Rot() ecs.ComponentArray[tile.RotComponent]     { return s.rot }
 func (s *service) Layer() ecs.ComponentArray[tile.LayerComponent] { return s.layer }
 
+func (s *service) CanDeploy() ecs.ComponentArray[tile.CanDeployComponent] {
+	return s.canDeploy
+}
+func (s *service) CoordsAnchor() ecs.ComponentArray[tile.CoordsAnchorComponent] {
+	return s.coordsAnchor
+}
 func (s *service) CoordsCursor() ecs.ComponentArray[tile.CoordsCursorComponent] {
 	return s.coordsCursor
-}
-func (s *service) CoordsCursorRange() ecs.ComponentArray[tile.CoordsCursorRangeComponent] {
-	return s.coordsCursorRange
 }
 
 // NewBiomeAsset in other file

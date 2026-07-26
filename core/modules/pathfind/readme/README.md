@@ -8,10 +8,10 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                               6             71             27            437
+Go                               6             71             27            418
 Markdown                         1              1              0              5
 -------------------------------------------------------------------------------
-SUM:                             7             72             27            442
+SUM:                             7             72             27            423
 -------------------------------------------------------------------------------
 ```
 ## TODO
@@ -66,17 +66,14 @@ Otherwise step will be removed and warning will be logged.
 #### property StepComponent Coords
 Type: `engine/modules/grid.Coords`
 
-### type FindPathFeature
-Type: `core/modules/pathfind.FindPathFeature`
-
 ### type FindPathEvent
 Type: `core/modules/pathfind.FindPathEvent`
 
-#### property FindPathEvent Entity
-Type: `engine/modules/ecs.EntityID`
+#### property FindPathEvent Object
+Type: `core/modules/tile.MovingObjectStep`
 
 #### property FindPathEvent Coords
-Type: `engine/modules/grid.Coords`
+Type: `core/modules/tile.CoordsStep`
 
 ## Variables
 ### var ErrInvalidPath
@@ -91,9 +88,6 @@ Type: `func[Number golang.org/x/exp/constraints.Integer](invSpeed Number) core/m
 
 ### func NewStep
 Type: `func(x engine/modules/grid.Coord, y engine/modules/grid.Coord) core/modules/pathfind.StepComponent`
-
-### func NewFindPathFeature
-Type: `func() engine/modules/interactions.FeatureEvent[core/modules/pathfind.FindPathFeature]`
 
 ### func NewFindPathEvent
 Type: `func(entity engine/modules/ecs.EntityID, coords engine/modules/grid.Coords) core/modules/pathfind.FindPathEvent`
@@ -116,14 +110,13 @@ Type: `func(entity engine/modules/ecs.EntityID, coords engine/modules/grid.Coord
 `core/modules/pathfind`:
   - `core/modules/pathfind.CanStep`
   - `core/modules/pathfind.Coords`
-  - `core/modules/pathfind.Entity`
   - `core/modules/pathfind.ErrInvalidPath`
   - `core/modules/pathfind.FindPathEvent`
-  - `core/modules/pathfind.FindPathFeature`
   - `core/modules/pathfind.InvSpeed`
   - `core/modules/pathfind.NewSpeed`
   - `core/modules/pathfind.NewStep`
   - `core/modules/pathfind.NewTarget`
+  - `core/modules/pathfind.Object`
   - `core/modules/pathfind.Service`
   - `core/modules/pathfind.Speed`
   - `core/modules/pathfind.SpeedComponent`
@@ -135,15 +128,18 @@ Type: `func(entity engine/modules/ecs.EntityID, coords engine/modules/grid.Coord
   - `core/modules/tile.Aligned`
   - `core/modules/tile.Coord`
   - `core/modules/tile.Coords`
-  - `core/modules/tile.CoordsInteraction`
+  - `core/modules/tile.CoordsCursorComponent`
+  - `core/modules/tile.CoordsStep`
   - `core/modules/tile.Entity`
   - `core/modules/tile.ErrInvalidPosition`
   - `core/modules/tile.ErrInvalidStep`
   - `core/modules/tile.ErrPositionAndSpeedIsRequiredToStep`
+  - `core/modules/tile.MovingObjectStep`
+  - `core/modules/tile.NewCoordsInteraction`
+  - `core/modules/tile.NewObjectInteraction`
   - `core/modules/tile.NewPos`
   - `core/modules/tile.NewRot`
   - `core/modules/tile.NewSize`
-  - `core/modules/tile.ObjectInteraction`
   - `core/modules/tile.Pos`
   - `core/modules/tile.PosComponent`
   - `core/modules/tile.Rot`
@@ -176,13 +172,12 @@ Type: `func(entity engine/modules/ecs.EntityID, coords engine/modules/grid.Coord
   - `engine/modules/grid.Y`
 
 `engine/modules/interactions`:
-  - `engine/modules/interactions.FeatureEntity`
-  - `engine/modules/interactions.FeatureEvent`
-  - `engine/modules/interactions.Interaction`
+  - `engine/modules/interactions.NewStepT`
   - `engine/modules/interactions.State`
 
 `engine/modules/interactions/pkg`:
   - `engine/modules/interactions/pkg.FeaturePkg`
+  - `engine/modules/interactions/pkg.NewCopyRelation`
 
 `engine/modules/loop`:
   - `engine/modules/loop.TickEvent`

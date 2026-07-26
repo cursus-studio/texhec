@@ -3,6 +3,7 @@ package deploy
 
 import (
 	"core/modules/reach"
+	"core/modules/tile"
 	"engine/modules/ecs"
 	"engine/modules/grid"
 	"engine/modules/interactions"
@@ -33,28 +34,35 @@ type Service interface {
 		coords grid.Coords,
 	) (ecs.EntityID, error)
 	DeployEvent(DeployEvent)
+	DestroyEvent(DestroyEvent)
 }
 
 //
 
-type DeployFeature struct{}
 type DeployEvent struct {
-	By,
-	Blueprint ecs.EntityID
-	Coords grid.Coords
+	By        tile.BuildingObjectStep
+	Blueprint tile.BlueprintStep
+	Coords    tile.CoordsStep
+}
+type DestroyEvent struct {
+	Object tile.ObjectStep
 }
 
-func NewDeployFeature() interactions.FeatureEvent[DeployFeature] {
-	return interactions.NewFeatureEvent(DeployFeature{})
-}
 func NewDeployEvent(
 	by,
 	blueprint ecs.EntityID,
 	coords grid.Coords,
 ) DeployEvent {
 	return DeployEvent{
-		By:        by,
-		Blueprint: blueprint,
-		Coords:    coords,
+		interactions.NewStepT[tile.BuildingObjectStep](tile.NewObjectInteraction(by)),
+		interactions.NewStepT[tile.BlueprintStep](tile.NewBlueprintInteraction(blueprint)),
+		interactions.NewStepT[tile.CoordsStep](tile.NewCoordsInteraction(coords)),
+	}
+}
+func NewDestroyEvent(
+	object ecs.EntityID,
+) DestroyEvent {
+	return DestroyEvent{
+		interactions.NewStepT[tile.ObjectStep](tile.NewObjectInteraction(object)),
 	}
 }
