@@ -18,8 +18,13 @@ func (s *service) CoordsInteraction() interactions.InteractionService[tile.Coord
 }
 
 func (s *service) OnTileClick(e grid.ClickEvent) {
+	chunkCoords, ok := s.EngineWorld.Grid().Coords().Get(e.Chunk)
+	if !ok {
+		return
+	}
+	coords := s.EngineWorld.Grid().AbsoluteCoords(chunkCoords, e.Coords)
 	propertiesEntity := s.World().NewEntity()
-	s.CoordsInteraction().Save(propertiesEntity, tile.NewCoordsInteraction(e.Coords))
+	s.CoordsInteraction().Save(propertiesEntity, tile.NewCoordsInteraction(coords))
 }
 
 //
