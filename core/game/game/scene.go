@@ -23,8 +23,8 @@ import (
 )
 
 // max zoom to see tiles in 1000 px
-const MAX_ZOOM = 1000 // 1000
-const MAP_SIZE = 1024 // 1024
+const MAX_ZOOM = 100 // 1000
+const MAP_SIZE = 128 // 1024
 
 func addScene(world game.GameWorld, sceneParent ecs.EntityID) {
 	// biggest maps on mods in rusted warfare 2560x1440

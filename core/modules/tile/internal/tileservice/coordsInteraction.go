@@ -17,134 +17,137 @@ func (s *service) CoordsInteraction() interactions.InteractionService[tile.Coord
 	return s.CoordsInteractionService
 }
 
-// on grid hover everything
+func (s *service) OnTileClick(e grid.ClickEvent) {
+	propertiesEntity := s.World().NewEntity()
+	s.CoordsInteraction().Save(propertiesEntity, tile.NewCoordsInteraction(e.Coords))
+}
+
+//
+
 func (s *service) OnTileHover(e grid.HoverEvent) {
-	featureEntity := s.Interactions().FeatureEntity()
-	if _, ok := s.CoordsInteractionService.MissingInteraction().Get(featureEntity); !ok {
+	entities := s.CoordsInteraction().MissingPreview().GetEntities()
+	if len(entities) != 1 {
 		return
 	}
+	previewEntity := entities[0]
 
 	chunkCoords, ok := s.EngineWorld.Grid().Coords().Get(e.Chunk)
 	if !ok {
 		return
 	}
 	coords := s.EngineWorld.Grid().AbsoluteCoords(chunkCoords, e.Coords)
-	interaction := interactions.NewInteraction(tile.CoordsInteraction{Coords: coords})
+	pos := tile.NewPos(coords.Coords())
+	s.Tile().Pos().Set(previewEntity, pos)
 
-	s.CoordsInteractionService.Interaction().Set(featureEntity, interaction)
+	for _, child := range s.Hierarchy().Children(previewEntity).GetIndices() {
+		s.World().RemoveEntity(child)
+	}
+
+	canDeploy := true
+
+	if coordsRange, ok := s.CoordsAnchor().Get(previewEntity); ok && coordsRange.Entity != 0 {
+		for _, reachCoords := range s.GameWorld.Deploy().Reach().TilesWithinReach(coordsRange.Entity) {
+			ind := s.Prototype().Clone(s.Definitions().Assets().Blank)
+			s.Hierarchy().SetParent(ind, previewEntity)
+			s.Transform().Parent().Set(ind, transform.NewParent(transform.Absolute))
+
+			s.Render().Mesh().Set(ind, render.NewMesh(s.Definitions().Assets().SquareMesh))
+			s.Render().Texture().Set(ind, render.NewTexture(s.Definitions().Assets().Border))
+			s.Groups().InheritGroups(ind)
+
+			s.Tile().Layer().Set(ind, tile.NewLayer(definitions.RangePlaceholderLayer))
+			s.Tile().Pos().Set(ind, tile.NewPos(reachCoords.Coords()))
+			s.Render().Color().Set(ind, render.NewColor(mgl32.Vec4{0, 0, .5, 1}))
+		}
+
+		if !s.GameWorld.Deploy().Reach().Reaches(coordsRange.Entity, previewEntity) {
+			canDeploy = false
+		}
+	}
+
+	if coordsCursor, ok := s.CoordsCursor().Get(previewEntity); ok {
+		blueprintObstruction, _ := s.Obstruction().Component().Get(coordsCursor.PropertiesEntity)
+		size, _ := s.Tile().Size().Get(coordsCursor.PropertiesEntity)
+		aabb := obstruction.NewAABB(pos, size)
+		collisions := s.Obstruction().Collisions(aabb, blueprintObstruction.Obstruction)
+
+		for _, collision := range collisions {
+			ind := s.Prototype().Clone(s.Definitions().Assets().Blank)
+			s.Hierarchy().SetParent(ind, previewEntity)
+			s.Transform().Parent().Set(ind, transform.NewParent(transform.Absolute))
+
+			s.Tile().Layer().Set(ind, tile.NewLayer(definitions.TilePlaceholderLayer))
+			s.Render().Mesh().Set(ind, render.NewMesh(s.Definitions().Assets().SquareMesh))
+			s.Render().Texture().Set(ind, render.NewTexture(s.Definitions().Assets().Blank))
+			s.Groups().InheritGroups(ind)
+
+			s.Tile().Pos().Set(ind, tile.NewPos(collision.Coords()))
+			s.Render().Color().Set(ind, render.NewColor(mgl32.Vec4{1, 0, 0, 1}))
+		}
+
+		if len(collisions) != 0 {
+			canDeploy = false
+		}
+	}
+
+	if canDeploy {
+		s.Render().Color().Set(previewEntity, render.NewColor(mgl32.Vec4{0, 1, 0, 1}))
+	} else {
+		s.Render().Color().Set(previewEntity, render.NewColor(mgl32.Vec4{1, 0, 0, 1}))
+	}
 }
 
-// on tile click
-func (s *service) OnTileClick(e grid.ClickEvent) {
-	featureEntity := s.Interactions().FeatureEntity()
-	if _, ok := s.CoordsInteractionService.Interaction().Get(featureEntity); !ok {
+func (s *service) OnCoordsMissingUpsert(entity ecs.EntityID) {
+	if _, ok := s.CoordsInteraction().MissingPreview().Get(entity); !ok {
 		return
 	}
-	s.CoordsInteractionService.MissingInteraction().Remove(featureEntity)
+	worldEntity, ok := s.Seed().WorldSeed()
+	if !ok {
+		return
+	}
+	coordsCursor, ok := s.CoordsCursor().Get(entity)
+	if !ok {
+		return
+	}
+
+	s.Prototype().CloneTo(coordsCursor.PropertiesEntity, entity)
+	s.Obstruction().Deployed().Remove(entity)
+	s.Collider().Component().Remove(entity)
+
+	s.Hierarchy().SetParent(entity, worldEntity)
+	s.Tile().Layer().Set(entity, tile.NewLayer(definitions.ObjectPlaceholderLayer))
+
+	if !coordsCursor.CustomImage {
+		s.Render().Texture().Set(entity, render.NewTexture(s.Definitions().Hud().Selected))
+	}
 }
 
-// on interactions.CoordsInteraction mod
-func (s *service) OnCoordsInteractionUpsert(entity ecs.EntityID) {
+//
+
+func (s *service) OnCoordsStateUpsert(entity ecs.EntityID) {
+	stateComp, ok := s.CoordsInteraction().StatePreview().Get(entity)
+	if !ok {
+		return
+	}
+
 	worldEntity, ok := s.Seed().WorldSeed()
 	if !ok {
 		return
 	}
 
-	placeholders := s.CoordsInteractionService.InteractionGUI().GetEntities()
-	if len(placeholders) > 1 {
-		for _, entity := range s.CoordsInteractionService.InteractionGUI().GetEntities()[1:] {
-			s.World().RemoveEntity(entity)
-		}
-	}
-	featureEntity := s.Interactions().FeatureEntity()
-	coordsCursor, ok := s.coordsCursor.Get(featureEntity)
-	if !ok {
-		return
-	}
-	coords, ok := s.CoordsInteractionService.Interaction().Get(featureEntity)
-	if !ok {
-		return
-	}
+	targetCoords := stateComp.State.Coords
+	s.Hierarchy().SetParent(entity, worldEntity)
 
-	var placeholderEntity ecs.EntityID
-	if len(placeholders) == 0 {
-		placeholderEntity = s.World().NewEntity()
-	} else {
-		placeholderEntity = placeholders[0]
-	}
-	s.Prototype().CloneTo(coordsCursor.PropertiesEntity, placeholderEntity)
-	s.Obstruction().Deployed().Remove(placeholderEntity)
-	s.Collider().Component().Remove(placeholderEntity)
+	pos := tile.NewPos(targetCoords.Coords())
+	s.Tile().Pos().Set(entity, pos)
 
-	s.Hierarchy().SetParent(placeholderEntity, worldEntity)
-	s.CoordsInteractionService.InteractionGUI().Set(placeholderEntity, interactions.InteractionGUIComponent[tile.CoordsInteraction]{})
-	s.Tile().Layer().Set(placeholderEntity, tile.NewLayer(definitions.ObjectPlaceholderLayer))
+	s.Transform().Parent().Set(entity, transform.NewParent(transform.Absolute))
+	s.Tile().Layer().Set(entity, tile.NewLayer(definitions.ObjectSelectionPlaceholderLayer))
 
-	pos := tile.NewPos(coords.State.Coords.Coords())
-	s.Tile().Pos().Set(placeholderEntity, pos)
+	s.Render().Mesh().Set(entity, render.NewMesh(s.Definitions().Assets().SquareMesh))
+	s.Render().Texture().Set(entity, render.NewTexture(s.Definitions().Hud().Selected))
+	s.Groups().InheritGroups(entity)
 
-	if !coordsCursor.CustomImage {
-		s.Render().Texture().Set(placeholderEntity, render.NewTexture(s.Definitions().Hud().Selected))
-		// set image to default
-	}
-
-	//
-
-	canDeploy := true
-	for _, child := range s.Hierarchy().Children(placeholderEntity).GetIndices() {
-		s.World().RemoveEntity(child)
-	}
-
-	// range
-
-	if coordsCursorRange, ok := s.coordsCursorRange.Get(featureEntity); ok && coordsCursorRange.Entity != 0 {
-		for _, coords := range s.GameWorld.Deploy().Reach().TilesWithinReach(coordsCursorRange.Entity) {
-			entity := s.Prototype().Clone(s.Definitions().Assets().Blank)
-			s.Hierarchy().SetParent(entity, placeholderEntity)
-			s.Transform().Parent().Set(entity, transform.NewParent(transform.Absolute))
-
-			s.Render().Mesh().Set(entity, render.NewMesh(s.Definitions().Assets().SquareMesh))
-			s.Render().Texture().Set(entity, render.NewTexture(s.Definitions().Assets().Border))
-			s.Groups().InheritGroups(entity)
-
-			s.Tile().Layer().Set(entity, tile.NewLayer(definitions.RangePlaceholderLayer))
-			s.Tile().Pos().Set(entity, tile.NewPos(coords.Coords()))
-			s.Render().Color().Set(entity, render.NewColor(mgl32.Vec4{0, 0, .5, 1}))
-		}
-
-		if !s.GameWorld.Deploy().Reach().Reaches(coordsCursorRange.Entity, placeholderEntity) {
-			canDeploy = false
-		}
-	}
-
-	// collisions
-	blueprintObstruction, _ := s.Obstruction().Component().Get(coordsCursor.PropertiesEntity)
-	size, _ := s.Tile().Size().Get(coordsCursor.PropertiesEntity)
-	aabb := obstruction.NewAABB(pos, size)
-	collisions := s.Obstruction().Collisions(aabb, blueprintObstruction.Obstruction)
-	for _, collision := range collisions {
-		entity := s.Prototype().Clone(s.Definitions().Assets().Blank)
-		s.Hierarchy().SetParent(entity, placeholderEntity)
-		s.Transform().Parent().Set(entity, transform.NewParent(transform.Absolute))
-
-		s.Tile().Layer().Set(entity, tile.NewLayer(definitions.TilePlaceholderLayer))
-		s.Render().Mesh().Set(entity, render.NewMesh(s.Definitions().Assets().SquareMesh))
-		s.Render().Texture().Set(entity, render.NewTexture(s.Definitions().Assets().Blank))
-		s.Groups().InheritGroups(entity)
-
-		s.Tile().Layer().Set(entity, tile.NewLayer(definitions.TilePlaceholderLayer))
-		s.Tile().Pos().Set(entity, tile.NewPos(collision.Coords()))
-		s.Render().Color().Set(entity, render.NewColor(mgl32.Vec4{1, 0, 0, 1}))
-	}
-	if len(collisions) != 0 {
-		canDeploy = false
-		goto showCanDeploy
-	}
-
-showCanDeploy:
-	if canDeploy {
-		s.Render().Color().Set(placeholderEntity, render.NewColor(mgl32.Vec4{0, 1, 0, 1}))
-		return
-	}
-	s.Render().Color().Set(placeholderEntity, render.NewColor(mgl32.Vec4{1, 0, 0, 1}))
+	s.Obstruction().Deployed().Remove(entity)
+	s.Collider().Component().Remove(entity)
 }

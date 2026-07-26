@@ -8,10 +8,10 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                               6             79             11            379
+Go                               7             83             13            418
 Markdown                         1              8              0             27
 -------------------------------------------------------------------------------
-SUM:                             7             87             11            406
+SUM:                             8             91             13            445
 -------------------------------------------------------------------------------
 ```
 ## Types
@@ -62,6 +62,7 @@ Type: `core/modules/ui.CursorCameraComponent`
   - `core/modules/ui.CursorCamera`
   - `core/modules/ui.CursorCameraComponent`
   - `core/modules/ui.Service`
+  - `core/modules/ui.ShowMenu`
   - `core/modules/ui.UiCameraComponent`
 
 `engine/modules/assets`:
@@ -79,7 +80,6 @@ Type: `core/modules/ui.CursorCameraComponent`
   - `engine/modules/ecs.EntityID`
   - `engine/modules/ecs.GetComponentArray`
   - `engine/modules/ecs.NewDirtySet`
-  - `engine/modules/ecs.NewRemoveEntityEvent`
   - `engine/modules/ecs.NewSystemRegister`
   - `engine/modules/ecs.RegisterSystems`
   - `engine/modules/ecs.SystemRegister`
@@ -89,6 +89,13 @@ Type: `core/modules/ui.CursorCameraComponent`
   - `engine/modules/inputs.KeepSelectedComponent`
   - `engine/modules/inputs.LeftClick`
   - `engine/modules/inputs.NewLeftClick`
+
+`engine/modules/interactions`:
+  - `engine/modules/interactions.AvailableFeatures`
+  - `engine/modules/interactions.Features`
+  - `engine/modules/interactions.NewDeselectFeatureEvent`
+  - `engine/modules/interactions.NewSelectFeatureEvent`
+  - `engine/modules/interactions.SelectFeatureEvent`
 
 `engine/modules/layout`:
   - `engine/modules/layout.Align`

@@ -10,8 +10,8 @@ import (
 	interactionspkg "engine/modules/interactions/pkg"
 	typeregistrypkg "engine/modules/typeregistry/pkg"
 	"fmt"
-	"reflect"
 	"strconv"
+	"unsafe"
 
 	"github.com/ogiusek/ioc/v2"
 )
@@ -23,23 +23,13 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 		typeregistrypkg.PkgT[pathfind.StepComponent],
 
 		typeregistrypkg.PkgT[pathfind.FindPathEvent],
-		interactionspkg.FeaturePkg("move", []reflect.Type{
-			reflect.TypeFor[tile.ObjectInteraction](),
-			reflect.TypeFor[tile.CoordsInteraction](),
-		}, func(c ioc.Dic) func() pathfind.FindPathEvent {
-			s := ioc.Get[game.GameWorld](c)
-			return func() pathfind.FindPathEvent {
-				e := pathfind.FindPathEvent{}
-				featureEntity := s.Interactions().FeatureEntity()
-				if comp, ok := s.Tile().CoordsInteraction().Interaction().Get(featureEntity); ok {
-					e.Coords = comp.State.Coords
-				}
-				if comp, ok := s.Tile().ObjectInteraction().Interaction().Get(featureEntity); ok {
-					e.Entity = comp.State.Entity
-				}
-				return e
-			}
-		}),
+
+		interactionspkg.FeaturePkg[pathfind.FindPathEvent](
+			interactionspkg.NewCopyRelation[tile.CoordsCursorComponent](
+				unsafe.Offsetof(pathfind.FindPathEvent{}.Object),
+				unsafe.Offsetof(pathfind.FindPathEvent{}.Coords),
+			),
+		),
 	}
 	for _, pkg := range pkgs {
 		pkg(b)

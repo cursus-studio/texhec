@@ -30,6 +30,7 @@ func NewService(c ioc.Dic) deploy.Service {
 	s.component = ecs.GetComponentArray[deploy.Component](s.World())
 
 	events.Listen(s.EventsBuilder(), s.DeployEvent)
+	events.Listen(s.EventsBuilder(), s.DestroyEvent)
 
 	return s
 }
@@ -69,23 +70,27 @@ func (s *service) Deploy(
 }
 
 func (s *service) DeployEvent(e deploy.DeployEvent) {
+	by := e.By.State().Entity
+	blueprint := e.Blueprint.State().Entity
+	coords := e.Coords.State().Coords
+
 	worldEntity, ok := s.Seed().WorldSeed()
 	if !ok {
 		return
 	}
 
 	// by
-	byPos, ok := s.Tile().Pos().Get(e.By)
+	byPos, ok := s.Tile().Pos().Get(by)
 	if !ok {
 		s.Logger().Log(obstruction.ErrPositionIsOccupied)
 		return
 	}
-	bySize, _ := s.Tile().Size().Get(e.By)
-	reachComp, _ := s.GameWorld.Deploy().Reach().Component().Get(e.By)
+	bySize, _ := s.Tile().Size().Get(by)
+	reachComp, _ := s.GameWorld.Deploy().Reach().Component().Get(by)
 
 	// target
-	pos := tile.NewPos(e.Coords.Coords())
-	size, _ := s.Tile().Size().Get(e.Blueprint)
+	pos := tile.NewPos(coords.Coords())
+	size, _ := s.Tile().Size().Get(blueprint)
 
 	// check can place
 	{ // reach
@@ -97,7 +102,7 @@ func (s *service) DeployEvent(e deploy.DeployEvent) {
 		}
 	}
 	{ // obstruction
-		blueprintObstruction, _ := s.Obstruction().Component().Get(e.Blueprint)
+		blueprintObstruction, _ := s.Obstruction().Component().Get(blueprint)
 
 		aabb := obstruction.NewAABB(pos, size)
 		collisions := s.Obstruction().Collisions(aabb, blueprintObstruction.Obstruction)
@@ -112,12 +117,17 @@ func (s *service) DeployEvent(e deploy.DeployEvent) {
 	// ...
 
 	// place
-	deployed := s.Prototype().Clone(e.Blueprint)
+	deployed := s.Prototype().Clone(blueprint)
 	s.Hierarchy().SetParent(deployed, worldEntity)
-	if owner, ok := s.Player().Owner().Get(e.By); ok {
+	if owner, ok := s.Player().Owner().Get(by); ok {
 		s.Player().Owner().Set(deployed, owner)
 	}
 	s.Obstruction().Deployed().Set(deployed, obstruction.NewDeployed())
 	s.Inputs().LeftClick().Set(deployed, inputs.NewLeftClick(tile.NewClickEntityEvent()))
-	s.Tile().Pos().Set(deployed, tile.NewPos(e.Coords.Coords()))
+	s.Tile().Pos().Set(deployed, tile.NewPos(coords.Coords()))
+}
+
+func (s *service) DestroyEvent(e deploy.DestroyEvent) {
+	object := e.Object.State().Entity
+	s.World().RemoveEntity(object)
 }

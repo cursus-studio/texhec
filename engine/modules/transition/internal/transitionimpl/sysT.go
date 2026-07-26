@@ -59,8 +59,7 @@ func (s *sysT[Component]) ListenFrame(event loop.FrameEvent) {
 		)
 		progress := transition.Progress(transitionComponent.Progress) / transition.Progress(transitionComponent.Duration)
 
-		easingComponent, ok := s.easingArray.Get(entity)
-		if ok {
+		if easingComponent, ok := s.easingArray.Get(entity); ok {
 			if fn, ok := s.Transition().EasingFunction().Get(easingComponent.ID); ok {
 				progress = fn.EasingFunction(progress)
 			}

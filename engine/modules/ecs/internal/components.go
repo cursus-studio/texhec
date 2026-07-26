@@ -1,7 +1,6 @@
 package internal
 
 import (
-	"engine/modules/datastructures"
 	"engine/modules/ecs/internal/ecstypes"
 	"reflect"
 )
@@ -49,9 +48,9 @@ func (components *componentsImpl) RemoveEntity(entity ecstypes.EntityID) {
 	}
 }
 
-func newComponents(entities datastructures.SparseSet[ecstypes.EntityID]) *componentsImpl {
+func newComponents() *componentsImpl {
 	return &componentsImpl{
-		storage: newComponentsStorage(entities),
+		storage: newComponentsStorage(),
 	}
 }
 
@@ -65,17 +64,15 @@ type arraysSharedInterface interface {
 type componentsStorage struct {
 	arrays              map[componentType]arraysSharedInterface // any is *componentsArray[ComponentType]
 	arraySlice          []arraysSharedInterface
-	entities            datastructures.SparseSet[ecstypes.EntityID]
 	onArrayAddListeners map[componentType][]func(arraysSharedInterface)
 }
 
 type ComponentsStorage *componentsStorage
 
-func newComponentsStorage(entities datastructures.SparseSet[ecstypes.EntityID]) ComponentsStorage {
+func newComponentsStorage() ComponentsStorage {
 	return &componentsStorage{
 		arrays:              make(map[componentType]arraysSharedInterface),
 		arraySlice:          make([]arraysSharedInterface, 0),
-		entities:            entities,
 		onArrayAddListeners: make(map[componentType][]func(arraysSharedInterface)),
 	}
 }

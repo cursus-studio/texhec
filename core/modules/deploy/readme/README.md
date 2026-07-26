@@ -8,9 +8,9 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                               3             35             14            203
+Go                               3             37             14            214
 -------------------------------------------------------------------------------
-SUM:                             3             35             14            203
+SUM:                             3             37             14            214
 -------------------------------------------------------------------------------
 ```
 ## Types
@@ -28,6 +28,9 @@ execute adds costs and everything where deploy just deploys without any costs (i
 #### method Service DeployEvent
 Type: `func(core/modules/deploy.DeployEvent)`
 
+#### method Service DestroyEvent
+Type: `func(core/modules/deploy.DestroyEvent)`
+
 #### method Service Reach
 Type: `func() core/modules/reach.ServiceT[core/modules/deploy.Component]`
 
@@ -41,23 +44,29 @@ Type: `[]engine/modules/ecs.EntityID`
 Type: `core/modules/deploy.DeployEvent`
 
 #### property DeployEvent By
-Type: `engine/modules/ecs.EntityID`
+Type: `core/modules/tile.BuildingObjectStep`
 
 #### property DeployEvent Blueprint
-Type: `engine/modules/ecs.EntityID`
+Type: `core/modules/tile.BlueprintStep`
 
 #### property DeployEvent Coords
-Type: `engine/modules/grid.Coords`
+Type: `core/modules/tile.CoordsStep`
+
+### type DestroyEvent
+Type: `core/modules/deploy.DestroyEvent`
+
+#### property DestroyEvent Object
+Type: `core/modules/tile.ObjectStep`
 
 ## Functions
 ### func NewDeploy
 Type: `func(deployable ...engine/modules/ecs.EntityID) core/modules/deploy.Component`
 
-### func NewDeployFeature
-Type: `func() engine/modules/interactions.FeatureEvent[core/modules/deploy.DeployEvent]`
-
 ### func NewDeployEvent
 Type: `func(by engine/modules/ecs.EntityID, blueprint engine/modules/ecs.EntityID, coords engine/modules/grid.Coords) core/modules/deploy.DeployEvent`
+
+### func NewDestroyEvent
+Type: `func(object engine/modules/ecs.EntityID) core/modules/deploy.DestroyEvent`
 
 
 ## Dependencies
@@ -75,6 +84,8 @@ Type: `func(by engine/modules/ecs.EntityID, blueprint engine/modules/ecs.EntityI
   - `core/modules/deploy.Component`
   - `core/modules/deploy.Coords`
   - `core/modules/deploy.DeployEvent`
+  - `core/modules/deploy.DestroyEvent`
+  - `core/modules/deploy.Object`
   - `core/modules/deploy.Reach`
   - `core/modules/deploy.Service`
 
@@ -103,16 +114,23 @@ Type: `func(by engine/modules/ecs.EntityID, blueprint engine/modules/ecs.EntityI
   - `core/modules/reach/pkg.PkgT`
 
 `core/modules/tile`:
+  - `core/modules/tile.BlueprintStep`
+  - `core/modules/tile.BuildingObjectStep`
+  - `core/modules/tile.CanDeployComponent`
   - `core/modules/tile.Coord`
   - `core/modules/tile.Coords`
-  - `core/modules/tile.CoordsInteraction`
+  - `core/modules/tile.CoordsAnchorComponent`
+  - `core/modules/tile.CoordsCursorComponent`
+  - `core/modules/tile.CoordsStep`
   - `core/modules/tile.Entity`
+  - `core/modules/tile.NewBlueprintInteraction`
   - `core/modules/tile.NewClickEntityEvent`
+  - `core/modules/tile.NewCoordsInteraction`
+  - `core/modules/tile.NewObjectInteraction`
   - `core/modules/tile.NewPos`
-  - `core/modules/tile.ObjectInteraction`
+  - `core/modules/tile.ObjectStep`
   - `core/modules/tile.Pos`
   - `core/modules/tile.Size`
-  - `core/modules/tile.SourceObjectInteraction`
 
 `engine/modules/ecs`:
   - `engine/modules/ecs.ComponentArray`
@@ -132,14 +150,12 @@ Type: `func(by engine/modules/ecs.EntityID, blueprint engine/modules/ecs.EntityI
   - `engine/modules/inputs.NewLeftClick`
 
 `engine/modules/interactions`:
-  - `engine/modules/interactions.FeatureEntity`
-  - `engine/modules/interactions.FeatureEvent`
-  - `engine/modules/interactions.Interaction`
-  - `engine/modules/interactions.NewFeatureEvent`
+  - `engine/modules/interactions.NewStepT`
   - `engine/modules/interactions.State`
 
 `engine/modules/interactions/pkg`:
   - `engine/modules/interactions/pkg.FeaturePkg`
+  - `engine/modules/interactions/pkg.NewCopyRelation`
 
 `engine/modules/seed`:
   - `engine/modules/seed.ErrWorldCanHaveOneSeed`

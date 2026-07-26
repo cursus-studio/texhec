@@ -1,7 +1,7 @@
 # interactions
 ## Architecture
 Allows to compose features (events) from multiple steps.
-It is related to wizzard pattern.
+It is heavily inspired by wizzard pattern.
 
 Feature is event emited after collecting multiple steps.
 Step is filtered interaction. For example it isn't only unit click it is friendly unit click.
@@ -13,10 +13,10 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                               5             55             15            294
+Go                               8            131             62            666
 Markdown                         2              1              0              6
 -------------------------------------------------------------------------------
-SUM:                             7             56             15            300
+SUM:                            10            132             62            672
 -------------------------------------------------------------------------------
 ```
 ## TODO
@@ -25,144 +25,405 @@ Add feature and interaction history
 ## Types
 ### type Service
 Type: `engine/modules/interactions.Service`
+service
 
-#### method Service Feature
-Type: `func() engine/modules/ecs.ComponentArray[engine/modules/interactions.FeatureComponent]`
+#### method Service AvailableFeatures
+Type: `func() engine/modules/ecs.ComponentArray[engine/modules/interactions.AvailableFeaturesComponent]`
 
-#### method Service FeatureEntity
-Type: `func() engine/modules/ecs.EntityID`
+#### method Service Features
+Type: `func() []engine/modules/interactions.FeatureKey`
 
-#### method Service Instance
-Type: `func() engine/modules/ecs.ComponentArray[engine/modules/interactions.InstanceComponent]`
-entity with this stores all components with interactions and selected feature
+### type FeatureKey
+Type: `engine/modules/interactions.FeatureKey`
 
-#### method Service Proceed
-Type: `func(engine/modules/ecs.EntityID)`
-entity here isn't used
-it's here just to make calling it easier by OnUpsert because only there it should be used
+#### method FeatureKey Align
+Type: `func() int`
 
-### type Event
-Type: `engine/modules/interactions.Event`
+#### method FeatureKey AssignableTo
+Type: `func(u reflect.Type) bool`
 
-### type AnyInteractionService
-Type: `engine/modules/interactions.AnyInteractionService`
+#### method FeatureKey Bits
+Type: `func() int`
 
-#### method AnyInteractionService InteractionAny
-Type: `func() engine/modules/ecs.AnyComponentArray`
+#### method FeatureKey CanSeq
+Type: `func() bool`
 
-#### method AnyInteractionService Measure
-Type: `func() (alreadyMeasured bool)`
-saves [MissingInteractionComponent] if it there is no [InteractionComponent]
+#### method FeatureKey CanSeq2
+Type: `func() bool`
 
-#### method AnyInteractionService MissingInteractionAny
-Type: `func() engine/modules/ecs.AnyComponentArray`
+#### method FeatureKey ChanDir
+Type: `func() reflect.ChanDir`
 
-#### method AnyInteractionService Name
-Type: `func() engine/modules/interactions.Name`
+#### method FeatureKey Comparable
+Type: `func() bool`
 
-#### method AnyInteractionService StateType
+#### method FeatureKey ConvertibleTo
+Type: `func(u reflect.Type) bool`
+
+#### method FeatureKey Elem
 Type: `func() reflect.Type`
+
+#### method FeatureKey Field
+Type: `func(i int) reflect.StructField`
+
+#### method FeatureKey FieldAlign
+Type: `func() int`
+
+#### method FeatureKey FieldByIndex
+Type: `func(index []int) reflect.StructField`
+
+#### method FeatureKey FieldByName
+Type: `func(name string) (reflect.StructField, bool)`
+
+#### method FeatureKey FieldByNameFunc
+Type: `func(match func(string) bool) (reflect.StructField, bool)`
+
+#### method FeatureKey Implements
+Type: `func(u reflect.Type) bool`
+
+#### method FeatureKey In
+Type: `func(i int) reflect.Type`
+
+#### method FeatureKey IsVariadic
+Type: `func() bool`
+
+#### method FeatureKey Key
+Type: `func() reflect.Type`
+
+#### method FeatureKey Kind
+Type: `func() reflect.Kind`
+
+#### method FeatureKey Len
+Type: `func() int`
+
+#### method FeatureKey Method
+Type: `func(int) reflect.Method`
+
+#### method FeatureKey MethodByName
+Type: `func(string) (reflect.Method, bool)`
+
+#### method FeatureKey Name
+Type: `func() string`
+
+#### method FeatureKey NumField
+Type: `func() int`
+
+#### method FeatureKey NumIn
+Type: `func() int`
+
+#### method FeatureKey NumMethod
+Type: `func() int`
+
+#### method FeatureKey NumOut
+Type: `func() int`
+
+#### method FeatureKey Out
+Type: `func(i int) reflect.Type`
+
+#### method FeatureKey OverflowComplex
+Type: `func(x complex128) bool`
+
+#### method FeatureKey OverflowFloat
+Type: `func(x float64) bool`
+
+#### method FeatureKey OverflowInt
+Type: `func(x int64) bool`
+
+#### method FeatureKey OverflowUint
+Type: `func(x uint64) bool`
+
+#### method FeatureKey PkgPath
+Type: `func() string`
+
+#### method FeatureKey Size
+Type: `func() uintptr`
+
+#### method FeatureKey String
+Type: `func() string`
+
+### type StepKey
+Type: `engine/modules/interactions.StepKey`
+
+#### method StepKey Align
+Type: `func() int`
+
+#### method StepKey AssignableTo
+Type: `func(u reflect.Type) bool`
+
+#### method StepKey Bits
+Type: `func() int`
+
+#### method StepKey CanSeq
+Type: `func() bool`
+
+#### method StepKey CanSeq2
+Type: `func() bool`
+
+#### method StepKey ChanDir
+Type: `func() reflect.ChanDir`
+
+#### method StepKey Comparable
+Type: `func() bool`
+
+#### method StepKey ConvertibleTo
+Type: `func(u reflect.Type) bool`
+
+#### method StepKey Elem
+Type: `func() reflect.Type`
+
+#### method StepKey Field
+Type: `func(i int) reflect.StructField`
+
+#### method StepKey FieldAlign
+Type: `func() int`
+
+#### method StepKey FieldByIndex
+Type: `func(index []int) reflect.StructField`
+
+#### method StepKey FieldByName
+Type: `func(name string) (reflect.StructField, bool)`
+
+#### method StepKey FieldByNameFunc
+Type: `func(match func(string) bool) (reflect.StructField, bool)`
+
+#### method StepKey Implements
+Type: `func(u reflect.Type) bool`
+
+#### method StepKey In
+Type: `func(i int) reflect.Type`
+
+#### method StepKey IsVariadic
+Type: `func() bool`
+
+#### method StepKey Key
+Type: `func() reflect.Type`
+
+#### method StepKey Kind
+Type: `func() reflect.Kind`
+
+#### method StepKey Len
+Type: `func() int`
+
+#### method StepKey Method
+Type: `func(int) reflect.Method`
+
+#### method StepKey MethodByName
+Type: `func(string) (reflect.Method, bool)`
+
+#### method StepKey Name
+Type: `func() string`
+
+#### method StepKey NumField
+Type: `func() int`
+
+#### method StepKey NumIn
+Type: `func() int`
+
+#### method StepKey NumMethod
+Type: `func() int`
+
+#### method StepKey NumOut
+Type: `func() int`
+
+#### method StepKey Out
+Type: `func(i int) reflect.Type`
+
+#### method StepKey OverflowComplex
+Type: `func(x complex128) bool`
+
+#### method StepKey OverflowFloat
+Type: `func(x float64) bool`
+
+#### method StepKey OverflowInt
+Type: `func(x int64) bool`
+
+#### method StepKey OverflowUint
+Type: `func(x uint64) bool`
+
+#### method StepKey PkgPath
+Type: `func() string`
+
+#### method StepKey Size
+Type: `func() uintptr`
+
+#### method StepKey String
+Type: `func() string`
+
+### type InteractionKey
+Type: `engine/modules/interactions.InteractionKey`
+
+#### method InteractionKey Align
+Type: `func() int`
+
+#### method InteractionKey AssignableTo
+Type: `func(u reflect.Type) bool`
+
+#### method InteractionKey Bits
+Type: `func() int`
+
+#### method InteractionKey CanSeq
+Type: `func() bool`
+
+#### method InteractionKey CanSeq2
+Type: `func() bool`
+
+#### method InteractionKey ChanDir
+Type: `func() reflect.ChanDir`
+
+#### method InteractionKey Comparable
+Type: `func() bool`
+
+#### method InteractionKey ConvertibleTo
+Type: `func(u reflect.Type) bool`
+
+#### method InteractionKey Elem
+Type: `func() reflect.Type`
+
+#### method InteractionKey Field
+Type: `func(i int) reflect.StructField`
+
+#### method InteractionKey FieldAlign
+Type: `func() int`
+
+#### method InteractionKey FieldByIndex
+Type: `func(index []int) reflect.StructField`
+
+#### method InteractionKey FieldByName
+Type: `func(name string) (reflect.StructField, bool)`
+
+#### method InteractionKey FieldByNameFunc
+Type: `func(match func(string) bool) (reflect.StructField, bool)`
+
+#### method InteractionKey Implements
+Type: `func(u reflect.Type) bool`
+
+#### method InteractionKey In
+Type: `func(i int) reflect.Type`
+
+#### method InteractionKey IsVariadic
+Type: `func() bool`
+
+#### method InteractionKey Key
+Type: `func() reflect.Type`
+
+#### method InteractionKey Kind
+Type: `func() reflect.Kind`
+
+#### method InteractionKey Len
+Type: `func() int`
+
+#### method InteractionKey Method
+Type: `func(int) reflect.Method`
+
+#### method InteractionKey MethodByName
+Type: `func(string) (reflect.Method, bool)`
+
+#### method InteractionKey Name
+Type: `func() string`
+
+#### method InteractionKey NumField
+Type: `func() int`
+
+#### method InteractionKey NumIn
+Type: `func() int`
+
+#### method InteractionKey NumMethod
+Type: `func() int`
+
+#### method InteractionKey NumOut
+Type: `func() int`
+
+#### method InteractionKey Out
+Type: `func(i int) reflect.Type`
+
+#### method InteractionKey OverflowComplex
+Type: `func(x complex128) bool`
+
+#### method InteractionKey OverflowFloat
+Type: `func(x float64) bool`
+
+#### method InteractionKey OverflowInt
+Type: `func(x int64) bool`
+
+#### method InteractionKey OverflowUint
+Type: `func(x uint64) bool`
+
+#### method InteractionKey PkgPath
+Type: `func() string`
+
+#### method InteractionKey Size
+Type: `func() uintptr`
+
+#### method InteractionKey String
+Type: `func() string`
 
 ### type InteractionService
 Type: `engine/modules/interactions.InteractionService[State any]`
 
-#### method InteractionService FinishMeasurement
-Type: `func(engine/modules/interactions.FinishMeasurementEvent[State])`
+#### method InteractionService MissingPreview
+Type: `func() engine/modules/ecs.ComponentArray[engine/modules/interactions.MissingPreviewComponent[State]]`
 
-#### method InteractionService Interaction
-Type: `func() engine/modules/ecs.ComponentArray[engine/modules/interactions.InteractionComponent[State]]`
+#### method InteractionService Save
+Type: `func(propertiesEntity engine/modules/ecs.EntityID, state State)`
+saves state in entity with [IsMissingComponent] or resets interactions
 
-#### method InteractionService InteractionAny
-Type: `func() engine/modules/ecs.AnyComponentArray`
+#### method InteractionService StatePreview
+Type: `func() engine/modules/ecs.ComponentArray[engine/modules/interactions.StatePreviewComponent[State]]`
 
-#### method InteractionService InteractionGUI
-Type: `func() engine/modules/ecs.ComponentArray[engine/modules/interactions.InteractionGUIComponent[State]]`
-elements are removed when interaction is removed.
-they can be used to indicate that element is used.
+### type Step
+Type: `engine/modules/interactions.Step[State any]`
+step
 
-#### method InteractionService Measure
-Type: `func() (alreadyMeasured bool)`
-saves [MissingInteractionComponent] if it there is no [InteractionComponent]
+#### method Step State
+Type: `func() State`
 
-#### method InteractionService MissingInteraction
-Type: `func() engine/modules/ecs.ComponentArray[engine/modules/interactions.MissingInteractionComponent[State]]`
-
-#### method InteractionService MissingInteractionAny
-Type: `func() engine/modules/ecs.AnyComponentArray`
-
-#### method InteractionService Name
-Type: `func() engine/modules/interactions.Name`
-
-#### method InteractionService StateType
-Type: `func() reflect.Type`
-
-### type AnyFeatureService
-Type: `engine/modules/interactions.AnyFeatureService`
-
-#### method AnyFeatureService EventType
-Type: `func() reflect.Type`
-
-#### method AnyFeatureService Interactions
-Type: `func() []engine/modules/interactions.AnyInteractionService`
-
-#### method AnyFeatureService Name
-Type: `func() engine/modules/interactions.Name`
-
-### type FeatureService
-Type: `engine/modules/interactions.FeatureService[Event any]`
-listens to [FeatureEvent]
-
-#### method FeatureService EventType
-Type: `func() reflect.Type`
-
-#### method FeatureService Interactions
-Type: `func() []engine/modules/interactions.AnyInteractionService`
-
-#### method FeatureService Name
-Type: `func() engine/modules/interactions.Name`
-
-### type MissingInteractionComponent
-Type: `engine/modules/interactions.MissingInteractionComponent[State any]`
-
-### type InteractionGUIComponent
-Type: `engine/modules/interactions.InteractionGUIComponent[State any]`
-
-### type InteractionComponent
-Type: `engine/modules/interactions.InteractionComponent[State any]`
-
-#### property InteractionComponent State
-Type: `State`
-
-### type FinishMeasurementEvent
-Type: `engine/modules/interactions.FinishMeasurementEvent[State any]`
-
-#### property FinishMeasurementEvent State
-Type: `State`
-
-### type FeatureEvent
-Type: `engine/modules/interactions.FeatureEvent[Event any]`
-
-### type FeatureComponent
-Type: `engine/modules/interactions.FeatureComponent`
-
-#### property FeatureComponent Event
+### type Event
 Type: `engine/modules/interactions.Event`
+feature
 
-### type InstanceComponent
-Type: `engine/modules/interactions.InstanceComponent`
+### type StatePreviewComponent
+Type: `engine/modules/interactions.StatePreviewComponent[State any]`
+interaction
+
+#### property StatePreviewComponent State
+Type: `State`
+
+### type MissingPreviewComponent
+Type: `engine/modules/interactions.MissingPreviewComponent[State any]`
+
+### type AvailableFeaturesComponent
+Type: `engine/modules/interactions.AvailableFeaturesComponent`
+
+#### property AvailableFeaturesComponent Features
+Type: `[]engine/modules/interactions.FeatureKey`
+
+#### method AvailableFeaturesComponent Equal
+Type: `func(other engine/modules/interactions.AvailableFeaturesComponent) bool`
+
+### type SelectFeatureEvent
+Type: `engine/modules/interactions.SelectFeatureEvent`
+
+#### property SelectFeatureEvent FeatureKey
+Type: `engine/modules/interactions.FeatureKey`
 
 ## Functions
-### func NewInteraction
-Type: `func[State any](state State) engine/modules/interactions.InteractionComponent[State]`
+### func NewStatePreview
+Type: `func[State any](state State) engine/modules/interactions.StatePreviewComponent[State]`
 
-### func NewFinishMeasurementEvent
-Type: `func[State any](state State) engine/modules/interactions.FinishMeasurementEvent[State]`
+### func NewMissingPreview
+Type: `func[State any]() engine/modules/interactions.MissingPreviewComponent[State]`
 
-### func NewFeature
-Type: `func(event engine/modules/interactions.Event) engine/modules/interactions.FeatureComponent`
+### func NewStepT
+Type: `func[StepT engine/modules/interactions.Step[State], State any](state State) StepT`
 
-### func NewFeatureEvent
-Type: `func[Event any]() engine/modules/interactions.FeatureEvent[Event]`
+### func NewAvailableFeatures
+Type: `func(features ...engine/modules/interactions.FeatureKey) engine/modules/interactions.AvailableFeaturesComponent`
+
+### func NewSelectFeatureEvent
+Type: `func(featureKey engine/modules/interactions.FeatureKey) engine/modules/interactions.SelectFeatureEvent`
+
+### func NewDeselectFeatureEvent
+Type: `func() engine/modules/interactions.SelectFeatureEvent`
 
 
 ## Dependencies
@@ -170,42 +431,42 @@ Type: `func[Event any]() engine/modules/interactions.FeatureEvent[Event]`
   - `engine.EngineWorld`
   - `engine.Events`
   - `engine.EventsBuilder`
-  - `engine.Interactions`
+  - `engine.Hierarchy`
   - `engine.Logger`
+  - `engine.Prototype`
   - `engine.World`
 
 `engine/modules/ecs`:
-  - `engine/modules/ecs.AnyComponentArray`
   - `engine/modules/ecs.ComponentArray`
   - `engine/modules/ecs.EntityID`
   - `engine/modules/ecs.GetComponentArray`
+  - `engine/modules/ecs.World`
+
+`engine/modules/grid`:
+  - `engine/modules/grid.Coords`
 
 `engine/modules/interactions`:
-  - `engine/modules/interactions.AnyFeatureService`
-  - `engine/modules/interactions.AnyInteractionService`
-  - `engine/modules/interactions.Event`
-  - `engine/modules/interactions.EventType`
-  - `engine/modules/interactions.Feature`
-  - `engine/modules/interactions.FeatureComponent`
-  - `engine/modules/interactions.FeatureEntity`
-  - `engine/modules/interactions.FeatureEvent`
-  - `engine/modules/interactions.FeatureService`
-  - `engine/modules/interactions.FinishMeasurementEvent`
-  - `engine/modules/interactions.InstanceComponent`
-  - `engine/modules/interactions.InteractionAny`
-  - `engine/modules/interactions.InteractionComponent`
-  - `engine/modules/interactions.InteractionGUIComponent`
+  - `engine/modules/interactions.AvailableFeaturesComponent`
+  - `engine/modules/interactions.FeatureKey`
+  - `engine/modules/interactions.Features`
+  - `engine/modules/interactions.InteractionKey`
   - `engine/modules/interactions.InteractionService`
-  - `engine/modules/interactions.Interactions`
-  - `engine/modules/interactions.MissingInteractionAny`
-  - `engine/modules/interactions.MissingInteractionComponent`
-  - `engine/modules/interactions.Name`
-  - `engine/modules/interactions.NewFeature`
-  - `engine/modules/interactions.NewInteraction`
-  - `engine/modules/interactions.Proceed`
+  - `engine/modules/interactions.MissingPreviewComponent`
+  - `engine/modules/interactions.NewAvailableFeatures`
+  - `engine/modules/interactions.NewMissingPreview`
+  - `engine/modules/interactions.NewStatePreview`
+  - `engine/modules/interactions.NewStepT`
+  - `engine/modules/interactions.SelectFeatureEvent`
   - `engine/modules/interactions.Service`
-  - `engine/modules/interactions.State`
-  - `engine/modules/interactions.StateType`
+  - `engine/modules/interactions.StatePreviewComponent`
+  - `engine/modules/interactions.Step`
+  - `engine/modules/interactions.StepKey`
+
+`engine/modules/interactions/pkg`:
+  - `engine/modules/interactions/pkg.FeaturePkg`
+  - `engine/modules/interactions/pkg.InteractionPkg`
+  - `engine/modules/interactions/pkg.NewRelation`
+  - `engine/modules/interactions/pkg.StepPkg`
 
 ### Third Party
 - `github.com/ogiusek/events`

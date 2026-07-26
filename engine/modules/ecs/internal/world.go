@@ -8,12 +8,9 @@ type world struct {
 }
 
 func NewWorld() ecstypes.World {
-	entitiesImpl := newEntities()
-	componentsImpl := newComponents(entitiesImpl.entities)
-
 	return &world{
-		entitiesImpl:   entitiesImpl,
-		componentsImpl: componentsImpl,
+		entitiesImpl:   newEntities(),
+		componentsImpl: newComponents(),
 	}
 }
 

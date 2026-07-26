@@ -21,12 +21,25 @@ type componentArray[Component any] struct {
 	onRemove     []ecstypes.OnMod
 }
 
+type Equaler[T any] interface {
+	Equal(other T) bool
+}
+
 func ComponentComparator[Component any]() func(c1, c2 Component) bool {
-	equal := func(Component, Component) bool { return false }
-	if reflect.TypeFor[Component]().Comparable() {
-		equal = func(c1, c2 Component) bool { return any(c1) == any(c2) }
+	var zero Component
+	if _, ok := any(zero).(Equaler[Component]); ok {
+		return func(c1, c2 Component) bool {
+			return any(c1).(Equaler[Component]).Equal(c2)
+		}
 	}
-	return equal
+
+	if reflect.TypeFor[Component]().Comparable() {
+		return func(c1, c2 Component) bool {
+			return any(c1) == any(c2)
+		}
+	}
+
+	return func(c1, c2 Component) bool { return false }
 }
 
 func newComponentArray[Component any](entities entitiesImpl) *componentArray[Component] {

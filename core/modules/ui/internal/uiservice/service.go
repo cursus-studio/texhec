@@ -4,6 +4,7 @@ import (
 	"core/game"
 	"core/modules/ui"
 	"engine/modules/ecs"
+	"engine/modules/interactions"
 	"engine/modules/transform"
 	"engine/modules/transition"
 	"time"
@@ -49,15 +50,18 @@ func NewService(
 	s.childrenWrapperArray = ecs.GetComponentArray[childrenComponent](s.World())
 
 	s.systems = append(s.systems, ecs.NewSystemRegister(func() error {
+		s.Interactions().AvailableFeatures().OnMod(s.onAvailableFeaturesMod)
 		events.Listen(s.EventsBuilder(), func(e sdl.MouseButtonEvent) {
 			if e.Button != sdl.BUTTON_RIGHT || e.State != sdl.RELEASED {
 				return
 			}
-			removeEntityEvent := ecs.NewRemoveEntityEvent(s.Interactions().FeatureEntity())
-			events.Emit(s.Events(), removeEntityEvent)
+			events.Emit(s.Events(), interactions.NewDeselectFeatureEvent())
 		})
-
-		s.Interactions().Instance().OnRemove(func(ecs.EntityID) {
+		events.Listen(s.EventsBuilder(), func(event interactions.SelectFeatureEvent) {
+			var zero interactions.SelectFeatureEvent
+			if event != zero {
+				return
+			}
 			s.HideMenu()
 		})
 		return nil
