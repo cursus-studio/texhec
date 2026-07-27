@@ -45,7 +45,7 @@ mainLoop:
 		s.Groups().InheritGroups(quit)
 
 		s.Transform().Pos().Set(quit, transform.NewPos(0, 0, 1))
-		s.Transform().Parent().Set(quit, transform.NewParent(transform.RelativePos))
+		s.Transform().Inherit().Set(quit, transform.NewInherit(transform.RelativePos))
 		s.Transform().ParentPivotPoint().Set(quit, transform.NewParentPivotPoint(1, 1, .5))
 		s.Transform().Size().Set(quit, transform.NewSize(25, 25, 1))
 		s.Transform().PivotPoint().Set(quit, transform.NewPivotPoint(1, 1, .5))
@@ -67,7 +67,7 @@ mainLoop:
 		s.Hierarchy().SetParent(childWrapper, menu)
 		s.Groups().InheritGroups(childWrapper)
 		s.Transform().Pos().Set(childWrapper, transform.NewPos(0, -30 /* quit height + margin */, 0))
-		s.Transform().Parent().Set(childWrapper, transform.NewParent(transform.RelativePos|transform.RelativeSizeXY))
+		s.Transform().Inherit().Set(childWrapper, transform.NewInherit(transform.RelativePos|transform.RelativeSizeXY))
 
 		s.Layout().Order().Set(childWrapper, layout.NewOrder(layout.OrderVectical))
 		s.Layout().Align().Set(childWrapper, layout.NewAlign(0, .5))

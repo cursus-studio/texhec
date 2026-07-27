@@ -326,12 +326,12 @@ Type: `core/modules/obstruction.Obstruction`
 
 `engine/modules/transform`:
   - `engine/modules/transform.AspectRatio`
+  - `engine/modules/transform.Inherit`
   - `engine/modules/transform.MaxSize`
   - `engine/modules/transform.NewAspectRatio`
+  - `engine/modules/transform.NewInherit`
   - `engine/modules/transform.NewMaxSize`
-  - `engine/modules/transform.NewParent`
   - `engine/modules/transform.NewSize`
-  - `engine/modules/transform.Parent`
   - `engine/modules/transform.PrimaryAxisX`
   - `engine/modules/transform.RelativePos`
   - `engine/modules/transform.RelativeSizeX`

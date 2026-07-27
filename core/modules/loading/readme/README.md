@@ -58,11 +58,11 @@ Type: `func() error`
   - `engine/modules/text.NewText`
 
 `engine/modules/transform`:
-  - `engine/modules/transform.NewParent`
+  - `engine/modules/transform.Inherit`
+  - `engine/modules/transform.NewInherit`
   - `engine/modules/transform.NewParentPivotPoint`
   - `engine/modules/transform.NewPivotPoint`
   - `engine/modules/transform.NewPos`
-  - `engine/modules/transform.Parent`
   - `engine/modules/transform.ParentPivotPoint`
   - `engine/modules/transform.PivotPoint`
   - `engine/modules/transform.Pos`

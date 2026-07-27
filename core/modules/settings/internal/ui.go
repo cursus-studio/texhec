@@ -71,7 +71,7 @@ func (s *system) ListenRender(parent ecs.EntityID) error {
 	s.Hierarchy().SetParent(labelEntity, parent)
 	s.Groups().InheritGroups(labelEntity)
 
-	s.Transform().Parent().Set(labelEntity, transform.NewParent(transform.RelativePos|transform.RelativeSizeX))
+	s.Transform().Inherit().Set(labelEntity, transform.NewInherit(transform.RelativePos|transform.RelativeSizeX))
 	s.Transform().Size().Set(labelEntity, transform.NewSize(1, 50, 1))
 
 	s.Text().Content().Set(labelEntity, text.NewText("SETTINGS"))

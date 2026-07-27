@@ -55,7 +55,7 @@ func (s *service) OnTileHover(e grid.HoverEvent) {
 		for _, reachCoords := range s.GameWorld.Deploy().Reach().TilesWithinReach(anchor.Entity) {
 			ind := s.Prototype().Clone(s.Definitions().Assets().Blank)
 			s.Hierarchy().SetParent(ind, previewEntity)
-			s.Transform().Parent().Set(ind, transform.NewParent(transform.Absolute))
+			s.Transform().Inherit().Set(ind, transform.NewInherit(transform.Absolute))
 
 			s.Render().Mesh().Set(ind, render.NewMesh(s.Definitions().Assets().SquareMesh))
 			s.Render().Texture().Set(ind, render.NewTexture(s.Definitions().Assets().Border))
@@ -80,7 +80,7 @@ func (s *service) OnTileHover(e grid.HoverEvent) {
 		for _, collision := range collisions {
 			ind := s.Prototype().Clone(s.Definitions().Assets().Blank)
 			s.Hierarchy().SetParent(ind, previewEntity)
-			s.Transform().Parent().Set(ind, transform.NewParent(transform.Absolute))
+			s.Transform().Inherit().Set(ind, transform.NewInherit(transform.Absolute))
 
 			s.Tile().Layer().Set(ind, tile.NewLayer(definitions.TilePlaceholderLayer))
 			s.Render().Mesh().Set(ind, render.NewMesh(s.Definitions().Assets().SquareMesh))
@@ -147,7 +147,7 @@ func (s *service) OnCoordsStateUpsert(entity ecs.EntityID) {
 	pos := tile.NewPos(targetCoords.Coords())
 	s.Tile().Pos().Set(entity, pos)
 
-	s.Transform().Parent().Set(entity, transform.NewParent(transform.Absolute))
+	s.Transform().Inherit().Set(entity, transform.NewInherit(transform.Absolute))
 	s.Tile().Layer().Set(entity, tile.NewLayer(definitions.ObjectSelectionPlaceholderLayer))
 
 	s.Render().Mesh().Set(entity, render.NewMesh(s.Definitions().Assets().SquareMesh))

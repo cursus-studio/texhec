@@ -46,7 +46,7 @@ func addScene(world game.GameWorld, sceneParent ecs.EntityID) {
 		world.Transform().Pos().Set(settingsEntity, transform.NewPos(10, -10, 0))
 		world.Transform().Size().Set(settingsEntity, transform.NewSize(50, 50, 1))
 		world.Transform().PivotPoint().Set(settingsEntity, transform.NewPivotPoint(0, 1, .5))
-		world.Transform().Parent().Set(settingsEntity, transform.NewParent(transform.RelativePos))
+		world.Transform().Inherit().Set(settingsEntity, transform.NewInherit(transform.RelativePos))
 		world.Transform().ParentPivotPoint().Set(settingsEntity, transform.NewParentPivotPoint(0, 1, .5))
 		world.Groups().Component().Set(settingsEntity, groups.EmptyGroups().Ptr().Enable(definitions.UiGroup).Val())
 
@@ -67,7 +67,7 @@ func addScene(world game.GameWorld, sceneParent ecs.EntityID) {
 
 		bg := world.World().NewEntity()
 		world.Hierarchy().SetParent(bg, bgCamera)
-		world.Transform().Parent().Set(bg, transform.NewParent(transform.RelativePos|transform.RelativeSizeXY))
+		world.Transform().Inherit().Set(bg, transform.NewInherit(transform.RelativePos|transform.RelativeSizeXY))
 		world.Groups().InheritGroups(bg)
 		world.Ui().AnimatedBackground().Set(bg, ui.AnimatedBackgroundComponent{})
 	}

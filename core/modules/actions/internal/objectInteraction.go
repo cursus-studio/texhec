@@ -53,7 +53,7 @@ func (s *service) OnObjectStateUpsert(entity ecs.EntityID) {
 	targetObject := stateComp.State.Entity
 	s.Hierarchy().SetParent(entity, targetObject)
 	s.Groups().InheritGroups(entity)
-	s.Transform().Parent().Set(entity, transform.NewParent(transform.RelativePos|transform.RelativeSizeXY))
+	s.Transform().Inherit().Set(entity, transform.NewInherit(transform.RelativePos|transform.RelativeSizeXY))
 	s.Transform().Pos().Set(entity, transform.NewPos(0, 0, -1))
 
 	s.Render().Mesh().Set(entity, render.NewMesh(s.Definitions().Assets().SquareMesh))

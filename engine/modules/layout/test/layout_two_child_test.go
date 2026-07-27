@@ -22,12 +22,12 @@ func TestLayoutForTwoChild(t *testing.T) {
 	btn1 := setup.World().NewEntity()
 	setup.Transform().Size().Set(btn1, transform.NewSize(0, 0, 0))
 	setup.Hierarchy().SetParent(btn1, parent)
-	setup.Transform().Parent().Set(btn1, transform.NewParent(transform.RelativePos))
+	setup.Transform().Inherit().Set(btn1, transform.NewInherit(transform.RelativePos))
 
 	btn2 := setup.World().NewEntity()
 	setup.Transform().Size().Set(btn2, transform.NewSize(0, 0, 0))
 	setup.Hierarchy().SetParent(btn2, parent)
-	setup.Transform().Parent().Set(btn2, transform.NewParent(transform.RelativePos))
+	setup.Transform().Inherit().Set(btn2, transform.NewInherit(transform.RelativePos))
 
 	setup.Expect(btn1, 0, 5)
 	setup.Expect(btn2, 0, -5)

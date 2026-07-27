@@ -31,7 +31,7 @@ func (t *service) Init() {
 	t.AspectRatioArray.SetEmpty(transform.NewAspectRatio(0, 0, 0, 0)) // 0 means not set
 	t.PivotPointArray.SetEmpty(t.defaultPivot)
 
-	t.ParentMaskArray.SetEmpty(transform.NewParent(transform.RelativePos))
+	t.InheritMaskArray.SetEmpty(transform.NewInherit(transform.RelativePos))
 	t.ParentPivotPointArray.SetEmpty(t.defaultParentPivot)
 
 	t.AbsolutePosArray.SetEmpty(transform.AbsolutePosComponent{Pos: mgl32.Vec3{0, 0, 0}})
@@ -50,7 +50,7 @@ func (t *service) Init() {
 		arr.AddDependency(t.PivotPointArray)
 
 		arr.AddDependency(t.Hierarchy().Component())
-		arr.AddDependency(t.ParentMaskArray)
+		arr.AddDependency(t.InheritMaskArray)
 		arr.AddDependency(t.ParentPivotPointArray)
 	}
 

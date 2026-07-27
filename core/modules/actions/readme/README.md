@@ -264,9 +264,9 @@ Type: `func(entity engine/modules/ecs.EntityID) core/modules/actions.BlueprintIn
 
 `engine/modules/transform`:
   - `engine/modules/transform.Absolute`
-  - `engine/modules/transform.NewParent`
+  - `engine/modules/transform.Inherit`
+  - `engine/modules/transform.NewInherit`
   - `engine/modules/transform.NewPos`
-  - `engine/modules/transform.Parent`
   - `engine/modules/transform.Pos`
   - `engine/modules/transform.RelativePos`
   - `engine/modules/transform.RelativeSizeXY`

@@ -19,7 +19,7 @@ func TestLayoutForOneChild(t *testing.T) {
 
 	setup.Hierarchy().SetParent(btn, parent)
 
-	setup.Transform().Parent().Set(btn, transform.NewParent(transform.RelativePos))
+	setup.Transform().Inherit().Set(btn, transform.NewInherit(transform.RelativePos))
 	setup.Transform().Size().Set(btn, transform.NewSize(10, 10, 10))
 	setup.Transform().Size().Set(parent, transform.NewSize(10, 10, 10))
 	setup.Expect(btn, 0, 0)

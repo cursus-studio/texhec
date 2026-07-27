@@ -63,7 +63,7 @@ func (s *cursorSystem) Listen(loop.FrameEvent) {
 	pos := transform.NewPos(ray.Pos.Add(ray.Direction).Elem())
 
 	s.Hierarchy().SetParent(cursor, camera)
-	s.Transform().Parent().Set(cursor, transform.NewParent(transform.Absolute))
+	s.Transform().Inherit().Set(cursor, transform.NewInherit(transform.Absolute))
 	s.Transform().Pos().Set(cursor, pos)
 	s.Render().Mesh().Set(cursor, render.NewMesh(s.Definitions().Assets().SquareMesh))
 	s.Render().Texture().Set(cursor, render.NewTexture(s.Definitions().Hud().Cursor))
