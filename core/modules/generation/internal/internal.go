@@ -3,6 +3,7 @@ package internal
 import (
 	"core/game"
 	"core/modules/generation"
+	"core/modules/player"
 	"core/modules/tile"
 	"engine/modules/batcher"
 	"engine/modules/collider"
@@ -234,6 +235,8 @@ func (s *service) GenerateOn(event tile.MissingChunkEvent) {
 		playerEntity := s.World().NewEntity()
 		s.Hierarchy().SetParent(playerEntity, worldGenerationEntity)
 		s.Metadata().Name().Set(playerEntity, metadata.NewName("john"))
+		s.Player().ActingPlayer().Set(playerEntity, player.NewActingPlayer())
+
 		player2Entity := s.World().NewEntity()
 		s.Hierarchy().SetParent(player2Entity, worldGenerationEntity)
 		s.Metadata().Name().Set(player2Entity, metadata.NewName("anna"))

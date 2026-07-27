@@ -40,12 +40,12 @@ type Service interface {
 //
 
 type DeployEvent struct {
-	By        tile.BuildingObjectStep
+	By        tile.FriendlyBuilderObjectStep
 	Blueprint tile.BlueprintStep
 	Coords    tile.CoordsStep
 }
 type DestroyEvent struct {
-	Object tile.ObjectStep
+	Object tile.FriendlyObjectStep
 }
 
 func NewDeployEvent(
@@ -54,7 +54,7 @@ func NewDeployEvent(
 	coords grid.Coords,
 ) DeployEvent {
 	return DeployEvent{
-		interactions.NewStepT[tile.BuildingObjectStep](tile.NewObjectInteraction(by)),
+		interactions.NewStepT[tile.FriendlyBuilderObjectStep](tile.NewObjectInteraction(by)),
 		interactions.NewStepT[tile.BlueprintStep](tile.NewBlueprintInteraction(blueprint)),
 		interactions.NewStepT[tile.CoordsStep](tile.NewCoordsInteraction(coords)),
 	}

@@ -70,7 +70,7 @@ Type: `engine/modules/grid.Coords`
 Type: `core/modules/pathfind.FindPathEvent`
 
 #### property FindPathEvent Object
-Type: `core/modules/tile.MovingObjectStep`
+Type: `core/modules/tile.FriendlyMobileObjectStep`
 
 #### property FindPathEvent Coords
 Type: `core/modules/tile.CoordsStep`
@@ -134,7 +134,7 @@ Type: `func(entity engine/modules/ecs.EntityID, coords engine/modules/grid.Coord
   - `core/modules/tile.ErrInvalidPosition`
   - `core/modules/tile.ErrInvalidStep`
   - `core/modules/tile.ErrPositionAndSpeedIsRequiredToStep`
-  - `core/modules/tile.MovingObjectStep`
+  - `core/modules/tile.FriendlyMobileObjectStep`
   - `core/modules/tile.NewCoordsInteraction`
   - `core/modules/tile.NewObjectInteraction`
   - `core/modules/tile.NewPos`

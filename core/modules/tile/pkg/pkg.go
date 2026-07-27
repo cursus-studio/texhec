@@ -75,18 +75,30 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 		interactionspkg.StepPkg[tile.ObjectStep](func(c ioc.Dic) func(state tile.ObjectInteraction) error {
 			return func(state tile.ObjectInteraction) error { return nil }
 		}),
-		interactionspkg.StepPkg[tile.MovingObjectStep](func(c ioc.Dic) func(state tile.ObjectInteraction) error {
+		interactionspkg.StepPkg[tile.FriendlyObjectStep](func(c ioc.Dic) func(state tile.ObjectInteraction) error {
 			world := ioc.Get[game.GameWorld](c)
 			return func(state tile.ObjectInteraction) error {
+				return world.Player().ControlsObject(state.Entity)
+			}
+		}),
+		interactionspkg.StepPkg[tile.FriendlyMobileObjectStep](func(c ioc.Dic) func(state tile.ObjectInteraction) error {
+			world := ioc.Get[game.GameWorld](c)
+			return func(state tile.ObjectInteraction) error {
+				if err := world.Player().ControlsObject(state.Entity); err != nil {
+					return err
+				}
 				if _, ok := world.Pathfind().Speed().Get(state.Entity); !ok {
 					return tile.ErrRequiresSpeed
 				}
 				return nil
 			}
 		}),
-		interactionspkg.StepPkg[tile.BuildingObjectStep](func(c ioc.Dic) func(state tile.ObjectInteraction) error {
+		interactionspkg.StepPkg[tile.FriendlyBuilderObjectStep](func(c ioc.Dic) func(state tile.ObjectInteraction) error {
 			world := ioc.Get[game.GameWorld](c)
 			return func(state tile.ObjectInteraction) error {
+				if err := world.Player().ControlsObject(state.Entity); err != nil {
+					return err
+				}
 				link, _ := world.Metadata().Link().Get(state.Entity)
 				if _, ok := world.Deploy().Component().Get(link.Entity); !ok {
 					return tile.ErrRequiresDeploy

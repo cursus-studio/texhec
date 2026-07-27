@@ -44,7 +44,7 @@ Type: `[]engine/modules/ecs.EntityID`
 Type: `core/modules/deploy.DeployEvent`
 
 #### property DeployEvent By
-Type: `core/modules/tile.BuildingObjectStep`
+Type: `core/modules/tile.FriendlyBuilderObjectStep`
 
 #### property DeployEvent Blueprint
 Type: `core/modules/tile.BlueprintStep`
@@ -56,7 +56,7 @@ Type: `core/modules/tile.CoordsStep`
 Type: `core/modules/deploy.DestroyEvent`
 
 #### property DestroyEvent Object
-Type: `core/modules/tile.ObjectStep`
+Type: `core/modules/tile.FriendlyObjectStep`
 
 ## Functions
 ### func NewDeploy
@@ -115,7 +115,6 @@ Type: `func(object engine/modules/ecs.EntityID) core/modules/deploy.DestroyEvent
 
 `core/modules/tile`:
   - `core/modules/tile.BlueprintStep`
-  - `core/modules/tile.BuildingObjectStep`
   - `core/modules/tile.CanDeployComponent`
   - `core/modules/tile.Coord`
   - `core/modules/tile.Coords`
@@ -123,6 +122,8 @@ Type: `func(object engine/modules/ecs.EntityID) core/modules/deploy.DestroyEvent
   - `core/modules/tile.CoordsCursorComponent`
   - `core/modules/tile.CoordsStep`
   - `core/modules/tile.Entity`
+  - `core/modules/tile.FriendlyBuilderObjectStep`
+  - `core/modules/tile.FriendlyObjectStep`
   - `core/modules/tile.NewBlueprintInteraction`
   - `core/modules/tile.NewClickEntityEvent`
   - `core/modules/tile.NewCoordsInteraction`

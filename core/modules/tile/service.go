@@ -202,8 +202,9 @@ func NewBlueprintInteraction(entity ecs.EntityID) BlueprintInteraction {
 
 type CoordsStep interactions.Step[CoordsInteraction]
 type ObjectStep interactions.Step[ObjectInteraction]
-type MovingObjectStep interactions.Step[ObjectInteraction]
-type BuildingObjectStep interactions.Step[ObjectInteraction]
+type FriendlyObjectStep interactions.Step[ObjectInteraction]
+type FriendlyMobileObjectStep interactions.Step[ObjectInteraction]
+type FriendlyBuilderObjectStep interactions.Step[ObjectInteraction]
 type BlueprintStep interactions.Step[BlueprintInteraction]
 
 //

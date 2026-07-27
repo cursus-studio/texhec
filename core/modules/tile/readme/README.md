@@ -103,11 +103,11 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                              11            248            100           1332
+Go                              11            248            100           1345
 GLSL                             3             31              2            112
 Markdown                         3             10              0             85
 -------------------------------------------------------------------------------
-SUM:                            17            289            102           1529
+SUM:                            17            289            102           1542
 -------------------------------------------------------------------------------
 ```
 ## TODO
@@ -212,16 +212,22 @@ Type: `core/modules/tile.ObjectStep`
 #### method ObjectStep State
 Type: `func() core/modules/tile.ObjectInteraction`
 
-### type MovingObjectStep
-Type: `core/modules/tile.MovingObjectStep`
+### type FriendlyObjectStep
+Type: `core/modules/tile.FriendlyObjectStep`
 
-#### method MovingObjectStep State
+#### method FriendlyObjectStep State
 Type: `func() core/modules/tile.ObjectInteraction`
 
-### type BuildingObjectStep
-Type: `core/modules/tile.BuildingObjectStep`
+### type FriendlyMobileObjectStep
+Type: `core/modules/tile.FriendlyMobileObjectStep`
 
-#### method BuildingObjectStep State
+#### method FriendlyMobileObjectStep State
+Type: `func() core/modules/tile.ObjectInteraction`
+
+### type FriendlyBuilderObjectStep
+Type: `core/modules/tile.FriendlyBuilderObjectStep`
+
+#### method FriendlyBuilderObjectStep State
 Type: `func() core/modules/tile.ObjectInteraction`
 
 ### type BlueprintStep
@@ -435,6 +441,7 @@ Type: `func(deployed engine/modules/ecs.EntityID) core/modules/tile.ClickBluepri
   - `core/game.GameWorld`
   - `core/game.Obstruction`
   - `core/game.Pathfind`
+  - `core/game.Player`
   - `core/game.Tile`
   - `core/game.Ui`
 
@@ -467,7 +474,6 @@ Type: `func(deployed engine/modules/ecs.EntityID) core/modules/tile.ClickBluepri
   - `core/modules/tile.BiomeAsset`
   - `core/modules/tile.BlueprintInteraction`
   - `core/modules/tile.BlueprintStep`
-  - `core/modules/tile.BuildingObjectStep`
   - `core/modules/tile.CanDeployComponent`
   - `core/modules/tile.ClickBlueprintEvent`
   - `core/modules/tile.ClickEntityEvent`
@@ -482,13 +488,15 @@ Type: `func(deployed engine/modules/ecs.EntityID) core/modules/tile.ClickBluepri
   - `core/modules/tile.Entity`
   - `core/modules/tile.ErrRequiresDeploy`
   - `core/modules/tile.ErrRequiresSpeed`
+  - `core/modules/tile.FriendlyBuilderObjectStep`
+  - `core/modules/tile.FriendlyMobileObjectStep`
+  - `core/modules/tile.FriendlyObjectStep`
   - `core/modules/tile.GetTileSize`
   - `core/modules/tile.Grid`
   - `core/modules/tile.ID`
   - `core/modules/tile.Images`
   - `core/modules/tile.Layer`
   - `core/modules/tile.LayerComponent`
-  - `core/modules/tile.MovingObjectStep`
   - `core/modules/tile.NewBiomeAsset`
   - `core/modules/tile.NewBlueprintInteraction`
   - `core/modules/tile.NewCanDeploy`

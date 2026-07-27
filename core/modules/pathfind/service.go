@@ -68,13 +68,13 @@ type Service interface {
 // - look on `HPA*` and `JPS`
 
 type FindPathEvent struct {
-	Object tile.MovingObjectStep
+	Object tile.FriendlyMobileObjectStep
 	Coords tile.CoordsStep
 }
 
 func NewFindPathEvent(entity ecs.EntityID, coords grid.Coords) FindPathEvent {
 	return FindPathEvent{
-		interactions.NewStepT[tile.MovingObjectStep](tile.NewObjectInteraction(entity)),
+		interactions.NewStepT[tile.FriendlyMobileObjectStep](tile.NewObjectInteraction(entity)),
 		interactions.NewStepT[tile.CoordsStep](tile.NewCoordsInteraction(coords)),
 	}
 }
