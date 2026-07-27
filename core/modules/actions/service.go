@@ -21,7 +21,7 @@ type CoordsCursorComponent struct {
 	// if true then entity is used as an image else default icon is used
 	CustomImage bool
 }
-type CoordsAnchorComponent struct {
+type AnchorComponent struct {
 	Entity ecs.EntityID
 }
 
@@ -31,8 +31,8 @@ func NewCanDeploy(canDeploy ecs.EntityID) CanDeployComponent {
 func NewCoordsCursor(propertiesEntity ecs.EntityID, customImage bool) CoordsCursorComponent {
 	return CoordsCursorComponent{propertiesEntity, customImage}
 }
-func NewCoordsAnchor(entity ecs.EntityID) CoordsAnchorComponent {
-	return CoordsAnchorComponent{entity}
+func NewAnchor(entity ecs.EntityID) AnchorComponent {
+	return AnchorComponent{entity}
 }
 
 //
@@ -50,10 +50,13 @@ func NewBlueprintInteraction(entity ecs.EntityID) BlueprintInteraction {
 //
 
 type CoordsStep interactions.Step[CoordsInteraction]
+
 type ObjectStep interactions.Step[ObjectInteraction]
 type FriendlyObjectStep interactions.Step[ObjectInteraction]
 type FriendlyMobileObjectStep interactions.Step[ObjectInteraction]
 type FriendlyBuilderObjectStep interactions.Step[ObjectInteraction]
+type EnemyObjectStep interactions.Step[ObjectInteraction]
+
 type BlueprintStep interactions.Step[BlueprintInteraction]
 
 //
@@ -61,7 +64,7 @@ type BlueprintStep interactions.Step[BlueprintInteraction]
 type Service interface {
 	CanDeploy() ecs.ComponentArray[CanDeployComponent]
 	CoordsCursor() ecs.ComponentArray[CoordsCursorComponent]
-	CoordsAnchor() ecs.ComponentArray[CoordsAnchorComponent]
+	Anchor() ecs.ComponentArray[AnchorComponent]
 
 	CoordsInteraction() interactions.InteractionService[CoordsInteraction]
 	ObjectInteraction() interactions.InteractionService[ObjectInteraction]

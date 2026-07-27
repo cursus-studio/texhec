@@ -26,9 +26,7 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 
 		interactionspkg.FeaturePkg[pathfind.FindPathEvent](
 			interactionspkg.NewCopyRelation[actions.CoordsCursorComponent](
-				unsafe.Offsetof(pathfind.FindPathEvent{}.Object),
-				unsafe.Offsetof(pathfind.FindPathEvent{}.Coords),
-			),
+				unsafe.Offsetof(pathfind.FindPathEvent{}.Object), unsafe.Offsetof(pathfind.FindPathEvent{}.Coords)),
 		),
 	}
 	for _, pkg := range pkgs {

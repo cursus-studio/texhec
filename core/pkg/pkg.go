@@ -7,6 +7,7 @@ import (
 	menuscene "core/game/menu"
 	settingsscene "core/game/settings"
 	actionspkg "core/modules/actions/pkg"
+	attackpkg "core/modules/attack/pkg"
 	definitionspkg "core/modules/definitions/pkg"
 	deploypkg "core/modules/deploy/pkg"
 	fpsloggerpkg "core/modules/fpslogger/pkg"
@@ -29,6 +30,7 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 		enginepkg.Pkg,
 
 		actionspkg.Pkg,
+		attackpkg.Pkg,
 		definitionspkg.Pkg,
 		deploypkg.Pkg,
 		fpsloggerpkg.Pkg,

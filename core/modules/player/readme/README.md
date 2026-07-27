@@ -8,10 +8,10 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                               3             17              3             72
+Go                               3             17              3             73
 Markdown                         2              0              0              3
 -------------------------------------------------------------------------------
-SUM:                             5             17              3             75
+SUM:                             5             17              3             76
 -------------------------------------------------------------------------------
 ```
 ## TODO
@@ -47,6 +47,9 @@ Type: `engine/modules/ecs.EntityID`
 Type: `error`
 
 ### var ErrRequiresControl
+Type: `error`
+
+### var ErrRequiresToBeEnemy
 Type: `error`
 
 ## Functions

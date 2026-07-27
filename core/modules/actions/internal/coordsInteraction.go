@@ -51,8 +51,8 @@ func (s *service) OnTileHover(e grid.HoverEvent) {
 
 	canDeploy := true
 
-	if coordsRange, ok := s.CoordsAnchor().Get(previewEntity); ok && coordsRange.Entity != 0 {
-		for _, reachCoords := range s.GameWorld.Deploy().Reach().TilesWithinReach(coordsRange.Entity) {
+	if anchor, ok := s.Anchor().Get(previewEntity); ok {
+		for _, reachCoords := range s.GameWorld.Deploy().Reach().TilesWithinReach(anchor.Entity) {
 			ind := s.Prototype().Clone(s.Definitions().Assets().Blank)
 			s.Hierarchy().SetParent(ind, previewEntity)
 			s.Transform().Parent().Set(ind, transform.NewParent(transform.Absolute))
@@ -66,7 +66,7 @@ func (s *service) OnTileHover(e grid.HoverEvent) {
 			s.Render().Color().Set(ind, render.NewColor(mgl32.Vec4{0, 0, .5, 1}))
 		}
 
-		if !s.GameWorld.Deploy().Reach().Reaches(coordsRange.Entity, previewEntity) {
+		if !s.GameWorld.Deploy().Reach().Reaches(anchor.Entity, previewEntity) {
 			canDeploy = false
 		}
 	}

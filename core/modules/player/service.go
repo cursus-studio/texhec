@@ -6,8 +6,9 @@ import (
 )
 
 var (
-	ErrRequiresOwner   error = errors.New("player:requires owner")
-	ErrRequiresControl error = errors.New("player:requires control over player")
+	ErrRequiresOwner     error = errors.New("player:requires owner")
+	ErrRequiresControl   error = errors.New("player:requires control over player")
+	ErrRequiresToBeEnemy error = errors.New("player:requires to be enemy")
 )
 
 // marks that player is performing a move

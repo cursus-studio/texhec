@@ -8,9 +8,9 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                               3             37             14            214
+Go                               3             37             14            208
 -------------------------------------------------------------------------------
-SUM:                             3             37             14            214
+SUM:                             3             37             14            208
 -------------------------------------------------------------------------------
 ```
 ## Types
@@ -79,10 +79,10 @@ Type: `func(object engine/modules/ecs.EntityID) core/modules/deploy.DestroyEvent
   - `core/game.Tile`
 
 `core/modules/actions`:
+  - `core/modules/actions.AnchorComponent`
   - `core/modules/actions.BlueprintStep`
   - `core/modules/actions.CanDeployComponent`
   - `core/modules/actions.Coords`
-  - `core/modules/actions.CoordsAnchorComponent`
   - `core/modules/actions.CoordsCursorComponent`
   - `core/modules/actions.CoordsStep`
   - `core/modules/actions.Entity`

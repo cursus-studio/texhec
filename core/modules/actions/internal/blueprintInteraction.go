@@ -18,7 +18,7 @@ func (s *service) BlueprintInteraction() interactions.InteractionService[actions
 func (s *service) OnClickBlueprint(event tile.ClickBlueprintEvent) {
 	propertiesEntity := s.World().NewEntity()
 	s.CoordsCursor().Set(propertiesEntity, actions.NewCoordsCursor(event.Entity, true))
-	s.CoordsAnchor().Set(propertiesEntity, actions.NewCoordsAnchor(event.Entity))
+	s.Anchor().Set(propertiesEntity, actions.NewAnchor(event.Entity))
 
 	s.BlueprintInteraction().Save(propertiesEntity, actions.NewBlueprintInteraction(event.Entity))
 }
@@ -75,6 +75,6 @@ func (s *service) OnBlueprintStateUpsert(entity ecs.EntityID) {
 
 	s.CoordsCursor().Set(entity, actions.NewCoordsCursor(blueprint.State.Entity, true))
 	if object, ok := s.ObjectInteraction().StatePreview().Get(entity); ok {
-		s.CoordsAnchor().Set(entity, actions.NewCoordsAnchor(object.State.Entity))
+		s.Anchor().Set(entity, actions.NewAnchor(object.State.Entity))
 	}
 }
