@@ -8,10 +8,10 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                               6             81             10            410
+Go                               6             84             13            421
 Markdown                         1              0              0              1
 -------------------------------------------------------------------------------
-SUM:                             7             81             10            411
+SUM:                             7             84             13            422
 -------------------------------------------------------------------------------
 ```
 ## Types
@@ -64,6 +64,12 @@ Type: `func() core/modules/actions.ObjectInteraction`
 Type: `core/modules/actions.FriendlyBuilderObjectStep`
 
 #### method FriendlyBuilderObjectStep State
+Type: `func() core/modules/actions.ObjectInteraction`
+
+### type EnemyObjectStep
+Type: `core/modules/actions.EnemyObjectStep`
+
+#### method EnemyObjectStep State
 Type: `func() core/modules/actions.ObjectInteraction`
 
 ### type BlueprintStep
@@ -162,6 +168,7 @@ Type: `func(entity engine/modules/ecs.EntityID) core/modules/actions.BlueprintIn
   - `core/modules/actions.CoordsInteraction`
   - `core/modules/actions.CoordsStep`
   - `core/modules/actions.CustomImage`
+  - `core/modules/actions.EnemyObjectStep`
   - `core/modules/actions.Entity`
   - `core/modules/actions.ErrRequiresDeploy`
   - `core/modules/actions.ErrRequiresSpeed`
@@ -199,6 +206,10 @@ Type: `func(entity engine/modules/ecs.EntityID) core/modules/actions.BlueprintIn
   - `core/modules/obstruction.Deployed`
   - `core/modules/obstruction.NewAABB`
   - `core/modules/obstruction.Obstruction`
+
+`core/modules/player`:
+  - `core/modules/player.ControlsObject`
+  - `core/modules/player.ErrRequiresToBeEnemy`
 
 `core/modules/tile`:
   - `core/modules/tile.ClickBlueprintEvent`

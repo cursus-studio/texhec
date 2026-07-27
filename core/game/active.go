@@ -2,6 +2,7 @@ package game
 
 import (
 	"core/modules/actions"
+	"core/modules/attack"
 	"core/modules/definitions"
 	"core/modules/deploy"
 	"core/modules/fpslogger"
@@ -25,6 +26,7 @@ type GameWorld struct {
 
 	// game
 	Actions     ioc.Lazy[actions.Service]     `inject:""`
+	Attack      ioc.Lazy[attack.Service]      `inject:""`
 	Definitions ioc.Lazy[definitions.Service] `inject:""`
 	Deploy      ioc.Lazy[deploy.Service]      `inject:""`
 	FpsLogger   ioc.Lazy[fpslogger.Service]   `inject:""`

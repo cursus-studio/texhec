@@ -4,6 +4,7 @@ import (
 	"core/game"
 	"core/modules/actions"
 	"core/modules/actions/internal"
+	"core/modules/player"
 	interactionspkg "engine/modules/interactions/pkg"
 	typeregistrypkg "engine/modules/typeregistry/pkg"
 
@@ -12,13 +13,14 @@ import (
 
 var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 	pkgs := []ioc.Pkg{
+		// coords interaction
 		interactionspkg.InteractionPkg[actions.CoordsInteraction](),
-		interactionspkg.InteractionPkg[actions.ObjectInteraction](),
-		interactionspkg.InteractionPkg[actions.BlueprintInteraction](),
-
 		interactionspkg.StepPkg[actions.CoordsStep](func(c ioc.Dic) func(state actions.CoordsInteraction) error {
 			return func(state actions.CoordsInteraction) error { return nil }
 		}),
+
+		// object interaction
+		interactionspkg.InteractionPkg[actions.ObjectInteraction](),
 		interactionspkg.StepPkg[actions.ObjectStep](func(c ioc.Dic) func(state actions.ObjectInteraction) error {
 			return func(state actions.ObjectInteraction) error { return nil }
 		}),
@@ -53,6 +55,18 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 				return nil
 			}
 		}),
+		interactionspkg.StepPkg[actions.EnemyObjectStep](func(c ioc.Dic) func(state actions.ObjectInteraction) error {
+			world := ioc.Get[game.GameWorld](c)
+			return func(state actions.ObjectInteraction) error {
+				if err := world.Player().ControlsObject(state.Entity); err != nil {
+					return nil
+				}
+				return player.ErrRequiresToBeEnemy
+			}
+		}),
+
+		// bluepring interaction
+		interactionspkg.InteractionPkg[actions.BlueprintInteraction](),
 		interactionspkg.StepPkg[actions.BlueprintStep](func(c ioc.Dic) func(state actions.BlueprintInteraction) error {
 			return func(state actions.BlueprintInteraction) error { return nil }
 		}),

@@ -21,24 +21,6 @@ func NewDeploy(deployable ...ecs.EntityID) Component {
 
 //
 
-type Service interface {
-	Reach() reach.ServiceT[Component]
-
-	Component() ecs.ComponentArray[Component]
-
-	// deploy differs from execute event by who deploys.
-	// execute adds costs and everything where deploy just deploys without any costs (its deployed by system)
-	Deploy(
-		blueprint,
-		owner ecs.EntityID,
-		coords grid.Coords,
-	) (ecs.EntityID, error)
-	DeployEvent(DeployEvent)
-	DestroyEvent(DestroyEvent)
-}
-
-//
-
 type DeployEvent struct {
 	By        actions.FriendlyBuilderObjectStep
 	Blueprint actions.BlueprintStep
@@ -65,4 +47,22 @@ func NewDestroyEvent(
 	return DestroyEvent{
 		interactions.NewStep(actions.NewObjectInteraction(object)),
 	}
+}
+
+//
+
+type Service interface {
+	Reach() reach.ServiceT[Component]
+
+	Component() ecs.ComponentArray[Component]
+
+	// deploy differs from execute event by who deploys.
+	// execute adds costs and everything where deploy just deploys without any costs (its deployed by system)
+	Deploy(
+		blueprint,
+		owner ecs.EntityID,
+		coords grid.Coords,
+	) (ecs.EntityID, error)
+	DeployEvent(DeployEvent)
+	DestroyEvent(DestroyEvent)
 }
