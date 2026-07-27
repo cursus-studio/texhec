@@ -2,6 +2,7 @@
 package pathfind
 
 import (
+	"core/modules/actions"
 	"core/modules/obstruction"
 	"core/modules/tile"
 	"engine/modules/ecs"
@@ -68,13 +69,13 @@ type Service interface {
 // - look on `HPA*` and `JPS`
 
 type FindPathEvent struct {
-	Object tile.MovingObjectStep
-	Coords tile.CoordsStep
+	Object actions.FriendlyMobileObjectStep
+	Coords actions.CoordsStep
 }
 
 func NewFindPathEvent(entity ecs.EntityID, coords grid.Coords) FindPathEvent {
 	return FindPathEvent{
-		interactions.NewStepT[tile.MovingObjectStep](tile.NewObjectInteraction(entity)),
-		interactions.NewStepT[tile.CoordsStep](tile.NewCoordsInteraction(coords)),
+		interactions.NewStep(actions.NewObjectInteraction(entity)),
+		interactions.NewStep(actions.NewCoordsInteraction(coords)),
 	}
 }

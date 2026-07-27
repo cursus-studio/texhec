@@ -1,6 +1,7 @@
-package tileservice
+package internal
 
 import (
+	"core/modules/actions"
 	"core/modules/definitions"
 	"core/modules/tile"
 	"engine/modules/ecs"
@@ -10,7 +11,7 @@ import (
 	"fmt"
 )
 
-func (s *service) ObjectInteraction() interactions.InteractionService[tile.ObjectInteraction] {
+func (s *service) ObjectInteraction() interactions.InteractionService[actions.ObjectInteraction] {
 	return s.ObjectInteractionService
 }
 
@@ -22,11 +23,11 @@ func (s *service) OnClickObject(event tile.ClickEntityEvent) {
 	}
 
 	propertiesEntity := s.World().NewEntity()
-	s.CanDeploy().Set(propertiesEntity, tile.NewCanDeploy(link.Entity))
-	s.CoordsAnchor().Set(propertiesEntity, tile.NewCoordsAnchor(event.Entity))
-	s.CoordsCursor().Set(propertiesEntity, tile.NewCoordsCursor(link.Entity, true))
+	s.CanDeploy().Set(propertiesEntity, actions.NewCanDeploy(link.Entity))
+	s.CoordsAnchor().Set(propertiesEntity, actions.NewCoordsAnchor(event.Entity))
+	s.CoordsCursor().Set(propertiesEntity, actions.NewCoordsCursor(link.Entity, true))
 
-	s.ObjectInteraction().Save(propertiesEntity, tile.NewObjectInteraction(event.Entity))
+	s.ObjectInteraction().Save(propertiesEntity, actions.NewObjectInteraction(event.Entity))
 }
 
 func (s *service) OnObjectMissingUpsert(entity ecs.EntityID) {

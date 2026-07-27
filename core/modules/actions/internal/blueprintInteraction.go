@@ -1,6 +1,7 @@
-package tileservice
+package internal
 
 import (
+	"core/modules/actions"
 	"core/modules/tile"
 	"engine/modules/ecs"
 	"engine/modules/inputs"
@@ -10,16 +11,16 @@ import (
 	"fmt"
 )
 
-func (s *service) BlueprintInteraction() interactions.InteractionService[tile.BlueprintInteraction] {
+func (s *service) BlueprintInteraction() interactions.InteractionService[actions.BlueprintInteraction] {
 	return s.BlueprintInteractionService
 }
 
 func (s *service) OnClickBlueprint(event tile.ClickBlueprintEvent) {
 	propertiesEntity := s.World().NewEntity()
-	s.CoordsCursor().Set(propertiesEntity, tile.NewCoordsCursor(event.Entity, true))
-	s.CoordsAnchor().Set(propertiesEntity, tile.NewCoordsAnchor(event.Entity))
+	s.CoordsCursor().Set(propertiesEntity, actions.NewCoordsCursor(event.Entity, true))
+	s.CoordsAnchor().Set(propertiesEntity, actions.NewCoordsAnchor(event.Entity))
 
-	s.BlueprintInteraction().Save(propertiesEntity, tile.NewBlueprintInteraction(event.Entity))
+	s.BlueprintInteraction().Save(propertiesEntity, actions.NewBlueprintInteraction(event.Entity))
 }
 
 func (s *service) OnBlueprintMissingUpsert(entity ecs.EntityID) {
@@ -72,8 +73,8 @@ func (s *service) OnBlueprintStateUpsert(entity ecs.EntityID) {
 		return
 	}
 
-	s.CoordsCursor().Set(entity, tile.NewCoordsCursor(blueprint.State.Entity, true))
+	s.CoordsCursor().Set(entity, actions.NewCoordsCursor(blueprint.State.Entity, true))
 	if object, ok := s.ObjectInteraction().StatePreview().Get(entity); ok {
-		s.CoordsAnchor().Set(entity, tile.NewCoordsAnchor(object.State.Entity))
+		s.CoordsAnchor().Set(entity, actions.NewCoordsAnchor(object.State.Entity))
 	}
 }

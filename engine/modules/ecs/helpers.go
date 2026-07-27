@@ -4,13 +4,6 @@ import (
 	"engine/modules/ecs/internal/ecstypes"
 )
 
-// events
-type RemoveEntityEvent struct{ Entity EntityID }
-
-func NewRemoveEntityEvent(entity EntityID) RemoveEntityEvent {
-	return RemoveEntityEvent{entity}
-}
-
 // event wrappers
 type ApplyEntityEvent interface {
 	ApplyEntity(entityEmitting EntityID) (event any)

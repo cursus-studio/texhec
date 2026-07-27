@@ -8,10 +8,10 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                               3             14              2             48
-Markdown                         1              0              0              2
+Go                               3             17              3             72
+Markdown                         2              0              0              3
 -------------------------------------------------------------------------------
-SUM:                             4             14              2             50
+SUM:                             5             17              3             75
 -------------------------------------------------------------------------------
 ```
 ## TODO
@@ -22,8 +22,19 @@ Perhaps attach `PlayerComponent` to camera.
 ### type Service
 Type: `core/modules/player.Service`
 
+#### method Service ActingPlayer
+Type: `func() engine/modules/ecs.ComponentArray[core/modules/player.ActingPlayerComponent]`
+
+#### method Service ControlsObject
+Type: `func(engine/modules/ecs.EntityID) error`
+returns nil if object is controled
+
 #### method Service Owner
 Type: `func() engine/modules/ecs.ComponentArray[core/modules/player.OwnerComponent]`
+
+### type ActingPlayerComponent
+Type: `core/modules/player.ActingPlayerComponent`
+marks that player is performing a move
 
 ### type OwnerComponent
 Type: `core/modules/player.OwnerComponent`
@@ -31,7 +42,17 @@ Type: `core/modules/player.OwnerComponent`
 #### property OwnerComponent Owner
 Type: `engine/modules/ecs.EntityID`
 
+## Variables
+### var ErrRequiresOwner
+Type: `error`
+
+### var ErrRequiresControl
+Type: `error`
+
 ## Functions
+### func NewActingPlayer
+Type: `func() core/modules/player.ActingPlayerComponent`
+
 ### func NewOwner
 Type: `func(owner engine/modules/ecs.EntityID) core/modules/player.OwnerComponent`
 
@@ -39,8 +60,14 @@ Type: `func(owner engine/modules/ecs.EntityID) core/modules/player.OwnerComponen
 ## Dependencies
 `core/game`:
   - `core/game.GameWorld`
+  - `core/game.Player`
 
 `core/modules/player`:
+  - `core/modules/player.ActingPlayer`
+  - `core/modules/player.ActingPlayerComponent`
+  - `core/modules/player.ErrRequiresControl`
+  - `core/modules/player.ErrRequiresOwner`
+  - `core/modules/player.Owner`
   - `core/modules/player.OwnerComponent`
   - `core/modules/player.Service`
 

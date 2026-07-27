@@ -14,7 +14,6 @@ import (
 	"engine/modules/entityregistry"
 	"engine/modules/graphics"
 	gridpkg "engine/modules/grid/pkg"
-	interactionspkg "engine/modules/interactions/pkg"
 	relationpkg "engine/modules/relation/pkg"
 	"engine/modules/render"
 	typeregistrypkg "engine/modules/typeregistry/pkg"
@@ -65,48 +64,12 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 			},
 			func(index tile.ID) uint32 { return uint32(index) },
 		),
-		interactionspkg.InteractionPkg[tile.CoordsInteraction](),
-		interactionspkg.InteractionPkg[tile.ObjectInteraction](),
-		interactionspkg.InteractionPkg[tile.BlueprintInteraction](),
-
-		interactionspkg.StepPkg[tile.CoordsStep](func(c ioc.Dic) func(state tile.CoordsInteraction) error {
-			return func(state tile.CoordsInteraction) error { return nil }
-		}),
-		interactionspkg.StepPkg[tile.ObjectStep](func(c ioc.Dic) func(state tile.ObjectInteraction) error {
-			return func(state tile.ObjectInteraction) error { return nil }
-		}),
-		interactionspkg.StepPkg[tile.MovingObjectStep](func(c ioc.Dic) func(state tile.ObjectInteraction) error {
-			world := ioc.Get[game.GameWorld](c)
-			return func(state tile.ObjectInteraction) error {
-				if _, ok := world.Pathfind().Speed().Get(state.Entity); !ok {
-					return tile.ErrRequiresSpeed
-				}
-				return nil
-			}
-		}),
-		interactionspkg.StepPkg[tile.BuildingObjectStep](func(c ioc.Dic) func(state tile.ObjectInteraction) error {
-			world := ioc.Get[game.GameWorld](c)
-			return func(state tile.ObjectInteraction) error {
-				link, _ := world.Metadata().Link().Get(state.Entity)
-				if _, ok := world.Deploy().Component().Get(link.Entity); !ok {
-					return tile.ErrRequiresDeploy
-				}
-				return nil
-			}
-		}),
-		interactionspkg.StepPkg[tile.BlueprintStep](func(c ioc.Dic) func(state tile.BlueprintInteraction) error {
-			return func(state tile.BlueprintInteraction) error { return nil }
-		}),
 
 		typeregistrypkg.PkgT[tile.Component],
 		typeregistrypkg.PkgT[tile.PosComponent],
 		typeregistrypkg.PkgT[tile.SizeComponent],
 		typeregistrypkg.PkgT[tile.RotComponent],
 		typeregistrypkg.PkgT[tile.LayerComponent],
-
-		typeregistrypkg.PkgT[tile.CoordsCursorComponent],
-		typeregistrypkg.PkgT[tile.CoordsAnchorComponent],
-		typeregistrypkg.PkgT[tile.CanDeployComponent],
 	}
 	for _, pkg := range pkgs {
 		pkg(b)

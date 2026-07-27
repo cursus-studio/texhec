@@ -2,9 +2,9 @@ package pathfindpkg
 
 import (
 	"core/game"
+	"core/modules/actions"
 	"core/modules/pathfind"
 	"core/modules/pathfind/internal"
-	"core/modules/tile"
 	"engine/modules/ecs"
 	"engine/modules/entityregistry"
 	interactionspkg "engine/modules/interactions/pkg"
@@ -25,7 +25,7 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 		typeregistrypkg.PkgT[pathfind.FindPathEvent],
 
 		interactionspkg.FeaturePkg[pathfind.FindPathEvent](
-			interactionspkg.NewCopyRelation[tile.CoordsCursorComponent](
+			interactionspkg.NewCopyRelation[actions.CoordsCursorComponent](
 				unsafe.Offsetof(pathfind.FindPathEvent{}.Object),
 				unsafe.Offsetof(pathfind.FindPathEvent{}.Coords),
 			),

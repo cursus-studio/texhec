@@ -33,14 +33,14 @@ type InteractionService[State any] interface {
 type Step[State any] interface {
 	State() State
 }
-type stepT[StepT Step[State], State any] struct {
+type stepT[State any] struct {
 	Value State
 }
 
-func NewStepT[StepT Step[State], State any](state State) StepT {
-	return any(stepT[StepT, State]{state}).(StepT)
+func NewStep[State any](state State) Step[State] {
+	return stepT[State]{state}
 }
-func (step stepT[StepT, State]) State() State { return step.Value }
+func (step stepT[State]) State() State { return step.Value }
 
 // feature
 type Event = any

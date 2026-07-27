@@ -44,19 +44,19 @@ Type: `[]engine/modules/ecs.EntityID`
 Type: `core/modules/deploy.DeployEvent`
 
 #### property DeployEvent By
-Type: `core/modules/tile.BuildingObjectStep`
+Type: `core/modules/actions.FriendlyBuilderObjectStep`
 
 #### property DeployEvent Blueprint
-Type: `core/modules/tile.BlueprintStep`
+Type: `core/modules/actions.BlueprintStep`
 
 #### property DeployEvent Coords
-Type: `core/modules/tile.CoordsStep`
+Type: `core/modules/actions.CoordsStep`
 
 ### type DestroyEvent
 Type: `core/modules/deploy.DestroyEvent`
 
 #### property DestroyEvent Object
-Type: `core/modules/tile.ObjectStep`
+Type: `core/modules/actions.FriendlyObjectStep`
 
 ## Functions
 ### func NewDeploy
@@ -77,6 +77,20 @@ Type: `func(object engine/modules/ecs.EntityID) core/modules/deploy.DestroyEvent
   - `core/game.Player`
   - `core/game.Reach`
   - `core/game.Tile`
+
+`core/modules/actions`:
+  - `core/modules/actions.BlueprintStep`
+  - `core/modules/actions.CanDeployComponent`
+  - `core/modules/actions.Coords`
+  - `core/modules/actions.CoordsAnchorComponent`
+  - `core/modules/actions.CoordsCursorComponent`
+  - `core/modules/actions.CoordsStep`
+  - `core/modules/actions.Entity`
+  - `core/modules/actions.FriendlyBuilderObjectStep`
+  - `core/modules/actions.FriendlyObjectStep`
+  - `core/modules/actions.NewBlueprintInteraction`
+  - `core/modules/actions.NewCoordsInteraction`
+  - `core/modules/actions.NewObjectInteraction`
 
 `core/modules/deploy`:
   - `core/modules/deploy.Blueprint`
@@ -114,21 +128,9 @@ Type: `func(object engine/modules/ecs.EntityID) core/modules/deploy.DestroyEvent
   - `core/modules/reach/pkg.PkgT`
 
 `core/modules/tile`:
-  - `core/modules/tile.BlueprintStep`
-  - `core/modules/tile.BuildingObjectStep`
-  - `core/modules/tile.CanDeployComponent`
   - `core/modules/tile.Coord`
-  - `core/modules/tile.Coords`
-  - `core/modules/tile.CoordsAnchorComponent`
-  - `core/modules/tile.CoordsCursorComponent`
-  - `core/modules/tile.CoordsStep`
-  - `core/modules/tile.Entity`
-  - `core/modules/tile.NewBlueprintInteraction`
   - `core/modules/tile.NewClickEntityEvent`
-  - `core/modules/tile.NewCoordsInteraction`
-  - `core/modules/tile.NewObjectInteraction`
   - `core/modules/tile.NewPos`
-  - `core/modules/tile.ObjectStep`
   - `core/modules/tile.Pos`
   - `core/modules/tile.Size`
 
@@ -150,7 +152,7 @@ Type: `func(object engine/modules/ecs.EntityID) core/modules/deploy.DestroyEvent
   - `engine/modules/inputs.NewLeftClick`
 
 `engine/modules/interactions`:
-  - `engine/modules/interactions.NewStepT`
+  - `engine/modules/interactions.NewStep`
   - `engine/modules/interactions.State`
 
 `engine/modules/interactions/pkg`:
