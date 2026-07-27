@@ -8,24 +8,24 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                               6             84             13            421
+Go                               6             85             13            428
 Markdown                         1              0              0              1
 -------------------------------------------------------------------------------
-SUM:                             7             84             13            422
+SUM:                             7             85             13            429
 -------------------------------------------------------------------------------
 ```
 ## Types
 ### type Service
 Type: `core/modules/actions.Service`
 
+#### method Service Anchor
+Type: `func() engine/modules/ecs.ComponentArray[core/modules/actions.AnchorComponent]`
+
 #### method Service BlueprintInteraction
 Type: `func() engine/modules/interactions.InteractionService[core/modules/actions.BlueprintInteraction]`
 
 #### method Service CanDeploy
 Type: `func() engine/modules/ecs.ComponentArray[core/modules/actions.CanDeployComponent]`
-
-#### method Service CoordsAnchor
-Type: `func() engine/modules/ecs.ComponentArray[core/modules/actions.CoordsAnchorComponent]`
 
 #### method Service CoordsCursor
 Type: `func() engine/modules/ecs.ComponentArray[core/modules/actions.CoordsCursorComponent]`
@@ -95,10 +95,10 @@ Type: `engine/modules/ecs.EntityID`
 Type: `bool`
 if true then entity is used as an image else default icon is used
 
-### type CoordsAnchorComponent
-Type: `core/modules/actions.CoordsAnchorComponent`
+### type AnchorComponent
+Type: `core/modules/actions.AnchorComponent`
 
-#### property CoordsAnchorComponent Entity
+#### property AnchorComponent Entity
 Type: `engine/modules/ecs.EntityID`
 
 ### type CoordsInteraction
@@ -133,8 +133,8 @@ Type: `func(canDeploy engine/modules/ecs.EntityID) core/modules/actions.CanDeplo
 ### func NewCoordsCursor
 Type: `func(propertiesEntity engine/modules/ecs.EntityID, customImage bool) core/modules/actions.CoordsCursorComponent`
 
-### func NewCoordsAnchor
-Type: `func(entity engine/modules/ecs.EntityID) core/modules/actions.CoordsAnchorComponent`
+### func NewAnchor
+Type: `func(entity engine/modules/ecs.EntityID) core/modules/actions.AnchorComponent`
 
 ### func NewCoordsInteraction
 Type: `func(coords engine/modules/grid.Coords) core/modules/actions.CoordsInteraction`
@@ -159,11 +159,11 @@ Type: `func(entity engine/modules/ecs.EntityID) core/modules/actions.BlueprintIn
   - `core/game.Ui`
 
 `core/modules/actions`:
+  - `core/modules/actions.AnchorComponent`
   - `core/modules/actions.BlueprintInteraction`
   - `core/modules/actions.BlueprintStep`
   - `core/modules/actions.CanDeployComponent`
   - `core/modules/actions.Coords`
-  - `core/modules/actions.CoordsAnchorComponent`
   - `core/modules/actions.CoordsCursorComponent`
   - `core/modules/actions.CoordsInteraction`
   - `core/modules/actions.CoordsStep`
@@ -175,9 +175,9 @@ Type: `func(entity engine/modules/ecs.EntityID) core/modules/actions.BlueprintIn
   - `core/modules/actions.FriendlyBuilderObjectStep`
   - `core/modules/actions.FriendlyMobileObjectStep`
   - `core/modules/actions.FriendlyObjectStep`
+  - `core/modules/actions.NewAnchor`
   - `core/modules/actions.NewBlueprintInteraction`
   - `core/modules/actions.NewCanDeploy`
-  - `core/modules/actions.NewCoordsAnchor`
   - `core/modules/actions.NewCoordsCursor`
   - `core/modules/actions.NewCoordsInteraction`
   - `core/modules/actions.NewObjectInteraction`

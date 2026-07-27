@@ -13,10 +13,8 @@ import (
 var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 	pkgs := []ioc.Pkg{
 		interactionspkg.FeaturePkg[attack.AttackEvent](
-			interactionspkg.NewCopyRelation[actions.CoordsAnchorComponent](
-				unsafe.Offsetof(attack.AttackEvent{}.By),
-				unsafe.Offsetof(attack.AttackEvent{}.Target),
-			),
+			interactionspkg.NewCopyRelation[actions.AnchorComponent](
+				unsafe.Offsetof(attack.AttackEvent{}.By), unsafe.Offsetof(attack.AttackEvent{}.Target)),
 		),
 	}
 	for _, pkg := range pkgs {

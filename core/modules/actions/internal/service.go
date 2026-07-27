@@ -18,14 +18,14 @@ type service struct {
 
 	canDeploy    ecs.ComponentArray[actions.CanDeployComponent]
 	coordsCursor ecs.ComponentArray[actions.CoordsCursorComponent]
-	coordsAnchor ecs.ComponentArray[actions.CoordsAnchorComponent]
+	coordsAnchor ecs.ComponentArray[actions.AnchorComponent]
 }
 
 func NewService(c ioc.Dic) actions.Service {
 	s := ioc.GetServices[*service](c)
 	s.canDeploy = ecs.GetComponentArray[actions.CanDeployComponent](s.World())
 	s.coordsCursor = ecs.GetComponentArray[actions.CoordsCursorComponent](s.World())
-	s.coordsAnchor = ecs.GetComponentArray[actions.CoordsAnchorComponent](s.World())
+	s.coordsAnchor = ecs.GetComponentArray[actions.AnchorComponent](s.World())
 
 	s.CoordsInteractionService.MissingPreview().OnUpsert(s.OnCoordsMissingUpsert)
 	s.CoordsInteractionService.StatePreview().OnUpsert(s.OnCoordsStateUpsert)
@@ -47,7 +47,7 @@ func NewService(c ioc.Dic) actions.Service {
 func (s *service) CanDeploy() ecs.ComponentArray[actions.CanDeployComponent] {
 	return s.canDeploy
 }
-func (s *service) CoordsAnchor() ecs.ComponentArray[actions.CoordsAnchorComponent] {
+func (s *service) Anchor() ecs.ComponentArray[actions.AnchorComponent] {
 	return s.coordsAnchor
 }
 func (s *service) CoordsCursor() ecs.ComponentArray[actions.CoordsCursorComponent] {

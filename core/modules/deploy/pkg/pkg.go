@@ -24,17 +24,11 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 		reachpkg.PkgT[deploy.Component],
 		interactionspkg.FeaturePkg[deploy.DeployEvent](
 			interactionspkg.NewCopyRelation[actions.CanDeployComponent](
-				unsafe.Offsetof(deploy.DeployEvent{}.By),
-				unsafe.Offsetof(deploy.DeployEvent{}.Blueprint),
-			),
+				unsafe.Offsetof(deploy.DeployEvent{}.By), unsafe.Offsetof(deploy.DeployEvent{}.Blueprint)),
 			interactionspkg.NewCopyRelation[actions.CoordsCursorComponent](
-				unsafe.Offsetof(deploy.DeployEvent{}.Blueprint),
-				unsafe.Offsetof(deploy.DeployEvent{}.Coords),
-			),
-			interactionspkg.NewCopyRelation[actions.CoordsAnchorComponent](
-				unsafe.Offsetof(deploy.DeployEvent{}.By),
-				unsafe.Offsetof(deploy.DeployEvent{}.Coords),
-			),
+				unsafe.Offsetof(deploy.DeployEvent{}.Blueprint), unsafe.Offsetof(deploy.DeployEvent{}.Coords)),
+			interactionspkg.NewCopyRelation[actions.AnchorComponent](
+				unsafe.Offsetof(deploy.DeployEvent{}.By), unsafe.Offsetof(deploy.DeployEvent{}.Coords)),
 		),
 		interactionspkg.FeaturePkg[deploy.DestroyEvent](),
 	}

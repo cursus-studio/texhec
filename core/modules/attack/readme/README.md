@@ -8,10 +8,10 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                               3             14              1             65
+Go                               3             14              1             63
 Markdown                         1              0              0              1
 -------------------------------------------------------------------------------
-SUM:                             4             14              1             66
+SUM:                             4             14              1             64
 -------------------------------------------------------------------------------
 ```
 ## Types
@@ -40,7 +40,7 @@ Type: `func(by engine/modules/ecs.EntityID, target engine/modules/ecs.EntityID) 
   - `core/game.GameWorld`
 
 `core/modules/actions`:
-  - `core/modules/actions.CoordsAnchorComponent`
+  - `core/modules/actions.AnchorComponent`
   - `core/modules/actions.EnemyObjectStep`
   - `core/modules/actions.Entity`
   - `core/modules/actions.FriendlyBuilderObjectStep`
