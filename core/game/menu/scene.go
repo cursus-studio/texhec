@@ -33,7 +33,7 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 			world.Transform().Pos().Set(signature, transform.NewPos(5, 5, 0))
 			world.Transform().Size().Set(signature, transform.NewSize(100, 50, 1))
 			world.Transform().PivotPoint().Set(signature, transform.NewPivotPoint(0, .5, .5))
-			world.Transform().Parent().Set(signature, transform.NewParent(transform.RelativePos))
+			world.Transform().Inherit().Set(signature, transform.NewInherit(transform.RelativePos))
 			world.Transform().ParentPivotPoint().Set(signature, transform.NewParentPivotPoint(0, 0, .5))
 
 			world.Text().Content().Set(signature, text.NewText("menu"))
@@ -51,7 +51,7 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 			world.Hierarchy().SetParent(buttonArea, cameraEntity)
 			world.Groups().InheritGroups(buttonArea)
 			world.Transform().Pos().Set(buttonArea, transform.NewPos(0, 0, 1))
-			world.Transform().Parent().Set(buttonArea, transform.NewParent(transform.RelativePos|transform.RelativeSizeX))
+			world.Transform().Inherit().Set(buttonArea, transform.NewInherit(transform.RelativePos|transform.RelativeSizeX))
 
 			world.Layout().Order().Set(buttonArea, layout.NewOrder(layout.OrderVectical))
 			world.Layout().Align().Set(buttonArea, layout.NewAlign(.5, .5))

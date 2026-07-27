@@ -24,8 +24,8 @@ type Service interface {
 	AspectRatio() ecs.ComponentArray[AspectRatioComponent]
 	PivotPoint() ecs.ComponentArray[PivotPointComponent]
 
-	Parent() ecs.ComponentArray[ParentComponent]
 	ParentPivotPoint() ecs.ComponentArray[ParentPivotPointComponent]
+	Inherit() ecs.ComponentArray[InheritComponent]
 
 	Mat4(ecs.EntityID) mgl32.Mat4
 	AddDirtySet(ecs.DirtySet)
@@ -34,22 +34,22 @@ type Service interface {
 // components
 
 // parent
-type ParentFlag uint8
+type InheritFlag uint8
 
 const (
-	RelativePos ParentFlag = 1 << iota
+	RelativePos InheritFlag = 1 << iota
 	RelativeRotation
 	RelativeSizeX
 	RelativeSizeY
 	RelativeSizeZ
 )
 const (
-	RelativeSizeXY             = RelativeSizeX | RelativeSizeY
-	RelativeSizeXZ             = RelativeSizeX | RelativeSizeZ
-	RelativeSizeXYZ            = RelativeSizeX | RelativeSizeY | RelativeSizeZ
-	RelativeSizeYZ             = RelativeSizeY | RelativeSizeZ
-	Absolute        ParentFlag = 0
-	Relative                   = RelativePos | RelativeRotation | RelativeSizeXYZ
+	RelativeSizeXY              = RelativeSizeX | RelativeSizeY
+	RelativeSizeXZ              = RelativeSizeX | RelativeSizeZ
+	RelativeSizeXYZ             = RelativeSizeX | RelativeSizeY | RelativeSizeZ
+	RelativeSizeYZ              = RelativeSizeY | RelativeSizeZ
+	Absolute        InheritFlag = 0
+	Relative                    = RelativePos | RelativeRotation | RelativeSizeXYZ
 )
 
 // aspect ratio
@@ -85,9 +85,9 @@ type AspectRatioComponent struct {
 //
 // example: to align to left use (0, .5, .5)
 type PivotPointComponent struct{ Point mgl32.Vec3 }
-
-type ParentComponent struct{ RelativeMask ParentFlag }
 type ParentPivotPointComponent PivotPointComponent
+
+type InheritComponent struct{ RelativeMask InheritFlag }
 
 // ctors
 
@@ -102,10 +102,10 @@ func NewAspectRatio(x, y, z float32, primaryAxis PrimaryAxis) AspectRatioCompone
 func NewPivotPoint(x, y, z float32) PivotPointComponent {
 	return PivotPointComponent{mgl32.Vec3{x, y, z}}
 }
-func NewParent(mask ParentFlag) ParentComponent { return ParentComponent{mask} }
 func NewParentPivotPoint(x, y, z float32) ParentPivotPointComponent {
 	return ParentPivotPointComponent{mgl32.Vec3{x, y, z}}
 }
+func NewInherit(mask InheritFlag) InheritComponent { return InheritComponent{mask} }
 
 // blend
 

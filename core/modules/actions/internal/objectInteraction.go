@@ -2,7 +2,6 @@ package internal
 
 import (
 	"core/modules/actions"
-	"core/modules/definitions"
 	"core/modules/tile"
 	"engine/modules/ecs"
 	"engine/modules/interactions"
@@ -51,25 +50,12 @@ func (s *service) OnObjectStateUpsert(entity ecs.EntityID) {
 		return
 	}
 
-	worldEntity, ok := s.Seed().WorldSeed()
-	if !ok {
-		return
-	}
-
 	targetObject := stateComp.State.Entity
-	s.Hierarchy().SetParent(entity, worldEntity)
+	s.Hierarchy().SetParent(entity, targetObject)
+	s.Groups().InheritGroups(entity)
+	s.Transform().Inherit().Set(entity, transform.NewInherit(transform.RelativePos|transform.RelativeSizeXY))
+	s.Transform().Pos().Set(entity, transform.NewPos(0, 0, -1))
 
-	if pos, ok := s.Tile().Pos().Get(targetObject); ok {
-		s.Tile().Pos().Set(entity, pos)
-	}
-	if size, ok := s.Tile().Size().Get(targetObject); ok {
-		s.Tile().Size().Set(entity, size)
-	}
-	s.Tile().Rot().Set(entity, tile.NewRot(0))
-
-	s.Transform().Parent().Set(entity, transform.NewParent(transform.Absolute))
-	s.Tile().Layer().Set(entity, tile.NewLayer(definitions.ObjectSelectionPlaceholderLayer))
 	s.Render().Mesh().Set(entity, render.NewMesh(s.Definitions().Assets().SquareMesh))
 	s.Render().Texture().Set(entity, render.NewTexture(s.Definitions().Hud().Can))
-	s.Groups().InheritGroups(entity)
 }

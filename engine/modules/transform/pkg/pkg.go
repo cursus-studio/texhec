@@ -21,7 +21,7 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 		typeregistrypkg.PkgT[transform.AspectRatioComponent],
 		typeregistrypkg.PkgT[transform.PivotPointComponent],
 
-		typeregistrypkg.PkgT[transform.ParentComponent],
+		typeregistrypkg.PkgT[transform.InheritComponent],
 		typeregistrypkg.PkgT[transform.ParentPivotPointComponent],
 	}
 	for _, pkg := range pkgs {

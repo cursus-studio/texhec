@@ -66,7 +66,7 @@ func (s *system) Render(message string) {
 	s.TextArr.Set(textEntity, TextComp{})
 	s.Hierarchy().SetParent(textEntity, cameraEntity)
 	s.Transform().Pos().Set(textEntity, transform.NewPos(0, 0, 2))
-	s.Transform().Parent().Set(textEntity, transform.NewParent(transform.RelativePos))
+	s.Transform().Inherit().Set(textEntity, transform.NewInherit(transform.RelativePos))
 
 	s.Text().Content().Set(textEntity, text.NewText(message))
 	s.Text().FontSize().Set(textEntity, text.NewFontSize(32))

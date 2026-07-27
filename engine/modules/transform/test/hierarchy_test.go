@@ -14,7 +14,7 @@ func TestHierarchy(t *testing.T) {
 
 	setup.hierarchy.SetParent(child, parent)
 	setup.transform.Pos().Set(parent, transform.NewPos(5, 5, 5))
-	setup.transform.Parent().Set(child, transform.NewParent(transform.RelativePos))
+	setup.transform.Inherit().Set(child, transform.NewInherit(transform.RelativePos))
 
 	setup.transform.Pos().Set(child, transform.NewPos(5, 5, 5))
 	setup.expectAbsolutePos(t, child, transform.NewPos(10, 10, 10))

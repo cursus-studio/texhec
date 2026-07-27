@@ -80,7 +80,7 @@ func (s *System) OnBackgroundUpsert(entity ecs.EntityID) {
 	if _, ok := s.transitionArr.Get(entity); ok {
 		return
 	}
-	s.Transform().Parent().Set(entity, transform.NewParent(transform.RelativePos|transform.RelativeSizeXY))
+	s.Transform().Inherit().Set(entity, transform.NewInherit(transform.RelativePos|transform.RelativeSizeXY))
 	if entity != s.blueprint {
 		s.Render().Mesh().Set(entity, render.NewMesh(s.Definitions().Assets().SquareMesh))
 	}
@@ -95,7 +95,7 @@ func (s *System) ListenUpdateBg(event UpdateBgEvent) {
 	duration := s.bgTimePerFrame * time.Duration(size)
 
 	for _, entity := range s.Ui().AnimatedBackground().GetEntities() {
-		s.Transform().Parent().Set(entity, transform.NewParent(transform.RelativePos|transform.RelativeSizeXY))
+		s.Transform().Inherit().Set(entity, transform.NewInherit(transform.RelativePos|transform.RelativeSizeXY))
 		if entity != s.blueprint {
 			s.Render().Mesh().Set(entity, render.NewMesh(s.Definitions().Assets().SquareMesh))
 		}

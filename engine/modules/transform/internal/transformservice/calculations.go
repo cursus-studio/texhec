@@ -12,7 +12,7 @@ func (t *service) GetRelativeParentPos(entity ecs.EntityID) mgl32.Vec3 {
 	if !ok {
 		return mgl32.Vec3{}
 	}
-	parentMask, _ := t.ParentMaskArray.Get(entity)
+	parentMask, _ := t.InheritMaskArray.Get(entity)
 	if parentMask.RelativeMask&transform.RelativePos == 0 {
 		return mgl32.Vec3{}
 	}
@@ -47,7 +47,7 @@ func (t *service) GetRelativeParentRotation(entity ecs.EntityID) mgl32.Quat {
 	if !ok {
 		return mgl32.QuatIdent()
 	}
-	parentMask, _ := t.ParentMaskArray.Get(entity)
+	parentMask, _ := t.InheritMaskArray.Get(entity)
 	if parentMask.RelativeMask&transform.RelativeRotation == 0 {
 		return mgl32.QuatIdent()
 	}
@@ -63,7 +63,7 @@ func (t *service) GetRelativeParentSize(entity ecs.EntityID) mgl32.Vec3 {
 	if !ok {
 		return size
 	}
-	parentMask, _ := t.ParentMaskArray.Get(entity)
+	parentMask, _ := t.InheritMaskArray.Get(entity)
 	parentSize, _ := t.AbsoluteSizeArray.Get(parent.Parent)
 	if parentMask.RelativeMask&transform.RelativeSizeX != 0 {
 		size[0] = parentSize.Size[0]

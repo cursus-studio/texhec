@@ -78,9 +78,9 @@ Type: `engine/modules/ecs.EntityID`
   - `engine/modules/text.NewText`
 
 `engine/modules/transform`:
-  - `engine/modules/transform.NewParent`
+  - `engine/modules/transform.Inherit`
+  - `engine/modules/transform.NewInherit`
   - `engine/modules/transform.NewSize`
-  - `engine/modules/transform.Parent`
   - `engine/modules/transform.RelativePos`
   - `engine/modules/transform.RelativeSizeX`
   - `engine/modules/transform.Size`

@@ -31,8 +31,8 @@ type service struct {
 	AspectRatioArray ecs.ComponentArray[transform.AspectRatioComponent]
 
 	PivotPointArray       ecs.ComponentArray[transform.PivotPointComponent]
-	ParentMaskArray       ecs.ComponentArray[transform.ParentComponent]
 	ParentPivotPointArray ecs.ComponentArray[transform.ParentPivotPointComponent]
+	InheritMaskArray      ecs.ComponentArray[transform.InheritComponent]
 
 	defaultRot         transform.RotationComponent
 	defaultSize        transform.SizeComponent
@@ -68,8 +68,8 @@ func NewService(
 	s.AspectRatioArray = ecs.GetComponentArray[transform.AspectRatioComponent](s.World())
 
 	s.PivotPointArray = ecs.GetComponentArray[transform.PivotPointComponent](s.World())
-	s.ParentMaskArray = ecs.GetComponentArray[transform.ParentComponent](s.World())
 	s.ParentPivotPointArray = ecs.GetComponentArray[transform.ParentPivotPointComponent](s.World())
+	s.InheritMaskArray = ecs.GetComponentArray[transform.InheritComponent](s.World())
 
 	s.defaultRot = transform.NewRotation(mgl32.QuatIdent())
 	s.defaultSize = transform.NewSize(1, 1, 1)
@@ -119,7 +119,7 @@ func (t *service) BeforeGet() {
 
 		for _, child := range t.Hierarchy().Children(entity).GetIndices() {
 			comparedMask := transform.RelativePos | transform.RelativeRotation | transform.RelativeSizeXYZ
-			mask, _ := t.ParentMaskArray.Get(child)
+			mask, _ := t.InheritMaskArray.Get(child)
 			if mask.RelativeMask&comparedMask == 0 {
 				continue
 			}
@@ -165,11 +165,11 @@ func (t *service) AspectRatio() ecs.ComponentArray[transform.AspectRatioComponen
 func (t *service) PivotPoint() ecs.ComponentArray[transform.PivotPointComponent] {
 	return t.PivotPointArray
 }
-func (t *service) Parent() ecs.ComponentArray[transform.ParentComponent] {
-	return t.ParentMaskArray
-}
 func (t *service) ParentPivotPoint() ecs.ComponentArray[transform.ParentPivotPointComponent] {
 	return t.ParentPivotPointArray
+}
+func (t *service) Inherit() ecs.ComponentArray[transform.InheritComponent] {
+	return t.InheritMaskArray
 }
 
 func (t *service) Mat4(entity ecs.EntityID) mgl32.Mat4 {

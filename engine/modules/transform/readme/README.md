@@ -11,12 +11,12 @@ goos: linux
 goarch: amd64
 pkg: engine/modules/transform/test
 cpu: Intel(R) Core(TM) i5-8350U CPU @ 1.70GHz
-BenchmarkGetPos-8                 	43811241	        27.50 ns/op
+BenchmarkGetPos-8                 	43297045	        26.70 ns/op
 BenchmarkRawGetPos-8              	100000000	        10.97 ns/op
-BenchmarkSetAbsolutePos-8         	 1908158	       619.5 ns/op
-BenchmarkSetAndGetAbsolutePos-8   	 1968898	       603.7 ns/op
+BenchmarkSetAbsolutePos-8         	 1842477	       633.9 ns/op
+BenchmarkSetAndGetAbsolutePos-8   	 2019024	       610.9 ns/op
 PASS
-ok  	engine/modules/transform/test	5.949s
+ok  	engine/modules/transform/test	5.940s
 ```
 ## Lines of code
 ```
@@ -52,6 +52,9 @@ Type: `func(engine/modules/ecs.DirtySet)`
 #### method Service AspectRatio
 Type: `func() engine/modules/ecs.ComponentArray[engine/modules/transform.AspectRatioComponent]`
 
+#### method Service Inherit
+Type: `func() engine/modules/ecs.ComponentArray[engine/modules/transform.InheritComponent]`
+
 #### method Service Mat4
 Type: `func(engine/modules/ecs.EntityID) github.com/go-gl/mathgl/mgl32.Mat4`
 
@@ -60,9 +63,6 @@ Type: `func() engine/modules/ecs.ComponentArray[engine/modules/transform.MaxSize
 
 #### method Service MinSize
 Type: `func() engine/modules/ecs.ComponentArray[engine/modules/transform.MinSizeComponent]`
-
-#### method Service Parent
-Type: `func() engine/modules/ecs.ComponentArray[engine/modules/transform.ParentComponent]`
 
 #### method Service ParentPivotPoint
 Type: `func() engine/modules/ecs.ComponentArray[engine/modules/transform.ParentPivotPointComponent]`
@@ -79,8 +79,8 @@ Type: `func() engine/modules/ecs.ComponentArray[engine/modules/transform.Rotatio
 #### method Service Size
 Type: `func() engine/modules/ecs.ComponentArray[engine/modules/transform.SizeComponent]`
 
-### type ParentFlag
-Type: `engine/modules/transform.ParentFlag`
+### type InheritFlag
+Type: `engine/modules/transform.InheritFlag`
 parent
 
 ### type PrimaryAxis
@@ -198,12 +198,6 @@ Type: `func()`
 #### method PivotPointComponent Lerp
 Type: `func(c2 engine/modules/transform.PivotPointComponent, mix32 float32) engine/modules/transform.PivotPointComponent`
 
-### type ParentComponent
-Type: `engine/modules/transform.ParentComponent`
-
-#### property ParentComponent RelativeMask
-Type: `engine/modules/transform.ParentFlag`
-
 ### type ParentPivotPointComponent
 Type: `engine/modules/transform.ParentPivotPointComponent`
 
@@ -216,39 +210,45 @@ Type: `func()`
 #### method ParentPivotPointComponent Lerp
 Type: `func(c2 engine/modules/transform.ParentPivotPointComponent, mix32 float32) engine/modules/transform.ParentPivotPointComponent`
 
+### type InheritComponent
+Type: `engine/modules/transform.InheritComponent`
+
+#### property InheritComponent RelativeMask
+Type: `engine/modules/transform.InheritFlag`
+
 ## Variables
 ### var RelativePos
-Type: `engine/modules/transform.ParentFlag`
+Type: `engine/modules/transform.InheritFlag`
 
 ### var RelativeRotation
-Type: `engine/modules/transform.ParentFlag`
+Type: `engine/modules/transform.InheritFlag`
 
 ### var RelativeSizeX
-Type: `engine/modules/transform.ParentFlag`
+Type: `engine/modules/transform.InheritFlag`
 
 ### var RelativeSizeY
-Type: `engine/modules/transform.ParentFlag`
+Type: `engine/modules/transform.InheritFlag`
 
 ### var RelativeSizeZ
-Type: `engine/modules/transform.ParentFlag`
+Type: `engine/modules/transform.InheritFlag`
 
 ### var RelativeSizeXY
-Type: `engine/modules/transform.ParentFlag`
+Type: `engine/modules/transform.InheritFlag`
 
 ### var RelativeSizeXZ
-Type: `engine/modules/transform.ParentFlag`
+Type: `engine/modules/transform.InheritFlag`
 
 ### var RelativeSizeXYZ
-Type: `engine/modules/transform.ParentFlag`
+Type: `engine/modules/transform.InheritFlag`
 
 ### var RelativeSizeYZ
-Type: `engine/modules/transform.ParentFlag`
+Type: `engine/modules/transform.InheritFlag`
 
 ### var Absolute
-Type: `engine/modules/transform.ParentFlag`
+Type: `engine/modules/transform.InheritFlag`
 
 ### var Relative
-Type: `engine/modules/transform.ParentFlag`
+Type: `engine/modules/transform.InheritFlag`
 
 ### var PrimaryAxisX
 Type: `engine/modules/transform.PrimaryAxis`
@@ -281,11 +281,11 @@ Type: `func(x float32, y float32, z float32, primaryAxis engine/modules/transfor
 ### func NewPivotPoint
 Type: `func(x float32, y float32, z float32) engine/modules/transform.PivotPointComponent`
 
-### func NewParent
-Type: `func(mask engine/modules/transform.ParentFlag) engine/modules/transform.ParentComponent`
-
 ### func NewParentPivotPoint
 Type: `func(x float32, y float32, z float32) engine/modules/transform.ParentPivotPointComponent`
+
+### func NewInherit
+Type: `func(mask engine/modules/transform.InheritFlag) engine/modules/transform.InheritComponent`
 
 
 ## Dependencies
@@ -317,18 +317,18 @@ Type: `func(x float32, y float32, z float32) engine/modules/transform.ParentPivo
   - `engine/modules/transform.AbsoluteSizeComponent`
   - `engine/modules/transform.AspectRatio`
   - `engine/modules/transform.AspectRatioComponent`
+  - `engine/modules/transform.InheritComponent`
   - `engine/modules/transform.MaxSizeComponent`
   - `engine/modules/transform.MinSizeComponent`
   - `engine/modules/transform.NewAspectRatio`
+  - `engine/modules/transform.NewInherit`
   - `engine/modules/transform.NewMaxSize`
   - `engine/modules/transform.NewMinSize`
-  - `engine/modules/transform.NewParent`
   - `engine/modules/transform.NewParentPivotPoint`
   - `engine/modules/transform.NewPivotPoint`
   - `engine/modules/transform.NewPos`
   - `engine/modules/transform.NewRotation`
   - `engine/modules/transform.NewSize`
-  - `engine/modules/transform.ParentComponent`
   - `engine/modules/transform.ParentPivotPointComponent`
   - `engine/modules/transform.PivotPointComponent`
   - `engine/modules/transform.Point`

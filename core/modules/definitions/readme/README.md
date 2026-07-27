@@ -8,10 +8,10 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                               3             42              7            329
+Go                               3             42              8            328
 Markdown                         1              1              0              3
 -------------------------------------------------------------------------------
-SUM:                             4             43              7            332
+SUM:                             4             43              8            331
 -------------------------------------------------------------------------------
 ```
 ## TODO
@@ -192,11 +192,9 @@ Type: `core/modules/tile.Coord`
 ### var UnitLayer
 Type: `core/modules/tile.Coord`
 
-### var PathLayer
-Type: `core/modules/tile.Coord`
-
 ### var TilePlaceholderLayer
 Type: `core/modules/tile.Coord`
+PathLayer
 
 ### var RangePlaceholderLayer
 Type: `core/modules/tile.Coord`
@@ -328,12 +326,12 @@ Type: `core/modules/obstruction.Obstruction`
 
 `engine/modules/transform`:
   - `engine/modules/transform.AspectRatio`
+  - `engine/modules/transform.Inherit`
   - `engine/modules/transform.MaxSize`
   - `engine/modules/transform.NewAspectRatio`
+  - `engine/modules/transform.NewInherit`
   - `engine/modules/transform.NewMaxSize`
-  - `engine/modules/transform.NewParent`
   - `engine/modules/transform.NewSize`
-  - `engine/modules/transform.Parent`
   - `engine/modules/transform.PrimaryAxisX`
   - `engine/modules/transform.RelativePos`
   - `engine/modules/transform.RelativeSizeX`

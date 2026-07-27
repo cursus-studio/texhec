@@ -123,7 +123,7 @@ func (s *service) Hud() definitions.Hud {
 		s.World.Groups().Component().Set(def.Btn, groups.EmptyGroups())
 
 		s.World.Transform().AspectRatio().Set(def.Btn, transform.NewAspectRatio(float32(btnAspectRatio.Dx()), float32(btnAspectRatio.Dy()), 0, transform.PrimaryAxisX))
-		s.World.Transform().Parent().Set(def.Btn, transform.NewParent(transform.RelativePos|transform.RelativeSizeX))
+		s.World.Transform().Inherit().Set(def.Btn, transform.NewInherit(transform.RelativePos|transform.RelativeSizeX))
 		s.World.Transform().MaxSize().Set(def.Btn, transform.NewMaxSize(0, 50, 0))
 		s.World.Transform().Size().Set(def.Btn, transform.NewSize(1, 50, 1))
 
@@ -142,7 +142,7 @@ func (s *service) Hud() definitions.Hud {
 
 		s.World.Transform().Size().Set(def.Text, transform.NewSize(150, 50, 1))
 		s.World.Transform().AspectRatio().Set(def.Text, transform.NewAspectRatio(float32(btnAspectRatio.Dx()), float32(btnAspectRatio.Dy()), 0, transform.PrimaryAxisX))
-		s.World.Transform().Parent().Set(def.Text, transform.NewParent(transform.RelativePos))
+		s.World.Transform().Inherit().Set(def.Text, transform.NewInherit(transform.RelativePos))
 
 		s.World.Render().Mesh().Set(def.Text, render.NewMesh(s.World.Definitions().Assets().SquareMesh))
 		s.World.Render().Texture().Set(def.Text, render.NewTexture(def.Btn))
@@ -159,7 +159,7 @@ func (s *service) Hud() definitions.Hud {
 		s.World.Groups().Component().Set(def.Input, groups.EmptyGroups())
 
 		s.World.Transform().AspectRatio().Set(def.Input, transform.NewAspectRatio(float32(btnAspectRatio.Dx()), float32(btnAspectRatio.Dy()), 0, transform.PrimaryAxisX))
-		s.World.Transform().Parent().Set(def.Input, transform.NewParent(transform.RelativePos|transform.RelativeSizeX))
+		s.World.Transform().Inherit().Set(def.Input, transform.NewInherit(transform.RelativePos|transform.RelativeSizeX))
 		s.World.Transform().MaxSize().Set(def.Input, transform.NewMaxSize(0, 50, 0))
 		s.World.Transform().Size().Set(def.Input, transform.NewSize(1, 50, 1))
 

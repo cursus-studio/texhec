@@ -14,7 +14,7 @@ func TestParentPivot(t *testing.T) {
 	child := setup.NewEntity()
 
 	setup.hierarchy.SetParent(child, parent)
-	setup.transform.Parent().Set(child, transform.NewParent(transform.RelativePos))
+	setup.transform.Inherit().Set(child, transform.NewInherit(transform.RelativePos))
 	setup.expectAbsolutePos(t, child, transform.NewPos(10, 10, 10))
 
 	setup.transform.ParentPivotPoint().Set(child, transform.NewParentPivotPoint(0, 0, 0))
