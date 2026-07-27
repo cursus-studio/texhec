@@ -49,7 +49,7 @@ func (s *stepService[StepT, State]) Interaction() AnyInteractionService { return
 
 func (s *stepService[StepT, State]) FillValue(entity ecs.EntityID, value reflect.Value) {
 	state, _ := s.InteractionService.State().Get(entity)
-	step := interactions.NewStepT[StepT](state.State)
+	step := interactions.NewStep(state.State)
 	value.Set(reflect.ValueOf(step))
 }
 

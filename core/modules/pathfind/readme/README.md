@@ -8,10 +8,10 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                               6             71             27            418
+Go                               6             71             27            419
 Markdown                         1              1              0              5
 -------------------------------------------------------------------------------
-SUM:                             7             72             27            423
+SUM:                             7             72             27            424
 -------------------------------------------------------------------------------
 ```
 ## TODO
@@ -70,10 +70,10 @@ Type: `engine/modules/grid.Coords`
 Type: `core/modules/pathfind.FindPathEvent`
 
 #### property FindPathEvent Object
-Type: `core/modules/tile.FriendlyMobileObjectStep`
+Type: `core/modules/actions.FriendlyMobileObjectStep`
 
 #### property FindPathEvent Coords
-Type: `core/modules/tile.CoordsStep`
+Type: `core/modules/actions.CoordsStep`
 
 ## Variables
 ### var ErrInvalidPath
@@ -99,6 +99,15 @@ Type: `func(entity engine/modules/ecs.EntityID, coords engine/modules/grid.Coord
   - `core/game.Obstruction`
   - `core/game.Pathfind`
   - `core/game.Tile`
+
+`core/modules/actions`:
+  - `core/modules/actions.Coords`
+  - `core/modules/actions.CoordsCursorComponent`
+  - `core/modules/actions.CoordsStep`
+  - `core/modules/actions.Entity`
+  - `core/modules/actions.FriendlyMobileObjectStep`
+  - `core/modules/actions.NewCoordsInteraction`
+  - `core/modules/actions.NewObjectInteraction`
 
 `core/modules/obstruction`:
   - `core/modules/obstruction.Collisions`
@@ -127,16 +136,9 @@ Type: `func(entity engine/modules/ecs.EntityID, coords engine/modules/grid.Coord
 `core/modules/tile`:
   - `core/modules/tile.Aligned`
   - `core/modules/tile.Coord`
-  - `core/modules/tile.Coords`
-  - `core/modules/tile.CoordsCursorComponent`
-  - `core/modules/tile.CoordsStep`
-  - `core/modules/tile.Entity`
   - `core/modules/tile.ErrInvalidPosition`
   - `core/modules/tile.ErrInvalidStep`
   - `core/modules/tile.ErrPositionAndSpeedIsRequiredToStep`
-  - `core/modules/tile.FriendlyMobileObjectStep`
-  - `core/modules/tile.NewCoordsInteraction`
-  - `core/modules/tile.NewObjectInteraction`
   - `core/modules/tile.NewPos`
   - `core/modules/tile.NewRot`
   - `core/modules/tile.NewSize`
@@ -172,7 +174,7 @@ Type: `func(entity engine/modules/ecs.EntityID, coords engine/modules/grid.Coord
   - `engine/modules/grid.Y`
 
 `engine/modules/interactions`:
-  - `engine/modules/interactions.NewStepT`
+  - `engine/modules/interactions.NewStep`
   - `engine/modules/interactions.State`
 
 `engine/modules/interactions/pkg`:

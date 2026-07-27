@@ -416,8 +416,8 @@ Type: `func[State any](state State) engine/modules/interactions.StatePreviewComp
 ### func NewMissingPreview
 Type: `func[State any]() engine/modules/interactions.MissingPreviewComponent[State]`
 
-### func NewStepT
-Type: `func[StepT engine/modules/interactions.Step[State], State any](state State) StepT`
+### func NewStep
+Type: `func[State any](state State) engine/modules/interactions.Step[State]`
 
 ### func NewSelectedFeature
 Type: `func(feature engine/modules/interactions.FeatureKey) engine/modules/interactions.AvailableFeaturesComponent`
@@ -462,7 +462,7 @@ Type: `func() engine/modules/interactions.SelectFeatureEvent`
   - `engine/modules/interactions.NewMissingPreview`
   - `engine/modules/interactions.NewSelectedFeature`
   - `engine/modules/interactions.NewStatePreview`
-  - `engine/modules/interactions.NewStepT`
+  - `engine/modules/interactions.NewStep`
   - `engine/modules/interactions.SelectFeatureEvent`
   - `engine/modules/interactions.Selected`
   - `engine/modules/interactions.Service`

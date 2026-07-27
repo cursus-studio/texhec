@@ -103,11 +103,11 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                              11            248            100           1345
+Go                               8            177             93            980
 GLSL                             3             31              2            112
 Markdown                         3             10              0             85
 -------------------------------------------------------------------------------
-SUM:                            17            289            102           1542
+SUM:                            14            218             95           1177
 -------------------------------------------------------------------------------
 ```
 ## TODO
@@ -117,23 +117,8 @@ Currently animated tiles aren't supported and there is a big chance that they wo
 ### type Service
 Type: `core/modules/tile.Service`
 
-#### method Service BlueprintInteraction
-Type: `func() engine/modules/interactions.InteractionService[core/modules/tile.BlueprintInteraction]`
-
-#### method Service CanDeploy
-Type: `func() engine/modules/ecs.ComponentArray[core/modules/tile.CanDeployComponent]`
-
 #### method Service Component
 Type: `func() engine/modules/ecs.ComponentArray[core/modules/tile.Component]`
-
-#### method Service CoordsAnchor
-Type: `func() engine/modules/ecs.ComponentArray[core/modules/tile.CoordsAnchorComponent]`
-
-#### method Service CoordsCursor
-Type: `func() engine/modules/ecs.ComponentArray[core/modules/tile.CoordsCursorComponent]`
-
-#### method Service CoordsInteraction
-Type: `func() engine/modules/interactions.InteractionService[core/modules/tile.CoordsInteraction]`
 
 #### method Service GetPos
 Type: `func(coords engine/modules/grid.Coords) engine/modules/transform.PosComponent`
@@ -160,9 +145,6 @@ src images should be:
 - 1010
 - 1001
 - 0001
-
-#### method Service ObjectInteraction
-Type: `func() engine/modules/interactions.InteractionService[core/modules/tile.ObjectInteraction]`
 
 #### method Service Pos
 Type: `func() engine/modules/ecs.ComponentArray[core/modules/tile.PosComponent]`
@@ -199,42 +181,6 @@ Type: `core/modules/tile.ApplyCoordsEvent`
 
 #### method ApplyCoordsEvent ApplyCoords
 Type: `func(engine/modules/grid.Coords) any`
-
-### type CoordsStep
-Type: `core/modules/tile.CoordsStep`
-
-#### method CoordsStep State
-Type: `func() core/modules/tile.CoordsInteraction`
-
-### type ObjectStep
-Type: `core/modules/tile.ObjectStep`
-
-#### method ObjectStep State
-Type: `func() core/modules/tile.ObjectInteraction`
-
-### type FriendlyObjectStep
-Type: `core/modules/tile.FriendlyObjectStep`
-
-#### method FriendlyObjectStep State
-Type: `func() core/modules/tile.ObjectInteraction`
-
-### type FriendlyMobileObjectStep
-Type: `core/modules/tile.FriendlyMobileObjectStep`
-
-#### method FriendlyMobileObjectStep State
-Type: `func() core/modules/tile.ObjectInteraction`
-
-### type FriendlyBuilderObjectStep
-Type: `core/modules/tile.FriendlyBuilderObjectStep`
-
-#### method FriendlyBuilderObjectStep State
-Type: `func() core/modules/tile.ObjectInteraction`
-
-### type BlueprintStep
-Type: `core/modules/tile.BlueprintStep`
-
-#### method BlueprintStep State
-Type: `func() core/modules/tile.BlueprintInteraction`
 
 ### type ID
 Type: `core/modules/tile.ID`
@@ -311,46 +257,6 @@ Type: `core/modules/tile.UnloadChunkEvent`
 #### property UnloadChunkEvent Coords
 Type: `engine/modules/grid.ChunkCoordsComponent`
 
-### type CanDeployComponent
-Type: `core/modules/tile.CanDeployComponent`
-
-#### property CanDeployComponent Entity
-Type: `engine/modules/ecs.EntityID`
-
-### type CoordsCursorComponent
-Type: `core/modules/tile.CoordsCursorComponent`
-
-#### property CoordsCursorComponent PropertiesEntity
-Type: `engine/modules/ecs.EntityID`
-
-#### property CoordsCursorComponent CustomImage
-Type: `bool`
-if true then entity is used as an image else default icon is used
-
-### type CoordsAnchorComponent
-Type: `core/modules/tile.CoordsAnchorComponent`
-
-#### property CoordsAnchorComponent Entity
-Type: `engine/modules/ecs.EntityID`
-
-### type CoordsInteraction
-Type: `core/modules/tile.CoordsInteraction`
-
-#### property CoordsInteraction Coords
-Type: `engine/modules/grid.Coords`
-
-### type ObjectInteraction
-Type: `core/modules/tile.ObjectInteraction`
-
-#### property ObjectInteraction Entity
-Type: `engine/modules/ecs.EntityID`
-
-### type BlueprintInteraction
-Type: `core/modules/tile.BlueprintInteraction`
-
-#### property BlueprintInteraction Entity
-Type: `engine/modules/ecs.EntityID`
-
 ### type ClickEntityEvent
 Type: `core/modules/tile.ClickEntityEvent`
 
@@ -375,12 +281,6 @@ error logged when grid.GetIndex returns !ok
 Type: `error`
 
 ### var ErrPositionAndSpeedIsRequiredToStep
-Type: `error`
-
-### var ErrRequiresSpeed
-Type: `error`
-
-### var ErrRequiresDeploy
 Type: `error`
 
 ### var Tau
@@ -408,24 +308,6 @@ Type: `func(coords engine/modules/grid.ChunkCoordsComponent) core/modules/tile.M
 ### func NewUnloadChunkEvent
 Type: `func(coords engine/modules/grid.ChunkCoordsComponent) core/modules/tile.UnloadChunkEvent`
 
-### func NewCanDeploy
-Type: `func(canDeploy engine/modules/ecs.EntityID) core/modules/tile.CanDeployComponent`
-
-### func NewCoordsCursor
-Type: `func(propertiesEntity engine/modules/ecs.EntityID, customImage bool) core/modules/tile.CoordsCursorComponent`
-
-### func NewCoordsAnchor
-Type: `func(entity engine/modules/ecs.EntityID) core/modules/tile.CoordsAnchorComponent`
-
-### func NewCoordsInteraction
-Type: `func(coords engine/modules/grid.Coords) core/modules/tile.CoordsInteraction`
-
-### func NewObjectInteraction
-Type: `func(entity engine/modules/ecs.EntityID) core/modules/tile.ObjectInteraction`
-
-### func NewBlueprintInteraction
-Type: `func(entity engine/modules/ecs.EntityID) core/modules/tile.BlueprintInteraction`
-
 ### func NewClickEntityEvent
 Type: `func() core/modules/tile.ClickEntityEvent`
 
@@ -436,61 +318,21 @@ Type: `func(deployed engine/modules/ecs.EntityID) core/modules/tile.ClickBluepri
 ## Dependencies
 `core/game`:
   - `core/game.Definitions`
-  - `core/game.Deploy`
-  - `core/game.EngineWorld`
   - `core/game.GameWorld`
-  - `core/game.Obstruction`
-  - `core/game.Pathfind`
-  - `core/game.Player`
   - `core/game.Tile`
-  - `core/game.Ui`
 
 `core/modules/definitions`:
   - `core/modules/definitions.Assets`
-  - `core/modules/definitions.Blank`
-  - `core/modules/definitions.Border`
-  - `core/modules/definitions.Btn`
-  - `core/modules/definitions.Can`
   - `core/modules/definitions.ConstructLayer`
-  - `core/modules/definitions.Hud`
-  - `core/modules/definitions.ObjectPlaceholderLayer`
-  - `core/modules/definitions.ObjectSelectionPlaceholderLayer`
-  - `core/modules/definitions.RangePlaceholderLayer`
-  - `core/modules/definitions.Selected`
   - `core/modules/definitions.SquareCollider`
   - `core/modules/definitions.SquareMesh`
   - `core/modules/definitions.TileLayer`
-  - `core/modules/definitions.TilePlaceholderLayer`
   - `core/modules/definitions.UnitLayer`
-
-`core/modules/obstruction`:
-  - `core/modules/obstruction.Collisions`
-  - `core/modules/obstruction.Component`
-  - `core/modules/obstruction.Deployed`
-  - `core/modules/obstruction.NewAABB`
-  - `core/modules/obstruction.Obstruction`
 
 `core/modules/tile`:
   - `core/modules/tile.BiomeAsset`
-  - `core/modules/tile.BlueprintInteraction`
-  - `core/modules/tile.BlueprintStep`
-  - `core/modules/tile.CanDeployComponent`
-  - `core/modules/tile.ClickBlueprintEvent`
-  - `core/modules/tile.ClickEntityEvent`
   - `core/modules/tile.Component`
   - `core/modules/tile.Coord`
-  - `core/modules/tile.Coords`
-  - `core/modules/tile.CoordsAnchorComponent`
-  - `core/modules/tile.CoordsCursorComponent`
-  - `core/modules/tile.CoordsInteraction`
-  - `core/modules/tile.CoordsStep`
-  - `core/modules/tile.CustomImage`
-  - `core/modules/tile.Entity`
-  - `core/modules/tile.ErrRequiresDeploy`
-  - `core/modules/tile.ErrRequiresSpeed`
-  - `core/modules/tile.FriendlyBuilderObjectStep`
-  - `core/modules/tile.FriendlyMobileObjectStep`
-  - `core/modules/tile.FriendlyObjectStep`
   - `core/modules/tile.GetTileSize`
   - `core/modules/tile.Grid`
   - `core/modules/tile.ID`
@@ -498,23 +340,12 @@ Type: `func(deployed engine/modules/ecs.EntityID) core/modules/tile.ClickBluepri
   - `core/modules/tile.Layer`
   - `core/modules/tile.LayerComponent`
   - `core/modules/tile.NewBiomeAsset`
-  - `core/modules/tile.NewBlueprintInteraction`
-  - `core/modules/tile.NewCanDeploy`
-  - `core/modules/tile.NewClickBlueprintEvent`
-  - `core/modules/tile.NewCoordsAnchor`
-  - `core/modules/tile.NewCoordsCursor`
-  - `core/modules/tile.NewCoordsInteraction`
   - `core/modules/tile.NewLayer`
-  - `core/modules/tile.NewObjectInteraction`
-  - `core/modules/tile.NewPos`
   - `core/modules/tile.NewRot`
   - `core/modules/tile.NewSize`
   - `core/modules/tile.NewTile`
-  - `core/modules/tile.ObjectInteraction`
-  - `core/modules/tile.ObjectStep`
   - `core/modules/tile.Pos`
   - `core/modules/tile.PosComponent`
-  - `core/modules/tile.PropertiesEntity`
   - `core/modules/tile.Quat`
   - `core/modules/tile.Rot`
   - `core/modules/tile.RotComponent`
@@ -588,16 +419,13 @@ Type: `func(deployed engine/modules/ecs.EntityID) core/modules/tile.ClickBluepri
   - `engine/modules/graphics.VertexShader`
 
 `engine/modules/grid`:
-  - `engine/modules/grid.AbsoluteCoords`
   - `engine/modules/grid.Chunk`
   - `engine/modules/grid.ChunkCoordsComponent`
   - `engine/modules/grid.ChunkSize`
-  - `engine/modules/grid.ClickEvent`
   - `engine/modules/grid.Coord`
   - `engine/modules/grid.Coords`
   - `engine/modules/grid.GetChunk`
   - `engine/modules/grid.GetTiles`
-  - `engine/modules/grid.HoverEvent`
   - `engine/modules/grid.NewChunkCoords`
   - `engine/modules/grid.NewCoord`
   - `engine/modules/grid.NewCoords`
@@ -608,23 +436,6 @@ Type: `func(deployed engine/modules/ecs.EntityID) core/modules/tile.ClickBluepri
 `engine/modules/grid/pkg`:
   - `engine/modules/grid/pkg.PkgT`
 
-`engine/modules/inputs`:
-  - `engine/modules/inputs.LeftClick`
-  - `engine/modules/inputs.NewLeftClick`
-  - `engine/modules/inputs.Stack`
-
-`engine/modules/interactions`:
-  - `engine/modules/interactions.InteractionService`
-  - `engine/modules/interactions.MissingPreview`
-  - `engine/modules/interactions.Save`
-  - `engine/modules/interactions.State`
-  - `engine/modules/interactions.StatePreview`
-  - `engine/modules/interactions.Step`
-
-`engine/modules/interactions/pkg`:
-  - `engine/modules/interactions/pkg.InteractionPkg`
-  - `engine/modules/interactions/pkg.StepPkg`
-
 `engine/modules/relation`:
   - `engine/modules/relation.Get`
   - `engine/modules/relation.Service`
@@ -634,28 +445,19 @@ Type: `func(deployed engine/modules/ecs.EntityID) core/modules/tile.ClickBluepri
 
 `engine/modules/render`:
   - `engine/modules/render.Camera`
-  - `engine/modules/render.Color`
   - `engine/modules/render.ErrTextureAssetImagesHasToMatchResolution`
   - `engine/modules/render.Mesh`
-  - `engine/modules/render.NewColor`
   - `engine/modules/render.NewMesh`
   - `engine/modules/render.NewTexture`
   - `engine/modules/render.RenderEvent`
   - `engine/modules/render.Texture`
 
-`engine/modules/text`:
-  - `engine/modules/text.Content`
-  - `engine/modules/text.NewText`
-
 `engine/modules/transform`:
-  - `engine/modules/transform.Absolute`
   - `engine/modules/transform.Mat4`
-  - `engine/modules/transform.NewParent`
   - `engine/modules/transform.NewPivotPoint`
   - `engine/modules/transform.NewPos`
   - `engine/modules/transform.NewRotation`
   - `engine/modules/transform.NewSize`
-  - `engine/modules/transform.Parent`
   - `engine/modules/transform.PivotPoint`
   - `engine/modules/transform.Pos`
   - `engine/modules/transform.PosComponent`

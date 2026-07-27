@@ -2,8 +2,8 @@
 package deploy
 
 import (
+	"core/modules/actions"
 	"core/modules/reach"
-	"core/modules/tile"
 	"engine/modules/ecs"
 	"engine/modules/grid"
 	"engine/modules/interactions"
@@ -40,12 +40,12 @@ type Service interface {
 //
 
 type DeployEvent struct {
-	By        tile.FriendlyBuilderObjectStep
-	Blueprint tile.BlueprintStep
-	Coords    tile.CoordsStep
+	By        actions.FriendlyBuilderObjectStep
+	Blueprint actions.BlueprintStep
+	Coords    actions.CoordsStep
 }
 type DestroyEvent struct {
-	Object tile.FriendlyObjectStep
+	Object actions.FriendlyObjectStep
 }
 
 func NewDeployEvent(
@@ -54,15 +54,15 @@ func NewDeployEvent(
 	coords grid.Coords,
 ) DeployEvent {
 	return DeployEvent{
-		interactions.NewStepT[tile.FriendlyBuilderObjectStep](tile.NewObjectInteraction(by)),
-		interactions.NewStepT[tile.BlueprintStep](tile.NewBlueprintInteraction(blueprint)),
-		interactions.NewStepT[tile.CoordsStep](tile.NewCoordsInteraction(coords)),
+		interactions.NewStep(actions.NewObjectInteraction(by)),
+		interactions.NewStep(actions.NewBlueprintInteraction(blueprint)),
+		interactions.NewStep(actions.NewCoordsInteraction(coords)),
 	}
 }
 func NewDestroyEvent(
 	object ecs.EntityID,
 ) DestroyEvent {
 	return DestroyEvent{
-		interactions.NewStepT[tile.ObjectStep](tile.NewObjectInteraction(object)),
+		interactions.NewStep(actions.NewObjectInteraction(object)),
 	}
 }

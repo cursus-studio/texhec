@@ -2,11 +2,11 @@ package deploypkg
 
 import (
 	"core/game"
+	"core/modules/actions"
 	"core/modules/deploy"
 	"core/modules/deploy/internal"
 	"core/modules/reach"
 	reachpkg "core/modules/reach/pkg"
-	"core/modules/tile"
 	"engine/modules/ecs"
 	"engine/modules/entityregistry"
 	"engine/modules/grid"
@@ -23,15 +23,15 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 	pkgs := []ioc.Pkg{
 		reachpkg.PkgT[deploy.Component],
 		interactionspkg.FeaturePkg[deploy.DeployEvent](
-			interactionspkg.NewCopyRelation[tile.CanDeployComponent](
+			interactionspkg.NewCopyRelation[actions.CanDeployComponent](
 				unsafe.Offsetof(deploy.DeployEvent{}.By),
 				unsafe.Offsetof(deploy.DeployEvent{}.Blueprint),
 			),
-			interactionspkg.NewCopyRelation[tile.CoordsCursorComponent](
+			interactionspkg.NewCopyRelation[actions.CoordsCursorComponent](
 				unsafe.Offsetof(deploy.DeployEvent{}.Blueprint),
 				unsafe.Offsetof(deploy.DeployEvent{}.Coords),
 			),
-			interactionspkg.NewCopyRelation[tile.CoordsAnchorComponent](
+			interactionspkg.NewCopyRelation[actions.CoordsAnchorComponent](
 				unsafe.Offsetof(deploy.DeployEvent{}.By),
 				unsafe.Offsetof(deploy.DeployEvent{}.Coords),
 			),

@@ -3,7 +3,6 @@ package tile
 import (
 	"engine/modules/ecs"
 	"engine/modules/grid"
-	"engine/modules/interactions"
 	"engine/modules/transform"
 	"engine/modules/transition"
 	"errors"
@@ -19,9 +18,6 @@ var (
 	ErrInvalidPosition                  error = errors.New("tile:position not found on the grid")
 	ErrInvalidStep                      error = errors.New("tile:invalid step")
 	ErrPositionAndSpeedIsRequiredToStep error = errors.New("tile:to step you need to have speed and position")
-
-	ErrRequiresSpeed  error = errors.New("tile:requires speed")
-	ErrRequiresDeploy error = errors.New("tile:requires deploy")
 )
 
 type ID uint8
@@ -125,87 +121,9 @@ func NewUnloadChunkEvent(coords grid.ChunkCoordsComponent) UnloadChunkEvent {
 
 //
 
-type Service interface {
-	ecs.SystemRegister
-	Renderer() ecs.SystemRegister
-
-	Component() ecs.ComponentArray[Component]
-	Grid() grid.ServiceT[ID]
-	GetTile(ID) (ecs.EntityID, bool)
-
-	Pos() ecs.ComponentArray[PosComponent]
-	Size() ecs.ComponentArray[SizeComponent]
-	Rot() ecs.ComponentArray[RotComponent]
-	Layer() ecs.ComponentArray[LayerComponent]
-
-	CanDeploy() ecs.ComponentArray[CanDeployComponent]
-	CoordsCursor() ecs.ComponentArray[CoordsCursorComponent]
-	CoordsAnchor() ecs.ComponentArray[CoordsAnchorComponent]
-
-	// src images should be:
-	// - 1111
-	// - 1110
-	// - 1010
-	// - 1001
-	// - 0001
-	NewBiomeAsset(srcImages [6][]image.Image) (BiomeAsset, error)
-
-	GetPos(coords grid.Coords) transform.PosComponent
-	// transform 1x1 tile size.
-	// can be used for graphics or collisions.
-	GetTileSize() transform.SizeComponent
-
-	CoordsInteraction() interactions.InteractionService[CoordsInteraction]
-	ObjectInteraction() interactions.InteractionService[ObjectInteraction]
-	BlueprintInteraction() interactions.InteractionService[BlueprintInteraction]
-}
-
-//
-
 type ApplyCoordsEvent interface {
 	ApplyCoords(grid.Coords) any
 }
-
-//
-
-type CanDeployComponent struct {
-	Entity ecs.EntityID
-}
-type CoordsCursorComponent struct {
-	PropertiesEntity ecs.EntityID
-	// if true then entity is used as an image else default icon is used
-	CustomImage bool
-}
-type CoordsAnchorComponent struct {
-	Entity ecs.EntityID
-}
-
-func NewCanDeploy(canDeploy ecs.EntityID) CanDeployComponent {
-	return CanDeployComponent{canDeploy}
-}
-func NewCoordsCursor(propertiesEntity ecs.EntityID, customImage bool) CoordsCursorComponent {
-	return CoordsCursorComponent{propertiesEntity, customImage}
-}
-func NewCoordsAnchor(entity ecs.EntityID) CoordsAnchorComponent {
-	return CoordsAnchorComponent{entity}
-}
-
-type CoordsInteraction struct{ Coords grid.Coords }
-type ObjectInteraction struct{ Entity ecs.EntityID }
-type BlueprintInteraction struct{ Entity ecs.EntityID }
-
-func NewCoordsInteraction(coords grid.Coords) CoordsInteraction  { return CoordsInteraction{coords} }
-func NewObjectInteraction(entity ecs.EntityID) ObjectInteraction { return ObjectInteraction{entity} }
-func NewBlueprintInteraction(entity ecs.EntityID) BlueprintInteraction {
-	return BlueprintInteraction{entity}
-}
-
-type CoordsStep interactions.Step[CoordsInteraction]
-type ObjectStep interactions.Step[ObjectInteraction]
-type FriendlyObjectStep interactions.Step[ObjectInteraction]
-type FriendlyMobileObjectStep interactions.Step[ObjectInteraction]
-type FriendlyBuilderObjectStep interactions.Step[ObjectInteraction]
-type BlueprintStep interactions.Step[BlueprintInteraction]
 
 //
 
@@ -219,4 +137,33 @@ func NewClickBlueprintEvent(deployed ecs.EntityID) ClickBlueprintEvent {
 func (e ClickEntityEvent) ApplyEntity(entity ecs.EntityID) any {
 	e.Entity = entity
 	return e
+}
+
+//
+
+type Service interface {
+	ecs.SystemRegister
+	Renderer() ecs.SystemRegister
+
+	Component() ecs.ComponentArray[Component]
+	Grid() grid.ServiceT[ID]
+	GetTile(ID) (ecs.EntityID, bool)
+
+	Pos() ecs.ComponentArray[PosComponent]
+	Size() ecs.ComponentArray[SizeComponent]
+	Rot() ecs.ComponentArray[RotComponent]
+	Layer() ecs.ComponentArray[LayerComponent]
+
+	// src images should be:
+	// - 1111
+	// - 1110
+	// - 1010
+	// - 1001
+	// - 0001
+	NewBiomeAsset(srcImages [6][]image.Image) (BiomeAsset, error)
+
+	GetPos(coords grid.Coords) transform.PosComponent
+	// transform 1x1 tile size.
+	// can be used for graphics or collisions.
+	GetTileSize() transform.SizeComponent
 }

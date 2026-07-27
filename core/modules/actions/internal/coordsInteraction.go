@@ -1,6 +1,7 @@
-package tileservice
+package internal
 
 import (
+	"core/modules/actions"
 	"core/modules/definitions"
 	"core/modules/obstruction"
 	"core/modules/tile"
@@ -13,7 +14,7 @@ import (
 	"github.com/go-gl/mathgl/mgl32"
 )
 
-func (s *service) CoordsInteraction() interactions.InteractionService[tile.CoordsInteraction] {
+func (s *service) CoordsInteraction() interactions.InteractionService[actions.CoordsInteraction] {
 	return s.CoordsInteractionService
 }
 
@@ -24,7 +25,7 @@ func (s *service) OnTileClick(e grid.ClickEvent) {
 	}
 	coords := s.EngineWorld.Grid().AbsoluteCoords(chunkCoords, e.Coords)
 	propertiesEntity := s.World().NewEntity()
-	s.CoordsInteraction().Save(propertiesEntity, tile.NewCoordsInteraction(coords))
+	s.CoordsInteraction().Save(propertiesEntity, actions.NewCoordsInteraction(coords))
 }
 
 //
