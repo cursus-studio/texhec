@@ -51,7 +51,7 @@ func (s *system) OnTilePosSizeRotUpsert(entity ecs.EntityID) {
 	transformPos := transform.NewPos(
 		s.tileSize.Size.X()*float32(pos.X),
 		s.tileSize.Size.Y()*float32(pos.Y),
-		float32(layer.Z),
+		float32(layer.Z*2),
 	)
 	transformSize := transform.NewSize(
 		s.tileSize.Size[0]*float32(size.X),

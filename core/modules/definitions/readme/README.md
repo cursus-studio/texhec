@@ -8,10 +8,10 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                               3             42              7            329
+Go                               3             42              8            328
 Markdown                         1              1              0              3
 -------------------------------------------------------------------------------
-SUM:                             4             43              7            332
+SUM:                             4             43              8            331
 -------------------------------------------------------------------------------
 ```
 ## TODO
@@ -192,11 +192,9 @@ Type: `core/modules/tile.Coord`
 ### var UnitLayer
 Type: `core/modules/tile.Coord`
 
-### var PathLayer
-Type: `core/modules/tile.Coord`
-
 ### var TilePlaceholderLayer
 Type: `core/modules/tile.Coord`
+PathLayer
 
 ### var RangePlaceholderLayer
 Type: `core/modules/tile.Coord`

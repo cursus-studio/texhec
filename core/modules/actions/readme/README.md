@@ -8,10 +8,10 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                               6             85             13            428
+Go                               6             83             13            416
 Markdown                         1              0              0              1
 -------------------------------------------------------------------------------
-SUM:                             7             85             13            429
+SUM:                             7             83             13            417
 -------------------------------------------------------------------------------
 ```
 ## Types
@@ -219,9 +219,7 @@ Type: `func(entity engine/modules/ecs.EntityID) core/modules/actions.BlueprintIn
   - `core/modules/tile.NewClickBlueprintEvent`
   - `core/modules/tile.NewLayer`
   - `core/modules/tile.NewPos`
-  - `core/modules/tile.NewRot`
   - `core/modules/tile.Pos`
-  - `core/modules/tile.Rot`
   - `core/modules/tile.Size`
 
 `engine/modules/ecs`:
@@ -267,7 +265,11 @@ Type: `func(entity engine/modules/ecs.EntityID) core/modules/actions.BlueprintIn
 `engine/modules/transform`:
   - `engine/modules/transform.Absolute`
   - `engine/modules/transform.NewParent`
+  - `engine/modules/transform.NewPos`
   - `engine/modules/transform.Parent`
+  - `engine/modules/transform.Pos`
+  - `engine/modules/transform.RelativePos`
+  - `engine/modules/transform.RelativeSizeXY`
 
 `engine/modules/typeregistry/pkg`:
   - `engine/modules/typeregistry/pkg.PkgT`
