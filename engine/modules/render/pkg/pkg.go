@@ -1,0 +1,134 @@
+package renderpkg
+
+import (
+	"bytes"
+	"engine"
+	"engine/modules/assets"
+	"engine/modules/graphics"
+	"engine/modules/render"
+	"engine/modules/render/internal/service"
+	typeregistrypkg "engine/modules/typeregistry/pkg"
+	"image"
+	"image/gif"
+	_ "image/jpeg"
+	_ "image/png"
+	"os"
+	"strings"
+	"unsafe"
+
+	"github.com/go-gl/gl/v4.5-core/gl"
+	"github.com/ogiusek/ioc/v2"
+)
+
+var Pkg = ioc.NewPkg(func(b ioc.Builder) {
+	pkgs := []ioc.Pkg{
+		typeregistrypkg.PkgT[render.MeshComponent],
+		typeregistrypkg.PkgT[render.TextureComponent],
+		typeregistrypkg.PkgT[render.TextureFrameComponent],
+		typeregistrypkg.PkgT[render.ColorComponent],
+	}
+	for _, pkg := range pkgs {
+		pkg(b)
+	}
+
+	ioc.Register(b, func(c ioc.Dic) graphics.VBOFactory[render.Vertex] {
+		return func() graphics.VBOSetter[render.Vertex] {
+			vbo := graphics.NewVBO[render.Vertex](func() {
+				gl.VertexAttribPointerWithOffset(0, 3, gl.FLOAT, false,
+					int32(unsafe.Sizeof(render.Vertex{})), uintptr(unsafe.Offsetof(render.Vertex{}.Pos)))
+				gl.EnableVertexAttribArray(0)
+
+				gl.VertexAttribPointerWithOffset(1, 2, gl.FLOAT, false,
+					int32(unsafe.Sizeof(render.Vertex{})), uintptr(unsafe.Offsetof(render.Vertex{}.TexturePos)))
+				gl.EnableVertexAttribArray(1)
+			})
+			return vbo
+		}
+	})
+
+	ioc.Register(b, func(c ioc.Dic) render.Service {
+		return service.NewService(c)
+	})
+
+	ioc.Wrap(b, func(c ioc.Dic, b assets.Service) {
+		world := ioc.Get[engine.EngineWorld](c)
+		imageHandler := func(id assets.PathComponent) (assets.Asset, error) {
+			source, err := os.ReadFile(id.Path)
+			if err != nil {
+				return nil, err
+			}
+			imgFile := bytes.NewBuffer(source)
+			img, _, err := image.Decode(imgFile)
+			if err != nil {
+				return nil, err
+			}
+
+			img = world.Graphics().NewImage(img).FlipV().Image()
+			return render.NewTextureAsset(img)
+		}
+		trimImageHandler := func(id assets.PathComponent) (assets.Asset, error) {
+			source, err := os.ReadFile(strings.TrimSuffix(id.Path, "-trim"))
+			if err != nil {
+				return nil, err
+			}
+			imgFile := bytes.NewBuffer(source)
+			img, _, err := image.Decode(imgFile)
+			if err != nil {
+				return nil, err
+			}
+
+			img = world.Graphics().NewImage(img).FlipV().TrimTransparentBackground().Image()
+			return render.NewTextureAsset(img)
+		}
+		b.Register("png", imageHandler)
+		b.Register("jpg", imageHandler)
+		b.Register("jpeg", imageHandler)
+
+		b.Register("png-trim", trimImageHandler)
+		b.Register("jpg-trim", trimImageHandler)
+		b.Register("jpeg-trim", trimImageHandler)
+
+		gifHandler := func(id assets.PathComponent) (assets.Asset, error) {
+			source, err := os.ReadFile(id.Path)
+			if err != nil {
+				return nil, err
+			}
+			imgFile := bytes.NewBuffer(source)
+			gif, err := gif.DecodeAll(imgFile)
+			if err != nil {
+				return nil, err
+			}
+
+			images := make([]image.Image, 0, len(gif.Image))
+			for _, img := range gif.Image {
+				finalImg := world.Graphics().NewImage(img).FlipV().Image()
+				images = append(images, finalImg)
+			}
+
+			return render.NewTextureAsset(images...)
+		}
+
+		gifTrimHandler := func(id assets.PathComponent) (assets.Asset, error) {
+			source, err := os.ReadFile(strings.TrimSuffix(id.Path, "-trim"))
+			if err != nil {
+				return nil, err
+			}
+			imgFile := bytes.NewBuffer(source)
+			gif, err := gif.DecodeAll(imgFile)
+			if err != nil {
+				return nil, err
+			}
+
+			images := make([]image.Image, 0, len(gif.Image))
+			for _, img := range gif.Image {
+				finalImg := world.Graphics().NewImage(img).FlipV().TrimTransparentBackground().Image()
+				images = append(images, finalImg)
+			}
+
+			return render.NewTextureAsset(images...)
+		}
+
+		b.Register("gif", gifHandler)
+		b.Register("gif-trim", gifTrimHandler)
+	})
+})

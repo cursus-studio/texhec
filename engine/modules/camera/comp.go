@@ -1,0 +1,67 @@
+package camera
+
+import (
+	"reflect"
+
+	"github.com/go-gl/mathgl/mgl32"
+)
+
+type Component struct {
+	Projection reflect.Type
+}
+
+func NewCamera[Projection any]() Component {
+	return Component{reflect.TypeFor[Projection]()}
+}
+
+//
+
+type PriorityComponent struct {
+	// biggest camera is uppermost
+	Priority int
+}
+
+func NewPriority(priority int) PriorityComponent {
+	return PriorityComponent{priority}
+}
+
+//
+
+// component specifying that camera can be freely moved on map
+type MobileCameraComponent struct{}
+
+func NewMobileCamera() MobileCameraComponent { return MobileCameraComponent{} }
+
+//
+
+type CameraLimitsComponent struct {
+	MinZoom, MaxZoom float32
+	Min, Max         mgl32.Vec3
+}
+
+func NewCameraLimits(minZ, maxZ float32, min, max mgl32.Vec3) CameraLimitsComponent {
+	return CameraLimitsComponent{minZ, maxZ, min, max}
+}
+
+//
+
+type ViewportComponent struct{ X, Y, W, H int32 }
+type NormalizedViewportComponent struct{ X, Y, W, H float32 }
+
+func NewViewport(x, y, w, h int32) ViewportComponent {
+	return ViewportComponent{x, y, w, h}
+}
+func NewNormalizedViewport(x, y, w, h float32) NormalizedViewportComponent {
+	return NormalizedViewportComponent{x, y, w, h}
+}
+
+func (c *ViewportComponent) Viewport() (x, y, w, h int32) { return c.X, c.Y, c.W, c.H }
+func (c *NormalizedViewportComponent) Viewport(fullW, fullH int32) (rx, ry, rw, rh int32) { // r is from result
+	x := float32(fullW) * c.X
+	y := float32(fullH) * c.Y
+	w := float32(fullW) * c.W
+	h := float32(fullH) * c.H
+	return int32(x), int32(y), int32(w), int32(h)
+}
+
+//

@@ -1,43 +1,120 @@
 package main
 
 import (
-	_ "embed"
+	"core/game"
+	"core/modules/definitions"
+	"engine/modules/ecs"
+	"engine/modules/inputs"
+	"engine/modules/loop"
+	"engine/modules/scene"
+	"errors"
+	"fmt"
 	"os"
+	"path/filepath"
 	"runtime"
-	appruntime "shared/services/runtime"
+	"runtime/pprof"
 
-	"github.com/go-gl/gl/v4.5-core/gl"
+	"github.com/ogiusek/events"
 	"github.com/ogiusek/ioc/v2"
+	"github.com/veandco/go-sdl2/sdl"
 )
 
+// golangci-lint run --fix
 func main() {
-	print("started\n")
+	print("started main\n")
 
-	runtime.LockOSThread()
-
-	isServer := false
-	for _, arg := range os.Args {
-		if arg == "server" {
-			isServer = true
-			break
+	{ // go tool pprof -http=:8080 ignore.cpu.pprof
+		name := ""
+		if len(os.Args) > 1 {
+			name = os.Args[1]
 		}
+		f, err := os.Create(filepath.Base(fmt.Sprintf("ignore.cpu.pprof%v", name)))
+		if err != nil {
+			panic(err)
+		}
+		if err := pprof.StartCPUProfile(f); err != nil {
+			panic(err)
+		}
+		defer pprof.StopCPUProfile()
 	}
 
-	sharedPkg := SharedPackage()
+	c := getDic()
+	world := ioc.Get[game.GameWorld](c)
 
-	backendC := backendDic(sharedPkg)
-	if isServer {
-		backendRuntime := ioc.Get[appruntime.Runtime](backendC)
-		backendRuntime.Run()
-		return
-	}
+	// before start
+	events.GlobalErrHandler(world.EventsBuilder(), func(err error) {
+		world.Logger().Log(err)
+	})
 
-	c := frontendDic(
-		backendC,
-		sharedPkg,
+	temporaryInlineSystems := ecs.NewSystemRegister(func() error {
+		events.Listen(world.EventsBuilder(), func(e inputs.KeyboardEvent) {
+			if e.Keysym.Sym == sdl.K_q {
+				world.Logger().Info(errors.New("quiting program due to pressing 'Q'"))
+				events.Emit(world.Events(), loop.NewStopEvent())
+			}
+			if e.Keysym.Sym == sdl.K_ESCAPE {
+				world.Logger().Info(errors.New("quiting program due to pressing 'ESC'"))
+				events.Emit(world.Events(), loop.NewStopEvent())
+			}
+			if e.State == sdl.PRESSED && e.Keysym.Sym == sdl.K_f {
+				world.Logger().Info(errors.New("toggling screen size due to pressing 'F'"))
+				flags := world.Window().Window().GetFlags()
+				if flags&sdl.WINDOW_FULLSCREEN_DESKTOP == sdl.WINDOW_FULLSCREEN_DESKTOP {
+					_ = world.Window().Window().SetFullscreen(0)
+				} else {
+					_ = world.Window().Window().SetFullscreen(sdl.WINDOW_FULLSCREEN_DESKTOP)
+				}
+			}
+		})
+
+		return nil
+	})
+
+	errs := ecs.RegisterSystems(
+		world.NetSync().Start(),
+		world.Smooth().Start(),
+		// update {
+		world.Connection(),
+
+		// inputs
+		world.Inputs(),
+		world.Audio(),
+
+		// update
+		world.Camera(),
+		world.Drag(),
+		world.Transition(),
+		temporaryInlineSystems,
+
+		world.Generation(),
+		world.Tile(),
+		world.Obstruction(),
+		world.Pathfind(),
+
+		// ui update
+		world.Ui(),
+		world.Settings(),
+		// world.Loading(),
+		world.Batcher(),
+		// } (update)
+
+		world.Smooth().Stop(),
+		world.NetSync().Stop(),
+
+		// render
+		world.Render(),
+		world.Tile().Renderer(),
+		world.Render().Renderer(),
+		world.Text().Renderer(),
+		world.FpsLogger(),
 	)
+	for _, err := range errs {
+		world.Logger().Log(err)
+	}
 
-	gl.ClearColor(0.2, 0.3, 0.3, 1.0)
-	frontendRuntime := ioc.Get[appruntime.Runtime](c)
-	frontendRuntime.Run()
+	events.Emit(world.Events(), scene.NewChangeSceneEvent(definitions.GameID))
+
+	world.Logger().Info(errors.New("initialized engine"))
+	runtime.LockOSThread()
+	world.Loop().Run(loop.NewConfigureEvent(60, 1))
 }

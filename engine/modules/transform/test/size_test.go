@@ -1,0 +1,22 @@
+package test
+
+import (
+	"engine/modules/transform"
+	"testing"
+
+	"github.com/go-gl/mathgl/mgl32"
+)
+
+func TestSize(t *testing.T) {
+	setup := NewSetup()
+	entity := setup.NewEntity()
+
+	setup.transform.Size().Set(entity, transform.NewSize(10, 10, 10))
+	setup.expectAbsoluteSize(t, entity, transform.NewSize(10, 10, 10))
+
+	setup.transform.Size().Set(entity, transform.NewSize(15, 15, 15))
+	setup.expectAbsoluteSize(t, entity, transform.NewSize(15, 15, 15))
+
+	setup.transform.AbsoluteSize().Set(entity, transform.AbsoluteSizeComponent{Size: mgl32.Vec3{5, 5, 5}})
+	setup.expectAbsoluteSize(t, entity, transform.NewSize(5, 5, 5))
+}

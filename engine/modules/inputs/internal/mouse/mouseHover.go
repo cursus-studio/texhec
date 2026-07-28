@@ -1,0 +1,76 @@
+package mouse
+
+import (
+	"engine"
+	"engine/modules/ecs"
+	"engine/modules/inputs"
+	"engine/modules/inputs/internal"
+	"slices"
+
+	"github.com/ogiusek/events"
+	"github.com/ogiusek/ioc/v2"
+)
+
+type hoverSystem struct {
+	engine.EngineWorld `inject:""`
+	targets            []inputs.Target
+}
+
+func NewHoverSystem(c ioc.Dic) ecs.SystemRegister {
+	return ecs.NewSystemRegister(func() error {
+		s := ioc.GetServices[*hoverSystem](c)
+		s.targets = nil
+
+		events.Listen(s.EventsBuilder(), s.Listen)
+		return nil
+	})
+}
+
+func (s *hoverSystem) handleMouseLeave(entity ecs.EntityID) {
+	s.Inputs().Hovered().Remove(entity)
+
+	mouseLeave, ok := s.Inputs().MouseLeave().Get(entity)
+	if !ok {
+		return
+	}
+	if event, ok := mouseLeave.Event.(ecs.ApplyEntityEvent); ok {
+		mouseLeave.Event = event.ApplyEntity(entity)
+	}
+	events.EmitAny(s.Events(), mouseLeave.Event)
+}
+
+func (s *hoverSystem) Listen(event internal.RayChangedTargetEvent) {
+	left := []inputs.Target{}
+	entered := []inputs.Target{}
+
+	for _, prevTarget := range s.targets {
+		if slices.Contains(event.Targets, prevTarget) {
+			continue
+		}
+		left = append(left, prevTarget)
+	}
+	for _, target := range event.Targets {
+		if slices.Contains(s.targets, target) {
+			continue
+		}
+		entered = append(entered, target)
+	}
+
+	for _, target := range left {
+		s.handleMouseLeave(target.Entity)
+	}
+
+	for _, target := range entered {
+		s.Inputs().Hovered().Set(target.Entity, inputs.HoveredComponent{Camera: target.Camera})
+		mouseEnter, ok := s.Inputs().MouseEnter().Get(target.Entity)
+		if !ok {
+			continue
+		}
+		if e, ok := mouseEnter.Event.(ecs.ApplyEntityEvent); ok {
+			mouseEnter.Event = e.ApplyEntity(target.Entity)
+		}
+		events.EmitAny(s.Events(), mouseEnter.Event)
+	}
+	s.targets = event.Targets
+
+}

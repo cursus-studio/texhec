@@ -1,0 +1,53 @@
+package texturearray
+
+import (
+	"engine/modules/datastructures"
+	"fmt"
+	"image"
+	"image/draw"
+	"math"
+
+	"github.com/go-gl/gl/v4.5-core/gl"
+)
+
+func createTexs(w, h int, imgs datastructures.SparseArray[uint32, image.Image]) (uint32, error) {
+	if w <= 0 || h <= 0 || w > math.MaxInt32 || h > math.MaxInt32 {
+		return 0, fmt.Errorf("invalid image dimensions for OpenGL: %dx%d", w, h)
+
+	}
+	var texs uint32
+
+	gl.GenTextures(1, &texs)
+	gl.ActiveTexture(gl.TEXTURE0)
+	gl.BindTexture(gl.TEXTURE_2D_ARRAY, texs)
+	indices := imgs.GetIndices()
+	var maxIndex uint32
+	for _, index := range indices {
+		if index > maxIndex {
+			maxIndex = index
+		}
+	}
+	size := maxIndex + 1
+	gl.TexStorage3D(gl.TEXTURE_2D_ARRAY, 1, gl.RGBA8, int32(w), int32(h), int32(size))
+
+	for _, i := range imgs.GetIndices() {
+		img, _ := imgs.Get(i)
+		rgbaImg, ok := img.(*image.RGBA)
+		if !ok {
+			rgbaImg = image.NewRGBA(img.Bounds())
+			draw.Draw(rgbaImg, rgbaImg.Bounds(), img, image.Point{}, draw.Src)
+		}
+
+		// here nosec can be used because int32 and uint32 has the same amount of bytes under the hood
+		// #nosec G115
+		gl.TexSubImage3D(gl.TEXTURE_2D_ARRAY, 0, 0, 0, int32(i), int32(w), int32(h), 1, gl.RGBA, gl.UNSIGNED_BYTE, gl.Ptr(rgbaImg.Pix))
+	}
+
+	gl.TexParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_MIN_FILTER, gl.LINEAR)
+	gl.TexParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_MAG_FILTER, gl.LINEAR)
+	gl.TexParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_WRAP_S, gl.REPEAT)
+	gl.TexParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_WRAP_T, gl.REPEAT)
+	gl.BindTexture(gl.TEXTURE_2D_ARRAY, 0)
+
+	return texs, nil
+}

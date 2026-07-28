@@ -1,0 +1,102 @@
+package enginepkg
+
+import (
+	"engine"
+	assetspkg "engine/modules/assets/pkg"
+	audiopkg "engine/modules/audio/pkg"
+	batcherpkg "engine/modules/batcher/pkg"
+	camerapkg "engine/modules/camera/pkg"
+	clockpkg "engine/modules/clock/pkg"
+	codecpkg "engine/modules/codec/pkg"
+	colliderpkg "engine/modules/collider/pkg"
+	connectionpkg "engine/modules/connection/pkg"
+	consolepkg "engine/modules/console/pkg"
+	dragpkg "engine/modules/drag/pkg"
+	ecspkg "engine/modules/ecs/pkg"
+	entityregistrypkg "engine/modules/entityregistry/pkg"
+	focuspkg "engine/modules/focus/pkg"
+	graphicspkg "engine/modules/graphics/pkg"
+	gridpkg "engine/modules/grid/pkg"
+	groupspkg "engine/modules/groups/pkg"
+	hierarchypkg "engine/modules/hierarchy/pkg"
+	inputspkg "engine/modules/inputs/pkg"
+	interactionspkg "engine/modules/interactions/pkg"
+	layoutpkg "engine/modules/layout/pkg"
+	loggerpkg "engine/modules/logger/pkg"
+	looppkg "engine/modules/loop/pkg"
+	metadatapkg "engine/modules/metadata/pkg"
+	netsyncpkg "engine/modules/netsync/pkg"
+	noisepkg "engine/modules/noise/pkg"
+	prototypepkg "engine/modules/prototype/pkg"
+	recordpkg "engine/modules/record/pkg"
+	renderpkg "engine/modules/render/pkg"
+	scenepkg "engine/modules/scene/pkg"
+	seedpkg "engine/modules/seed/pkg"
+	smoothpkg "engine/modules/smooth/pkg"
+	textpkg "engine/modules/text/pkg"
+	transformpkg "engine/modules/transform/pkg"
+	transitionpkg "engine/modules/transition/pkg"
+	uuidpkg "engine/modules/uuid/pkg"
+	warmuppkg "engine/modules/warmup/pkg"
+	windowpkg "engine/modules/window/pkg"
+
+	"github.com/ogiusek/events"
+	"github.com/ogiusek/ioc/v2"
+)
+
+var Pkg = ioc.NewPkg(func(b ioc.Builder) {
+	pkgs := []ioc.Pkg{
+		assetspkg.Pkg,
+		audiopkg.Pkg,
+		batcherpkg.Pkg,
+		camerapkg.Pkg,
+		clockpkg.Pkg,
+		codecpkg.Pkg,
+		colliderpkg.Pkg,
+		connectionpkg.Pkg,
+		consolepkg.Pkg,
+		dragpkg.Pkg,
+		ecspkg.Pkg,
+		entityregistrypkg.Pkg,
+		focuspkg.Pkg,
+		graphicspkg.Pkg,
+		gridpkg.Pkg,
+		groupspkg.Pkg,
+		interactionspkg.Pkg,
+		hierarchypkg.Pkg,
+		inputspkg.Pkg,
+		layoutpkg.Pkg,
+		loggerpkg.Pkg,
+		looppkg.Pkg,
+		metadatapkg.Pkg,
+		netsyncpkg.Pkg,
+		noisepkg.Pkg,
+		prototypepkg.Pkg,
+		recordpkg.Pkg,
+		renderpkg.Pkg,
+		scenepkg.Pkg,
+		seedpkg.Pkg,
+		smoothpkg.Pkg,
+		textpkg.Pkg,
+		transformpkg.Pkg,
+		transitionpkg.Pkg,
+		uuidpkg.Pkg,
+		warmuppkg.Pkg,
+		windowpkg.Pkg,
+
+		func(b ioc.Builder) {
+			ioc.Register(b, func(c ioc.Dic) events.Builder {
+				return events.NewBuilder()
+			})
+			ioc.Register(b, func(c ioc.Dic) events.Events {
+				return ioc.Get[events.Builder](c).Build()
+			})
+			ioc.Register(b, func(c ioc.Dic) engine.EngineWorld {
+				return ioc.GetServices[engine.EngineWorld](c)
+			})
+		},
+	}
+	for _, pkg := range pkgs {
+		pkg(b)
+	}
+})

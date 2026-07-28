@@ -1,0 +1,57 @@
+package onetokey
+
+import (
+	"engine/modules/datastructures"
+	"engine/modules/ecs"
+	"engine/modules/relation"
+)
+
+type spatialRelation[IndexType any] struct {
+	world    ecs.World
+	dirtySet ecs.DirtySet
+
+	entities datastructures.SparseArray[ecs.EntityID, uint32]
+	indices  datastructures.SparseArray[uint32, ecs.EntityID]
+
+	componentIndex func(ecs.EntityID) (IndexType, bool)
+	indexNumber    func(IndexType) uint32
+}
+
+func NewSpatialIndex[IndexType any](
+	w ecs.World,
+	dirtySet func(ecs.World) ecs.DirtySet,
+	componentIndex func(ecs.EntityID) (IndexType, bool),
+	indexNumber func(IndexType) uint32,
+) relation.Service[IndexType] {
+	indexGlobal := &spatialRelation[IndexType]{
+		world:    w,
+		dirtySet: dirtySet(w),
+
+		entities: datastructures.NewSparseArray[ecs.EntityID, uint32](),
+		indices:  datastructures.NewSparseArray[uint32, ecs.EntityID](),
+
+		componentIndex: componentIndex,
+		indexNumber:    indexNumber,
+	}
+
+	return indexGlobal
+}
+
+func (i *spatialRelation[IndexType]) Get(index IndexType) (ecs.EntityID, bool) {
+	for _, entity := range i.dirtySet.Get() {
+		indexType, ok := i.componentIndex(entity)
+		if !ok {
+			if number, ok := i.entities.Get(entity); ok {
+				i.entities.Remove(entity)
+				i.indices.Remove(number)
+			}
+			continue
+		}
+		number := i.indexNumber(indexType)
+		i.entities.Set(entity, number)
+		i.indices.Set(number, entity)
+	}
+
+	number := i.indexNumber(index)
+	return i.indices.Get(number)
+}

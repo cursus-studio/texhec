@@ -1,0 +1,82 @@
+pipeline {
+    agent any
+
+    triggers {
+        githubPush()
+    }
+    options {
+        buildDiscarder(logRotator(numToKeepStr: '20', artifactNumToKeepStr: '20'))
+        preserveStashes(buildCount: 5)
+        disableConcurrentBuilds(abortPrevious: true)
+        overrideIndexTriggers(false)
+    }
+    environment {
+        CONTEXT = 'jenkins/cicd'
+        OWNER = 'cursus-studio'
+        REPO = 'texhec'
+    }
+
+    stages {
+        stage('Setup') {
+            steps {
+                updateGitHubStatus('pending', 'Started...')
+                checkout scm
+            }
+        }
+
+        stage('Containerized Execution') {
+            agent {
+                dockerfile {
+                    filename 'Dockerfile'
+                    dir 'cicd'
+                    args '-v /home/jenkins/go-cache:/root/.cache/go-build -v /home/jenkins/golangci-lint:/root/.cache/golangci-lint'
+                    additionalBuildArgs '--build-arg CACHE_VERSION=1.0.0'
+                }
+            }
+            stages {
+                stage('Verify Env') {
+                    steps {
+                        sh 'go version'
+                        sh 'golangci-lint --version'
+                    }
+                }
+                stage('Verify') {
+                    steps {
+                        script{
+                            withCredentials([usernamePassword(credentialsId: 'texhec-app', passwordVariable: 'TOKEN', usernameVariable: 'USER')]) {
+                                sh "go run cicd cloud ${env.GIT_PREVIOUS_SUCCESSFUL_COMMIT}"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    post {
+        success {
+            updateGitHubStatus('success', 'Success!')
+        }
+        failure {
+            updateGitHubStatus('failure', "Build failed at stage: \\\"${env.LAST_STATUS_DESC}\\\"")
+        }
+        aborted {
+            updateGitHubStatus('error', 'Build was aborted.')
+        }
+    }
+}
+
+
+def updateGitHubStatus(String state, String desc) {
+    env.LAST_STATUS_DESC = desc
+    withCredentials([usernamePassword(credentialsId: 'texhec-app', passwordVariable: 'TOKEN', usernameVariable: 'USER')]) {
+        sh """
+            curl -L \
+                -X POST \
+                -H "Accept: application/vnd.github+json" \
+                -H "Authorization: Bearer \$TOKEN" \
+                -H "X-GitHub-Api-Version: 2026-03-10" \
+                https://api.github.com/repos/${env.OWNER}/${env.REPO}/statuses/${env.GIT_COMMIT} \
+                -d '{"state":"${state}","target_url":"${env.BUILD_URL}","description":"${desc}","context":"${env.CONTEXT}"}'
+        """
+    }
+}

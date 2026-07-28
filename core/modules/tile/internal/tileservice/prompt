@@ -1,0 +1,252 @@
+```go
+// func (s *service) OnTileHover(e grid.HoverEvent) {
+//     featureEntity := s.Interactions().FeatureEntity()
+//     if _, ok := s.CoordsInteractionService.IsMissing().Get(featureEntity); !ok {
+//         return
+//     }
+//
+//     chunkCoords, ok := s.EngineWorld.Grid().Coords().Get(e.Chunk)
+//     if !ok {
+//         return
+//     }
+//     coords := s.EngineWorld.Grid().AbsoluteCoords(chunkCoords, e.Coords)
+//     interaction := interactions.NewState(tile.CoordsInteraction{Coords: coords})
+//
+//     s.CoordsInteractionService.State().Set(featureEntity, interaction)
+// }
+
+// on interactions.CoordsInteraction mod
+// func (s *service) OnCoordsInteractionUpsert(entity ecs.EntityID) {
+//     worldEntity, ok := s.Seed().WorldSeed()
+//     if !ok {
+//         return
+//     }
+//
+//     placeholders := s.CoordsInteractionService.StepPreview().GetEntities()
+//     if len(placeholders) > 1 {
+//         for _, entity := range s.CoordsInteractionService.StepPreview().GetEntities()[1:] {
+//             s.World().RemoveEntity(entity)
+//         }
+//     }
+//     featureEntity := s.Interactions().FeatureEntity()
+//     coordsCursor, ok := s.coordsCursor.Get(featureEntity)
+//     if !ok {
+//         return
+//     }
+//     coords, ok := s.CoordsInteractionService.State().Get(featureEntity)
+//     if !ok {
+//         return
+//     }
+//
+//     var placeholderEntity ecs.EntityID
+//     if len(placeholders) == 0 {
+//         placeholderEntity = s.World().NewEntity()
+//     } else {
+//         placeholderEntity = placeholders[0]
+//     }
+//     s.Prototype().CloneTo(coordsCursor.PropertiesEntity, placeholderEntity)
+//     s.Obstruction().Deployed().Remove(placeholderEntity)
+//     s.Collider().Component().Remove(placeholderEntity)
+//
+//     s.Hierarchy().SetParent(placeholderEntity, worldEntity)
+//     s.CoordsInteractionService.StepPreview().Set(placeholderEntity, interactions.StepPreviewComponent[tile.CoordsInteraction]{})
+//     s.Tile().Layer().Set(placeholderEntity, tile.NewLayer(definitions.ObjectPlaceholderLayer))
+//
+//     pos := tile.NewPos(coords.State.Coords.Coords())
+//     s.Tile().Pos().Set(placeholderEntity, pos)
+//
+//     if !coordsCursor.CustomImage {
+//         s.Render().Texture().Set(placeholderEntity, render.NewTexture(s.Definitions().Hud().Selected))
+//         // set image to default
+//     }
+//
+//     //
+//
+//     canDeploy := true
+//     for _, child := range s.Hierarchy().Children(placeholderEntity).GetIndices() {
+//         s.World().RemoveEntity(child)
+//     }
+//
+//     // range
+//
+//     if coordsCursorRange, ok := s.coordsCursorRange.Get(featureEntity); ok && coordsCursorRange.Entity != 0 {
+//         for _, coords := range s.GameWorld.Deploy().Reach().TilesWithinReach(coordsCursorRange.Entity) {
+//             entity := s.Prototype().Clone(s.Definitions().Assets().Blank)
+//             s.Hierarchy().SetParent(entity, placeholderEntity)
+//             s.Transform().Parent().Set(entity, transform.NewParent(transform.Absolute))
+//
+//             s.Render().Mesh().Set(entity, render.NewMesh(s.Definitions().Assets().SquareMesh))
+//             s.Render().Texture().Set(entity, render.NewTexture(s.Definitions().Assets().Border))
+//             s.Groups().InheritGroups(entity)
+//
+//             s.Tile().Layer().Set(entity, tile.NewLayer(definitions.RangePlaceholderLayer))
+//             s.Tile().Pos().Set(entity, tile.NewPos(coords.Coords()))
+//             s.Render().Color().Set(entity, render.NewColor(mgl32.Vec4{0, 0, .5, 1}))
+//         }
+//
+//         if !s.GameWorld.Deploy().Reach().Reaches(coordsCursorRange.Entity, placeholderEntity) {
+//             canDeploy = false
+//         }
+//     }
+//
+//     // collisions
+//     blueprintObstruction, _ := s.Obstruction().Component().Get(coordsCursor.PropertiesEntity)
+//     size, _ := s.Tile().Size().Get(coordsCursor.PropertiesEntity)
+//     aabb := obstruction.NewAABB(pos, size)
+//     collisions := s.Obstruction().Collisions(aabb, blueprintObstruction.Obstruction)
+//     for _, collision := range collisions {
+//         entity := s.Prototype().Clone(s.Definitions().Assets().Blank)
+//         s.Hierarchy().SetParent(entity, placeholderEntity)
+//         s.Transform().Parent().Set(entity, transform.NewParent(transform.Absolute))
+//
+//         s.Tile().Layer().Set(entity, tile.NewLayer(definitions.TilePlaceholderLayer))
+//         s.Render().Mesh().Set(entity, render.NewMesh(s.Definitions().Assets().SquareMesh))
+//         s.Render().Texture().Set(entity, render.NewTexture(s.Definitions().Assets().Blank))
+//         s.Groups().InheritGroups(entity)
+//
+//         s.Tile().Layer().Set(entity, tile.NewLayer(definitions.TilePlaceholderLayer))
+//         s.Tile().Pos().Set(entity, tile.NewPos(collision.Coords()))
+//         s.Render().Color().Set(entity, render.NewColor(mgl32.Vec4{1, 0, 0, 1}))
+//     }
+//     if len(collisions) != 0 {
+//         canDeploy = false
+//         goto showCanDeploy
+//     }
+//
+// showCanDeploy:
+//
+//     if canDeploy {
+//         s.Render().Color().Set(placeholderEntity, render.NewColor(mgl32.Vec4{0, 1, 0, 1}))
+//         return
+//     }
+//     s.Render().Color().Set(placeholderEntity, render.NewColor(mgl32.Vec4{1, 0, 0, 1}))
+// }
+```
+
+```go
+// func (s *service) OnObjectInteractionUpsert(ecs.EntityID) {
+//     worldEntity, ok := s.Seed().WorldSeed()
+//     if !ok {
+//         return
+//     }
+//
+//     placeholders := s.ObjectInteractionService.StepPreview().GetEntities()
+//     if len(placeholders) > 1 {
+//         for _, entity := range s.CoordsInteractionService.StepPreview().GetEntities()[1:] {
+//             s.World().RemoveEntity(entity)
+//         }
+//     }
+//     featureEntity := s.Interactions().FeatureEntity()
+//     object, ok := s.ObjectInteractionService.State().Get(featureEntity)
+//     if !ok {
+//         return
+//     }
+//
+//     var placeholderEntity ecs.EntityID
+//     if len(placeholders) == 0 {
+//         placeholderEntity = s.World().NewEntity()
+//     } else {
+//         placeholderEntity = placeholders[0]
+//     }
+//     s.Hierarchy().SetParent(placeholderEntity, worldEntity)
+//
+//     if pos, ok := s.Tile().Pos().Get(object.State.Entity); ok {
+//         s.Tile().Pos().Set(placeholderEntity, pos)
+//     }
+//     s.Tile().Rot().Set(placeholderEntity, tile.NewRot(0))
+//     if size, ok := s.Tile().Size().Get(object.State.Entity); ok {
+//         s.Tile().Size().Set(placeholderEntity, size)
+//     }
+//     s.Transform().Parent().Set(placeholderEntity, transform.NewParent(transform.Absolute))
+//     s.Tile().Layer().Set(placeholderEntity, tile.NewLayer(definitions.ObjectSelectionPlaceholderLayer))
+//
+//     s.Render().Mesh().Set(placeholderEntity, render.NewMesh(s.Definitions().Assets().SquareMesh))
+//     s.Render().Texture().Set(placeholderEntity, render.NewTexture(s.Definitions().Hud().Can))
+//     s.Groups().InheritGroups(placeholderEntity)
+//
+//     s.Obstruction().Deployed().Remove(placeholderEntity)
+//     s.Collider().Component().Remove(placeholderEntity)
+//
+//     s.ObjectInteractionService.StepPreview().Set(placeholderEntity, interactions.StepPreviewComponent[tile.ObjectInteraction]{})
+// }
+```
+
+This is how things could be done in previous framework.
+But now framework completely changed.
+
+Now:
+- entity passed in missing preview has only one component (statePreview or missingPreview component) so it can be attached using hierarchy to anything
+- there are multiple interaction entities so code has directly refer to entity passed in method
+
+Current placeholders: ```go
+// show preview B
+func (s *service) OnObjectStateUpsert(entity ecs.EntityID) {
+    // draw circle around object
+}
+```
+
+```go
+// update preview A
+func (s *service) OnTileHover(e grid.HoverEvent) {
+    entities := s.CoordsInteraction().MissingPreview().GetEntities()
+    if len(entities) != 1 {
+        return
+    }
+    previewEntity := entities[0]
+
+    // add to entity:
+    // - can object be drawn and signilize it with for e.g. squares below
+    // - change its coordinates
+}
+
+// upsert preview A
+func (s *service) OnCoordsMissingUpsert(entity ecs.EntityID) {
+    // add properties to entity to be ready to draw for onTileHover on modification
+}
+
+// upsert preview B
+func (s *service) OnCoordsStateUpsert(entity ecs.EntityID) {
+    // draw circle/object on coordinates
+}
+```
+
+You may use these methods to determine certain things (they may be attached to entity to narrow selection rules): ```go
+    CanDeploy() ecs.ComponentArray[CanDeployComponent]
+    CoordsAnchor() ecs.ComponentArray[CoordsAnchorComponent]
+    CoordsCursor() ecs.ComponentArray[CoordsCursorComponent]
+    CoordsCursorRange() ecs.ComponentArray[CoordsCursorRangeComponent]
+...
+    CoordsInteraction() interactions.InteractionService[CoordsInteraction]
+    ObjectInteraction() interactions.InteractionService[ObjectInteraction]
+    BlueprintInteraction() interactions.InteractionService[BlueprintInteraction]
+```
+
+for context: ```go
+type CanDeployComponent struct {
+    Entity ecs.EntityID
+}
+type CoordsAnchorComponent struct {
+    Coords grid.Coords
+}
+type CoordsCursorComponent struct {
+    PropertiesEntity ecs.EntityID
+    // if true then entity is used as an image else default icon is used
+    CustomImage bool
+}
+type CoordsCursorRangeComponent struct {
+    Entity ecs.EntityID
+}
+```
+
+```go
+type StatePreviewComponent[State any] struct{ State State }
+type MissingPreviewComponent[State any] struct{}
+...
+type InteractionService[State any] interface {
+    StatePreview() ecs.ComponentArray[StatePreviewComponent[State]]
+    MissingPreview() ecs.ComponentArray[MissingPreviewComponent[State]]
+
+    // saves state in entity with [IsMissingComponent] or resets interactions
+    Save(propertiesEntity ecs.EntityID, state State)
+}
+```

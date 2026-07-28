@@ -1,0 +1,45 @@
+package internal
+
+import (
+	"engine"
+	"engine/modules/ecs"
+	"engine/modules/prototype"
+
+	"github.com/ogiusek/events"
+	"github.com/ogiusek/ioc/v2"
+)
+
+type Service interface {
+	Add(arr ecs.AnyComponentArray)
+	prototype.Service
+}
+
+type service struct {
+	engine.EngineWorld `inject:""`
+
+	arrays []ecs.AnyComponentArray
+}
+
+func NewService(c ioc.Dic) Service {
+	s := ioc.GetServices[*service](c)
+	return s
+}
+
+func (s *service) Add(array ecs.AnyComponentArray) {
+	s.arrays = append(s.arrays, array)
+}
+
+func (s *service) Clone(cloned ecs.EntityID) ecs.EntityID {
+	clone := s.World().NewEntity()
+	s.CloneTo(cloned, clone)
+	return clone
+}
+
+func (s *service) CloneTo(cloned, clone ecs.EntityID) {
+	for _, arr := range s.arrays {
+		if comp, ok := arr.GetAny(cloned); ok {
+			arr.SetAny(clone, comp)
+		}
+	}
+	events.Emit(s.Events(), prototype.NewCloneEvent(cloned, clone))
+}

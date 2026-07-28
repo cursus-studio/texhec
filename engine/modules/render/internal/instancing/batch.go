@@ -1,0 +1,160 @@
+package instancing
+
+import (
+	"engine/modules/assets"
+	"engine/modules/datastructures"
+	"engine/modules/ecs"
+	"engine/modules/graphics"
+	"engine/modules/render"
+	"fmt"
+	"math"
+
+	"github.com/go-gl/gl/v4.5-core/gl"
+	"github.com/go-gl/mathgl/mgl32"
+)
+
+type batchKey struct {
+	texture render.TextureComponent
+	mesh    render.MeshComponent
+}
+
+type batch struct {
+	system       *system
+	VAO          graphics.VAO
+	TextureArray graphics.TextureArray
+	Dirty        bool
+
+	// buffers (model, color, frame)
+	Entities datastructures.Set[ecs.EntityID]
+	Models   graphics.Buffer[mgl32.Mat4]
+	Colors   graphics.Buffer[mgl32.Vec4]
+	Frames   graphics.Buffer[int32]
+	Groups   graphics.Buffer[uint32]
+}
+
+func (s *system) NewBatch(batchKey batchKey) (*batch, error) {
+	// mesh
+	VAO, ok := s.meshes[batchKey.mesh.ID]
+	if !ok {
+		meshAsset, err := assets.GetAsset[render.MeshAsset](s.Assets(), batchKey.mesh.ID)
+		if err != nil {
+			return nil, err
+		}
+		VBO := s.VboFactory()
+		if err := VBO.SetVertices(meshAsset.Vertices()); err != nil {
+			return nil, err
+		}
+		EBO := s.Graphics().NewEBO()
+		if err := EBO.SetIndices(meshAsset.Indices()); err != nil {
+			return nil, err
+		}
+		VAO = s.Graphics().NewVAO(VBO, EBO)
+		s.meshes[batchKey.mesh.ID] = VAO
+	}
+
+	// texture
+	textureArr, ok := s.textures[batchKey.texture.Asset]
+	if !ok {
+		textureAsset, err := assets.GetAsset[render.TextureAsset](s.Assets(), batchKey.texture.Asset)
+		if err != nil {
+			return nil, err
+		}
+		textureArr, err = s.Graphics().TextureArray().NewFromSlice(textureAsset.Images())
+		if err != nil {
+			return nil, err
+		}
+		s.textures[batchKey.texture.Asset] = textureArr
+	}
+
+	// batch
+	batch := &batch{
+		system:       s,
+		VAO:          VAO,
+		TextureArray: textureArr,
+		Dirty:        true,
+
+		Entities: datastructures.NewSet[ecs.EntityID](),
+	}
+
+	// buffers
+	batch.Models = graphics.NewBuffer[mgl32.Mat4](gl.SHADER_STORAGE_BUFFER, gl.DYNAMIC_DRAW, 0)
+	batch.Colors = graphics.NewBuffer[mgl32.Vec4](gl.SHADER_STORAGE_BUFFER, gl.DYNAMIC_DRAW, 1)
+	batch.Frames = graphics.NewBuffer[int32](gl.SHADER_STORAGE_BUFFER, gl.DYNAMIC_DRAW, 2)
+	batch.Groups = graphics.NewBuffer[uint32](gl.SHADER_STORAGE_BUFFER, gl.DYNAMIC_DRAW, 3)
+
+	return batch, nil
+}
+
+//
+
+func (s *batch) Upsert(entity ecs.EntityID) {
+	index, ok := s.Entities.GetIndex(entity)
+	for !ok {
+		s.Entities.Add(entity)
+		index, ok = s.Entities.GetIndex(entity)
+	}
+	model := s.system.Transform().Mat4(entity)
+	color, _ := s.system.Render().Color().Get(entity)
+	textureFrame, _ := s.system.Render().TextureFrame().Get(entity)
+	groups, _ := s.system.Groups().Component().Get(entity)
+
+	frame := int32(textureFrame.GetFrame(s.TextureArray.ImagesCount()))
+
+	s.Dirty = true
+	s.Models.Set(index, model)
+	s.Colors.Set(index, color.Color)
+	s.Frames.Set(index, frame)
+	s.Groups.Set(index, groups.Mask)
+}
+
+func (s *batch) Remove(entity ecs.EntityID) {
+	index, ok := s.Entities.GetIndex(entity)
+	if !ok {
+		return
+	}
+
+	s.Dirty = true
+	s.Entities.Remove(index)
+	s.Models.Remove(index)
+	s.Colors.Remove(index)
+	s.Frames.Remove(index)
+	s.Groups.Remove(index)
+}
+
+//
+
+func (s *batch) Render() error {
+	if len(s.Entities.Get()) == 0 {
+		return nil
+	}
+
+	if s.Dirty {
+		s.Dirty = false
+		s.Models.Flush()
+		s.Colors.Flush()
+		s.Frames.Flush()
+		s.Groups.Flush()
+	}
+
+	s.VAO.Bind()
+	s.TextureArray.Bind()
+
+	s.Models.Bind()
+	s.Colors.Bind()
+	s.Frames.Bind()
+	s.Groups.Bind()
+
+	entitiesLen := len(s.Entities.Get())
+	if entitiesLen < 0 || entitiesLen > math.MaxInt32 {
+		return fmt.Errorf("there can be max render %v entities in a render batch", math.MaxInt32)
+	}
+
+	gl.DrawElementsInstanced(
+		gl.TRIANGLES,
+		s.VAO.EBO().Len(),
+		gl.UNSIGNED_INT,
+		nil,
+		int32(entitiesLen),
+	)
+	return nil
+}
