@@ -228,6 +228,11 @@ func NewService(c ioc.Dic) pipe.Service {
 				countCmd := exec.Command("pixelorama", "--headless", "--quit", "--", "--framecount", pxoFile)
 				out, err := countCmd.CombinedOutput()
 				if err != nil {
+					//#nosec G204
+					countCmd := exec.Command("box64", "pixelorama", "--headless", "--quit", "--", "--framecount", pxoFile)
+					out, err = countCmd.CombinedOutput()
+				}
+				if err != nil {
 					return fmt.Errorf("failed to get framecount for %s: %s", pxoFile, string(out))
 				}
 
