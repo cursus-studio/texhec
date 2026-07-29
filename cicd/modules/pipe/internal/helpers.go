@@ -14,12 +14,12 @@ import (
 )
 
 func parseFrameCount(stdout string) (int, error) {
-	lines := strings.Split(strings.TrimSpace(stdout), "\n")
-	if len(lines) == 0 {
-		return 0, fmt.Errorf("empty output")
+	for line := range strings.SplitSeq(strings.TrimSpace(stdout), "\n") {
+		if num, err := strconv.Atoi(strings.TrimSpace(line)); err == nil {
+			return num, nil
+		}
 	}
-	lastLine := strings.TrimSpace(lines[len(lines)-1])
-	return strconv.Atoi(lastLine)
+	return 0, fmt.Errorf("output lacks a framecount number \"%s\"", stdout)
 }
 
 func SpritesheetToGIF(sheetPath, outputPath string, frameCount int) error {

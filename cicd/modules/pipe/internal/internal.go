@@ -222,9 +222,9 @@ func NewService(c ioc.Dic) pipe.Service {
 					continue
 				}
 
-				//pixelorama --headless --quit -- --framecount $(pwd)/assets/src/backgrounds/1.pxo 2>/dev/null
+				//pixelorama --headless --quit -- --framecount $(pwd)/assets/src/backgrounds/1.pxo
 				//#nosec G204
-				countCmd := exec.Command("pixelorama", "--headless", "--quit", "--", "--framecount", pwd+file, "2>/dev/null")
+				countCmd := exec.Command("pixelorama", "--headless", "--quit", "--", "--framecount", pwd+file)
 				out, err := countCmd.CombinedOutput()
 				if err != nil {
 					return fmt.Errorf("failed to get framecount for %s: %s", file, string(out))
@@ -261,12 +261,12 @@ func NewService(c ioc.Dic) pipe.Service {
 				spiteSheetFile := pwd + base + ".spitesheet.png"
 				gifFile := pwd + base + ".gif"
 				defer func() { _ = os.Remove(spiteSheetFile) }()
-				//pixelorama --headless --quit -- --framecount -e -f 1-1 -o $(pwd)/assets/dist/backgrounds/1.png -s -o $(pwd)/assets/dist/backgrounds/1.spritesheet.png $(pwd)/assets/src/backgrounds/1.pxo 2>/dev/null
+				//pixelorama --headless --quit -- --framecount -e -f 1-1 -o $(pwd)/assets/dist/backgrounds/1.png -s -o $(pwd)/assets/dist/backgrounds/1.spritesheet.png $(pwd)/assets/src/backgrounds/1.pxo
 				//#nosec G204
 				cmd := exec.Command("pixeloarama", "--headless", "--quit", "--", "--framecount",
 					"-e", "-f 1-1", "-o", pngFile,
 					"-s", "-o", spiteSheetFile,
-					pwd+file, "2>/dev/null")
+					pwd+file)
 
 				out, err := cmd.CombinedOutput()
 				if err != nil {
