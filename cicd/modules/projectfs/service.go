@@ -11,5 +11,7 @@ type Service interface {
 	ProjectModules(project string) []string
 	ProjectServices(project string) []string
 
+	PxoFiles() ([]string, error)
+
 	Save(file, content string) error
 }

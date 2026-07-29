@@ -9,7 +9,10 @@ import (
 	"log"
 	"os"
 	"os/exec"
+	"path/filepath"
+	"slices"
 	"strings"
+	"time"
 
 	"github.com/ogiusek/ioc/v2"
 )
@@ -18,20 +21,23 @@ type StageCtx struct {
 	ChangedModules,
 	ChangedProjects,
 	Modules,
-	Projects []string
+	Projects,
+	PxoFiles []string
 }
 
 func NewStageCtx(
 	changedModules,
 	changedProjects,
 	modules,
-	projects []string,
+	projects,
+	pxoFiles []string,
 ) StageCtx {
 	return StageCtx{
 		ChangedModules:  changedModules,
 		ChangedProjects: changedProjects,
 		Modules:         modules,
 		Projects:        projects,
+		PxoFiles:        pxoFiles,
 	}
 }
 
@@ -68,6 +74,11 @@ type service struct {
 func NewService(c ioc.Dic) pipe.Service {
 	s := ioc.GetServices[*service](c)
 	s.hooksDirectory = ".git-hooks"
+	pwd, err := os.Getwd()
+	if err != nil {
+		log.Fatalf("Failed to get current working directory: %v", err)
+	}
+	pwd += "/"
 
 	// pipeline
 	// shaders
@@ -191,6 +202,100 @@ func NewService(c ioc.Dic) pipe.Service {
 			return nil
 		}),
 
+		// assets exports
+		NewStage("Assets Export", func(ctx StageCtx) error {
+			for _, file := range ctx.PxoFiles {
+				fmt.Printf("  checking \"%v\"\n", file)
+				ext := filepath.Ext(file)
+				base := file[:len(file)-len(ext)]
+				base = strings.Replace(base, "src/", "dist/", 1)
+
+				if _, err := os.Stat(file); os.IsNotExist(err) {
+					continue
+				}
+
+				if _, err := os.Stat(base + ".png"); os.IsNotExist(err) {
+					return fmt.Errorf("missing PNG asset: %s.png", base)
+				}
+
+				if _, err := os.Stat(base + ".gif"); err == nil {
+					continue
+				}
+
+				//#nosec G204
+				countCmd := exec.Command("pixelorama", "--headless", "--quit", "--", "--framecount", pwd+file, "2>/dev/null")
+				out, err := countCmd.CombinedOutput()
+				if err != nil {
+					return fmt.Errorf("failed to get framecount for %s: %s", file, string(out))
+				}
+
+				frames, err := parseFrameCount(string(out))
+				if err != nil {
+					return fmt.Errorf("failed to parse framecount for %s: %w", file, err)
+				}
+
+				if frames > 1 {
+					return fmt.Errorf("missing GIF asset: %s.gif", base)
+				}
+			}
+			return nil
+		}).SetFix(func(ctx StageCtx) error {
+			if len(ctx.PxoFiles) == 0 {
+				return nil
+			}
+			handleFile := func(file string) error {
+				fmt.Printf("  exporting \"%v\"\n", file)
+				ext := filepath.Ext(file)
+				base := file[:len(file)-len(ext)]
+				base = strings.Replace(base, "src/", "dist/", 1)
+
+				if _, err := os.Stat(file); os.IsNotExist(err) {
+					return nil
+				}
+				if err := os.MkdirAll(filepath.Dir(base), 0750); err != nil {
+					return fmt.Errorf("failed to create target directory for %s: %w", file, err)
+				}
+
+				pngFile := pwd + base + ".png"
+				spiteSheetFile := pwd + base + ".spitesheet.png"
+				gifFile := pwd + base + ".gif"
+				defer func() { _ = os.Remove(spiteSheetFile) }()
+				//pixelorama --headless --quit -- --framecount -e -f 1-1 -o $(pwd)/assets/dist/backgrounds/1.png -s -o $(pwd)/assets/dist/backgrounds/1.spritesheet.png $(pwd)/assets/src/backgrounds/1.pxo 2>/dev/null
+				//#nosec G204
+				cmd := exec.Command("pixeloarama", "--headless", "--quit", "--", "--framecount",
+					"-e", "-f 1-1", "-o", pngFile,
+					"-s", "-o", spiteSheetFile,
+					pwd+file, "2>/dev/null")
+
+				out, err := cmd.CombinedOutput()
+				if err != nil {
+					return fmt.Errorf("failed to get framecount for %s: %s", file, string(out))
+				}
+				frames, err := parseFrameCount(string(out))
+				if err != nil {
+					return fmt.Errorf("failed to parse framecount for %s: %w", file, err)
+				}
+				if frames <= 1 {
+					return nil
+				}
+
+				if err := SpritesheetToGIF(spiteSheetFile, gifFile, frames); err != nil {
+					return err
+				}
+				return nil
+			}
+			for _, file := range ctx.PxoFiles {
+				if err := handleFile(file); err != nil {
+					return err
+				}
+			}
+			time.Sleep(time.Second)
+			if err := s.Git().Stage("assets/dist"); err != nil {
+				return fmt.Errorf("failed to stage file: %v", err.Error())
+			}
+			return nil
+		}),
+
 		// docs
 		NewStage("Docs Genaration", func(ctx StageCtx) error {
 			for _, module := range ctx.ChangedModules {
@@ -279,11 +384,16 @@ func (s *service) Sync() error {
 	if err != nil {
 		return err
 	}
+	pxoFiles, err := s.ProjectFS().PxoFiles()
+	if err != nil {
+		return err
+	}
 
 	ctx := NewStageCtx(
 		// sync runs on all modules (doesn't cache certain steps)
 		modules, projects,
 		modules, projects,
+		pxoFiles,
 	)
 
 	for _, stage := range s.stages {
@@ -299,6 +409,7 @@ func (s *service) Sync() error {
 }
 
 func (s *service) Fix() error {
+	// read all files
 	projects, err := s.ProjectFS().AllProjects()
 	if err != nil {
 		return err
@@ -311,12 +422,16 @@ func (s *service) Fix() error {
 	if err != nil {
 		return err
 	}
+	pxoFiles := slices.DeleteFunc(changedFiles, func(file string) bool {
+		return !strings.HasSuffix(file, ".pxo")
+	})
 
 	ctx := NewStageCtx(
 		s.ProjectFS().FilesModules(changedFiles),
 		s.ProjectFS().FilesProjects(changedFiles),
 		modules,
 		projects,
+		pxoFiles,
 	)
 
 	for _, stage := range s.stages {
@@ -348,12 +463,16 @@ func (s *service) Cloud(commitHash string) error {
 	if err != nil {
 		return err
 	}
+	pxoFiles := slices.DeleteFunc(changedFiles, func(file string) bool {
+		return !strings.HasSuffix(file, ".pxo")
+	})
 
 	ctx := NewStageCtx(
 		s.ProjectFS().FilesModules(changedFiles),
 		s.ProjectFS().FilesProjects(changedFiles),
 		modules,
 		projects,
+		pxoFiles,
 	)
 	for _, stage := range s.stages {
 		msg := fmt.Sprintf("Verify Stage \"%v\"", stage.Name)
@@ -381,12 +500,16 @@ func (s *service) Verify(commitHash string) error {
 	if err != nil {
 		return err
 	}
+	pxoFiles := slices.DeleteFunc(changedFiles, func(file string) bool {
+		return !strings.HasSuffix(file, ".pxo")
+	})
 
 	ctx := NewStageCtx(
 		s.ProjectFS().FilesModules(changedFiles),
 		s.ProjectFS().FilesProjects(changedFiles),
 		modules,
 		projects,
+		pxoFiles,
 	)
 	for _, stage := range s.stages {
 		log.Printf("Verify Stage \"%v\"", stage.Name)

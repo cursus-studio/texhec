@@ -39,5 +39,14 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 RUN curl -sSL -o /usr/bin/cloc https://github.com/AlDanial/cloc/releases/download/v2.08/cloc-2.08.pl \
     && chmod +x /usr/bin/cloc
 
+ENV PIXELORAMA_VERSION=v1.1.10
+RUN curl -sSL "https://github.com/Orama-Interactive/Pixelorama/releases/download/${PIXELORAMA_VERSION}/Pixelorama-Linux-64bit.tar.gz" -o pixelorama.tar.gz \
+    && mkdir -p /opt/pixelorama \
+    && tar -xzf pixelorama.tar.gz -C /opt/pixelorama \
+    && rm pixelorama.tar.gz \
+    && BINARY=$(find /opt/pixelorama -maxdepth 2 -type f \( -name "Pixelorama*" -a ! -name "*.pck" \)) \
+    && chmod +x "$BINARY" \
+    && ln -s "$BINARY" /usr/local/bin/pixelorama
+
 USER gouser
 WORKDIR /go/src/app
