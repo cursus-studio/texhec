@@ -12,11 +12,14 @@ RUN go install github.com/securego/gosec/v2/cmd/gosec@v2.24.6
 COPY --from=trivy /usr/local/bin/trivy /usr/bin/trivy
 COPY --from=lychee /usr/local/bin/lychee /usr/bin/lychee
 
+RUN if [ "$TARGETARCH" = "arm64" ]; then \
+        apt-get update && apt-get install -y --no-install-recommends box64; \
+    fi
+
 ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     xvfb \
-    box64 \
     # SDL2 dependencies
     libsdl2-dev \
     libsdl2-image-dev \
