@@ -222,6 +222,7 @@ func NewService(c ioc.Dic) pipe.Service {
 					continue
 				}
 
+				//pixelorama --headless --quit -- --framecount $(pwd)/assets/src/backgrounds/1.pxo 2>/dev/null
 				//#nosec G204
 				countCmd := exec.Command("pixelorama", "--headless", "--quit", "--", "--framecount", pwd+file, "2>/dev/null")
 				out, err := countCmd.CombinedOutput()
@@ -269,11 +270,11 @@ func NewService(c ioc.Dic) pipe.Service {
 
 				out, err := cmd.CombinedOutput()
 				if err != nil {
-					return fmt.Errorf("failed to get framecount for %s: %s", file, string(out))
+					return fmt.Errorf("failed to run command for %s: %s", file, string(out))
 				}
 				frames, err := parseFrameCount(string(out))
 				if err != nil {
-					return fmt.Errorf("failed to parse framecount for %s: %w", file, err)
+					return fmt.Errorf("failed to parse command output for %s: %w", file, err)
 				}
 				if frames <= 1 {
 					return nil
