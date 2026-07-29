@@ -209,6 +209,7 @@ func NewService(c ioc.Dic) pipe.Service {
 				ext := filepath.Ext(file)
 				base := file[:len(file)-len(ext)]
 				base = strings.Replace(base, "src/", "dist/", 1)
+				pxoFile := pwd + file
 
 				if _, err := os.Stat(file); os.IsNotExist(err) {
 					continue
@@ -224,10 +225,10 @@ func NewService(c ioc.Dic) pipe.Service {
 
 				//pixelorama --headless --quit -- --framecount $(pwd)/assets/src/backgrounds/1.pxo
 				//#nosec G204
-				countCmd := exec.Command("pixelorama", "--headless", "--quit", "--", "--framecount", pwd+file)
+				countCmd := exec.Command("pixelorama", "--headless", "--quit", "--", "--framecount", pxoFile)
 				out, err := countCmd.CombinedOutput()
 				if err != nil {
-					return fmt.Errorf("failed to get framecount for %s: %s", file, string(out))
+					return fmt.Errorf("failed to get framecount for %s: %s", pxoFile, string(out))
 				}
 
 				frames, err := parseFrameCount(string(out))
