@@ -37,11 +37,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
 RUN if [ "$(dpkg --print-architecture)" = "arm64" ]; then \
-        apt-get update && apt-get install -y --no-install-recommends unzip && rm -rf /var/lib/apt/lists/* \
-        && curl -fsSL https://github.com/ptitSeb/box64/releases/download/v0.2.6/<ACTUAL_ASSET_NAME>.zip -o /tmp/box64.zip \
-        && unzip /tmp/box64.zip -d /usr/local/bin \
-        && chmod +x /usr/local/bin/box64 \
-        && rm /tmp/box64.zip; \
+        apt-get update && apt-get install -y --no-install-recommends wget gnupg ca-certificates && \
+        wget https://ryanfortner.github.io/box64-debs/box64.list -O /etc/apt/sources.list.d/box64.list && \
+        wget -qO- https://ryanfortner.github.io/box64-debs/KEY.gpg | gpg --dearmor -o /etc/apt/trusted.gpg.d/box64-debs-archive-keyring.gpg && \
+        apt-get update && apt-get install -y --no-install-recommends box64 && \
+        rm -rf /var/lib/apt/lists/*; \
     fi
 
 RUN curl -sSL -o /usr/bin/cloc https://github.com/AlDanial/cloc/releases/download/v2.08/cloc-2.08.pl \
