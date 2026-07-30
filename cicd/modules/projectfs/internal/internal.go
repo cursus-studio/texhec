@@ -4,6 +4,7 @@ import (
 	"cicd/modules/projectfs"
 	"cicd/world"
 	"engine/modules/datastructures"
+	"io/fs"
 	"os"
 	"path/filepath"
 	"strings"
@@ -129,6 +130,19 @@ func (s *service) ProjectServices(project string) []string {
 		services = append(services, filepath.Join(project, "services", entry.Name()))
 	}
 	return services
+}
+func (s *service) PxoFiles() ([]string, error) {
+	var pxoFiles []string
+	err := filepath.WalkDir(".", func(path string, d fs.DirEntry, err error) error {
+		if err != nil {
+			return err
+		}
+		if !d.IsDir() && strings.HasSuffix(d.Name(), ".pxo") {
+			pxoFiles = append(pxoFiles, path)
+		}
+		return nil
+	})
+	return pxoFiles, err
 }
 
 func (s *service) Save(file, content string) error {
