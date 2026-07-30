@@ -38,7 +38,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 RUN if [ "$(dpkg --print-architecture)" = "arm64" ]; then \
         apt-get update && apt-get install -y --no-install-recommends unzip && rm -rf /var/lib/apt/lists/* \
-        && curl -sSL https://github.com/ptitSeb/box64/releases/download/v0.2.6/box64-GENERIC_ARM-RelWithDebInfo.zip -o /tmp/box64.zip \
+        && curl -fsSL https://github.com/ptitSeb/box64/releases/download/v0.2.6/<ACTUAL_ASSET_NAME>.zip -o /tmp/box64.zip \
         && unzip /tmp/box64.zip -d /usr/local/bin \
         && chmod +x /usr/local/bin/box64 \
         && rm /tmp/box64.zip; \
