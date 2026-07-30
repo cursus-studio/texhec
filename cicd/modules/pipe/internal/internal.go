@@ -228,6 +228,7 @@ func NewService(c ioc.Dic) pipe.Service {
 				countCmd := exec.Command("pixelorama", "--headless", "--quit", "--", "--framecount", pxoFile)
 				out, err := countCmd.CombinedOutput()
 				if err != nil {
+					//#nosec G204
 					boxCmd := exec.Command("box64", "pixelorama", "--headless", "--quit", "--", "--framecount", pxoFile)
 					boxOut, boxErr := boxCmd.CombinedOutput()
 					if boxErr != nil {
