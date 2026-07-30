@@ -237,9 +237,6 @@ func NewService(c ioc.Dic) pipe.Service {
 					}
 					out = boxOut
 				}
-				if err != nil {
-					return fmt.Errorf("failed to get framecount for %s: %s", pxoFile, string(out))
-				}
 
 				frames, err := parseFrameCount(string(out))
 				if err != nil {

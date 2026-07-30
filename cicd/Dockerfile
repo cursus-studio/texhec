@@ -12,10 +12,6 @@ RUN go install github.com/securego/gosec/v2/cmd/gosec@v2.24.6
 COPY --from=trivy /usr/local/bin/trivy /usr/bin/trivy
 COPY --from=lychee /usr/local/bin/lychee /usr/bin/lychee
 
-RUN if [ "$TARGETARCH" = "arm64" ]; then \
-        apt-get update && apt-get install -y --no-install-recommends box64; \
-    fi
-
 ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -39,6 +35,13 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     clang-format \
     glslang-tools \
     && rm -rf /var/lib/apt/lists/*
+
+RUN if [ "$(dpkg --print-architecture)" = "arm64" ]; then \
+        curl -sSL https://github.com/ptitSeb/box64/releases/download/v0.2.6/box64-debian-arm64.tar.gz -o /tmp/box64.tar.gz \
+        && tar -xzf /tmp/box64.tar.gz -C /usr/local/bin box64 \
+        && chmod +x /usr/local/bin/box64 \
+        && rm /tmp/box64.tar.gz; \
+    fi
 
 RUN curl -sSL -o /usr/bin/cloc https://github.com/AlDanial/cloc/releases/download/v2.08/cloc-2.08.pl \
     && chmod +x /usr/bin/cloc
