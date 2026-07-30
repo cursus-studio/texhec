@@ -36,8 +36,25 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     glslang-tools \
     && rm -rf /var/lib/apt/lists/*
 
+RUN if [ "$(dpkg --print-architecture)" = "arm64" ]; then \
+        apt-get update && apt-get install -y --no-install-recommends wget gnupg ca-certificates && \
+        wget https://ryanfortner.github.io/box64-debs/box64.list -O /etc/apt/sources.list.d/box64.list && \
+        wget -qO- https://ryanfortner.github.io/box64-debs/KEY.gpg | gpg --dearmor -o /etc/apt/trusted.gpg.d/box64-debs-archive-keyring.gpg && \
+        apt-get update && apt-get install -y --no-install-recommends box64 && \
+        rm -rf /var/lib/apt/lists/*; \
+    fi
+
 RUN curl -sSL -o /usr/bin/cloc https://github.com/AlDanial/cloc/releases/download/v2.08/cloc-2.08.pl \
     && chmod +x /usr/bin/cloc
+
+ENV PIXELORAMA_VERSION=v1.1.10
+RUN curl -sSL "https://github.com/Orama-Interactive/Pixelorama/releases/download/${PIXELORAMA_VERSION}/Pixelorama-Linux-64bit.tar.gz" -o pixelorama.tar.gz \
+    && mkdir -p /opt/pixelorama \
+    && tar -xzf pixelorama.tar.gz -C /opt/pixelorama \
+    && rm pixelorama.tar.gz \
+    && BINARY=$(find /opt/pixelorama -maxdepth 2 -type f \( -name "Pixelorama*" -a ! -name "*.pck" \)) \
+    && chmod +x "$BINARY" \
+    && ln -s "$BINARY" /usr/local/bin/pixelorama
 
 USER gouser
 WORKDIR /go/src/app
