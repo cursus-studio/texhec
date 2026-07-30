@@ -37,10 +37,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
 RUN if [ "$(dpkg --print-architecture)" = "arm64" ]; then \
-        curl -sSL https://github.com/ptitSeb/box64/releases/download/v0.2.6/box64-debian-arm64.tar.gz -o /tmp/box64.tar.gz \
-        && tar -xzf /tmp/box64.tar.gz -C /usr/local/bin box64 \
+        apt-get update && apt-get install -y --no-install-recommends unzip && rm -rf /var/lib/apt/lists/* \
+        && curl -sSL https://github.com/ptitSeb/box64/releases/download/v0.2.6/box64-GENERIC_ARM-RelWithDebInfo.zip -o /tmp/box64.zip \
+        && unzip /tmp/box64.zip -d /usr/local/bin \
         && chmod +x /usr/local/bin/box64 \
-        && rm /tmp/box64.tar.gz; \
+        && rm /tmp/box64.zip; \
     fi
 
 RUN curl -sSL -o /usr/bin/cloc https://github.com/AlDanial/cloc/releases/download/v2.08/cloc-2.08.pl \
