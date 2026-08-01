@@ -10,6 +10,7 @@ import (
 	"engine/modules/collider"
 	"engine/modules/connection"
 	"engine/modules/console"
+	"engine/modules/delay"
 	"engine/modules/drag"
 	"engine/modules/ecs"
 	"engine/modules/entityregistry"
@@ -57,6 +58,7 @@ type EngineWorld struct {
 	Collider       ioc.Lazy[collider.Service]       `inject:""`
 	Connection     ioc.Lazy[connection.Service]     `inject:""`
 	Console        ioc.Lazy[console.Service]        `inject:""`
+	Delay          ioc.Lazy[delay.Service]          `inject:""`
 	Drag           ioc.Lazy[drag.Service]           `inject:""`
 	EntityRegistry ioc.Lazy[entityregistry.Service] `inject:""`
 	Focus          ioc.Lazy[focus.Service]          `inject:""`
