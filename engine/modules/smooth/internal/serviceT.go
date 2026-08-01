@@ -8,6 +8,7 @@ import (
 	"engine/modules/record"
 	"engine/modules/smooth"
 	"engine/modules/transition"
+	"slices"
 	"time"
 
 	"github.com/ogiusek/events"
@@ -45,7 +46,7 @@ func (c *NextWaypointsComponent[Component]) Next(tickDelta time.Duration,
 	return WaypointsComponent[Component]{
 		CurrentWaypoint: 0,
 		WaypointDelta:   waypointDelta,
-		Waypoints:       append([]Component{first}, append(c.Waypoints, last)...),
+		Waypoints:       slices.Concat([]Component{first}, c.Waypoints, []Component{last}),
 	}
 }
 func (c *WaypointsComponent[Component]) Progress() (
