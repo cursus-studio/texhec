@@ -4,6 +4,7 @@ import (
 	"core/game"
 	"core/modules/ui"
 	"engine/modules/assets"
+	"engine/modules/delay"
 	"engine/modules/ecs"
 	"engine/modules/render"
 	"engine/modules/transform"
@@ -107,6 +108,6 @@ func (s *System) ListenUpdateBg(event UpdateBgEvent) {
 		))
 	}
 
-	events.Emit(s.Events(), transition.NewDelayedEvent(UpdateBgEvent{}, duration))
+	events.Emit(s.Events(), delay.NewDelayedEvent(UpdateBgEvent{}, duration))
 	s.bgTexture += 1
 }

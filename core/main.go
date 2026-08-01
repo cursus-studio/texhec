@@ -82,6 +82,7 @@ func main() {
 
 		// update
 		world.Camera(),
+		world.Delay(),
 		world.Drag(),
 		world.Transition(),
 		temporaryInlineSystems,
