@@ -62,13 +62,13 @@ type AnyFeatureService interface {
 	// sets step interaction to missing or emits event
 	Progress()
 }
-type FeatureService[Event any] interface {
+type FeatureService[Feature interactions.Feature] interface {
 	AnyFeatureService
 }
 
 //
 
-type featureService[Event any] struct {
+type featureService[Feature interactions.Feature] struct {
 	C                  ioc.Dic
 	engine.EngineWorld `inject:""`
 	Interactions       Service `inject:""`
@@ -77,8 +77,8 @@ type featureService[Event any] struct {
 	steps              []AnyStepService
 }
 
-func NewFeatureService[Event any](c ioc.Dic, relations []RawRelation) FeatureService[Event] {
-	s := ioc.GetServices[*featureService[Event]](c)
+func NewFeatureService[Feature interactions.Feature](c ioc.Dic, relations []RawRelation) FeatureService[Feature] {
+	s := ioc.GetServices[*featureService[Feature]](c)
 	s.C = c
 
 	s.rawRelations = relations
@@ -86,13 +86,13 @@ func NewFeatureService[Event any](c ioc.Dic, relations []RawRelation) FeatureSer
 	return s
 }
 
-func (s *featureService[Event]) Key() interactions.FeatureKey { return reflect.TypeFor[Event]() }
-func (s *featureService[Event]) Steps() []AnyStepService {
+func (s *featureService[Feature]) Key() interactions.FeatureKey { return reflect.TypeFor[Feature]() }
+func (s *featureService[Feature]) Steps() []AnyStepService {
 	return s.steps
 }
 
-func (s *featureService[Event]) Init() {
-	event := reflect.TypeFor[Event]()
+func (s *featureService[Feature]) Init() {
+	event := reflect.TypeFor[Feature]()
 	fieldsCount := event.NumField()
 	s.steps = make([]AnyStepService, 0, fieldsCount)
 	for i := range fieldsCount {
@@ -107,7 +107,7 @@ func (s *featureService[Event]) Init() {
 
 	s.relationByTgtField = make([][]Relation, len(s.steps))
 	for _, rawRelation := range s.rawRelations {
-		relation, ok := NewRelation[Event](s.C, rawRelation)
+		relation, ok := NewRelation[Feature](s.C, rawRelation)
 		if !ok {
 			panic("compiled code passed invalid relation")
 		}
@@ -117,7 +117,7 @@ func (s *featureService[Event]) Init() {
 	}
 }
 
-func (s *featureService[Event]) Progress() {
+func (s *featureService[Feature]) Progress() {
 	featureEntity := s.Interactions.FeatureEntity()
 	interactionEntities := s.Hierarchy().Children(featureEntity).GetIndices()
 	for i, step := range s.steps {
@@ -148,11 +148,11 @@ func (s *featureService[Event]) Progress() {
 		}
 		return
 	}
-	var event Event
-	value := reflect.ValueOf(&event).Elem()
+	var feature Feature
+	value := reflect.ValueOf(&feature).Elem()
 	for i, step := range s.steps {
 		step.FillValue(interactionEntities[i], value.Field(i))
 	}
 	s.Interactions.ResetFeatureEntity()
-	events.Emit(s.Events(), event)
+	events.EmitAny(s.Events(), feature.Event())
 }

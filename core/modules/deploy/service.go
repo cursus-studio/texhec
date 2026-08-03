@@ -2,11 +2,9 @@
 package deploy
 
 import (
-	"core/modules/actions"
 	"core/modules/reach"
 	"engine/modules/ecs"
 	"engine/modules/grid"
-	"engine/modules/interactions"
 )
 
 type Component struct {
@@ -22,12 +20,12 @@ func NewDeploy(deployable ...ecs.EntityID) Component {
 //
 
 type DeployEvent struct {
-	By        actions.FriendlyBuilderObjectStep
-	Blueprint actions.BlueprintStep
-	Coords    actions.CoordsStep
+	By,
+	Blueprint ecs.EntityID
+	Coords grid.Coords
 }
 type DestroyEvent struct {
-	Object actions.FriendlyObjectStep
+	Entity ecs.EntityID
 }
 
 func NewDeployEvent(
@@ -36,17 +34,13 @@ func NewDeployEvent(
 	coords grid.Coords,
 ) DeployEvent {
 	return DeployEvent{
-		interactions.NewStep(actions.NewObjectInteraction(by)),
-		interactions.NewStep(actions.NewBlueprintInteraction(blueprint)),
-		interactions.NewStep(actions.NewCoordsInteraction(coords)),
+		by,
+		blueprint,
+		coords,
 	}
 }
-func NewDestroyEvent(
-	object ecs.EntityID,
-) DestroyEvent {
-	return DestroyEvent{
-		interactions.NewStep(actions.NewObjectInteraction(object)),
-	}
+func NewDestroyEvent(entity ecs.EntityID) DestroyEvent {
+	return DestroyEvent{entity}
 }
 
 //

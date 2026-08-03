@@ -13,7 +13,7 @@ import (
 type service struct {
 	game.GameWorld              `inject:""`
 	CoordsInteractionService    interactions.InteractionService[actions.CoordsInteraction]    `inject:""`
-	ObjectInteractionService    interactions.InteractionService[actions.ObjectInteraction]    `inject:""`
+	ObjectInteractionService    interactions.InteractionService[actions.EntityInteraction]    `inject:""`
 	BlueprintInteractionService interactions.InteractionService[actions.BlueprintInteraction] `inject:""`
 
 	canDeploy    ecs.ComponentArray[actions.CanDeployComponent]

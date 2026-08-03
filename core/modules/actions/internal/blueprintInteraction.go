@@ -74,7 +74,7 @@ func (s *service) OnBlueprintStateUpsert(entity ecs.EntityID) {
 	}
 
 	s.CoordsCursor().Set(entity, actions.NewCoordsCursor(blueprint.State.Entity, true))
-	if object, ok := s.ObjectInteraction().StatePreview().Get(entity); ok {
+	if object, ok := s.EntityInteraction().StatePreview().Get(entity); ok {
 		s.Anchor().Set(entity, actions.NewAnchor(object.State.Entity))
 	}
 }

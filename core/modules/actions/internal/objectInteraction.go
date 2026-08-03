@@ -10,12 +10,12 @@ import (
 	"fmt"
 )
 
-func (s *service) ObjectInteraction() interactions.InteractionService[actions.ObjectInteraction] {
+func (s *service) EntityInteraction() interactions.InteractionService[actions.EntityInteraction] {
 	return s.ObjectInteractionService
 }
 
 func (s *service) OnClickObject(event tile.ClickEntityEvent) {
-	if missingEntities := s.ObjectInteraction().MissingPreview().GetEntities(); len(missingEntities) == 1 {
+	if missingEntities := s.EntityInteraction().MissingPreview().GetEntities(); len(missingEntities) == 1 {
 		missingEntity := missingEntities[0]
 		if anchor, ok := s.Anchor().Get(missingEntity); ok && !s.GameWorld.Deploy().Reach().Reaches(anchor.Entity, event.Entity) {
 			s.Logger().Warn(fmt.Errorf("cannot click entity out of range"))
@@ -34,7 +34,7 @@ func (s *service) OnClickObject(event tile.ClickEntityEvent) {
 	s.Anchor().Set(propertiesEntity, actions.NewAnchor(event.Entity))
 	s.CoordsCursor().Set(propertiesEntity, actions.NewCoordsCursor(link.Entity, false))
 
-	s.ObjectInteraction().Save(propertiesEntity, actions.NewObjectInteraction(event.Entity))
+	s.EntityInteraction().Save(propertiesEntity, actions.NewEntityInteraction(event.Entity))
 }
 
 func (s *service) OnObjectMissingUpsert(entity ecs.EntityID) {
@@ -45,7 +45,7 @@ func (s *service) OnObjectMissingUpsert(entity ecs.EntityID) {
 //
 
 func (s *service) OnObjectStateUpsert(entity ecs.EntityID) {
-	stateComp, ok := s.ObjectInteraction().StatePreview().Get(entity)
+	stateComp, ok := s.EntityInteraction().StatePreview().Get(entity)
 	if !ok {
 		return
 	}

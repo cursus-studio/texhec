@@ -19,18 +19,38 @@ import (
 	"github.com/ogiusek/ioc/v2"
 )
 
+type DeployFeature struct {
+	By        actions.FriendlyBuilderEntityStep
+	Blueprint actions.BlueprintStep
+	Coords    actions.CoordsStep
+}
+type DestroyFeature struct {
+	Entity actions.FriendlyEntityStep
+}
+
+func (f DeployFeature) Event() any {
+	return deploy.NewDeployEvent(
+		f.By.State().Entity,
+		f.Blueprint.State().Entity,
+		f.Coords.State().Coords,
+	)
+}
+func (f DestroyFeature) Event() any {
+	return deploy.NewDestroyEvent(f.Entity.State().Entity)
+}
+
 var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 	pkgs := []ioc.Pkg{
 		reachpkg.PkgT[deploy.Component],
-		interactionspkg.FeaturePkg[deploy.DeployEvent](
+		interactionspkg.FeaturePkg[DeployFeature](
 			interactionspkg.NewCopyRelation[actions.CanDeployComponent](
-				unsafe.Offsetof(deploy.DeployEvent{}.By), unsafe.Offsetof(deploy.DeployEvent{}.Blueprint)),
+				unsafe.Offsetof(DeployFeature{}.By), unsafe.Offsetof(DeployFeature{}.Blueprint)),
 			interactionspkg.NewCopyRelation[actions.CoordsCursorComponent](
-				unsafe.Offsetof(deploy.DeployEvent{}.Blueprint), unsafe.Offsetof(deploy.DeployEvent{}.Coords)),
+				unsafe.Offsetof(DeployFeature{}.Blueprint), unsafe.Offsetof(DeployFeature{}.Coords)),
 			interactionspkg.NewCopyRelation[actions.AnchorComponent](
-				unsafe.Offsetof(deploy.DeployEvent{}.By), unsafe.Offsetof(deploy.DeployEvent{}.Coords)),
+				unsafe.Offsetof(DeployFeature{}.By), unsafe.Offsetof(DeployFeature{}.Coords)),
 		),
-		interactionspkg.FeaturePkg[deploy.DestroyEvent](),
+		interactionspkg.FeaturePkg[DestroyFeature](),
 	}
 	for _, pkg := range pkgs {
 		pkg(b)

@@ -16,6 +16,15 @@ import (
 	"github.com/ogiusek/ioc/v2"
 )
 
+type FindPathFeature struct {
+	Entity actions.FriendlyMobileEntityStep
+	Coords actions.CoordsStep
+}
+
+func (f FindPathFeature) Event() any {
+	return pathfind.NewFindPathEvent(f.Entity.State().Entity, f.Coords.State().Coords)
+}
+
 var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 	pkgs := []ioc.Pkg{
 		typeregistrypkg.PkgT[pathfind.TargetComponent],
@@ -24,9 +33,9 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 
 		typeregistrypkg.PkgT[pathfind.FindPathEvent],
 
-		interactionspkg.FeaturePkg[pathfind.FindPathEvent](
+		interactionspkg.FeaturePkg[FindPathFeature](
 			interactionspkg.NewCopyRelation[actions.CoordsCursorComponent](
-				unsafe.Offsetof(pathfind.FindPathEvent{}.Object), unsafe.Offsetof(pathfind.FindPathEvent{}.Coords)),
+				unsafe.Offsetof(FindPathFeature{}.Entity), unsafe.Offsetof(FindPathFeature{}.Coords)),
 		),
 	}
 	for _, pkg := range pkgs {

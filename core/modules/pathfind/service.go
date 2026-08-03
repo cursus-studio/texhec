@@ -2,12 +2,10 @@
 package pathfind
 
 import (
-	"core/modules/actions"
 	"core/modules/obstruction"
 	"core/modules/tile"
 	"engine/modules/ecs"
 	"engine/modules/grid"
-	"engine/modules/interactions"
 	"errors"
 
 	"golang.org/x/exp/constraints"
@@ -69,13 +67,10 @@ type Service interface {
 // - look on `HPA*` and `JPS`
 
 type FindPathEvent struct {
-	Object actions.FriendlyMobileObjectStep
-	Coords actions.CoordsStep
+	Entity ecs.EntityID
+	Coords grid.Coords
 }
 
 func NewFindPathEvent(entity ecs.EntityID, coords grid.Coords) FindPathEvent {
-	return FindPathEvent{
-		interactions.NewStep(actions.NewObjectInteraction(entity)),
-		interactions.NewStep(actions.NewCoordsInteraction(coords)),
-	}
+	return FindPathEvent{entity, coords}
 }

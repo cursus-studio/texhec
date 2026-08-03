@@ -10,11 +10,23 @@ import (
 	"github.com/ogiusek/ioc/v2"
 )
 
+type AttackFeature struct {
+	By     actions.FriendlyBuilderEntityStep
+	Target actions.EnemyEntityStep
+}
+
+func (f AttackFeature) Event() any {
+	return attack.NewAttackEvent(
+		f.By.State().Entity,
+		f.Target.State().Entity,
+	)
+}
+
 var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 	pkgs := []ioc.Pkg{
-		interactionspkg.FeaturePkg[attack.AttackEvent](
+		interactionspkg.FeaturePkg[AttackFeature](
 			interactionspkg.NewCopyRelation[actions.AnchorComponent](
-				unsafe.Offsetof(attack.AttackEvent{}.By), unsafe.Offsetof(attack.AttackEvent{}.Target)),
+				unsafe.Offsetof(AttackFeature{}.By), unsafe.Offsetof(AttackFeature{}.Target)),
 		),
 	}
 	for _, pkg := range pkgs {
