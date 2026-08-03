@@ -7,7 +7,7 @@ require (
 	github.com/go-gl/mathgl v1.2.0
 	github.com/jaypipes/ghw v0.24.0
 	github.com/ogiusek/events v1.0.6
-	github.com/ogiusek/ioc/v2 v2.1.12
+	github.com/ogiusek/ioc/v2 v2.1.14
 	github.com/veandco/go-sdl2 v0.4.40
 	golang.org/x/exp v0.0.0-20250911091902-df9299821621
 )

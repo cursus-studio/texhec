@@ -5,7 +5,7 @@ go 1.25.0
 require (
 	github.com/go-git/go-git/v5 v5.19.1
 	github.com/google/go-github/v60 v60.0.0
-	github.com/ogiusek/ioc/v2 v2.1.12
+	github.com/ogiusek/ioc/v2 v2.1.14
 	github.com/spf13/cobra v1.10.2
 	golang.org/x/oauth2 v0.36.0
 	golang.org/x/tools v0.45.0
