@@ -9,11 +9,11 @@ goos: linux
 goarch: amd64
 pkg: core/modules/reach/test
 cpu: Intel(R) Core(TM) i5-8350U CPU @ 1.70GHz
-BenchmarkDist-8                 	100000000	        11.24 ns/op
-Benchmark4TilesWithinReach-8    	13350830	        87.64 ns/op
-Benchmark12TilesWithinReach-8   	 9518014	       133.7 ns/op
+BenchmarkDist-8                 	72901786	        16.32 ns/op
+Benchmark4TilesWithinReach-8    	 6746808	       181.5 ns/op
+Benchmark12TilesWithinReach-8   	 3146670	       548.5 ns/op
 PASS
-ok  	core/modules/reach/test	3.582s
+ok  	core/modules/reach/test	4.173s
 ```
 ## Lines of code
 ```

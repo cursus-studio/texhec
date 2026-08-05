@@ -7,7 +7,7 @@ extremely useful for generating maps
 ```
 $ go test ./... -bench=.
 PASS
-ok  	engine/modules/noise/test	1.291s
+ok  	engine/modules/noise/test	1.252s
 ```
 ## Lines of code
 ```

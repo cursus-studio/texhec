@@ -8,10 +8,10 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                               7             83             13            418
+Go                               7             83             13            419
 Markdown                         1              8              0             27
 -------------------------------------------------------------------------------
-SUM:                             8             91             13            445
+SUM:                             8             91             13            446
 -------------------------------------------------------------------------------
 ```
 ## Types
@@ -73,6 +73,9 @@ Type: `core/modules/ui.CursorCameraComponent`
   - `engine/modules/collider.Direction`
   - `engine/modules/collider.NewCollider`
   - `engine/modules/collider.Pos`
+
+`engine/modules/delay`:
+  - `engine/modules/delay.NewDelayedEvent`
 
 `engine/modules/ecs`:
   - `engine/modules/ecs.ComponentArray`
@@ -145,7 +148,6 @@ Type: `core/modules/ui.CursorCameraComponent`
   - `engine/modules/transform.Size`
 
 `engine/modules/transition`:
-  - `engine/modules/transition.NewDelayedEvent`
   - `engine/modules/transition.NewTransition`
   - `engine/modules/transition.NewTransitionEvent`
   - `engine/modules/transition.TransitionComponent`

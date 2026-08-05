@@ -9,25 +9,25 @@ goos: linux
 goarch: amd64
 pkg: engine/modules/datastructures/test
 cpu: Intel(R) Core(TM) i5-8350U CPU @ 1.70GHz
-BenchmarkMapGetByIndex-8                      	139785606	         8.515 ns/op
-BenchmarkIndexTrackerGetByIndex-8             	17903938	        67.85 ns/op
-BenchmarkIndexTrackerGetByValue-8             	13564314	        87.53 ns/op
-BenchmarkMapIterate-8                         	  111667	     10844 ns/op
-BenchmarkIndexTrackerIterate-8                	 4131976	       294.9 ns/op
-BenchmarkMapAdd-8                             	 3902844	       381.2 ns/op
-BenchmarkIndexTrackerAdd-8                    	 1265200	       910.1 ns/op
-BenchmarkMapDelete-8                          	 2810298	       489.8 ns/op
-BenchmarkIndexTrackerDelete-8                 	 1071009	      1265 ns/op
-BenchmarkSparseSetGetWithoutPaging-8          	476396167	         2.517 ns/op
-BenchmarkSparseSetGetWithPaging-8             	251607088	         4.757 ns/op
-BenchmarkSparseSetGetIndicesWithoutPaging-8   	713987823	         1.690 ns/op
-BenchmarkSparseSetGetIndicesWithPaging-8      	689825198	         1.690 ns/op
-BenchmarkSparseSetAddWithoutPaging-8          	251044130	         4.013 ns/op
-BenchmarkSparseSetAddWithPaging-8             	122293710	         9.175 ns/op
-BenchmarkSparseSetRemoveWithoutPaging-8       	304887013	         5.402 ns/op
-BenchmarkSparseSetRemoveWithPaging-8          	100000000	        12.16 ns/op
+BenchmarkMapGetByIndex-8                      	100000000	        10.26 ns/op
+BenchmarkIndexTrackerGetByIndex-8             	12761145	        93.21 ns/op
+BenchmarkIndexTrackerGetByValue-8             	10375312	       105.9 ns/op
+BenchmarkMapIterate-8                         	   98338	     12453 ns/op
+BenchmarkIndexTrackerIterate-8                	 3669985	       319.8 ns/op
+BenchmarkMapAdd-8                             	 3741642	       403.4 ns/op
+BenchmarkIndexTrackerAdd-8                    	 1000000	      1066 ns/op
+BenchmarkMapDelete-8                          	 2653327	       500.7 ns/op
+BenchmarkIndexTrackerDelete-8                 	 1000000	      1415 ns/op
+BenchmarkSparseSetGetWithoutPaging-8          	475007954	         2.547 ns/op
+BenchmarkSparseSetGetWithPaging-8             	252428830	         4.778 ns/op
+BenchmarkSparseSetGetIndicesWithoutPaging-8   	714019465	         1.688 ns/op
+BenchmarkSparseSetGetIndicesWithPaging-8      	698018500	         1.703 ns/op
+BenchmarkSparseSetAddWithoutPaging-8          	283678922	         5.791 ns/op
+BenchmarkSparseSetAddWithPaging-8             	131760746	         9.040 ns/op
+BenchmarkSparseSetRemoveWithoutPaging-8       	257807088	         4.341 ns/op
+BenchmarkSparseSetRemoveWithPaging-8          	131474908	        10.25 ns/op
 PASS
-ok  	engine/modules/datastructures/test	38.304s
+ok  	engine/modules/datastructures/test	43.474s
 ```
 ## Lines of code
 ```

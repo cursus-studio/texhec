@@ -6,7 +6,7 @@ defines how obstruction map is stored and accessed
 ```
 $ go test ./... -bench=.
 PASS
-ok  	core/modules/obstruction/test	0.005s
+ok  	core/modules/obstruction/test	0.007s
 ```
 ## Lines of code
 ```
@@ -14,9 +14,9 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                               6             54             11            319
+Go                               6             56             11            327
 -------------------------------------------------------------------------------
-SUM:                             6             54             11            319
+SUM:                             6             56             11            327
 -------------------------------------------------------------------------------
 ```
 ## Types
@@ -34,6 +34,9 @@ Type: `func() engine/modules/ecs.ComponentArray[core/modules/obstruction.Deploye
 
 #### method Service Grid
 Type: `func() engine/modules/grid.ServiceT[core/modules/obstruction.Obstruction]`
+
+#### method Service Obstructions
+Type: `func() engine/modules/datastructures.SparseSet[core/modules/obstruction.Obstruction]`
 
 #### method Service Register
 Type: `func() error`
@@ -118,6 +121,10 @@ Type: `func() core/modules/obstruction.DeployedComponent`
 
 `core/pkg`:
   - `core/pkg.Pkg`
+
+`engine/modules/datastructures`:
+  - `engine/modules/datastructures.NewSparseSet`
+  - `engine/modules/datastructures.SparseSet`
 
 `engine/modules/ecs`:
   - `engine/modules/ecs.ComponentArray`

@@ -6,7 +6,7 @@ this module allows us to encode and decode golang objects.
 ```
 $ go test ./... -bench=.
 PASS
-ok  	engine/modules/codec/test	0.006s
+ok  	engine/modules/codec/test	0.007s
 ```
 ## Lines of code
 ```

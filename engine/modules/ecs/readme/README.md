@@ -209,26 +209,26 @@ goos: linux
 goarch: amd64
 pkg: engine/modules/ecs/test
 cpu: Intel(R) Core(TM) i5-8350U CPU @ 1.70GHz
-BenchmarkDirtySetDirty-8               	129882433	         8.523 ns/op
-BenchmarkDirtySetDirtyInversed-8       	123916508	         8.512 ns/op
-BenchmarkDirtySetGet-8                 	530072244	         2.280 ns/op
-BenchmarkDirtySetDirtyAndGet-8         	162435986	         7.464 ns/op
-BenchmarkDirtySetDirtyAnd1Get-8        	125198662	         9.240 ns/op
-Benchmark4SavesWith7Systems-8          	27713272	        43.31 ns/op
-Benchmark16SavesWith7Systems-8         	 7128376	       170.1 ns/op
-Benchmark256SavesWith7Systems-8        	  463666	      2605 ns/op
-Benchmark4096SavesWith7Systems-8       	   29164	     41219 ns/op
-Benchmark16384SavesWith7Systems-8      	    7380	    166748 ns/op
-Benchmark65536SavesWith7Systems-8      	    1785	    665869 ns/op
-Benchmark262144SavesWith7Systems-8     	     456	   2664992 ns/op
-BenchmarkGetComponent-8                	79332867	        15.08 ns/op
-BenchmarkCreateComponents-8            	40945358	        31.48 ns/op
-BenchmarkUpdateComponents-8            	100000000	        10.54 ns/op
-BenchmarkRemoveComponent-8             	68089568	        14.83 ns/op
-BenchmarkRemoveEntityWithComponent-8   	33530390	        36.42 ns/op
-BenchmarkRemoveEntity-8                	64194157	        19.69 ns/op
+BenchmarkDirtySetDirty-8               	100000000	        12.94 ns/op
+BenchmarkDirtySetDirtyInversed-8       	135279075	         9.214 ns/op
+BenchmarkDirtySetGet-8                 	534313184	         2.260 ns/op
+BenchmarkDirtySetDirtyAndGet-8         	162697293	         7.297 ns/op
+BenchmarkDirtySetDirtyAnd1Get-8        	100000000	        13.31 ns/op
+Benchmark4SavesWith7Systems-8          	28339609	        42.43 ns/op
+Benchmark16SavesWith7Systems-8         	 6587994	       171.3 ns/op
+Benchmark256SavesWith7Systems-8        	  459235	      2572 ns/op
+Benchmark4096SavesWith7Systems-8       	   29434	     41174 ns/op
+Benchmark16384SavesWith7Systems-8      	    7248	    164820 ns/op
+Benchmark65536SavesWith7Systems-8      	    1840	    659049 ns/op
+Benchmark262144SavesWith7Systems-8     	     452	   2644456 ns/op
+BenchmarkGetComponent-8                	78782577	        15.10 ns/op
+BenchmarkCreateComponents-8            	41050173	        40.55 ns/op
+BenchmarkUpdateComponents-8            	100000000	        10.52 ns/op
+BenchmarkRemoveComponent-8             	77405326	        15.01 ns/op
+BenchmarkRemoveEntityWithComponent-8   	33956384	        35.46 ns/op
+BenchmarkRemoveEntity-8                	68035004	        18.72 ns/op
 PASS
-ok  	engine/modules/ecs/test	37.855s
+ok  	engine/modules/ecs/test	38.205s
 ```
 ## Lines of code
 ```
