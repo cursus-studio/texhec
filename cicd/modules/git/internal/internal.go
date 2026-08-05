@@ -38,8 +38,9 @@ func (s *service) handleListing(comparedCommit string) ([]string, error) {
 	args := []string{"--no-pager", "diff", "--name-only", "--staged"}
 	if comparedCommit != "" {
 		args = append(args, comparedCommit)
+	} else {
+		args = append(args, "HEAD")
 	}
-	args = append(args, "HEAD")
 	cmd := exec.Command("git", args...)
 
 	var out bytes.Buffer
