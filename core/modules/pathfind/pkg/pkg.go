@@ -7,7 +7,9 @@ import (
 	"core/modules/pathfind/internal"
 	"engine/modules/ecs"
 	"engine/modules/entityregistry"
+	gridpkg "engine/modules/grid/pkg"
 	interactionspkg "engine/modules/interactions/pkg"
+	relationpkg "engine/modules/relation/pkg"
 	typeregistrypkg "engine/modules/typeregistry/pkg"
 	"fmt"
 	"strconv"
@@ -36,7 +38,21 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 		interactionspkg.FeaturePkg[FindPathFeature](
 			interactionspkg.NewCopyRelation[actions.CoordsCursorComponent](
 				unsafe.Offsetof(FindPathFeature{}.Entity), unsafe.Offsetof(FindPathFeature{}.Coords)),
+			interactionspkg.NewCopyRelation[actions.RegionAnchorComponent](
+				unsafe.Offsetof(FindPathFeature{}.Entity), unsafe.Offsetof(FindPathFeature{}.Coords)),
 		),
+		relationpkg.MapRelationPkg(
+			func(w ecs.World) ecs.DirtySet {
+				set := ecs.NewDirtySet()
+				arr := ecs.GetComponentArray[internal.ChunkObstructionComponent](w)
+				arr.AddDirtySet(set)
+				return set
+			},
+			func(w ecs.World) func(entity ecs.EntityID) (indexType internal.ChunkObstructionComponent, ok bool) {
+				return ecs.GetComponentArray[internal.ChunkObstructionComponent](w).Get
+			},
+		),
+		gridpkg.PkgT[internal.RegionFragment],
 	}
 	for _, pkg := range pkgs {
 		pkg(b)

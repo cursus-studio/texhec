@@ -248,6 +248,7 @@ func (s *service) GenerateOn(event tile.MissingChunkEvent) {
 		}
 		toDeploy := []Deployed{
 			{s.Definitions().Objects().Farm, playerEntity},
+			{s.Definitions().Objects().Tank, playerEntity},
 			{s.Definitions().Objects().Tank, player2Entity},
 		}
 	loop:

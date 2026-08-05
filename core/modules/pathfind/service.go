@@ -12,7 +12,8 @@ import (
 )
 
 var (
-	ErrInvalidPath error = errors.New("pathfind:invalid path")
+	ErrInvalidPath         error = errors.New("pathfind:invalid path")
+	ErrInvalidServiceOrder       = errors.New("invalid services order. Chunk region map cannot be generated before chunk")
 )
 
 // all entities without [tile.StepComponent] get one on tick which will move them towards target
@@ -44,12 +45,24 @@ func NewStep(x, y grid.Coord) StepComponent { return StepComponent{grid.NewCoord
 
 //
 
+// this variable contains region index and is used for region connectivity
+type Region uint16
+
+var NotARegion = ^Region(0)
+
 type Service interface {
 	ecs.SystemRegister
 	Target() ecs.ComponentArray[TargetComponent]
 	Speed() ecs.ComponentArray[SpeedComponent]
 	Step() ecs.ComponentArray[StepComponent]
 
+	// region
+	RegionObstruction(Region) (obstruction.Obstruction, bool)
+	CoordsRegion(grid.Coords, obstruction.Obstruction) (Region, bool)
+	EntityRegion(ecs.EntityID) (Region, bool)
+	ShareRegion(ecs.EntityID, grid.Coords) bool
+
+	//
 	FindPath(FindPathEvent)
 
 	CanStep(

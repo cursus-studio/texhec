@@ -15,6 +15,7 @@ import (
 
 type service struct {
 	game.GameWorld `inject:""`
+	*regionsService
 
 	target ecs.ComponentArray[pathfind.TargetComponent]
 	speed  ecs.ComponentArray[pathfind.SpeedComponent]
@@ -23,6 +24,7 @@ type service struct {
 
 func NewService(c ioc.Dic) pathfind.Service {
 	s := ioc.GetServices[*service](c)
+	s.regionsService = newRegionService(c)
 	s.target = ecs.GetComponentArray[pathfind.TargetComponent](s.World())
 	s.speed = ecs.GetComponentArray[pathfind.SpeedComponent](s.World())
 	s.step = ecs.GetComponentArray[pathfind.StepComponent](s.World())

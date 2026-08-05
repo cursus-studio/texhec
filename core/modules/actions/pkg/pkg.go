@@ -72,8 +72,9 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 		}),
 
 		typeregistrypkg.PkgT[actions.CoordsCursorComponent],
-		typeregistrypkg.PkgT[actions.AnchorComponent],
 		typeregistrypkg.PkgT[actions.CanDeployComponent],
+		typeregistrypkg.PkgT[actions.AnchorComponent],
+		typeregistrypkg.PkgT[actions.RegionAnchorComponent],
 	}
 	for _, pkg := range pkgs {
 		pkg(b)

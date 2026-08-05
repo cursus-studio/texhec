@@ -23,6 +23,11 @@ func (s *service) OnClickObject(event tile.ClickEntityEvent) {
 		}
 	}
 
+	region, ok := s.Pathfind().EntityRegion(event.Entity)
+	if !ok {
+		return
+	}
+
 	link, ok := s.Metadata().Link().Get(event.Entity)
 	if !ok {
 		s.Logger().Warn(fmt.Errorf("cannot click entity which doesn't have original entity"))
@@ -31,8 +36,9 @@ func (s *service) OnClickObject(event tile.ClickEntityEvent) {
 
 	propertiesEntity := s.World().NewEntity()
 	s.CanDeploy().Set(propertiesEntity, actions.NewCanDeploy(link.Entity))
-	s.Anchor().Set(propertiesEntity, actions.NewAnchor(event.Entity))
 	s.CoordsCursor().Set(propertiesEntity, actions.NewCoordsCursor(link.Entity, false))
+	s.Anchor().Set(propertiesEntity, actions.NewAnchor(event.Entity))
+	s.RegionAnchor().Set(propertiesEntity, actions.NewRegionAnchor(region))
 
 	s.EntityInteraction().Save(propertiesEntity, actions.NewEntityInteraction(event.Entity))
 }

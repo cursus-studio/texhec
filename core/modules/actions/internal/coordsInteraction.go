@@ -71,6 +71,14 @@ func (s *service) OnTileHover(e grid.HoverEvent) {
 		}
 	}
 
+	if anchor, ok := s.RegionAnchor().Get(previewEntity); ok {
+		obstruction, _ := s.Pathfind().RegionObstruction(anchor.Region)
+		region, _ := s.Pathfind().CoordsRegion(coords, obstruction)
+		if region != anchor.Region {
+			canDeploy = false
+		}
+	}
+
 	if coordsCursor, ok := s.CoordsCursor().Get(previewEntity); ok {
 		blueprintObstruction, _ := s.Obstruction().Component().Get(coordsCursor.PropertiesEntity)
 		size, _ := s.Tile().Size().Get(coordsCursor.PropertiesEntity)

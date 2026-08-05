@@ -1,6 +1,7 @@
 package actions
 
 import (
+	"core/modules/pathfind"
 	"engine/modules/ecs"
 	"engine/modules/grid"
 	"engine/modules/interactions"
@@ -24,6 +25,9 @@ type CoordsCursorComponent struct {
 type AnchorComponent struct {
 	Entity ecs.EntityID
 }
+type RegionAnchorComponent struct {
+	Region pathfind.Region
+}
 
 func NewCanDeploy(canDeploy ecs.EntityID) CanDeployComponent {
 	return CanDeployComponent{canDeploy}
@@ -33,6 +37,9 @@ func NewCoordsCursor(propertiesEntity ecs.EntityID, customImage bool) CoordsCurs
 }
 func NewAnchor(entity ecs.EntityID) AnchorComponent {
 	return AnchorComponent{entity}
+}
+func NewRegionAnchor(region pathfind.Region) RegionAnchorComponent {
+	return RegionAnchorComponent{region}
 }
 
 //
@@ -65,6 +72,7 @@ type Service interface {
 	CanDeploy() ecs.ComponentArray[CanDeployComponent]
 	CoordsCursor() ecs.ComponentArray[CoordsCursorComponent]
 	Anchor() ecs.ComponentArray[AnchorComponent]
+	RegionAnchor() ecs.ComponentArray[RegionAnchorComponent]
 
 	CoordsInteraction() interactions.InteractionService[CoordsInteraction]
 	EntityInteraction() interactions.InteractionService[EntityInteraction]
