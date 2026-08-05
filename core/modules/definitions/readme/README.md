@@ -8,10 +8,10 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                               3             42              8            328
+Go                               3             42              8            334
 Markdown                         1              1              0              3
 -------------------------------------------------------------------------------
-SUM:                             4             43              8            331
+SUM:                             4             43              8            337
 -------------------------------------------------------------------------------
 ```
 ## TODO
@@ -222,6 +222,7 @@ Type: `core/modules/obstruction.Obstruction`
   - `core/game.GameWorld`
 
 `core/modules/definitions`:
+  - `core/modules/definitions.AirspaceObstruction`
   - `core/modules/definitions.Assets`
   - `core/modules/definitions.Blank`
   - `core/modules/definitions.Border`
@@ -235,6 +236,7 @@ Type: `core/modules/obstruction.Obstruction`
   - `core/modules/definitions.Hud`
   - `core/modules/definitions.Input`
   - `core/modules/definitions.Linear`
+  - `core/modules/definitions.LowlandObstruction`
   - `core/modules/definitions.MyEasing`
   - `core/modules/definitions.Objects`
   - `core/modules/definitions.Service`
@@ -244,6 +246,7 @@ Type: `core/modules/obstruction.Obstruction`
   - `core/modules/definitions.Text`
   - `core/modules/definitions.Tiles`
   - `core/modules/definitions.Transitions`
+  - `core/modules/definitions.WaterObstruction`
 
 `core/modules/deploy`:
   - `core/modules/deploy.Component`
@@ -251,6 +254,8 @@ Type: `core/modules/obstruction.Obstruction`
 
 `core/modules/obstruction`:
   - `core/modules/obstruction.Obstruction`
+  - `core/modules/obstruction.Obstructions`
+  - `core/modules/obstruction.Service`
 
 `core/modules/tile`:
   - `core/modules/tile.Coord`

@@ -8,10 +8,10 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                               6             83             13            416
+Go                               6             85             13            442
 Markdown                         1              0              0              1
 -------------------------------------------------------------------------------
-SUM:                             7             83             13            417
+SUM:                             7             85             13            443
 -------------------------------------------------------------------------------
 ```
 ## Types
@@ -33,8 +33,11 @@ Type: `func() engine/modules/ecs.ComponentArray[core/modules/actions.CoordsCurso
 #### method Service CoordsInteraction
 Type: `func() engine/modules/interactions.InteractionService[core/modules/actions.CoordsInteraction]`
 
-#### method Service ObjectInteraction
-Type: `func() engine/modules/interactions.InteractionService[core/modules/actions.ObjectInteraction]`
+#### method Service EntityInteraction
+Type: `func() engine/modules/interactions.InteractionService[core/modules/actions.EntityInteraction]`
+
+#### method Service RegionAnchor
+Type: `func() engine/modules/ecs.ComponentArray[core/modules/actions.RegionAnchorComponent]`
 
 ### type CoordsStep
 Type: `core/modules/actions.CoordsStep`
@@ -42,35 +45,35 @@ Type: `core/modules/actions.CoordsStep`
 #### method CoordsStep State
 Type: `func() core/modules/actions.CoordsInteraction`
 
-### type ObjectStep
-Type: `core/modules/actions.ObjectStep`
+### type EntityStep
+Type: `core/modules/actions.EntityStep`
 
-#### method ObjectStep State
-Type: `func() core/modules/actions.ObjectInteraction`
+#### method EntityStep State
+Type: `func() core/modules/actions.EntityInteraction`
 
-### type FriendlyObjectStep
-Type: `core/modules/actions.FriendlyObjectStep`
+### type FriendlyEntityStep
+Type: `core/modules/actions.FriendlyEntityStep`
 
-#### method FriendlyObjectStep State
-Type: `func() core/modules/actions.ObjectInteraction`
+#### method FriendlyEntityStep State
+Type: `func() core/modules/actions.EntityInteraction`
 
-### type FriendlyMobileObjectStep
-Type: `core/modules/actions.FriendlyMobileObjectStep`
+### type FriendlyMobileEntityStep
+Type: `core/modules/actions.FriendlyMobileEntityStep`
 
-#### method FriendlyMobileObjectStep State
-Type: `func() core/modules/actions.ObjectInteraction`
+#### method FriendlyMobileEntityStep State
+Type: `func() core/modules/actions.EntityInteraction`
 
-### type FriendlyBuilderObjectStep
-Type: `core/modules/actions.FriendlyBuilderObjectStep`
+### type FriendlyBuilderEntityStep
+Type: `core/modules/actions.FriendlyBuilderEntityStep`
 
-#### method FriendlyBuilderObjectStep State
-Type: `func() core/modules/actions.ObjectInteraction`
+#### method FriendlyBuilderEntityStep State
+Type: `func() core/modules/actions.EntityInteraction`
 
-### type EnemyObjectStep
-Type: `core/modules/actions.EnemyObjectStep`
+### type EnemyEntityStep
+Type: `core/modules/actions.EnemyEntityStep`
 
-#### method EnemyObjectStep State
-Type: `func() core/modules/actions.ObjectInteraction`
+#### method EnemyEntityStep State
+Type: `func() core/modules/actions.EntityInteraction`
 
 ### type BlueprintStep
 Type: `core/modules/actions.BlueprintStep`
@@ -101,16 +104,22 @@ Type: `core/modules/actions.AnchorComponent`
 #### property AnchorComponent Entity
 Type: `engine/modules/ecs.EntityID`
 
+### type RegionAnchorComponent
+Type: `core/modules/actions.RegionAnchorComponent`
+
+#### property RegionAnchorComponent Region
+Type: `core/modules/pathfind.Region`
+
 ### type CoordsInteraction
 Type: `core/modules/actions.CoordsInteraction`
 
 #### property CoordsInteraction Coords
 Type: `engine/modules/grid.Coords`
 
-### type ObjectInteraction
-Type: `core/modules/actions.ObjectInteraction`
+### type EntityInteraction
+Type: `core/modules/actions.EntityInteraction`
 
-#### property ObjectInteraction Entity
+#### property EntityInteraction Entity
 Type: `engine/modules/ecs.EntityID`
 
 ### type BlueprintInteraction
@@ -136,11 +145,14 @@ Type: `func(propertiesEntity engine/modules/ecs.EntityID, customImage bool) core
 ### func NewAnchor
 Type: `func(entity engine/modules/ecs.EntityID) core/modules/actions.AnchorComponent`
 
+### func NewRegionAnchor
+Type: `func(region core/modules/pathfind.Region) core/modules/actions.RegionAnchorComponent`
+
 ### func NewCoordsInteraction
 Type: `func(coords engine/modules/grid.Coords) core/modules/actions.CoordsInteraction`
 
-### func NewObjectInteraction
-Type: `func(entity engine/modules/ecs.EntityID) core/modules/actions.ObjectInteraction`
+### func NewEntityInteraction
+Type: `func(entity engine/modules/ecs.EntityID) core/modules/actions.EntityInteraction`
 
 ### func NewBlueprintInteraction
 Type: `func(entity engine/modules/ecs.EntityID) core/modules/actions.BlueprintInteraction`
@@ -168,22 +180,25 @@ Type: `func(entity engine/modules/ecs.EntityID) core/modules/actions.BlueprintIn
   - `core/modules/actions.CoordsInteraction`
   - `core/modules/actions.CoordsStep`
   - `core/modules/actions.CustomImage`
-  - `core/modules/actions.EnemyObjectStep`
+  - `core/modules/actions.EnemyEntityStep`
   - `core/modules/actions.Entity`
+  - `core/modules/actions.EntityInteraction`
+  - `core/modules/actions.EntityStep`
   - `core/modules/actions.ErrRequiresDeploy`
   - `core/modules/actions.ErrRequiresSpeed`
-  - `core/modules/actions.FriendlyBuilderObjectStep`
-  - `core/modules/actions.FriendlyMobileObjectStep`
-  - `core/modules/actions.FriendlyObjectStep`
+  - `core/modules/actions.FriendlyBuilderEntityStep`
+  - `core/modules/actions.FriendlyEntityStep`
+  - `core/modules/actions.FriendlyMobileEntityStep`
   - `core/modules/actions.NewAnchor`
   - `core/modules/actions.NewBlueprintInteraction`
   - `core/modules/actions.NewCanDeploy`
   - `core/modules/actions.NewCoordsCursor`
   - `core/modules/actions.NewCoordsInteraction`
-  - `core/modules/actions.NewObjectInteraction`
-  - `core/modules/actions.ObjectInteraction`
-  - `core/modules/actions.ObjectStep`
+  - `core/modules/actions.NewEntityInteraction`
+  - `core/modules/actions.NewRegionAnchor`
   - `core/modules/actions.PropertiesEntity`
+  - `core/modules/actions.Region`
+  - `core/modules/actions.RegionAnchorComponent`
   - `core/modules/actions.Service`
 
 `core/modules/definitions`:
@@ -206,6 +221,13 @@ Type: `func(entity engine/modules/ecs.EntityID) core/modules/actions.BlueprintIn
   - `core/modules/obstruction.Deployed`
   - `core/modules/obstruction.NewAABB`
   - `core/modules/obstruction.Obstruction`
+
+`core/modules/pathfind`:
+  - `core/modules/pathfind.CoordsRegion`
+  - `core/modules/pathfind.EntityRegion`
+  - `core/modules/pathfind.Region`
+  - `core/modules/pathfind.RegionObstruction`
+  - `core/modules/pathfind.Speed`
 
 `core/modules/player`:
   - `core/modules/player.ControlsObject`

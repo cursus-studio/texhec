@@ -8,9 +8,9 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                               3             37             14            208
+Go                               3             38             14            216
 -------------------------------------------------------------------------------
-SUM:                             3             37             14            208
+SUM:                             3             38             14            216
 -------------------------------------------------------------------------------
 ```
 ## Types
@@ -44,19 +44,19 @@ Type: `[]engine/modules/ecs.EntityID`
 Type: `core/modules/deploy.DeployEvent`
 
 #### property DeployEvent By
-Type: `core/modules/actions.FriendlyBuilderObjectStep`
+Type: `engine/modules/ecs.EntityID`
 
 #### property DeployEvent Blueprint
-Type: `core/modules/actions.BlueprintStep`
+Type: `engine/modules/ecs.EntityID`
 
 #### property DeployEvent Coords
-Type: `core/modules/actions.CoordsStep`
+Type: `engine/modules/grid.Coords`
 
 ### type DestroyEvent
 Type: `core/modules/deploy.DestroyEvent`
 
-#### property DestroyEvent Object
-Type: `core/modules/actions.FriendlyObjectStep`
+#### property DestroyEvent Entity
+Type: `engine/modules/ecs.EntityID`
 
 ## Functions
 ### func NewDeploy
@@ -66,7 +66,7 @@ Type: `func(deployable ...engine/modules/ecs.EntityID) core/modules/deploy.Compo
 Type: `func(by engine/modules/ecs.EntityID, blueprint engine/modules/ecs.EntityID, coords engine/modules/grid.Coords) core/modules/deploy.DeployEvent`
 
 ### func NewDestroyEvent
-Type: `func(object engine/modules/ecs.EntityID) core/modules/deploy.DestroyEvent`
+Type: `func(entity engine/modules/ecs.EntityID) core/modules/deploy.DestroyEvent`
 
 
 ## Dependencies
@@ -86,11 +86,8 @@ Type: `func(object engine/modules/ecs.EntityID) core/modules/deploy.DestroyEvent
   - `core/modules/actions.CoordsCursorComponent`
   - `core/modules/actions.CoordsStep`
   - `core/modules/actions.Entity`
-  - `core/modules/actions.FriendlyBuilderObjectStep`
-  - `core/modules/actions.FriendlyObjectStep`
-  - `core/modules/actions.NewBlueprintInteraction`
-  - `core/modules/actions.NewCoordsInteraction`
-  - `core/modules/actions.NewObjectInteraction`
+  - `core/modules/actions.FriendlyBuilderEntityStep`
+  - `core/modules/actions.FriendlyEntityStep`
 
 `core/modules/deploy`:
   - `core/modules/deploy.Blueprint`
@@ -99,7 +96,9 @@ Type: `func(object engine/modules/ecs.EntityID) core/modules/deploy.DestroyEvent
   - `core/modules/deploy.Coords`
   - `core/modules/deploy.DeployEvent`
   - `core/modules/deploy.DestroyEvent`
-  - `core/modules/deploy.Object`
+  - `core/modules/deploy.Entity`
+  - `core/modules/deploy.NewDeployEvent`
+  - `core/modules/deploy.NewDestroyEvent`
   - `core/modules/deploy.Reach`
   - `core/modules/deploy.Service`
 
@@ -150,10 +149,6 @@ Type: `func(object engine/modules/ecs.EntityID) core/modules/deploy.DestroyEvent
 `engine/modules/inputs`:
   - `engine/modules/inputs.LeftClick`
   - `engine/modules/inputs.NewLeftClick`
-
-`engine/modules/interactions`:
-  - `engine/modules/interactions.NewStep`
-  - `engine/modules/interactions.State`
 
 `engine/modules/interactions/pkg`:
   - `engine/modules/interactions/pkg.FeaturePkg`

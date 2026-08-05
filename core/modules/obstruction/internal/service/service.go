@@ -5,6 +5,7 @@ import (
 	"core/modules/definitions"
 	"core/modules/obstruction"
 	"core/modules/tile"
+	"engine/modules/datastructures"
 	"engine/modules/ecs"
 	"engine/modules/grid"
 	"engine/modules/inputs"
@@ -29,6 +30,7 @@ type service struct {
 	sizeGetter        record.ComponentGetter[tile.SizeComponent]
 	obstructionGetter record.ComponentGetter[obstruction.Component]
 	deployedGetter    record.ComponentGetter[obstruction.DeployedComponent]
+	obstructions      datastructures.SparseSet[obstruction.Obstruction]
 }
 
 func NewService(c ioc.Dic) obstruction.Service {
@@ -49,6 +51,7 @@ func NewService(c ioc.Dic) obstruction.Service {
 	s.sizeGetter = record.AddToConfig[tile.SizeComponent](s.config)
 	s.obstructionGetter = record.AddToConfig[obstruction.Component](s.config)
 	s.deployedGetter = record.AddToConfig[obstruction.DeployedComponent](s.config)
+	s.obstructions = datastructures.NewSparseSet[obstruction.Obstruction]()
 
 	return s
 }
@@ -75,4 +78,8 @@ func (s *service) Collisions(aabb obstruction.AABB, obstruction obstruction.Obst
 		}
 	}
 	return collisions
+}
+
+func (s *service) Obstructions() datastructures.SparseSet[obstruction.Obstruction] {
+	return s.obstructions
 }

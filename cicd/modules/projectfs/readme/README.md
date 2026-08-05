@@ -8,9 +8,9 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                               3             21              4            153
+Go                               3             22              4            168
 -------------------------------------------------------------------------------
-SUM:                             3             21              4            153
+SUM:                             3             22              4            168
 -------------------------------------------------------------------------------
 ```
 ## Types
@@ -34,6 +34,9 @@ Type: `func(project string) []string`
 
 #### method Service ProjectServices
 Type: `func(project string) []string`
+
+#### method Service PxoFiles
+Type: `func() ([]string, error)`
 
 #### method Service Save
 Type: `func(file string, content string) error`

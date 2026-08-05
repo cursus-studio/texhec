@@ -13,12 +13,13 @@ import (
 type service struct {
 	game.GameWorld              `inject:""`
 	CoordsInteractionService    interactions.InteractionService[actions.CoordsInteraction]    `inject:""`
-	ObjectInteractionService    interactions.InteractionService[actions.ObjectInteraction]    `inject:""`
+	ObjectInteractionService    interactions.InteractionService[actions.EntityInteraction]    `inject:""`
 	BlueprintInteractionService interactions.InteractionService[actions.BlueprintInteraction] `inject:""`
 
 	canDeploy    ecs.ComponentArray[actions.CanDeployComponent]
 	coordsCursor ecs.ComponentArray[actions.CoordsCursorComponent]
 	coordsAnchor ecs.ComponentArray[actions.AnchorComponent]
+	regionAnchor ecs.ComponentArray[actions.RegionAnchorComponent]
 }
 
 func NewService(c ioc.Dic) actions.Service {
@@ -26,6 +27,7 @@ func NewService(c ioc.Dic) actions.Service {
 	s.canDeploy = ecs.GetComponentArray[actions.CanDeployComponent](s.World())
 	s.coordsCursor = ecs.GetComponentArray[actions.CoordsCursorComponent](s.World())
 	s.coordsAnchor = ecs.GetComponentArray[actions.AnchorComponent](s.World())
+	s.regionAnchor = ecs.GetComponentArray[actions.RegionAnchorComponent](s.World())
 
 	s.CoordsInteractionService.MissingPreview().OnUpsert(s.OnCoordsMissingUpsert)
 	s.CoordsInteractionService.StatePreview().OnUpsert(s.OnCoordsStateUpsert)
@@ -47,9 +49,12 @@ func NewService(c ioc.Dic) actions.Service {
 func (s *service) CanDeploy() ecs.ComponentArray[actions.CanDeployComponent] {
 	return s.canDeploy
 }
+func (s *service) CoordsCursor() ecs.ComponentArray[actions.CoordsCursorComponent] {
+	return s.coordsCursor
+}
 func (s *service) Anchor() ecs.ComponentArray[actions.AnchorComponent] {
 	return s.coordsAnchor
 }
-func (s *service) CoordsCursor() ecs.ComponentArray[actions.CoordsCursorComponent] {
-	return s.coordsCursor
+func (s *service) RegionAnchor() ecs.ComponentArray[actions.RegionAnchorComponent] {
+	return s.regionAnchor
 }

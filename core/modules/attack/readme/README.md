@@ -8,10 +8,10 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                               3             14              1             63
+Go                               3             16              1             69
 Markdown                         1              0              0              1
 -------------------------------------------------------------------------------
-SUM:                             4             14              1             64
+SUM:                             4             16              1             70
 -------------------------------------------------------------------------------
 ```
 ## Types
@@ -25,13 +25,13 @@ Type: `func(core/modules/attack.AttackEvent)`
 Type: `core/modules/attack.AttackEvent`
 
 #### property AttackEvent By
-Type: `core/modules/actions.FriendlyBuilderObjectStep`
+Type: `engine/modules/ecs.EntityID`
 
 #### property AttackEvent Target
-Type: `core/modules/actions.EnemyObjectStep`
+Type: `engine/modules/ecs.EntityID`
 
 ## Functions
-### func NewDeployEvent
+### func NewAttackEvent
 Type: `func(by engine/modules/ecs.EntityID, target engine/modules/ecs.EntityID) core/modules/attack.AttackEvent`
 
 
@@ -41,23 +41,18 @@ Type: `func(by engine/modules/ecs.EntityID, target engine/modules/ecs.EntityID) 
 
 `core/modules/actions`:
   - `core/modules/actions.AnchorComponent`
-  - `core/modules/actions.EnemyObjectStep`
+  - `core/modules/actions.EnemyEntityStep`
   - `core/modules/actions.Entity`
-  - `core/modules/actions.FriendlyBuilderObjectStep`
-  - `core/modules/actions.NewObjectInteraction`
+  - `core/modules/actions.FriendlyBuilderEntityStep`
 
 `core/modules/attack`:
   - `core/modules/attack.AttackEvent`
-  - `core/modules/attack.By`
+  - `core/modules/attack.NewAttackEvent`
   - `core/modules/attack.Service`
   - `core/modules/attack.Target`
 
 `engine/modules/ecs`:
   - `engine/modules/ecs.EntityID`
-
-`engine/modules/interactions`:
-  - `engine/modules/interactions.NewStep`
-  - `engine/modules/interactions.State`
 
 `engine/modules/interactions/pkg`:
   - `engine/modules/interactions/pkg.FeaturePkg`

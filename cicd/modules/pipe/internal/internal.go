@@ -271,14 +271,14 @@ func NewService(c ioc.Dic) pipe.Service {
 				defer func() { _ = os.Remove(spiteSheetFile) }()
 				//pixelorama --headless --quit -- --framecount -e -f 1-1 -o $(pwd)/assets/dist/backgrounds/1.png -s -o $(pwd)/assets/dist/backgrounds/1.spritesheet.png $(pwd)/assets/src/backgrounds/1.pxo
 				//#nosec G204
-				cmd := exec.Command("pixeloarama", "--headless", "--quit", "--", "--framecount",
+				cmd := exec.Command("pixelorama", "--headless", "--quit", "--", "--framecount",
 					"-e", "-f 1-1", "-o", pngFile,
 					"-s", "-o", spiteSheetFile,
 					pwd+file)
 
 				out, err := cmd.CombinedOutput()
 				if err != nil {
-					return fmt.Errorf("failed to run command for %s: %s", file, string(out))
+					return fmt.Errorf("failed to run command for %s: %s %s", file, string(out), err.Error())
 				}
 				frames, err := parseFrameCount(string(out))
 				if err != nil {
@@ -431,7 +431,7 @@ func (s *service) Fix() error {
 	if err != nil {
 		return err
 	}
-	pxoFiles := slices.DeleteFunc(changedFiles, func(file string) bool {
+	pxoFiles := slices.DeleteFunc(slices.Clone(changedFiles), func(file string) bool {
 		return !strings.HasSuffix(file, ".pxo")
 	})
 

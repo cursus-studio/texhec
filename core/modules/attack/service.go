@@ -1,23 +1,19 @@
 package attack
 
-import (
-	"core/modules/actions"
-	"engine/modules/ecs"
-	"engine/modules/interactions"
-)
+import "engine/modules/ecs"
 
 type AttackEvent struct {
-	By     actions.FriendlyBuilderObjectStep
-	Target actions.EnemyObjectStep
+	By,
+	Target ecs.EntityID
 }
 
-func NewDeployEvent(
+func NewAttackEvent(
 	by,
 	target ecs.EntityID,
 ) AttackEvent {
 	return AttackEvent{
-		interactions.NewStep(actions.NewObjectInteraction(by)),
-		interactions.NewStep(actions.NewObjectInteraction(target)),
+		by,
+		target,
 	}
 }
 

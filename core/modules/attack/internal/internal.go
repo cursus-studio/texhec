@@ -20,5 +20,5 @@ func NewService(c ioc.Dic) attack.Service {
 }
 
 func (s *service) AttackEvent(event attack.AttackEvent) {
-	s.World().RemoveEntity(event.Target.State().Entity)
+	s.World().RemoveEntity(event.Target)
 }

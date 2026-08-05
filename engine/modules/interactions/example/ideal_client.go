@@ -83,6 +83,12 @@ type HealFeature struct {
 	Healed FriendlyUnit
 }
 
+func (f MoveFeature) Event() any   { return nil /*here should initialize event*/ }
+func (f StopFeature) Event() any   { return nil /*here should initialize event*/ }
+func (f BuildFeature) Event() any  { return nil /*here should initialize event*/ }
+func (f AttackFeature) Event() any { return nil /*here should initialize event*/ }
+func (f HealFeature) Event() any   { return nil /*here should initialize event*/ }
+
 var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 	pkgs := []ioc.Pkg{
 		// require most. Do not need configuration but whole implementation and integration with GUI

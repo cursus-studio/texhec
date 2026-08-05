@@ -13,7 +13,7 @@ to parse is to our asset type.
 ```
 $ go test ./... -bench=.
 PASS
-ok  	engine/modules/assets/test	0.006s
+ok  	engine/modules/assets/test	0.009s
 ```
 ## Lines of code
 ```

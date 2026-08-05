@@ -1,3 +1,4 @@
+// package responsible for delaying events
 package delay
 
 import (

@@ -20,19 +20,19 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 		}),
 
 		// object interaction
-		interactionspkg.InteractionPkg[actions.ObjectInteraction](),
-		interactionspkg.StepPkg[actions.ObjectStep](func(c ioc.Dic) func(state actions.ObjectInteraction) error {
-			return func(state actions.ObjectInteraction) error { return nil }
+		interactionspkg.InteractionPkg[actions.EntityInteraction](),
+		interactionspkg.StepPkg[actions.EntityStep](func(c ioc.Dic) func(state actions.EntityInteraction) error {
+			return func(state actions.EntityInteraction) error { return nil }
 		}),
-		interactionspkg.StepPkg[actions.FriendlyObjectStep](func(c ioc.Dic) func(state actions.ObjectInteraction) error {
+		interactionspkg.StepPkg[actions.FriendlyEntityStep](func(c ioc.Dic) func(state actions.EntityInteraction) error {
 			world := ioc.Get[game.GameWorld](c)
-			return func(state actions.ObjectInteraction) error {
+			return func(state actions.EntityInteraction) error {
 				return world.Player().ControlsObject(state.Entity)
 			}
 		}),
-		interactionspkg.StepPkg[actions.FriendlyMobileObjectStep](func(c ioc.Dic) func(state actions.ObjectInteraction) error {
+		interactionspkg.StepPkg[actions.FriendlyMobileEntityStep](func(c ioc.Dic) func(state actions.EntityInteraction) error {
 			world := ioc.Get[game.GameWorld](c)
-			return func(state actions.ObjectInteraction) error {
+			return func(state actions.EntityInteraction) error {
 				if err := world.Player().ControlsObject(state.Entity); err != nil {
 					return err
 				}
@@ -42,9 +42,9 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 				return nil
 			}
 		}),
-		interactionspkg.StepPkg[actions.FriendlyBuilderObjectStep](func(c ioc.Dic) func(state actions.ObjectInteraction) error {
+		interactionspkg.StepPkg[actions.FriendlyBuilderEntityStep](func(c ioc.Dic) func(state actions.EntityInteraction) error {
 			world := ioc.Get[game.GameWorld](c)
-			return func(state actions.ObjectInteraction) error {
+			return func(state actions.EntityInteraction) error {
 				if err := world.Player().ControlsObject(state.Entity); err != nil {
 					return err
 				}
@@ -55,9 +55,9 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 				return nil
 			}
 		}),
-		interactionspkg.StepPkg[actions.EnemyObjectStep](func(c ioc.Dic) func(state actions.ObjectInteraction) error {
+		interactionspkg.StepPkg[actions.EnemyEntityStep](func(c ioc.Dic) func(state actions.EntityInteraction) error {
 			world := ioc.Get[game.GameWorld](c)
-			return func(state actions.ObjectInteraction) error {
+			return func(state actions.EntityInteraction) error {
 				if err := world.Player().ControlsObject(state.Entity); err != nil {
 					return nil
 				}
@@ -72,8 +72,9 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 		}),
 
 		typeregistrypkg.PkgT[actions.CoordsCursorComponent],
-		typeregistrypkg.PkgT[actions.AnchorComponent],
 		typeregistrypkg.PkgT[actions.CanDeployComponent],
+		typeregistrypkg.PkgT[actions.AnchorComponent],
+		typeregistrypkg.PkgT[actions.RegionAnchorComponent],
 	}
 	for _, pkg := range pkgs {
 		pkg(b)

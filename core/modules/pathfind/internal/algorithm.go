@@ -44,6 +44,12 @@ func (s *service) findPath(
 	size tile.SizeComponent,
 	obstruction obstruction.Component,
 ) (path []tile.PosComponent, ok bool) {
+	r1, _ := s.CoordsRegion(from, obstruction.Obstruction)
+	r2, _ := s.CoordsRegion(to, obstruction.Obstruction)
+	if r1 != r2 {
+		return nil, false
+	}
+
 	toData, ok := s.Obstruction().Grid().CoordsData(to)
 	if !ok {
 		return nil, false
