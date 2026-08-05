@@ -35,7 +35,7 @@ func (s *service) FilterRemoved(allFiles []string) []string {
 }
 
 func (s *service) handleListing(comparedCommit string) ([]string, error) {
-	args := []string{"--no-pager", "diff", "--name-only"}
+	args := []string{"--no-pager", "diff", "--name-only", "--staged"}
 	if comparedCommit != "" {
 		args = append(args, comparedCommit)
 	}

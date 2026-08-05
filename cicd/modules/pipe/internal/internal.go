@@ -431,7 +431,7 @@ func (s *service) Fix() error {
 	if err != nil {
 		return err
 	}
-	pxoFiles := slices.DeleteFunc(changedFiles, func(file string) bool {
+	pxoFiles := slices.DeleteFunc(slices.Clone(changedFiles), func(file string) bool {
 		return !strings.HasSuffix(file, ".pxo")
 	})
 
