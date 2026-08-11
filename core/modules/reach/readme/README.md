@@ -9,11 +9,11 @@ goos: linux
 goarch: amd64
 pkg: core/modules/reach/test
 cpu: Intel(R) Core(TM) i5-8350U CPU @ 1.70GHz
-BenchmarkDist-8                 	72901786	        16.32 ns/op
-Benchmark4TilesWithinReach-8    	 6746808	       181.5 ns/op
-Benchmark12TilesWithinReach-8   	 3146670	       548.5 ns/op
+BenchmarkDist-8                 	100000000	        12.41 ns/op
+Benchmark4TilesWithinReach-8    	11624863	        97.99 ns/op
+Benchmark12TilesWithinReach-8   	 9029640	       131.6 ns/op
 PASS
-ok  	core/modules/reach/test	4.173s
+ok  	core/modules/reach/test	3.589s
 ```
 ## Lines of code
 ```
@@ -21,10 +21,10 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                               8             60             28            365
+Go                               8             58             27            373
 Markdown                         2              0              0              2
 -------------------------------------------------------------------------------
-SUM:                            10             60             28            367
+SUM:                            10             58             27            375
 -------------------------------------------------------------------------------
 ```
 ## TODO
@@ -46,6 +46,9 @@ Type: `func() engine/modules/ecs.ComponentArray[core/modules/reach.Component[Fea
 
 #### method ServiceT Reaches
 Type: `func(fromEntity engine/modules/ecs.EntityID, toEntity engine/modules/ecs.EntityID) bool`
+
+#### method ServiceT TilesFrom
+Type: `func(core/modules/tile.PosComponent, core/modules/tile.SizeComponent, core/modules/reach.Component[FeatureComponent]) []engine/modules/grid.Coords`
 
 #### method ServiceT TilesWithinReach
 Type: `func(entity engine/modules/ecs.EntityID) []engine/modules/grid.Coords`
@@ -86,6 +89,7 @@ takes square of distnace
   - `core/modules/reach/pkg.PkgT`
 
 `core/modules/tile`:
+  - `core/modules/tile.Aligned`
   - `core/modules/tile.Coord`
   - `core/modules/tile.Pos`
   - `core/modules/tile.PosComponent`

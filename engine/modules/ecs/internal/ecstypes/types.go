@@ -31,6 +31,8 @@ type World interface {
 
 	// components
 	// there is a public method [GetComponentArray] to call generic method in Go
+	OnArrayInitialization(func(AnyComponentArray))
+	GetArrByComp(Component) (AnyComponentArray, bool)
 
 	// tooling
 	WarmUp()

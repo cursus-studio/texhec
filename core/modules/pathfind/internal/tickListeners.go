@@ -3,7 +3,6 @@ package internal
 import (
 	"core/modules/pathfind"
 	"core/modules/tile"
-	"engine/modules/ecs"
 	"engine/modules/grid"
 	"engine/modules/loop"
 	"fmt"
@@ -22,12 +21,11 @@ var (
 
 func (s *service) StepOnTick(e loop.TickEvent) {
 	entities := s.Pathfind().Step().GetEntities()
-	{
-		cp := make([]ecs.EntityID, len(entities))
-		copy(cp, entities)
-		entities = cp
-	}
 	for _, entity := range entities {
+		if _, ok := s.Pathfind().Target().Get(entity); !ok {
+			s.Pathfind().Step().Remove(entity)
+			continue
+		}
 		step, ok := s.Pathfind().Step().Get(entity)
 		if !ok {
 			continue

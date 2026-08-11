@@ -8,10 +8,10 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                               6             88             13            460
+Go                               6             88             13            474
 Markdown                         1              0              0              1
 -------------------------------------------------------------------------------
-SUM:                             7             88             13            461
+SUM:                             7             88             13            475
 -------------------------------------------------------------------------------
 ```
 ## Types
@@ -67,6 +67,12 @@ Type: `func() core/modules/actions.EntityInteraction`
 Type: `core/modules/actions.FriendlyBuilderEntityStep`
 
 #### method FriendlyBuilderEntityStep State
+Type: `func() core/modules/actions.EntityInteraction`
+
+### type FriendlyOffensiveEntityStep
+Type: `core/modules/actions.FriendlyOffensiveEntityStep`
+
+#### method FriendlyOffensiveEntityStep State
 Type: `func() core/modules/actions.EntityInteraction`
 
 ### type EnemyEntityStep
@@ -135,6 +141,9 @@ Type: `error`
 ### var ErrRequiresDeploy
 Type: `error`
 
+### var ErrRequiresAttack
+Type: `error`
+
 ## Functions
 ### func NewCanDeploy
 Type: `func(canDeploy engine/modules/ecs.EntityID) core/modules/actions.CanDeployComponent`
@@ -160,6 +169,7 @@ Type: `func(entity engine/modules/ecs.EntityID) core/modules/actions.BlueprintIn
 
 ## Dependencies
 `core/game`:
+  - `core/game.Attack`
   - `core/game.Definitions`
   - `core/game.Deploy`
   - `core/game.EngineWorld`
@@ -184,11 +194,13 @@ Type: `func(entity engine/modules/ecs.EntityID) core/modules/actions.BlueprintIn
   - `core/modules/actions.Entity`
   - `core/modules/actions.EntityInteraction`
   - `core/modules/actions.EntityStep`
+  - `core/modules/actions.ErrRequiresAttack`
   - `core/modules/actions.ErrRequiresDeploy`
   - `core/modules/actions.ErrRequiresSpeed`
   - `core/modules/actions.FriendlyBuilderEntityStep`
   - `core/modules/actions.FriendlyEntityStep`
   - `core/modules/actions.FriendlyMobileEntityStep`
+  - `core/modules/actions.FriendlyOffensiveEntityStep`
   - `core/modules/actions.NewAnchor`
   - `core/modules/actions.NewBlueprintInteraction`
   - `core/modules/actions.NewCanDeploy`

@@ -46,25 +46,20 @@ func (s *serviceT[Component]) Reaches(fromEntity, toEntity ecs.EntityID) bool {
 	dist := s.Reach().Distance(fromPos, fromSize, toPos, toSize)
 	return dist <= tile.Coord(reach.Reach)
 }
-func (s *serviceT[Component]) TilesWithinReach(entity ecs.EntityID) []grid.Coords {
-	reachComp, _ := s.component.Get(entity)
-	if reachComp.Reach == 0 {
+
+func (s *serviceT[Component]) TilesFrom(
+	pos tile.PosComponent,
+	size tile.SizeComponent,
+	reach reach.Component[Component],
+) []grid.Coords {
+	if reach.Reach == 0 {
 		return nil
 	}
-	pos, ok := s.Tile().Pos().Get(entity)
-	if !ok {
+	start, aligned := pos.Aligned()
+	if !aligned {
 		return nil
 	}
-	size, _ := s.Tile().Size().Get(entity)
-
-	if pos.X != tile.Coord(int(pos.X)) || pos.Y != tile.Coord(int(pos.Y)) {
-		return nil
-	}
-
-	//
-
-	start := grid.NewCoords(grid.Coord(pos.X), grid.Coord(pos.Y))
-	r := grid.Coord(math.Sqrt(float64(reachComp.Reach)))
+	r := grid.Coord(math.Sqrt(float64(reach.Reach)))
 
 	min := grid.NewCoords(start.X-r, start.Y-r)
 	max := grid.NewCoords(start.X+size.X+r-1, start.Y+size.Y+r-1)
@@ -94,10 +89,19 @@ func (s *serviceT[Component]) TilesWithinReach(entity ecs.EntityID) []grid.Coord
 				dy = start.Y - y
 			}
 
-			if (dx*dx)+(dy*dy) <= grid.Coord(reachComp.Reach) {
+			if (dx*dx)+(dy*dy) <= grid.Coord(reach.Reach) {
 				tiles = append(tiles, grid.NewCoords(grid.Coord(x), grid.Coord(y)))
 			}
 		}
 	}
 	return tiles
+}
+func (s *serviceT[Component]) TilesWithinReach(entity ecs.EntityID) []grid.Coords {
+	reachComp, _ := s.component.Get(entity)
+	pos, ok := s.Tile().Pos().Get(entity)
+	if !ok {
+		return nil
+	}
+	size, _ := s.Tile().Size().Get(entity)
+	return s.TilesFrom(pos, size, reachComp)
 }
