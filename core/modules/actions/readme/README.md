@@ -8,10 +8,10 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                               6             85             13            442
+Go                               6             88             13            460
 Markdown                         1              0              0              1
 -------------------------------------------------------------------------------
-SUM:                             7             85             13            443
+SUM:                             7             88             13            461
 -------------------------------------------------------------------------------
 ```
 ## Types
@@ -207,6 +207,7 @@ Type: `func(entity engine/modules/ecs.EntityID) core/modules/actions.BlueprintIn
   - `core/modules/definitions.Border`
   - `core/modules/definitions.Btn`
   - `core/modules/definitions.Can`
+  - `core/modules/definitions.GameGroup`
   - `core/modules/definitions.Hud`
   - `core/modules/definitions.ObjectPlaceholderLayer`
   - `core/modules/definitions.ObjectSelectionPlaceholderLayer`
@@ -255,6 +256,12 @@ Type: `func(entity engine/modules/ecs.EntityID) core/modules/actions.BlueprintIn
   - `engine/modules/grid.ClickEvent`
   - `engine/modules/grid.Coords`
   - `engine/modules/grid.HoverEvent`
+
+`engine/modules/groups`:
+  - `engine/modules/groups.Component`
+  - `engine/modules/groups.EmptyGroups`
+  - `engine/modules/groups.Enable`
+  - `engine/modules/groups.InheritGroups`
 
 `engine/modules/inputs`:
   - `engine/modules/inputs.LeftClick`

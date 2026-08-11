@@ -15,9 +15,9 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                               7             43             75            158
+Go                               7             42             75            156
 -------------------------------------------------------------------------------
-SUM:                             7             43             75            158
+SUM:                             7             42             75            156
 -------------------------------------------------------------------------------
 ```
 ## Types
@@ -43,20 +43,14 @@ Type: `engine/modules/groups.GroupsComponent`
 Type: `uint32`
 this can be swapped to uint64 etc (remember to swap all uint32 occurencies)
 
-#### method GroupsComponent Ptr
-Type: `func() *engine/modules/groups.GroupsComponent`
-
-#### method GroupsComponent Val
-Type: `func() engine/modules/groups.GroupsComponent`
-
 #### method GroupsComponent Enable
-Type: `func(g engine/modules/groups.Group) *engine/modules/groups.GroupsComponent`
+Type: `func(g engine/modules/groups.Group) engine/modules/groups.GroupsComponent`
 
 #### method GroupsComponent Enabled
 Type: `func(g engine/modules/groups.Group) bool`
 
 #### method GroupsComponent Disable
-Type: `func(g engine/modules/groups.Group) *engine/modules/groups.GroupsComponent`
+Type: `func(g engine/modules/groups.Group) engine/modules/groups.GroupsComponent`
 
 #### method GroupsComponent GetSharedWith
 Type: `func(g2 engine/modules/groups.GroupsComponent) engine/modules/groups.GroupsComponent`

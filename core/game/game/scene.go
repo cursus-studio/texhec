@@ -37,7 +37,7 @@ func addScene(world game.GameWorld, sceneParent ecs.EntityID) {
 		world.Hierarchy().SetParent(uiCamera, sceneParent)
 		world.Camera().Priority().Set(uiCamera, camera.NewPriority(1))
 		world.Camera().Ortho().Set(uiCamera, camera.NewOrtho(-1000, +1000))
-		world.Groups().Component().Set(uiCamera, groups.EmptyGroups().Ptr().Enable(definitions.UiGroup).Val())
+		world.Groups().Component().Set(uiCamera, groups.EmptyGroups().Enable(definitions.UiGroup))
 		world.Ui().UiCamera().Set(uiCamera, ui.UiCameraComponent{})
 		world.Ui().CursorCamera().Set(uiCamera, ui.CursorCameraComponent{})
 
@@ -48,7 +48,7 @@ func addScene(world game.GameWorld, sceneParent ecs.EntityID) {
 		world.Transform().PivotPoint().Set(settingsEntity, transform.NewPivotPoint(0, 1, .5))
 		world.Transform().Inherit().Set(settingsEntity, transform.NewInherit(transform.RelativePos))
 		world.Transform().ParentPivotPoint().Set(settingsEntity, transform.NewParentPivotPoint(0, 1, .5))
-		world.Groups().Component().Set(settingsEntity, groups.EmptyGroups().Ptr().Enable(definitions.UiGroup).Val())
+		world.Groups().Component().Set(settingsEntity, groups.EmptyGroups().Enable(definitions.UiGroup))
 
 		world.Render().Mesh().Set(settingsEntity, render.NewMesh(world.Definitions().Assets().SquareMesh))
 		world.Render().Texture().Set(settingsEntity, render.NewTexture(world.Definitions().Hud().Settings))
@@ -63,7 +63,7 @@ func addScene(world game.GameWorld, sceneParent ecs.EntityID) {
 		world.Hierarchy().SetParent(bgCamera, sceneParent)
 		world.Camera().Priority().Set(bgCamera, camera.NewPriority(-1))
 		world.Camera().Ortho().Set(bgCamera, camera.NewOrtho(-1000, +1000))
-		world.Groups().Component().Set(bgCamera, groups.EmptyGroups().Ptr().Enable(definitions.BgGroup).Val())
+		world.Groups().Component().Set(bgCamera, groups.EmptyGroups().Enable(definitions.BgGroup))
 
 		bg := world.World().NewEntity()
 		world.Hierarchy().SetParent(bg, bgCamera)
@@ -74,7 +74,7 @@ func addScene(world game.GameWorld, sceneParent ecs.EntityID) {
 
 	worldEntity := world.World().NewEntity()
 	world.Hierarchy().SetParent(worldEntity, sceneParent)
-	world.Groups().Component().Set(worldEntity, groups.EmptyGroups().Ptr().Enable(definitions.GameGroup).Val())
+	world.Groups().Component().Set(worldEntity, groups.EmptyGroups().Enable(definitions.GameGroup))
 	world.Seed().Seed().Set(worldEntity, seed.NewSeed(
 		// world.Clock.Now().Unix(),
 		21377137,
