@@ -6,26 +6,28 @@ import (
 	"core/modules/pathfind"
 	"core/modules/tile"
 	"engine/modules/grid"
-	"math"
 )
 
-// algorithm is ai generated
+// algorithm is AI generated
 
-// Item represents a node in the priority queue
 type Item struct {
-	coords   grid.Coords
-	priority int // fScore
+	coords grid.Coords
+	gScore int
+	fScore int
 }
 
 type PriorityQueue []*Item
 
-func (pq PriorityQueue) Len() int           { return len(pq) }
-func (pq PriorityQueue) Less(i, j int) bool { return pq[i].priority < pq[j].priority }
-func (pq PriorityQueue) Swap(i, j int)      { pq[i], pq[j] = pq[j], pq[i] }
-func (pq *PriorityQueue) Push(x any) {
-	item := x.(*Item)
-	*pq = append(*pq, item)
+func (pq PriorityQueue) Len() int { return len(pq) }
+func (pq PriorityQueue) Less(i, j int) bool {
+	if pq[i].fScore == pq[j].fScore {
+		// Tie-breaker: favor nodes closer to the goal (lower hScore / higher gScore)
+		return pq[i].gScore > pq[j].gScore
+	}
+	return pq[i].fScore < pq[j].fScore
 }
+func (pq PriorityQueue) Swap(i, j int) { pq[i], pq[j] = pq[j], pq[i] }
+func (pq *PriorityQueue) Push(x any)   { *pq = append(*pq, x.(*Item)) }
 func (pq *PriorityQueue) Pop() any {
 	old := *pq
 	n := len(old)
@@ -34,16 +36,15 @@ func (pq *PriorityQueue) Pop() any {
 	return item
 }
 
-// heuristic calculates Manhattan distance for 4-directional movement
 func heuristic(a, b grid.Coords) int {
-	return int(math.Abs(float64(a.X-b.X)) + math.Abs(float64(a.Y-b.Y)))
+	return abs(int(a.X-b.X)) + abs(int(a.Y-b.Y))
 }
 
 func (s *service) findPath(
 	from, to grid.Coords,
 	size tile.SizeComponent,
 	obstruction obstruction.Component,
-) (path []tile.PosComponent, ok bool) {
+) (path []grid.Coords, ok bool) {
 	r1, _ := s.CoordsRegion(from, obstruction.Obstruction)
 	r2, _ := s.CoordsRegion(to, obstruction.Obstruction)
 	if r1 != r2 {
@@ -51,65 +52,58 @@ func (s *service) findPath(
 	}
 
 	toData, ok := s.Obstruction().Grid().CoordsData(to)
-	if !ok {
-		return nil, false
-	}
-	if obstruction.Obstruction&toData.Component.GetTile(toData.Index) != 0 {
+	if !ok || obstruction.Obstruction&toData.Component.GetTile(toData.Index) != 0 {
 		return nil, false
 	}
 
-	// gScore[n] is the cost of the cheapest path from start to n currently known.
-	gScore := map[grid.Coords]int{}
-	gScore[from] = 0
+	gScore := map[grid.Coords]int{from: 0}
+	cameFrom := map[grid.Coords]grid.Coords{}
 
-	// fScore[n] = gScore[n] + h(n). fScore[n] represents our current best guess.
 	openSet := &PriorityQueue{}
 	heap.Init(openSet)
-	heap.Push(openSet, &Item{coords: from, priority: heuristic(from, to)})
 
-	// cameFrom tracks the path for reconstruction
-	cameFrom := map[grid.Coords]grid.Coords{}
-	parentIndex := map[grid.Coords]grid.Coords{}
+	hStart := heuristic(from, to)
+	heap.Push(openSet, &Item{coords: from, gScore: 0, fScore: hStart})
 
-	// Directions for 4 nearest neighbors
 	dirs := []struct{ x, y grid.Coord }{
 		{0, 1}, {1, 0}, {0, grid.NewCoord(-1)}, {grid.NewCoord(-1), 0},
 	}
 
 	for openSet.Len() > 0 {
-		// Get node with lowest fScore
 		current := heap.Pop(openSet).(*Item)
 
-		// Goal reached?
-		if current.coords == to {
-			path := reconstructPath(cameFrom, parentIndex, to)
-			path = append(path, tile.NewPos(to.Coords()))
-			return path, true
+		// Skip stale entries that were re-queued with better gScores
+		if current.gScore > gScore[current.coords] {
+			continue
 		}
 
-		// Check neighbors
+		if current.coords == to {
+			return reconstructPath(cameFrom, from, to), true
+		}
+
 		for _, d := range dirs {
 			neighborCoords := grid.Coords{
 				X: current.coords.X + d.x,
 				Y: current.coords.Y + d.y,
 			}
+
 			step := pathfind.NewStep(neighborCoords.X, neighborCoords.Y)
 			if !s.Pathfind().CanStep(current.coords, size, obstruction, step) {
 				continue
 			}
 
-			tentativeGScore := gScore[current.coords]
-			tentativeGScore++
+			tentativeGScore := current.gScore + 1
 
-			if score, exists := gScore[neighborCoords]; !exists || tentativeGScore < score {
+			bestG, exists := gScore[neighborCoords]
+			if !exists || tentativeGScore < bestG {
 				cameFrom[neighborCoords] = current.coords
-				parentIndex[neighborCoords] = current.coords
 				gScore[neighborCoords] = tentativeGScore
-				fScore := tentativeGScore + heuristic(neighborCoords, to)
 
+				fScore := tentativeGScore + heuristic(neighborCoords, to)
 				heap.Push(openSet, &Item{
-					coords:   neighborCoords,
-					priority: fScore,
+					coords: neighborCoords,
+					gScore: tentativeGScore,
+					fScore: fScore,
 				})
 			}
 		}
@@ -120,22 +114,20 @@ func (s *service) findPath(
 
 func reconstructPath(
 	cameFrom map[grid.Coords]grid.Coords,
-	parentIndex map[grid.Coords]grid.Coords,
-	current grid.Coords,
-) []tile.PosComponent {
-	var path []tile.PosComponent
+	from, to grid.Coords,
+) []grid.Coords {
+	var path []grid.Coords
+	curr := to
 
-	for {
-		coords, ok := cameFrom[current]
-		if !ok {
-			break
-		}
-		pos := tile.NewPos(coords.X, coords.Y)
-		path = append([]tile.PosComponent{pos}, path...)
-		current = parentIndex[current]
+	for curr != from {
+		path = append(path, curr)
+		curr = cameFrom[curr]
 	}
 
-	path = path[1:]
+	// Reverse slice in place to get path from start to end (excluding start)
+	for i, j := 0, len(path)-1; i < j; i, j = i+1, j-1 {
+		path[i], path[j] = path[j], path[i]
+	}
 
 	return path
 }

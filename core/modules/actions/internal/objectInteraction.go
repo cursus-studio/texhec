@@ -2,12 +2,16 @@ package internal
 
 import (
 	"core/modules/actions"
+	"core/modules/definitions"
 	"core/modules/tile"
 	"engine/modules/ecs"
+	"engine/modules/groups"
 	"engine/modules/interactions"
 	"engine/modules/render"
 	"engine/modules/transform"
 	"fmt"
+
+	"github.com/go-gl/mathgl/mgl32"
 )
 
 func (s *service) EntityInteraction() interactions.InteractionService[actions.EntityInteraction] {
@@ -46,6 +50,23 @@ func (s *service) OnClickObject(event tile.ClickEntityEvent) {
 func (s *service) OnObjectMissingUpsert(entity ecs.EntityID) {
 	// should find objects on which action can be performed and
 	// these object should be highlighted or shown in choose menu
+	anchor, ok := s.Anchor().Get(entity)
+	if !ok {
+		return
+	}
+	for _, reachCoords := range s.GameWorld.Deploy().Reach().TilesWithinReach(anchor.Entity) {
+		ind := s.World().NewEntity()
+		s.Hierarchy().SetParent(ind, entity)
+		s.Transform().Inherit().Set(ind, transform.NewInherit(transform.Absolute))
+
+		s.Render().Mesh().Set(ind, render.NewMesh(s.Definitions().Assets().SquareMesh))
+		s.Render().Texture().Set(ind, render.NewTexture(s.Definitions().Assets().Border))
+		s.Groups().Component().Set(ind, groups.EmptyGroups().Enable(definitions.GameGroup))
+
+		s.Tile().Layer().Set(ind, tile.NewLayer(definitions.RangePlaceholderLayer))
+		s.Tile().Pos().Set(ind, tile.NewPos(reachCoords.Coords()))
+		s.Render().Color().Set(ind, render.NewColor(mgl32.Vec4{0, 0, .5, 1}))
+	}
 }
 
 //

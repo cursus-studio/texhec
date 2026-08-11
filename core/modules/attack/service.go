@@ -1,24 +1,28 @@
 package attack
 
-import "engine/modules/ecs"
+import (
+	"core/modules/reach"
+	"engine/modules/ecs"
+	"errors"
+)
 
-type AttackEvent struct {
-	By,
-	Target ecs.EntityID
+var (
+	ErrCannotAttackEnemyOutOfReach error = errors.New("attack: enemy is out of reach and cannot follow him")
+)
+
+type TargetComponent struct {
+	Entity ecs.EntityID
 }
 
-func NewAttackEvent(
-	by,
-	target ecs.EntityID,
-) AttackEvent {
-	return AttackEvent{
-		by,
-		target,
-	}
+func NewTarget(target ecs.EntityID) TargetComponent {
+	return TargetComponent{target}
 }
 
 //
 
 type Service interface {
-	AttackEvent(AttackEvent)
+	ecs.SystemRegister
+	Reach() reach.ServiceT[TargetComponent]
+
+	Target() ecs.ComponentArray[TargetComponent]
 }

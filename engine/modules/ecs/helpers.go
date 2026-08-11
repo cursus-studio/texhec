@@ -9,6 +9,17 @@ type ApplyEntityEvent interface {
 	ApplyEntity(entityEmitting EntityID) (event any)
 }
 
+//
+
+type SetEvent struct {
+	Entity    EntityID
+	Component Component
+}
+
+func NewSetEvent(entity EntityID, comp Component) SetEvent {
+	return SetEvent{entity, comp}
+}
+
 // systems
 type SystemRegister interface{ Register() error }
 type systemRegister func() error

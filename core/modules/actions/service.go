@@ -11,6 +11,7 @@ import (
 var (
 	ErrRequiresSpeed  error = errors.New("tile:requires speed")
 	ErrRequiresDeploy error = errors.New("tile:requires deploy")
+	ErrRequiresAttack error = errors.New("tile:requires attack")
 )
 
 // components to configure interactions
@@ -62,6 +63,7 @@ type EntityStep interactions.Step[EntityInteraction]
 type FriendlyEntityStep interactions.Step[EntityInteraction]
 type FriendlyMobileEntityStep interactions.Step[EntityInteraction]
 type FriendlyBuilderEntityStep interactions.Step[EntityInteraction]
+type FriendlyOffensiveEntityStep interactions.Step[EntityInteraction]
 type EnemyEntityStep interactions.Step[EntityInteraction]
 
 type BlueprintStep interactions.Step[BlueprintInteraction]

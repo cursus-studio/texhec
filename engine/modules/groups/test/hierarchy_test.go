@@ -12,7 +12,7 @@ const (
 
 func TestHierarchy(t *testing.T) {
 	setup := NewSetup(t)
-	defaultGroups := groups.EmptyGroups().Ptr().Enable(G1).Val()
+	defaultGroups := groups.EmptyGroups().Enable(G1)
 
 	parent := setup.world.NewEntity()
 	setup.groups.Component().Set(parent, defaultGroups)

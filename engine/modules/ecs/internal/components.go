@@ -64,17 +64,26 @@ type arraysSharedInterface interface {
 type componentsStorage struct {
 	arrays              map[componentType]arraysSharedInterface // any is *componentsArray[ComponentType]
 	arraySlice          []arraysSharedInterface
-	onArrayAddListeners map[componentType][]func(arraysSharedInterface)
+	onArrayAddListeners []func(ecstypes.AnyComponentArray)
 }
 
-type ComponentsStorage *componentsStorage
+type ComponentsStorage = *componentsStorage
 
 func newComponentsStorage() ComponentsStorage {
 	return &componentsStorage{
 		arrays:              make(map[componentType]arraysSharedInterface),
 		arraySlice:          make([]arraysSharedInterface, 0),
-		onArrayAddListeners: make(map[componentType][]func(arraysSharedInterface)),
+		onArrayAddListeners: make([]func(ecstypes.AnyComponentArray), 0),
 	}
+}
+
+func (world *world) OnArrayInitialization(listener func(ecstypes.AnyComponentArray)) {
+	world.storage.onArrayAddListeners = append(world.storage.onArrayAddListeners, listener)
+}
+
+func (world *world) GetArrByComp(zero ecstypes.Component) (ecstypes.AnyComponentArray, bool) {
+	arr, ok := world.storage.arrays[newComponentType(reflect.TypeOf(zero))]
+	return arr, ok
 }
 
 func GetComponentArray[Component any](rawWorld ecstypes.World) ecstypes.ComponentArray[Component] {
@@ -89,12 +98,9 @@ func GetComponentArray[Component any](rawWorld ecstypes.World) ecstypes.Componen
 	array := newComponentArray[Component](*world.entitiesImpl)
 	components.arrays[componentType] = array
 	components.arraySlice = append(components.arraySlice, array)
-	//
-	listeners := components.onArrayAddListeners[componentType]
-	for _, listener := range listeners {
+	for _, listener := range components.onArrayAddListeners {
 		listener(array)
 	}
-	delete(components.onArrayAddListeners, componentType)
 	return array
 }
 

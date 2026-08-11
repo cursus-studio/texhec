@@ -8,10 +8,10 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                               7            106             40            766
+Go                               7            108             34            760
 Markdown                         1              1              0              5
 -------------------------------------------------------------------------------
-SUM:                             8            107             40            771
+SUM:                             8            109             34            765
 -------------------------------------------------------------------------------
 ```
 ## TODO
@@ -157,6 +157,7 @@ Type: `func(entity engine/modules/ecs.EntityID, coords engine/modules/grid.Coord
   - `core/modules/pathfind.SpeedComponent`
   - `core/modules/pathfind.Step`
   - `core/modules/pathfind.StepComponent`
+  - `core/modules/pathfind.Target`
   - `core/modules/pathfind.TargetComponent`
 
 `core/modules/tile`:

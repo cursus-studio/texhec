@@ -55,6 +55,18 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 				return nil
 			}
 		}),
+		interactionspkg.StepPkg[actions.FriendlyOffensiveEntityStep](func(c ioc.Dic) func(state actions.EntityInteraction) error {
+			world := ioc.Get[game.GameWorld](c)
+			return func(state actions.EntityInteraction) error {
+				if err := world.Player().ControlsObject(state.Entity); err != nil {
+					return err
+				}
+				if _, ok := world.Attack().Reach().Component().Get(state.Entity); !ok {
+					return actions.ErrRequiresAttack
+				}
+				return nil
+			}
+		}),
 		interactionspkg.StepPkg[actions.EnemyEntityStep](func(c ioc.Dic) func(state actions.EntityInteraction) error {
 			world := ioc.Get[game.GameWorld](c)
 			return func(state actions.EntityInteraction) error {
