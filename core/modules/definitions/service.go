@@ -102,11 +102,11 @@ type Tiles struct {
 }
 
 type Objects struct {
-	Farm    ecs.EntityID `path:"constructs/farm.png" name:"farm" object:"construct" obstruction:"lowland" size:"2x2" deployReach:"3"`
-	HouseT1 ecs.EntityID `path:"constructs/houseT1.png" name:"house t1" object:"construct" obstruction:"lowland" size:"1x1" attackReach:"1"`
-	HouseT2 ecs.EntityID `path:"constructs/houseT2.png" name:"house t2" object:"construct" obstruction:"lowland" size:"2x2"`
-	HouseT3 ecs.EntityID `path:"constructs/houseT3.png" name:"house t3" object:"construct" obstruction:"lowland" size:"3x3"`
-	HouseT4 ecs.EntityID `path:"constructs/houseT4.png" name:"house t4" object:"construct" obstruction:"lowland" size:"4x4"`
+	Farm    ecs.EntityID `path:"constructs/farm.png" name:"farm" object:"construct" obstruction:"lowland" size:"2x2" deployReach:"3" cost:"100" factory:"10"`
+	HouseT1 ecs.EntityID `path:"constructs/houseT1.png" name:"house t1" object:"construct" obstruction:"lowland" size:"1x1" cost:"100" attackReach:"1"`
+	HouseT2 ecs.EntityID `path:"constructs/houseT2.png" name:"house t2" object:"construct" obstruction:"lowland" size:"2x2" cost:"2000"`
+	HouseT3 ecs.EntityID `path:"constructs/houseT3.png" name:"house t3" object:"construct" obstruction:"lowland" size:"3x3" cost:"3000"`
+	HouseT4 ecs.EntityID `path:"constructs/houseT4.png" name:"house t4" object:"construct" obstruction:"lowland" size:"4x4" cost:"4000" factory:"400"`
 
-	Tank ecs.EntityID `path:"units/tank.png" name:"tank" object:"unit" obstruction:"lowland" speed:"2" deployReach:"1" attackReach:"3"`
+	Tank ecs.EntityID `path:"units/tank.png" name:"tank" object:"unit" obstruction:"lowland" speed:"2" deployReach:"1" cost:"200" attackReach:"3"`
 }

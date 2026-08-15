@@ -46,6 +46,7 @@ func NewDestroyEvent(entity ecs.EntityID) DestroyEvent {
 //
 
 type Service interface {
+	ecs.SystemRegister
 	Reach() reach.ServiceT[Component]
 
 	Component() ecs.ComponentArray[Component]

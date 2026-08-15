@@ -3,6 +3,7 @@ package internal
 import (
 	"core/game"
 	"core/modules/deploy"
+	"core/modules/economy"
 	"core/modules/obstruction"
 	"core/modules/player"
 	"core/modules/reach"
@@ -10,29 +11,43 @@ import (
 	"engine/modules/ecs"
 	"engine/modules/grid"
 	"engine/modules/inputs"
+	"engine/modules/loop"
 	"engine/modules/seed"
 
 	"github.com/ogiusek/events"
 	"github.com/ogiusek/ioc/v2"
 )
 
+type BoughtComponent deploy.DeployEvent
+
+func NewBought(event deploy.DeployEvent) BoughtComponent { return BoughtComponent(event) }
+
+//
+
 type service struct {
 	game.GameWorld `inject:""`
 	ReachT         reach.ServiceT[deploy.Component] `inject:""`
 
-	component ecs.ComponentArray[deploy.Component]
+	boughtComponent ecs.ComponentArray[BoughtComponent]
+	component       ecs.ComponentArray[deploy.Component]
 }
 
 func NewService(c ioc.Dic) deploy.Service {
 	s := ioc.GetServices[*service](c)
 	s.ReachT.Component().SetEmpty(reach.NewReach[deploy.Component](1))
 
+	s.boughtComponent = ecs.GetComponentArray[BoughtComponent](s.World())
 	s.component = ecs.GetComponentArray[deploy.Component](s.World())
 
 	events.Listen(s.EventsBuilder(), s.DeployEvent)
 	events.Listen(s.EventsBuilder(), s.DestroyEvent)
 
 	return s
+}
+
+func (s *service) Register() error {
+	events.Listen(s.EventsBuilder(), s.OnTick)
+	return nil
 }
 
 func (s *service) Component() ecs.ComponentArray[deploy.Component] { return s.component }
@@ -70,57 +85,81 @@ func (s *service) Deploy(
 }
 
 func (s *service) DeployEvent(e deploy.DeployEvent) {
+	entity := s.World().NewEntity()
+	s.boughtComponent.Set(entity, NewBought(e))
+}
+func (s *service) OnTick(loop.TickEvent) {
 	worldEntity, ok := s.Seed().WorldSeed()
 	if !ok {
 		return
 	}
 
-	// by
-	byPos, ok := s.Tile().Pos().Get(e.By)
-	if !ok {
-		s.Logger().Log(obstruction.ErrPositionIsOccupied)
-		return
-	}
-	bySize, _ := s.Tile().Size().Get(e.By)
-	reachComp, _ := s.GameWorld.Deploy().Reach().Component().Get(e.By)
-
-	// target
-	pos := tile.NewPos(e.Coords.Coords())
-	size, _ := s.Tile().Size().Get(e.Blueprint)
-
-	// check can place
-	{ // reach
-		dist := s.GameWorld.Reach().Distance(byPos, bySize, pos, size)
-		isInReach := dist <= tile.Coord(reachComp.Reach)
-		if !isInReach {
-			s.Logger().Log(reach.ErrOutsideOfReach)
-			return
+	entities := s.boughtComponent.GetEntities()
+	for _, entity := range entities {
+		event, ok := s.boughtComponent.Get(entity)
+		if !ok {
+			continue
 		}
-	}
-	{ // obstruction
-		blueprintObstruction, _ := s.Obstruction().Component().Get(e.Blueprint)
+		s.World().RemoveEntity(entity)
 
-		aabb := obstruction.NewAABB(pos, size)
-		collisions := s.Obstruction().Collisions(aabb, blueprintObstruction.Obstruction)
-
-		if len(collisions) != 0 {
+		// by
+		byPos, ok := s.Tile().Pos().Get(event.By)
+		if !ok {
 			s.Logger().Log(obstruction.ErrPositionIsOccupied)
-			return
+			continue
 		}
-	}
+		bySize, _ := s.Tile().Size().Get(event.By)
+		reachComp, _ := s.GameWorld.Deploy().Reach().Component().Get(event.By)
 
-	// pay
-	// ...
+		// target
+		pos := tile.NewPos(event.Coords.Coords())
+		size, _ := s.Tile().Size().Get(event.Blueprint)
 
-	// place
-	deployed := s.Prototype().Clone(e.Blueprint)
-	s.Hierarchy().SetParent(deployed, worldEntity)
-	if owner, ok := s.Player().Owner().Get(e.By); ok {
+		// check can place
+		{ // reach
+			dist := s.GameWorld.Reach().Distance(byPos, bySize, pos, size)
+			isInReach := dist <= tile.Coord(reachComp.Reach)
+			if !isInReach {
+				s.Logger().Log(reach.ErrOutsideOfReach)
+				continue
+			}
+		}
+		{ // obstruction
+			blueprintObstruction, _ := s.Obstruction().Component().Get(event.Blueprint)
+
+			aabb := obstruction.NewAABB(pos, size)
+			collisions := s.Obstruction().Collisions(aabb, blueprintObstruction.Obstruction)
+
+			if len(collisions) != 0 {
+				s.Logger().Log(obstruction.ErrPositionIsOccupied)
+				continue
+			}
+		}
+
+		owner, ok := s.Player().Owner().Get(event.By)
+		if !ok {
+			s.Logger().Log(player.ErrRequiresOwner)
+			continue
+		}
+
+		// pay
+		if cost, ok := s.Economy().Cost().Get(event.Blueprint); ok {
+			wallet, ok := s.Economy().Wallet().Get(owner.Owner)
+			if !ok || cost.Cost > wallet.Money {
+				s.Logger().Log(economy.ErrToExpensive)
+				continue
+			}
+			s.Economy().Wallet().Set(owner.Owner, wallet.Pay(cost))
+		}
+
+		// place
+		deployed := s.Prototype().Clone(event.Blueprint)
+		s.Hierarchy().SetParent(deployed, worldEntity)
 		s.Player().Owner().Set(deployed, owner)
+		s.Obstruction().Deployed().Set(deployed, obstruction.NewDeployed())
+		s.Inputs().LeftClick().Set(deployed, inputs.NewLeftClick(tile.NewClickEntityEvent()))
+		s.Tile().Pos().Set(deployed, tile.NewPos(event.Coords.Coords()))
 	}
-	s.Obstruction().Deployed().Set(deployed, obstruction.NewDeployed())
-	s.Inputs().LeftClick().Set(deployed, inputs.NewLeftClick(tile.NewClickEntityEvent()))
-	s.Tile().Pos().Set(deployed, tile.NewPos(e.Coords.Coords()))
 }
 
 func (s *service) DestroyEvent(e deploy.DestroyEvent) {

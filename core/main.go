@@ -90,7 +90,9 @@ func main() {
 		world.Generation(),
 		world.Tile(),
 		world.Obstruction(),
+		world.Economy(),
 		world.Attack(),
+		world.Deploy(),
 		world.Pathfind(),
 
 		// ui update

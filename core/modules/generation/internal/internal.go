@@ -2,6 +2,7 @@ package internal
 
 import (
 	"core/game"
+	"core/modules/economy"
 	"core/modules/generation"
 	"core/modules/player"
 	"core/modules/tile"
@@ -236,10 +237,12 @@ func (s *service) GenerateOn(event tile.MissingChunkEvent) {
 		s.Hierarchy().SetParent(playerEntity, worldGenerationEntity)
 		s.Metadata().Name().Set(playerEntity, metadata.NewName("john"))
 		s.Player().ActingPlayer().Set(playerEntity, player.NewActingPlayer())
+		s.Economy().Wallet().Set(playerEntity, economy.NewWallet(0))
 
 		player2Entity := s.World().NewEntity()
 		s.Hierarchy().SetParent(player2Entity, worldGenerationEntity)
 		s.Metadata().Name().Set(player2Entity, metadata.NewName("anna"))
+		s.Economy().Wallet().Set(player2Entity, economy.NewWallet(0))
 
 		// generates objects
 		type Deployed struct {

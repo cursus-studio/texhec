@@ -10,6 +10,7 @@ import (
 	attackpkg "core/modules/attack/pkg"
 	definitionspkg "core/modules/definitions/pkg"
 	deploypkg "core/modules/deploy/pkg"
+	economypkg "core/modules/economy/pkg"
 	fpsloggerpkg "core/modules/fpslogger/pkg"
 	generationpkg "core/modules/generation/pkg"
 	loadingpkg "core/modules/loading/pkg"
@@ -33,6 +34,7 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 		attackpkg.Pkg,
 		definitionspkg.Pkg,
 		deploypkg.Pkg,
+		economypkg.Pkg,
 		fpsloggerpkg.Pkg,
 		generationpkg.Pkg,
 		loadingpkg.Pkg,
