@@ -2,6 +2,7 @@ package internal
 
 import (
 	"core/game"
+	"core/modules/economy"
 	"core/modules/generation"
 	"core/modules/player"
 	"core/modules/tile"
@@ -75,6 +76,19 @@ func (s *service) Chances() (*Config, []tile.ID) {
 		types = append(types, slices.Repeat([]tile.ID{tileComp.ID}, chance.chance)...)
 	}
 	return config, types
+}
+
+func (s *service) GetPlayer(worldGenerationEntity ecs.EntityID, name string) ecs.EntityID {
+	for _, child := range s.Hierarchy().Children(worldGenerationEntity).GetIndices() {
+		if comp, ok := s.Metadata().Name().Get(child); ok && comp.Name == name {
+			return child
+		}
+	}
+	playerEntity := s.World().NewEntity()
+	s.Hierarchy().SetParent(playerEntity, worldGenerationEntity)
+	s.Metadata().Name().Set(playerEntity, metadata.NewName(name))
+	s.Economy().Wallet().Set(playerEntity, economy.NewWallet(0))
+	return playerEntity
 }
 
 func (s *service) GenerateOn(event tile.MissingChunkEvent) {
@@ -232,14 +246,9 @@ func (s *service) GenerateOn(event tile.MissingChunkEvent) {
 		s.Tile().Grid().Chunk().Set(chunkEntity, gridStateComponent)
 		s.Obstruction().Grid().Chunk().Set(chunkEntity, obstructGridComponent)
 
-		playerEntity := s.World().NewEntity()
-		s.Hierarchy().SetParent(playerEntity, worldGenerationEntity)
-		s.Metadata().Name().Set(playerEntity, metadata.NewName("john"))
+		playerEntity := s.GetPlayer(worldGenerationEntity, "john")
 		s.Player().ActingPlayer().Set(playerEntity, player.NewActingPlayer())
-
-		player2Entity := s.World().NewEntity()
-		s.Hierarchy().SetParent(player2Entity, worldGenerationEntity)
-		s.Metadata().Name().Set(player2Entity, metadata.NewName("anna"))
+		player2Entity := s.GetPlayer(worldGenerationEntity, "anna")
 
 		// generates objects
 		type Deployed struct {

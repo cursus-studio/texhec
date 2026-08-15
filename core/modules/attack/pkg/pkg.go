@@ -48,7 +48,7 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 			reachVal, err := strconv.Atoi(structTagValue)
 			if err != nil {
 				world.Logger().Warn(errors.Join(
-					fmt.Errorf("couldn't set for entity \"%v\" deployReach", entity),
+					fmt.Errorf("couldn't set for entity \"%v\" attackReach", entity),
 					err,
 				))
 				return

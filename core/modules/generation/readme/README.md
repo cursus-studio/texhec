@@ -8,10 +8,10 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                               3             43             12            280
+Go                               3             43             12            289
 Markdown                         1              3              0             13
 -------------------------------------------------------------------------------
-SUM:                             4             46             12            293
+SUM:                             4             46             12            302
 -------------------------------------------------------------------------------
 ```
 ## Types
@@ -26,10 +26,15 @@ Type: `func() error`
 `core/game`:
   - `core/game.Definitions`
   - `core/game.Deploy`
+  - `core/game.Economy`
   - `core/game.GameWorld`
   - `core/game.Obstruction`
   - `core/game.Player`
   - `core/game.Tile`
+
+`core/modules/economy`:
+  - `core/modules/economy.NewWallet`
+  - `core/modules/economy.Wallet`
 
 `core/modules/generation`:
   - `core/modules/generation.Service`

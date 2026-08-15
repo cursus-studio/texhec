@@ -24,9 +24,6 @@ type DeployFeature struct {
 	Blueprint actions.BlueprintStep
 	Coords    actions.CoordsStep
 }
-type DestroyFeature struct {
-	Entity actions.FriendlyEntityStep
-}
 
 func (f DeployFeature) Event() any {
 	return deploy.NewDeployEvent(
@@ -35,6 +32,11 @@ func (f DeployFeature) Event() any {
 		f.Coords.State().Coords,
 	)
 }
+
+type DestroyFeature struct {
+	Entity actions.FriendlyEntityStep
+}
+
 func (f DestroyFeature) Event() any {
 	return deploy.NewDestroyEvent(f.Entity.State().Entity)
 }

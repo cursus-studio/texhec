@@ -8,9 +8,9 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                               3             38             14            216
+Go                               3             46             14            250
 -------------------------------------------------------------------------------
-SUM:                             3             38             14            216
+SUM:                             3             46             14            250
 -------------------------------------------------------------------------------
 ```
 ## Types
@@ -33,6 +33,9 @@ Type: `func(core/modules/deploy.DestroyEvent)`
 
 #### method Service Reach
 Type: `func() core/modules/reach.ServiceT[core/modules/deploy.Component]`
+
+#### method Service Register
+Type: `func() error`
 
 ### type Component
 Type: `core/modules/deploy.Component`
@@ -72,6 +75,7 @@ Type: `func(entity engine/modules/ecs.EntityID) core/modules/deploy.DestroyEvent
 ## Dependencies
 `core/game`:
   - `core/game.Deploy`
+  - `core/game.Economy`
   - `core/game.GameWorld`
   - `core/game.Obstruction`
   - `core/game.Player`
@@ -102,6 +106,13 @@ Type: `func(entity engine/modules/ecs.EntityID) core/modules/deploy.DestroyEvent
   - `core/modules/deploy.Reach`
   - `core/modules/deploy.Service`
 
+`core/modules/economy`:
+  - `core/modules/economy.Cost`
+  - `core/modules/economy.ErrToExpensive`
+  - `core/modules/economy.Money`
+  - `core/modules/economy.Pay`
+  - `core/modules/economy.Wallet`
+
 `core/modules/obstruction`:
   - `core/modules/obstruction.Collisions`
   - `core/modules/obstruction.Component`
@@ -112,6 +123,7 @@ Type: `func(entity engine/modules/ecs.EntityID) core/modules/deploy.DestroyEvent
   - `core/modules/obstruction.Obstruction`
 
 `core/modules/player`:
+  - `core/modules/player.ErrRequiresOwner`
   - `core/modules/player.NewOwner`
   - `core/modules/player.Owner`
 
@@ -137,6 +149,7 @@ Type: `func(entity engine/modules/ecs.EntityID) core/modules/deploy.DestroyEvent
   - `engine/modules/ecs.ComponentArray`
   - `engine/modules/ecs.EntityID`
   - `engine/modules/ecs.GetComponentArray`
+  - `engine/modules/ecs.SystemRegister`
 
 `engine/modules/entityregistry`:
   - `engine/modules/entityregistry.Register`
@@ -153,6 +166,9 @@ Type: `func(entity engine/modules/ecs.EntityID) core/modules/deploy.DestroyEvent
 `engine/modules/interactions/pkg`:
   - `engine/modules/interactions/pkg.FeaturePkg`
   - `engine/modules/interactions/pkg.NewCopyRelation`
+
+`engine/modules/loop`:
+  - `engine/modules/loop.TickEvent`
 
 `engine/modules/seed`:
   - `engine/modules/seed.ErrWorldCanHaveOneSeed`

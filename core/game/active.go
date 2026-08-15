@@ -5,6 +5,7 @@ import (
 	"core/modules/attack"
 	"core/modules/definitions"
 	"core/modules/deploy"
+	"core/modules/economy"
 	"core/modules/fpslogger"
 	"core/modules/generation"
 	"core/modules/loading"
@@ -29,6 +30,7 @@ type GameWorld struct {
 	Attack      ioc.Lazy[attack.Service]      `inject:""`
 	Definitions ioc.Lazy[definitions.Service] `inject:""`
 	Deploy      ioc.Lazy[deploy.Service]      `inject:""`
+	Economy     ioc.Lazy[economy.Service]     `inject:""`
 	FpsLogger   ioc.Lazy[fpslogger.Service]   `inject:""`
 	Generation  ioc.Lazy[generation.Service]  `inject:""`
 	Loading     ioc.Lazy[loading.Service]     `inject:""`
