@@ -149,6 +149,7 @@ type Service interface {
 	Grid() grid.ServiceT[ID]
 	GetTile(ID) (ecs.EntityID, bool)
 
+	// is often used to check is element a prototype or a placed object
 	Pos() ecs.ComponentArray[PosComponent]
 	Size() ecs.ComponentArray[SizeComponent]
 	Rot() ecs.ComponentArray[RotComponent]

@@ -11,6 +11,7 @@ import (
 	"engine/modules/entityregistry"
 	"engine/modules/grid"
 	interactionspkg "engine/modules/interactions/pkg"
+	typeregistrypkg "engine/modules/typeregistry/pkg"
 	"errors"
 	"fmt"
 	"strconv"
@@ -29,6 +30,10 @@ func (f AttackFeature) Event() any {
 
 var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 	pkgs := []ioc.Pkg{
+		typeregistrypkg.PkgT[attack.TargetComponent],
+		typeregistrypkg.PkgT[attack.HealthComponent],
+		typeregistrypkg.PkgT[attack.DamageComponent],
+
 		reachpkg.PkgT[attack.TargetComponent],
 		interactionspkg.FeaturePkg[AttackFeature](
 		// interactionspkg.NewCopyRelation[actions.AnchorComponent](
@@ -56,6 +61,30 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 			reachVal *= reachVal
 			reachComp := reach.NewReach[attack.TargetComponent](grid.Coord(reachVal))
 			world.Attack().Reach().Component().Set(entity, reachComp)
+		})
+		b.Register("health", func(entity ecs.EntityID, structTagValue string) {
+			val, err := strconv.Atoi(structTagValue)
+			if err != nil {
+				world.Logger().Warn(errors.Join(
+					fmt.Errorf("couldn't set for entity \"%v\" health", entity),
+					err,
+				))
+				return
+			}
+			comp := attack.NewHealth(attack.Health(val))
+			world.Attack().Health().Set(entity, comp)
+		})
+		b.Register("damage", func(entity ecs.EntityID, structTagValue string) {
+			val, err := strconv.Atoi(structTagValue)
+			if err != nil {
+				world.Logger().Warn(errors.Join(
+					fmt.Errorf("couldn't set for entity \"%v\" damage", entity),
+					err,
+				))
+				return
+			}
+			comp := attack.NewDamage(attack.Health(val))
+			world.Attack().Damage().Set(entity, comp)
 		})
 	})
 })

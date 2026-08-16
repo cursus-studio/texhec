@@ -103,11 +103,11 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                               8            177             93            980
+Go                               8            177             94            980
 GLSL                             3             31              2            112
 Markdown                         3             10              0             85
 -------------------------------------------------------------------------------
-SUM:                            14            218             95           1177
+SUM:                            14            218             96           1177
 -------------------------------------------------------------------------------
 ```
 ## TODO
@@ -148,6 +148,7 @@ src images should be:
 
 #### method Service Pos
 Type: `func() engine/modules/ecs.ComponentArray[core/modules/tile.PosComponent]`
+is often used to check is element a prototype or a placed object
 
 #### method Service Register
 Type: `func() error`

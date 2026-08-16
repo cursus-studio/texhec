@@ -8,15 +8,24 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                               3             21              3            142
+Go                               4             31              4            229
 Markdown                         1              0              0              1
 -------------------------------------------------------------------------------
-SUM:                             4             21              3            143
+SUM:                             5             31              4            230
 -------------------------------------------------------------------------------
 ```
 ## Types
 ### type Service
 Type: `core/modules/attack.Service`
+
+#### method Service Damage
+Type: `func() engine/modules/ecs.ComponentArray[core/modules/attack.DamageComponent]`
+
+#### method Service FullHealth
+Type: `func(engine/modules/ecs.EntityID) (core/modules/attack.HealthComponent, bool)`
+
+#### method Service Health
+Type: `func() engine/modules/ecs.ComponentArray[core/modules/attack.HealthComponent]`
 
 #### method Service Reach
 Type: `func() core/modules/reach.ServiceT[core/modules/attack.TargetComponent]`
@@ -27,11 +36,32 @@ Type: `func() error`
 #### method Service Target
 Type: `func() engine/modules/ecs.ComponentArray[core/modules/attack.TargetComponent]`
 
+### type Health
+Type: `core/modules/attack.Health`
+
 ### type TargetComponent
 Type: `core/modules/attack.TargetComponent`
 
 #### property TargetComponent Entity
 Type: `engine/modules/ecs.EntityID`
+
+### type HealthComponent
+Type: `core/modules/attack.HealthComponent`
+
+#### property HealthComponent Health
+Type: `core/modules/attack.Health`
+
+#### method HealthComponent Smooth
+Type: `func()`
+
+#### method HealthComponent Lerp
+Type: `func(c2 core/modules/attack.HealthComponent, mix32 float32) core/modules/attack.HealthComponent`
+
+### type DamageComponent
+Type: `core/modules/attack.DamageComponent`
+
+#### property DamageComponent Damage
+Type: `core/modules/attack.Health`
 
 ## Variables
 ### var ErrCannotAttackEnemyOutOfReach
@@ -40,6 +70,12 @@ Type: `error`
 ## Functions
 ### func NewTarget
 Type: `func(target engine/modules/ecs.EntityID) core/modules/attack.TargetComponent`
+
+### func NewHealth
+Type: `func(health core/modules/attack.Health) core/modules/attack.HealthComponent`
+
+### func NewDamage
+Type: `func(damage core/modules/attack.Health) core/modules/attack.DamageComponent`
 
 
 ## Dependencies
@@ -56,8 +92,14 @@ Type: `func(target engine/modules/ecs.EntityID) core/modules/attack.TargetCompon
   - `core/modules/actions.FriendlyOffensiveEntityStep`
 
 `core/modules/attack`:
+  - `core/modules/attack.Damage`
+  - `core/modules/attack.DamageComponent`
   - `core/modules/attack.Entity`
   - `core/modules/attack.ErrCannotAttackEnemyOutOfReach`
+  - `core/modules/attack.Health`
+  - `core/modules/attack.HealthComponent`
+  - `core/modules/attack.NewDamage`
+  - `core/modules/attack.NewHealth`
   - `core/modules/attack.NewTarget`
   - `core/modules/attack.Reach`
   - `core/modules/attack.Service`
@@ -92,8 +134,10 @@ Type: `func(target engine/modules/ecs.EntityID) core/modules/attack.TargetCompon
 
 `engine/modules/ecs`:
   - `engine/modules/ecs.ComponentArray`
+  - `engine/modules/ecs.DirtySet`
   - `engine/modules/ecs.EntityID`
   - `engine/modules/ecs.GetComponentArray`
+  - `engine/modules/ecs.NewDirtySet`
   - `engine/modules/ecs.NewSetEvent`
   - `engine/modules/ecs.SystemRegister`
 
@@ -109,7 +153,15 @@ Type: `func(target engine/modules/ecs.EntityID) core/modules/attack.TargetCompon
   - `engine/modules/interactions/pkg.FeaturePkg`
 
 `engine/modules/loop`:
+  - `engine/modules/loop.Delta`
+  - `engine/modules/loop.FrameEvent`
   - `engine/modules/loop.TickEvent`
+
+`engine/modules/transition`:
+  - `engine/modules/transition.LerpInt`
+
+`engine/modules/typeregistry/pkg`:
+  - `engine/modules/typeregistry/pkg.PkgT`
 
 ### Third Party
 - `github.com/ogiusek/events`
