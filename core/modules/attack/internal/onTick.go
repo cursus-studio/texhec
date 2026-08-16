@@ -12,6 +12,7 @@ import (
 
 func (s *service) Register() error {
 	events.Listen(s.EventsBuilder(), s.OnTick)
+	events.Listen(s.EventsBuilder(), s.OnFrame)
 	return nil
 }
 
@@ -38,7 +39,7 @@ func (s *service) OnTick(event loop.TickEvent) {
 			}
 			s.Pathfind().Target().Remove(entity)
 			s.Attack().Target().Remove(entity)
-			s.World().RemoveEntity(target.Entity)
+			// s.World().RemoveEntity(target.Entity)
 			continue
 		}
 		if _, ok := s.Pathfind().Speed().Get(entity); !ok {
@@ -63,5 +64,14 @@ func (s *service) OnTick(event loop.TickEvent) {
 			s.Pathfind().Target().Set(entity, pathfind.NewTarget(coord))
 			break
 		}
+	}
+}
+
+func (s *service) OnFrame(loop.FrameEvent) {
+	for _, entity := range s.dirtyHealth.Get() {
+		if health, ok := s.health.Get(entity); !ok || health.Health != 0 {
+			continue
+		}
+		s.World().RemoveEntity(entity)
 	}
 }

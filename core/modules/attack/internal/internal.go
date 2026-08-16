@@ -16,7 +16,8 @@ type service struct {
 	health         ecs.ComponentArray[attack.HealthComponent]
 	damage         ecs.ComponentArray[attack.DamageComponent]
 
-	zeroHealth attack.HealthComponent
+	dirtyHealth ecs.DirtySet
+	zeroHealth  attack.HealthComponent
 }
 
 func NewService(c ioc.Dic) attack.Service {
@@ -24,6 +25,9 @@ func NewService(c ioc.Dic) attack.Service {
 	s.target = ecs.GetComponentArray[attack.TargetComponent](s.World())
 	s.health = ecs.GetComponentArray[attack.HealthComponent](s.World())
 	s.damage = ecs.GetComponentArray[attack.DamageComponent](s.World())
+
+	s.dirtyHealth = ecs.NewDirtySet()
+	s.health.AddDirtySet(s.dirtyHealth)
 	return s
 }
 

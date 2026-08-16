@@ -32,6 +32,11 @@ func NewDamage(damage Health) DamageComponent {
 	return DamageComponent{damage}
 }
 
+func (HealthComponent) Smooth() {}
+func (c1 HealthComponent) Lerp(c2 HealthComponent, mix32 float32) HealthComponent {
+	return HealthComponent{Health(float32(c1.Health)*(1-mix32) + float32(c2.Health)*mix32)}
+}
+
 //
 
 type Service interface {

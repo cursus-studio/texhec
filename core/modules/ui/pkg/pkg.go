@@ -44,8 +44,9 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 	ioc.Register(b, func(c ioc.Dic) ui.Service {
 		config := ioc.Get[Config](c).(*config)
 		return uiservice.NewService(c, []ecs.SystemRegister{
-			systems.NewSystem(c, config.bgTimePerFrame),
 			systems.NewCursorSystem(c),
+			systems.NewObjectsSystem(c),
+			systems.NewUpdateBgSystem(c, config.bgTimePerFrame),
 		}, config.animationDuration)
 	})
 })

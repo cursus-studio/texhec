@@ -8,10 +8,10 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                               4             28              3            213
+Go                               4             31              4            228
 Markdown                         1              0              0              1
 -------------------------------------------------------------------------------
-SUM:                             5             28              3            214
+SUM:                             5             31              4            229
 -------------------------------------------------------------------------------
 ```
 ## Types
@@ -50,6 +50,12 @@ Type: `core/modules/attack.HealthComponent`
 
 #### property HealthComponent Health
 Type: `core/modules/attack.Health`
+
+#### method HealthComponent Smooth
+Type: `func()`
+
+#### method HealthComponent Lerp
+Type: `func(c2 core/modules/attack.HealthComponent, mix32 float32) core/modules/attack.HealthComponent`
 
 ### type DamageComponent
 Type: `core/modules/attack.DamageComponent`
@@ -128,8 +134,10 @@ Type: `func(damage core/modules/attack.Health) core/modules/attack.DamageCompone
 
 `engine/modules/ecs`:
   - `engine/modules/ecs.ComponentArray`
+  - `engine/modules/ecs.DirtySet`
   - `engine/modules/ecs.EntityID`
   - `engine/modules/ecs.GetComponentArray`
+  - `engine/modules/ecs.NewDirtySet`
   - `engine/modules/ecs.NewSetEvent`
   - `engine/modules/ecs.SystemRegister`
 
@@ -146,6 +154,7 @@ Type: `func(damage core/modules/attack.Health) core/modules/attack.DamageCompone
 
 `engine/modules/loop`:
   - `engine/modules/loop.Delta`
+  - `engine/modules/loop.FrameEvent`
   - `engine/modules/loop.TickEvent`
 
 `engine/modules/typeregistry/pkg`:
