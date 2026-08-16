@@ -3,6 +3,7 @@ package attack
 import (
 	"core/modules/reach"
 	"engine/modules/ecs"
+	"engine/modules/transition"
 	"errors"
 )
 
@@ -34,7 +35,7 @@ func NewDamage(damage Health) DamageComponent {
 
 func (HealthComponent) Smooth() {}
 func (c1 HealthComponent) Lerp(c2 HealthComponent, mix32 float32) HealthComponent {
-	return HealthComponent{Health(float32(c1.Health)*(1-mix32) + float32(c2.Health)*mix32)}
+	return HealthComponent{transition.LerpInt(c1.Health, c2.Health, mix32)}
 }
 
 //

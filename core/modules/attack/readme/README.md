@@ -8,10 +8,10 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                               4             31              4            228
+Go                               4             31              4            229
 Markdown                         1              0              0              1
 -------------------------------------------------------------------------------
-SUM:                             5             31              4            229
+SUM:                             5             31              4            230
 -------------------------------------------------------------------------------
 ```
 ## Types
@@ -156,6 +156,9 @@ Type: `func(damage core/modules/attack.Health) core/modules/attack.DamageCompone
   - `engine/modules/loop.Delta`
   - `engine/modules/loop.FrameEvent`
   - `engine/modules/loop.TickEvent`
+
+`engine/modules/transition`:
+  - `engine/modules/transition.LerpInt`
 
 `engine/modules/typeregistry/pkg`:
   - `engine/modules/typeregistry/pkg.PkgT`

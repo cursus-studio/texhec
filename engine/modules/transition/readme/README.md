@@ -8,9 +8,9 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                               6             57             13            227
+Go                               6             57             13            231
 -------------------------------------------------------------------------------
-SUM:                             6             57             13            227
+SUM:                             6             57             13            231
 -------------------------------------------------------------------------------
 ```
 ## Types
@@ -77,6 +77,9 @@ Type: `func(t engine/modules/transition.Progress) engine/modules/transition.Prog
 ## Functions
 ### func Lerp
 Type: `func[Number, T golang.org/x/exp/constraints.Float](a Number, b Number, t T) Number`
+
+### func LerpInt
+Type: `func[Number golang.org/x/exp/constraints.Integer, T golang.org/x/exp/constraints.Float](a Number, b Number, t T) Number`
 
 ### func NewTransition
 Type: `func[Component any](from Component, to Component, duration time.Duration) engine/modules/transition.TransitionComponent[Component]`

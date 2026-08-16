@@ -46,7 +46,7 @@ func (s *objectsSystem) AddHealthBar(entity ecs.EntityID) {
 
 	s.Render().Mesh().Set(blankBar, render.NewMesh(s.Definitions().Assets().SquareMesh))
 	s.Render().Texture().Set(blankBar, render.NewTexture(s.Definitions().Assets().Blank))
-	s.Render().Color().Set(blankBar, render.NewColor(mgl32.Vec4{0, 0, 0, 1}))
+	s.Render().Color().Set(blankBar, render.NewColor(mgl32.Vec4{.3, 0, 0, 1}))
 
 	healthBar := s.World().NewEntity()
 	s.Hierarchy().SetParent(healthBar, entity)

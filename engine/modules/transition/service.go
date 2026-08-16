@@ -3,6 +3,7 @@ package transition
 
 import (
 	"engine/modules/ecs"
+	"math"
 	"time"
 
 	"golang.org/x/exp/constraints"
@@ -22,6 +23,9 @@ type LerpConstraint[Component any] interface {
 
 func Lerp[Number, T constraints.Float](a, b Number, t T) Number {
 	return a + Number(t)*(b-a)
+}
+func LerpInt[Number constraints.Integer, T constraints.Float](a, b Number, t T) Number {
+	return Number(math.Round(Lerp(float64(a), float64(b), t)))
 }
 
 //

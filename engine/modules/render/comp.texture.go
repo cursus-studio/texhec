@@ -36,8 +36,7 @@ func (c TextureFrameComponent) GetFrame(frameLen int16) int16 {
 }
 
 func (c1 TextureFrameComponent) Lerp(c2 TextureFrameComponent, mix32 float32) TextureFrameComponent {
-	mix64 := float64(mix32)
-	return TextureFrameComponent{transition.Lerp(c1.FrameNormalized, c2.FrameNormalized, mix64)}
+	return TextureFrameComponent{transition.Lerp(c1.FrameNormalized, c2.FrameNormalized, mix32)}
 }
 
 //
