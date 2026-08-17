@@ -23,10 +23,12 @@ type Service interface {
 }
 
 var (
-	MenuID     = scene.NewSceneId("menu")
-	GameID     = scene.NewSceneId("game")
-	SettingsID = scene.NewSceneId("settings")
-	CreditsID  = scene.NewSceneId("credits")
+	MenuID       = scene.NewSceneId("menu")
+	GameID       = scene.NewSceneId("game")
+	GameServerID = scene.NewSceneId("server")
+	GameClientID = scene.NewSceneId("client")
+	SettingsID   = scene.NewSceneId("settings")
+	CreditsID    = scene.NewSceneId("credits")
 )
 
 const (

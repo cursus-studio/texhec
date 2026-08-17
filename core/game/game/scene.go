@@ -26,7 +26,11 @@ import (
 const MAX_ZOOM = 100 // 1000
 const MAP_SIZE = 128 // 1024
 
-func addScene(world game.GameWorld, sceneParent ecs.EntityID) {
+func addScene(
+	world game.GameWorld,
+	sceneParent ecs.EntityID,
+	load func(),
+) {
 	// biggest maps on mods in rusted warfare 2560x1440
 	// - all tiles are rendered at once
 	// - strategic map is used at some point
@@ -72,19 +76,11 @@ func addScene(world game.GameWorld, sceneParent ecs.EntityID) {
 		world.Ui().AnimatedBackground().Set(bg, ui.AnimatedBackgroundComponent{})
 	}
 
-	worldEntity := world.World().NewEntity()
-	world.Hierarchy().SetParent(worldEntity, sceneParent)
-	world.Groups().Component().Set(worldEntity, groups.EmptyGroups().Enable(definitions.GameGroup))
-	world.Seed().Seed().Set(worldEntity, seed.NewSeed(
-		// world.Clock.Now().Unix(),
-		21377137,
-	))
-
 	gameCamera := world.World().NewEntity()
-	world.Hierarchy().SetParent(gameCamera, worldEntity)
+	world.Hierarchy().SetParent(gameCamera, sceneParent)
 	world.UUID().Component().Set(gameCamera, uuid.New([16]byte{48}))
 	world.Camera().Ortho().Set(gameCamera, camera.NewOrtho(-1000, +1000))
-	world.Groups().InheritGroups(gameCamera)
+	world.Groups().Component().Set(gameCamera, groups.EmptyGroups().Enable(definitions.GameGroup))
 	world.Camera().Mobile().Set(gameCamera, camera.NewMobileCamera())
 	world.Camera().Limits().Set(gameCamera, camera.NewCameraLimits(
 		10./float32(MAX_ZOOM), 10,
@@ -95,18 +91,41 @@ func addScene(world game.GameWorld, sceneParent ecs.EntityID) {
 		},
 	))
 
-	for x := range MAP_SIZE / world.Grid().ChunkSize() {
-		for y := range MAP_SIZE / world.Grid().ChunkSize() {
-			events.Emit(world.Events(), tile.NewMissingChunkEvent(grid.NewChunkCoords(x, y)))
-		}
-	}
+	load()
 }
 
 var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 	ioc.Register(b, func(c ioc.Dic) game.GameBuilder {
 		return func(sceneParent ecs.EntityID) {
 			world := ioc.Get[game.GameWorld](c)
-			addScene(world, sceneParent)
+			addScene(world, sceneParent, func() {
+				worldEntity := world.World().NewEntity()
+				world.Hierarchy().SetParent(worldEntity, sceneParent)
+				world.Groups().Component().Set(worldEntity, groups.EmptyGroups().Enable(definitions.GameGroup))
+				world.Seed().Seed().Set(worldEntity, seed.NewSeed(
+					// world.Clock.Now().Unix(),
+					21377137,
+				))
+				for x := range MAP_SIZE / world.Grid().ChunkSize() {
+					for y := range MAP_SIZE / world.Grid().ChunkSize() {
+						events.Emit(world.Events(), tile.NewMissingChunkEvent(grid.NewChunkCoords(x, y)))
+					}
+				}
+			})
+		}
+	})
+	ioc.Register(b, func(c ioc.Dic) game.GameServerBuilder {
+		return func(sceneParent ecs.EntityID) {
+			s := ioc.Get[game.GameWorld](c)
+			addScene(s, sceneParent, func() {
+			})
+		}
+	})
+	ioc.Register(b, func(c ioc.Dic) game.GameClientBuilder {
+		return func(sceneParent ecs.EntityID) {
+			s := ioc.Get[game.GameWorld](c)
+			addScene(s, sceneParent, func() {
+			})
 		}
 	})
 })
