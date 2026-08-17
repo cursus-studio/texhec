@@ -9,11 +9,11 @@ goos: linux
 goarch: amd64
 pkg: core/modules/reach/test
 cpu: Intel(R) Core(TM) i5-8350U CPU @ 1.70GHz
-BenchmarkDist-8                 	100000000	        12.41 ns/op
-Benchmark4TilesWithinReach-8    	11624863	        97.99 ns/op
-Benchmark12TilesWithinReach-8   	 9029640	       131.6 ns/op
+BenchmarkDist-8                 	124853566	         9.655 ns/op
+Benchmark4TilesWithinReach-8    	12420687	        96.86 ns/op
+Benchmark12TilesWithinReach-8   	 8930929	       136.4 ns/op
 PASS
-ok  	core/modules/reach/test	3.589s
+ok  	core/modules/reach/test	3.647s
 ```
 ## Lines of code
 ```
@@ -21,10 +21,10 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                               8             58             27            373
+Go                               8             57             27            364
 Markdown                         2              0              0              2
 -------------------------------------------------------------------------------
-SUM:                            10             58             27            375
+SUM:                            10             57             27            366
 -------------------------------------------------------------------------------
 ```
 ## TODO
