@@ -2,7 +2,6 @@ package test
 
 import (
 	"core/modules/tile"
-	"math"
 	"testing"
 )
 
@@ -13,7 +12,7 @@ func pow(num tile.Coord) tile.Coord {
 func TestDistance(t *testing.T) {
 	s := NewSetup()
 
-	s.ExpectDist(t, math.MaxFloat32, s.Reach().Distance(
+	s.ExpectDist(t, .5, s.Reach().Distance(
 		tile.NewPos(.5, .5), tile.NewSize(1, 1),
 		tile.NewPos(1, 0), tile.NewSize(1, 1),
 	))

@@ -63,6 +63,8 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 			}
 			buttons := []Button{
 				{"play", scene.NewChangeSceneEvent(definitions.GameID)},
+				{"server", scene.NewChangeSceneEvent(definitions.GameServerID)},
+				{"client", scene.NewChangeSceneEvent(definitions.GameClientID)},
 				{"settings", scene.NewChangeSceneEvent(definitions.SettingsID)},
 				{"credits", scene.NewChangeSceneEvent(definitions.CreditsID)},
 				{"exit", loop.NewStopEvent()},

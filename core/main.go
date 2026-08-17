@@ -116,7 +116,27 @@ func main() {
 		world.Logger().Log(err)
 	}
 
-	events.Emit(world.Events(), scene.NewChangeSceneEvent(definitions.GameID))
+	loadSceneEvent := scene.NewChangeSceneEvent(definitions.MenuID)
+	if len(os.Args) > 1 {
+		arg := os.Args[1]
+		switch arg {
+		case definitions.MenuID.ID:
+			fallthrough
+		case definitions.GameID.ID:
+			fallthrough
+		case definitions.GameServerID.ID:
+			fallthrough
+		case definitions.GameClientID.ID:
+			fallthrough
+		case definitions.SettingsID.ID:
+			fallthrough
+		case definitions.CreditsID.ID:
+			loadSceneEvent.ID.ID = arg
+		default:
+			panic("invalid scene argument")
+		}
+	}
+	events.Emit(world.Events(), loadSceneEvent)
 
 	world.Logger().Info(errors.New("initialized engine"))
 	runtime.LockOSThread()
