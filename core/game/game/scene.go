@@ -12,6 +12,7 @@ import (
 	"engine/modules/grid"
 	"engine/modules/groups"
 	"engine/modules/inputs"
+	"engine/modules/netsync"
 	"engine/modules/render"
 	"engine/modules/seed"
 	"engine/modules/transform"
@@ -23,8 +24,14 @@ import (
 )
 
 // max zoom to see tiles in 1000 px
-const MAX_ZOOM = 100 // 1000
-const MAP_SIZE = 128 // 1024
+const MAX_ZOOM = 32
+const MAP_SIZE = 32
+
+// const MAX_ZOOM = 100
+// const MAP_SIZE = 128
+
+// const MAX_ZOOM = 1000
+// const MAP_SIZE = 1024
 
 func addScene(
 	world game.GameWorld,
@@ -78,6 +85,7 @@ func addScene(
 
 	gameCamera := world.World().NewEntity()
 	world.Hierarchy().SetParent(gameCamera, sceneParent)
+	world.Camera().Priority().Set(gameCamera, camera.NewPriority(0))
 	world.UUID().Component().Set(gameCamera, uuid.New([16]byte{48}))
 	world.Camera().Ortho().Set(gameCamera, camera.NewOrtho(-1000, +1000))
 	world.Groups().Component().Set(gameCamera, groups.EmptyGroups().Enable(definitions.GameGroup))
@@ -85,8 +93,8 @@ func addScene(
 	world.Camera().Limits().Set(gameCamera, camera.NewCameraLimits(
 		10./float32(MAX_ZOOM), 10,
 		mgl32.Vec3{0, 0, -1000}, mgl32.Vec3{
-			world.Tile().GetTileSize().Size[0] * float32(MAP_SIZE),
-			world.Tile().GetTileSize().Size[1] * float32(MAP_SIZE),
+			world.Grid().GetTileSize().Size[0] * float32(MAP_SIZE),
+			world.Grid().GetTileSize().Size[1] * float32(MAP_SIZE),
 			1000,
 		},
 	))
@@ -97,27 +105,42 @@ func addScene(
 var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 	ioc.Register(b, func(c ioc.Dic) game.GameBuilder {
 		return func(sceneParent ecs.EntityID) {
-			world := ioc.Get[game.GameWorld](c)
-			addScene(world, sceneParent, func() {
-				worldEntity := world.World().NewEntity()
-				world.Hierarchy().SetParent(worldEntity, sceneParent)
-				world.Groups().Component().Set(worldEntity, groups.EmptyGroups().Enable(definitions.GameGroup))
-				world.Seed().Seed().Set(worldEntity, seed.NewSeed(
+			s := ioc.Get[game.GameWorld](c)
+			addScene(s, sceneParent, func() {
+				worldEntity := s.World().NewEntity()
+				s.Seed().Seed().Set(worldEntity, seed.NewSeed(
 					// world.Clock.Now().Unix(),
 					21377137,
 				))
-				for x := range MAP_SIZE / world.Grid().ChunkSize() {
-					for y := range MAP_SIZE / world.Grid().ChunkSize() {
-						events.Emit(world.Events(), tile.NewMissingChunkEvent(grid.NewChunkCoords(x, y)))
+				for x := range MAP_SIZE / s.Grid().ChunkSize() {
+					for y := range MAP_SIZE / s.Grid().ChunkSize() {
+						events.Emit(s.Events(), tile.NewMissingChunkEvent(grid.NewChunkCoords(x, y)))
 					}
 				}
 			})
 		}
 	})
 	ioc.Register(b, func(c ioc.Dic) game.GameServerBuilder {
+		s := ioc.Get[game.GameWorld](c)
 		return func(sceneParent ecs.EntityID) {
-			s := ioc.Get[game.GameWorld](c)
 			addScene(s, sceneParent, func() {
+				worldEntity := s.World().NewEntity()
+				s.Seed().Seed().Set(worldEntity, seed.NewSeed(
+					s.Clock().Now().Unix(),
+					// 21377137,
+				))
+				for x := range MAP_SIZE / s.Grid().ChunkSize() {
+					for y := range MAP_SIZE / s.Grid().ChunkSize() {
+						events.Emit(s.Events(), tile.NewMissingChunkEvent(grid.NewChunkCoords(x, y)))
+					}
+				}
+				//
+				hostEntity := s.World().NewEntity()
+				s.NetSync().Client().Set(hostEntity, netsync.ClientComponent{})
+				if err := s.Connection().Host(hostEntity, ":8080"); err != nil {
+					s.Logger().Warn(err)
+					return
+				}
 			})
 		}
 	})
@@ -125,6 +148,12 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 		return func(sceneParent ecs.EntityID) {
 			s := ioc.Get[game.GameWorld](c)
 			addScene(s, sceneParent, func() {
+				connectionEntity := s.World().NewEntity()
+				s.NetSync().Server().Set(connectionEntity, netsync.ServerComponent{})
+				if err := s.Connection().Connect(connectionEntity, ":8080"); err != nil {
+					s.Logger().Warn(err)
+					return
+				}
 			})
 		}
 	})

@@ -18,7 +18,7 @@ func NewSystem(c ioc.Dic) ecs.SystemRegister {
 	return ecs.NewSystemRegister(func() error {
 		s := ioc.GetServices[*system](c)
 
-		s.tileSize = s.Tile().GetTileSize()
+		s.tileSize = s.Grid().GetTileSize()
 
 		//
 

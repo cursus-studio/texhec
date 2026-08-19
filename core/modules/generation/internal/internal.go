@@ -7,14 +7,11 @@ import (
 	"core/modules/player"
 	"core/modules/tile"
 	"engine/modules/batcher"
-	"engine/modules/collider"
 	"engine/modules/datastructures"
 	"engine/modules/ecs"
 	"engine/modules/grid"
-	"engine/modules/inputs"
 	"engine/modules/metadata"
 	"engine/modules/noise"
-	"engine/modules/transform"
 	"fmt"
 	"slices"
 
@@ -226,22 +223,6 @@ func (s *service) GenerateOn(event tile.MissingChunkEvent) {
 	flushBatch := batcher.NewBatch(1, func(i int) {
 		chunkEntity := s.World().NewEntity()
 
-		s.Hierarchy().SetParent(chunkEntity, worldGenerationEntity)
-		s.Groups().InheritGroups(chunkEntity)
-		size := s.Tile().GetTileSize()
-		size.Size[0] *= float32(s.Grid().ChunkSize())
-		size.Size[1] *= float32(s.Grid().ChunkSize())
-
-		s.Transform().Pos().Set(chunkEntity, transform.NewPos(
-			float32(event.Coords.X)*size.Size[0],
-			float32(event.Coords.Y)*size.Size[1],
-			0,
-		))
-		s.Transform().Size().Set(chunkEntity, size)
-		s.Transform().PivotPoint().Set(chunkEntity, transform.NewPivotPoint(0, 0, .5))
-
-		s.Collider().Component().Set(chunkEntity, collider.NewCollider(s.Definitions().Assets().SquareCollider))
-		s.Inputs().Stack().Set(chunkEntity, inputs.StackComponent{})
 		s.Grid().Coords().Set(chunkEntity, grid.NewChunkCoords(event.Coords.X, event.Coords.Y))
 		s.Tile().Grid().Chunk().Set(chunkEntity, gridStateComponent)
 		s.Obstruction().Grid().Chunk().Set(chunkEntity, obstructGridComponent)

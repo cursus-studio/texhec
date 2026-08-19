@@ -96,9 +96,6 @@ Type: `engine/modules/grid.Coords`
 ### var ErrInvalidPath
 Type: `error`
 
-### var ErrInvalidServiceOrder
-Type: `error`
-
 ### var NotARegion
 Type: `core/modules/pathfind.Region`
 
@@ -144,7 +141,6 @@ Type: `func(entity engine/modules/ecs.EntityID, coords engine/modules/grid.Coord
   - `core/modules/pathfind.Coords`
   - `core/modules/pathfind.Entity`
   - `core/modules/pathfind.ErrInvalidPath`
-  - `core/modules/pathfind.ErrInvalidServiceOrder`
   - `core/modules/pathfind.FindPathEvent`
   - `core/modules/pathfind.InvSpeed`
   - `core/modules/pathfind.NewFindPathEvent`

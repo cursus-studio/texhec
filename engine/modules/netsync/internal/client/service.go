@@ -3,17 +3,14 @@ package client
 import (
 	"engine"
 	"engine/modules/connection"
-	"engine/modules/datastructures"
 	"engine/modules/ecs"
 	"engine/modules/loop"
 	"engine/modules/netsync/internal/clienttypes"
 	"engine/modules/netsync/internal/config"
 	"engine/modules/netsync/internal/servertypes"
 	"engine/modules/record"
-	"errors"
 	"fmt"
 	"reflect"
-	"sync"
 
 	"github.com/ogiusek/events"
 	"github.com/ogiusek/ioc/v2"
@@ -42,83 +39,78 @@ type Service struct {
 	receivedTransparentEvent bool
 	recordingID record.UUIDRecordingID
 
-	mutex *sync.Mutex
-
-	dirtySet           ecs.DirtySet
-	messagesFromServer []any
-	toRemove           []ecs.EntityID
-	listeners          datastructures.SparseSet[ecs.EntityID]
+	dirtySet ecs.DirtySet
 }
 
 func NewService(c ioc.Dic, config config.Config) *Service {
-	t := ioc.GetServices[*Service](c)
-	t.Config = config
-	t.recordNextEvent = true
-	t.predictions = make([]savedPrediction, 0)
-	t.recordedPrediction = nil
-	t.sentTransparentEvent = false
-	t.receivedTransparentEvent = false
-	t.recordingID = 0
+	s := ioc.GetServices[*Service](c)
+	s.Config = config
+	s.recordNextEvent = true
+	s.predictions = make([]savedPrediction, 0)
+	s.recordedPrediction = nil
+	s.sentTransparentEvent = false
+	s.receivedTransparentEvent = false
+	s.recordingID = 0
 
-	t.mutex = &sync.Mutex{}
+	s.dirtySet = ecs.NewDirtySet()
 
-	t.dirtySet = ecs.NewDirtySet()
-	t.messagesFromServer = nil
-	t.toRemove = nil
-	t.listeners = datastructures.NewSparseSet[ecs.EntityID]()
+	s.NetSync().Server().AddDirtySet(s.dirtySet)
+	s.Connection().Component().AddDirtySet(s.dirtySet)
 
 	listeners := map[reflect.Type]func(any){
 		reflect.TypeFor[servertypes.SendStateDTO](): func(a any) {
-			t.ListenSendState(a.(servertypes.SendStateDTO))
+			s.ListenSendState(a.(servertypes.SendStateDTO))
 		},
 		reflect.TypeFor[servertypes.SendChangeDTO](): func(a any) {
-			t.ListenSendChange(a.(servertypes.SendChangeDTO))
+			s.ListenSendChange(a.(servertypes.SendChangeDTO))
 		},
 		reflect.TypeFor[servertypes.TransparentEventDTO](): func(a any) {
-			t.ListenTransparentEvent(a.(servertypes.TransparentEventDTO))
+			s.ListenTransparentEvent(a.(servertypes.TransparentEventDTO))
 		},
 	}
-	events.Listen(t.EventsBuilder(), func(loop.FrameEvent) {
-		t.loadConnections()
-		conn := t.getConnection()
+	events.Listen(s.EventsBuilder(), func(loop.FrameEvent) {
+		for _, entity := range s.dirtySet.Get() {
+			if _, ok := s.NetSync().Server().Get(entity); !ok {
+				continue
+			}
+			conn, ok := s.Connection().Component().Get(entity)
+			if !ok {
+				continue
+			}
+			err := conn.Conn().Send(clienttypes.FetchStateDTO{})
+			s.Logger().Warn(err)
+		}
+		conn := s.getConnection()
 		if conn == nil {
 			return
 		}
-		t.mutex.Lock()
-		defer t.mutex.Unlock()
 
-		for len(t.toRemove) != 0 {
-			entity := t.toRemove[0]
-			t.toRemove = t.toRemove[1:]
-			t.World().RemoveEntity(entity)
-			t.listeners.Remove(entity)
-		}
-		for len(t.messagesFromServer) != 0 {
-			message := t.messagesFromServer[0]
-			t.messagesFromServer = t.messagesFromServer[1:]
-
-			messageType := reflect.TypeOf(message)
-			listener, ok := listeners[messageType]
+		for _, server := range s.NetSync().Server().GetEntities() {
+			conn, ok := s.Connection().Component().Get(server)
 			if !ok {
-				t.Logger().Log(fmt.Errorf("invalid listener of type '%v' called", messageType.String()))
-				_ = conn.Close()
-				return
+				s.Logger().Warn(fmt.Errorf("not connected to server"))
+				continue
 			}
-			listener(message)
+			for _, msg := range conn.Conn().Messages() {
+				messageType := reflect.TypeOf(msg)
+				listener, ok := listeners[messageType]
+				if !ok {
+					s.Logger().Log(fmt.Errorf("invalid listener of type '%v' called", messageType.String()))
+					_ = conn.Conn().Close()
+					return
+				}
+				listener(msg)
+			}
 		}
 	})
 
-	t.NetSync().Server().AddDirtySet(t.dirtySet)
-	t.Connection().Component().AddDirtySet(t.dirtySet)
-
-	return t
+	return s
 }
 
 // public methods
 
 // doesn't send event to server
 func (t *Service) BeforeEventRecord(event any) {
-	t.loadConnections()
 	clientConn := t.getConnection()
 	if clientConn == nil {
 		return
@@ -149,7 +141,6 @@ func (t *Service) BeforeEventRecord(event any) {
 }
 
 func (t *Service) BeforeEvent(event any) {
-	t.loadConnections()
 	clientConn := t.getConnection()
 	if clientConn == nil {
 		return
@@ -256,19 +247,19 @@ func (t *Service) ListenSendChange(dto servertypes.SendChangeDTO) {
 }
 
 // reconciliate
-func (t *Service) ListenSendState(dto servertypes.SendStateDTO) {
-	conn := t.getConnection()
+func (s *Service) ListenSendState(dto servertypes.SendStateDTO) {
+	conn := s.getConnection()
 	if conn == nil {
 		return
 	}
 	if dto.Error != nil {
-		t.predictions = nil
-		t.Logger().Log(dto.Error)
+		s.predictions = nil
+		s.Logger().Log(dto.Error)
 		_ = conn.Close()
 		return
 	}
-	t.predictions = nil
-	t.Record().UUID().Apply(t.RecordConfig, dto.State)
+	s.predictions = nil
+	s.Record().UUID().Apply(s.RecordConfig, dto.State)
 }
 
 func (t *Service) ListenTransparentEvent(dto servertypes.TransparentEventDTO) {
@@ -285,49 +276,6 @@ func (t *Service) ListenTransparentEvent(dto servertypes.TransparentEventDTO) {
 }
 
 // private methods
-
-func (t *Service) loadConnections() {
-	ei := t.dirtySet.Get()
-	if len(ei) == 0 {
-		return
-	}
-	if len(ei) != 1 {
-		t.Logger().Log(errors.New("has more than one server"))
-		return
-	}
-	entity := ei[0]
-	if ok := t.listeners.Get(entity); ok {
-		return
-	}
-	if _, ok := t.NetSync().Server().Get(entity); !ok {
-		return
-	}
-	t.listeners.Add(entity)
-	comp, ok := t.Connection().Component().Get(entity)
-	if !ok {
-		return
-	}
-	conn := comp.Conn()
-	messages := conn.Messages()
-	if err := conn.Send(clienttypes.FetchStateDTO{}); err != nil {
-		t.Logger().Log(err)
-		return
-	}
-	go func(entity ecs.EntityID) {
-		for {
-			message, ok := <-messages
-			if !ok {
-				break
-			}
-			t.mutex.Lock()
-			t.messagesFromServer = append(t.messagesFromServer, message)
-			t.mutex.Unlock()
-		}
-		t.mutex.Lock()
-		t.toRemove = append(t.toRemove, entity)
-		t.mutex.Unlock()
-	}(entity)
-}
 
 func (t *Service) undoPredictions() []clienttypes.PredictedEvent {
 	// add events to the list

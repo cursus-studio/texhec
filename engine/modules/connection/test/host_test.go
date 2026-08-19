@@ -20,7 +20,7 @@ func TestHost(t *testing.T) {
 	}
 
 	// host
-	if err := s.Connection().Host(s.Addr); err != nil {
+	if err := s.Connection().Host(s.World().NewEntity(), s.Addr); err != nil {
 		t.Errorf("Unexpected error when hosting: \"%v\"", err)
 		return
 	}

@@ -12,15 +12,23 @@ import (
 
 type config struct {
 	chunkSize grid.ChunkSize
+	tileSize  float32
 }
 
 func NewConfig() *config {
-	return &config{grid.NewChunkSize(5)}
+	return &config{
+		grid.NewChunkSize(5),
+		100,
+	}
 }
+func (c *config) GetTileSize() float32          { return c.tileSize }
+func (c *config) SetTileSize(s float32)         { c.tileSize = s }
 func (c *config) GetChunkSize() grid.ChunkSize  { return c.chunkSize }
 func (c *config) SetChunkSize(s grid.ChunkSize) { c.chunkSize = s }
 
 type Config interface {
+	GetTileSize() float32
+	SetTileSize(float32)
 	GetChunkSize() grid.ChunkSize
 	SetChunkSize(grid.ChunkSize)
 }
@@ -53,7 +61,8 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 		return NewConfig()
 	})
 	ioc.Register(b, func(c ioc.Dic) grid.Service {
-		return service.NewService(c, ioc.Get[Config](c).GetChunkSize())
+		config := ioc.Get[Config](c)
+		return service.NewService(c, config.GetTileSize(), config.GetChunkSize())
 	})
 })
 

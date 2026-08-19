@@ -164,7 +164,4 @@ type Service interface {
 	NewBiomeAsset(srcImages [6][]image.Image) (BiomeAsset, error)
 
 	GetPos(coords grid.Coords) transform.PosComponent
-	// transform 1x1 tile size.
-	// can be used for graphics or collisions.
-	GetTileSize() transform.SizeComponent
 }
