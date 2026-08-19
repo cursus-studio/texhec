@@ -157,7 +157,6 @@ func (s *service) OnTick(loop.TickEvent) {
 		s.Hierarchy().SetParent(deployed, worldEntity)
 		s.Player().Owner().Set(deployed, owner)
 		s.Obstruction().Deployed().Set(deployed, obstruction.NewDeployed())
-		s.Inputs().LeftClick().Set(deployed, inputs.NewLeftClick(tile.NewClickEntityEvent()))
 		s.Tile().Pos().Set(deployed, tile.NewPos(event.Coords.Coords()))
 	}
 }

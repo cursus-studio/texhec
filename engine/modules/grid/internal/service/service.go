@@ -5,6 +5,7 @@ import (
 	"engine/modules/ecs"
 	"engine/modules/grid"
 	"engine/modules/relation"
+	"engine/modules/transform"
 
 	"github.com/ogiusek/events"
 	"github.com/ogiusek/ioc/v2"
@@ -13,13 +14,15 @@ import (
 type service struct {
 	engine.EngineWorld                          `inject:""`
 	relation.Service[grid.ChunkCoordsComponent] `inject:""`
+	tileSize                                    float32
 	chunkSize                                   grid.ChunkSize
 	chunkSizeTileMask                           grid.Coord
 	coords                                      ecs.ComponentArray[grid.ChunkCoordsComponent]
 }
 
-func NewService(c ioc.Dic, chunkSize grid.ChunkSize) grid.Service {
+func NewService(c ioc.Dic, tileSize float32, chunkSize grid.ChunkSize) grid.Service {
 	s := ioc.GetServices[*service](c)
+	s.tileSize = tileSize
 	s.chunkSize = chunkSize
 	s.chunkSizeTileMask = chunkSize.Val() - 1
 	s.coords = ecs.GetComponentArray[grid.ChunkCoordsComponent](s.World())
@@ -77,4 +80,8 @@ func (s *service) RelativeCoords(coords grid.Coords) (grid.ChunkCoordsComponent,
 		coords.Y&s.chunkSizeTileMask, // & -> %
 	)
 	return chunkCoords, relCoords
+}
+
+func (s *service) GetTileSize() transform.SizeComponent {
+	return transform.NewSize(s.tileSize, s.tileSize, 1)
 }

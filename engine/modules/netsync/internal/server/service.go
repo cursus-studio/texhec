@@ -2,7 +2,6 @@ package server
 
 import (
 	"engine"
-	"engine/modules/datastructures"
 	"engine/modules/ecs"
 	"engine/modules/loop"
 	"engine/modules/netsync/internal/clienttypes"
@@ -12,16 +11,10 @@ import (
 	"engine/modules/uuid"
 	"fmt"
 	"reflect"
-	"sync"
 
 	"github.com/ogiusek/events"
 	"github.com/ogiusek/ioc/v2"
 )
-
-type clientMessage struct {
-	Client  ecs.EntityID
-	Message any
-}
 
 type Service struct {
 	engine.EngineWorld `inject:""`
@@ -29,13 +22,6 @@ type Service struct {
 
 	recordedEventUUID *uuid.UUID
 	recordingID       record.UUIDRecordingID
-
-	mutex *sync.Mutex
-
-	dirtySet               ecs.DirtySet
-	messagesSentFromClient []clientMessage
-	toRemove               []ecs.EntityID
-	listeners              datastructures.SparseSet[ecs.EntityID]
 }
 
 func NewService(c ioc.Dic, config config.Config) *Service {
@@ -43,13 +29,6 @@ func NewService(c ioc.Dic, config config.Config) *Service {
 	t.Config = config
 	t.recordedEventUUID = nil
 	t.recordingID = 0
-
-	t.mutex = &sync.Mutex{}
-
-	t.dirtySet = ecs.NewDirtySet()
-	t.messagesSentFromClient = nil
-	t.toRemove = nil
-	t.listeners = datastructures.NewSparseSet[ecs.EntityID]()
 
 	// listen to server messages
 	listeners := map[reflect.Type]func(ecs.EntityID, any){
@@ -64,34 +43,26 @@ func NewService(c ioc.Dic, config config.Config) *Service {
 		},
 	}
 	events.Listen(t.EventsBuilder(), func(loop.FrameEvent) {
-		t.loadConnections()
-		for len(t.toRemove) != 0 {
-			entity := t.toRemove[0]
-			t.mutex.Lock()
-			t.toRemove = t.toRemove[1:]
-			t.mutex.Unlock()
-
-			t.listeners.Remove(entity)
-			t.World().RemoveEntity(entity)
-		}
-
-		for len(t.messagesSentFromClient) != 0 {
-			message := t.messagesSentFromClient[0]
-			t.mutex.Lock()
-			t.messagesSentFromClient = t.messagesSentFromClient[1:]
-			t.mutex.Unlock()
-
-			messageType := reflect.TypeOf(message.Message)
-			listener, ok := listeners[messageType]
-			if !ok {
-				t.Logger().Log(fmt.Errorf("invalid listener called there is no %v type", messageType.String()))
-				continue
+		for _, clients := range t.NetSync().Client().GetEntities() {
+			for _, client := range t.Hierarchy().Children(clients).GetIndices() {
+				conn, ok := t.Connection().Component().Get(client)
+				if !ok {
+					t.Logger().Warn(fmt.Errorf("not connected to server"))
+					continue
+				}
+				messages := conn.Conn().Messages()
+				for _, msg := range messages {
+					messageType := reflect.TypeOf(msg)
+					listener, ok := listeners[messageType]
+					if !ok {
+						t.Logger().Log(fmt.Errorf("invalid listener called there is no %v type", messageType.String()))
+						continue
+					}
+					listener(client, msg)
+				}
 			}
-			listener(message.Client, message.Message)
 		}
 	})
-	t.NetSync().Client().AddDirtySet(t.dirtySet)
-	t.Connection().Component().AddDirtySet(t.dirtySet)
 
 	return t
 }
@@ -99,7 +70,6 @@ func NewService(c ioc.Dic, config config.Config) *Service {
 // public methods
 
 func (t *Service) BeforeEvent(event any) {
-	t.loadConnections()
 	if len(t.NetSync().Client().GetEntities()) == 0 {
 		return
 	}
@@ -112,7 +82,6 @@ func (t *Service) BeforeEvent(event any) {
 }
 
 func (t *Service) AfterEvent(event any) {
-	t.loadConnections()
 	if len(t.NetSync().Client().GetEntities()) == 0 {
 		return
 	}
@@ -173,40 +142,40 @@ func (t *Service) ListenTransparentEvent(entity ecs.EntityID, dto clienttypes.Tr
 
 // private methods
 
-func (t *Service) loadConnections() {
-	for _, entity := range t.dirtySet.Get() {
-		if ok := t.listeners.Get(entity); ok {
-			continue
-		}
-		t.listeners.Add(entity)
-		if _, ok := t.NetSync().Client().Get(entity); !ok {
-			continue
-		}
-
-		comp, ok := t.Connection().Component().Get(entity)
-		if !ok {
-			continue
-		}
-		messages := comp.Conn().Messages()
-		go func(entity ecs.EntityID) {
-			for {
-				message, ok := <-messages
-				if !ok {
-					break
-				}
-				t.mutex.Lock()
-				t.messagesSentFromClient = append(t.messagesSentFromClient, clientMessage{
-					Client:  entity,
-					Message: message,
-				})
-				t.mutex.Unlock()
-			}
-			t.mutex.Lock()
-			t.toRemove = append(t.toRemove, entity)
-			t.mutex.Unlock()
-		}(entity)
-	}
-}
+// func (t *Service) loadConnections() {
+// 	for _, entity := range t.dirtySet.Get() {
+// 		if ok := t.listeners.Get(entity); ok {
+// 			continue
+// 		}
+// 		t.listeners.Add(entity)
+// 		if _, ok := t.NetSync().Client().Get(entity); !ok {
+// 			continue
+// 		}
+//
+// 		comp, ok := t.Connection().Component().Get(entity)
+// 		if !ok {
+// 			continue
+// 		}
+// 		messages := comp.Conn().Messages()
+// 		go func(entity ecs.EntityID) {
+// 			for {
+// 				message, ok := <-messages
+// 				if !ok {
+// 					break
+// 				}
+// 				t.mutex.Lock()
+// 				t.messagesSentFromClient = append(t.messagesSentFromClient, clientMessage{
+// 					Client:  entity,
+// 					Message: message,
+// 				})
+// 				t.mutex.Unlock()
+// 			}
+// 			t.mutex.Lock()
+// 			t.toRemove = append(t.toRemove, entity)
+// 			t.mutex.Unlock()
+// 		}(entity)
+// 	}
+// }
 
 func (t *Service) sendVisible(client ecs.EntityID, eventUUID *uuid.UUID, changes record.UUIDRecording) {
 	connComp, ok := t.Connection().Component().Get(client)
@@ -231,22 +200,12 @@ func (t *Service) sendVisible(client ecs.EntityID, eventUUID *uuid.UUID, changes
 				EventID: *eventUUID,
 				Changes: sentChanges,
 			})
-			if err != nil {
-				t.mutex.Lock()
-				t.toRemove = append(t.toRemove, client)
-				t.mutex.Unlock()
-			}
-			// t.logger.Warn(err)
+			t.Logger().Warn(err)
 		} else {
 			err := connComp.Conn().Send(servertypes.SendStateDTO{
 				State: sentChanges,
 			})
-			if err != nil {
-				t.mutex.Lock()
-				t.toRemove = append(t.toRemove, client)
-				t.mutex.Unlock()
-			}
-			// t.logger.Warn(err)
+			t.Logger().Warn(err)
 		}
 	}()
 }

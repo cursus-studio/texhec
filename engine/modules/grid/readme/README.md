@@ -9,9 +9,9 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                               5             60             28            292
+Go                               5             64             31            325
 -------------------------------------------------------------------------------
-SUM:                             5             60             28            292
+SUM:                             5             64             31            325
 -------------------------------------------------------------------------------
 ```
 ## Types
@@ -38,6 +38,11 @@ Type: `func(engine/modules/grid.ChunkCoordsComponent) (engine/modules/ecs.Entity
 
 #### method Service GetLastIndex
 Type: `func() engine/modules/grid.Index`
+
+#### method Service GetTileSize
+Type: `func() engine/modules/transform.SizeComponent`
+transform 1x1 tile size.
+can be used for graphics or collisions.
 
 #### method Service IndexCoords
 Type: `func(index engine/modules/grid.Index) engine/modules/grid.Coords`
@@ -92,6 +97,10 @@ Type: `engine/modules/grid.Index`
 
 ### type ChunkComponent
 Type: `engine/modules/grid.ChunkComponent[Tile engine/modules/grid.TileConstraint]`
+
+#### property ChunkComponent Slice
+Type: `[]Tile`
+using slice directly isn't recommended
 
 #### method ChunkComponent GetTiles
 Type: `func() []Tile`
@@ -177,6 +186,7 @@ Type: `func[Tile engine/modules/grid.TileConstraint](entity engine/modules/ecs.E
   - `engine.EventsBuilder`
   - `engine.Grid`
   - `engine.Inputs`
+  - `engine.Transform`
   - `engine.World`
 
 `engine/modules/collider`:
@@ -226,6 +236,8 @@ Type: `func[Tile engine/modules/grid.TileConstraint](entity engine/modules/ecs.E
   - `engine/modules/inputs.NewHoverComponent`
   - `engine/modules/inputs.NewLeftClick`
   - `engine/modules/inputs.ObjectRayCollision`
+  - `engine/modules/inputs.Stack`
+  - `engine/modules/inputs.StackComponent`
   - `engine/modules/inputs.Target`
 
 `engine/modules/relation`:
@@ -234,6 +246,15 @@ Type: `func[Tile engine/modules/grid.TileConstraint](entity engine/modules/ecs.E
 
 `engine/modules/relation/pkg`:
   - `engine/modules/relation/pkg.MapRelationPkg`
+
+`engine/modules/transform`:
+  - `engine/modules/transform.NewPivotPoint`
+  - `engine/modules/transform.NewPos`
+  - `engine/modules/transform.NewSize`
+  - `engine/modules/transform.PivotPoint`
+  - `engine/modules/transform.Pos`
+  - `engine/modules/transform.Size`
+  - `engine/modules/transform.SizeComponent`
 
 `engine/modules/typeregistry/pkg`:
   - `engine/modules/typeregistry/pkg.PkgT`

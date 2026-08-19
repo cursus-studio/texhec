@@ -84,7 +84,7 @@ func BenchmarkRenderingChunk(b *testing.B) {
 	ortho := camera.NewOrtho(-1000, +1000)
 	ortho.Zoom = 10. / n
 	world.Camera().Ortho().Set(gameCamera, ortho)
-	tileSize := world.Tile().GetTileSize().Size
+	tileSize := world.Grid().GetTileSize().Size
 	cameraPos := transform.NewPos(tileSize.X()*n, tileSize.Y()*n, 0)
 	world.Transform().Pos().Set(gameCamera, cameraPos)
 

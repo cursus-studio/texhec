@@ -3,7 +3,9 @@ package main
 import (
 	"core/game"
 	"core/modules/definitions"
+	"engine/modules/collider"
 	"engine/modules/ecs"
+	"engine/modules/groups"
 	"engine/modules/inputs"
 	"engine/modules/loop"
 	"engine/modules/scene"
@@ -65,6 +67,21 @@ func main() {
 					_ = world.Window().Window().SetFullscreen(sdl.WINDOW_FULLSCREEN_DESKTOP)
 				}
 			}
+		})
+
+		world.Seed().Seed().OnUpsert(func(entity ecs.EntityID) {
+			world.Hierarchy().SetParent(entity, world.Scene().Scene())
+			world.Groups().Component().Set(entity, groups.EmptyGroups().Enable(definitions.GameGroup))
+		})
+		world.Grid().Coords().OnUpsert(func(entity ecs.EntityID) {
+			worldGenerationEntity, ok := world.Seed().WorldSeed()
+			if !ok {
+				return
+			}
+			world.Hierarchy().SetParent(entity, worldGenerationEntity)
+			world.Groups().InheritGroups(entity)
+
+			world.Collider().Component().Set(entity, collider.NewCollider(world.Definitions().Assets().SquareCollider))
 		})
 
 		return nil

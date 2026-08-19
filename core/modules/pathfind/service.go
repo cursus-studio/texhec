@@ -12,8 +12,7 @@ import (
 )
 
 var (
-	ErrInvalidPath         error = errors.New("pathfind:invalid path")
-	ErrInvalidServiceOrder       = errors.New("invalid services order. Chunk region map cannot be generated before chunk")
+	ErrInvalidPath error = errors.New("pathfind:invalid path")
 )
 
 // all entities without [tile.StepComponent] get one on tick which will move them towards target

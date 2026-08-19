@@ -4,6 +4,7 @@ package grid
 
 import (
 	"engine/modules/ecs"
+	"engine/modules/transform"
 
 	"golang.org/x/exp/constraints"
 )
@@ -38,20 +39,21 @@ func (c *Coords) Coords() (X, Y Coord) {
 //
 
 type ChunkComponent[Tile TileConstraint] struct {
-	slice []Tile
+	// using slice directly isn't recommended
+	Slice []Tile
 }
 type ChunkCoordsComponent Coords
 
 func NewChunk[Tile TileConstraint](s Coord) ChunkComponent[Tile] {
-	return ChunkComponent[Tile]{slice: make([]Tile, s*s)}
+	return ChunkComponent[Tile]{Slice: make([]Tile, s*s)}
 }
 func (c ChunkComponent[Tile]) GetTiles() []Tile {
-	tiles := make([]Tile, len(c.slice))
-	copy(tiles, c.slice)
+	tiles := make([]Tile, len(c.Slice))
+	copy(tiles, c.Slice)
 	return tiles
 }
-func (c ChunkComponent[Tile]) GetTile(index Index) Tile       { return c.slice[index] }
-func (c ChunkComponent[Tile]) SetTile(index Index, tile Tile) { c.slice[index] = tile }
+func (c ChunkComponent[Tile]) GetTile(index Index) Tile       { return c.Slice[index] }
+func (c ChunkComponent[Tile]) SetTile(index Index, tile Tile) { c.Slice[index] = tile }
 
 func NewChunkCoords(x, y Coord) ChunkCoordsComponent {
 	return ChunkCoordsComponent{X: x, Y: y}
@@ -102,6 +104,10 @@ type Service interface {
 	// calculate chunk coords
 	AbsoluteCoords(ChunkCoordsComponent, Coords) Coords
 	RelativeCoords(Coords) (ChunkCoordsComponent, Coords)
+
+	// transform 1x1 tile size.
+	// can be used for graphics or collisions.
+	GetTileSize() transform.SizeComponent
 }
 
 type ServiceT[Tile TileConstraint] interface {

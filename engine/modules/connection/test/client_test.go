@@ -38,7 +38,7 @@ func TestClient(t *testing.T) {
 	}
 
 	// connect
-	if err := s.Connection().Connect(s.Addr); err != nil {
+	if err := s.Connection().Connect(s.World().NewEntity(), s.Addr); err != nil {
 		t.Errorf("Unexpected error when hosting: \"%v\"", err)
 		return
 	}
@@ -51,13 +51,9 @@ func TestClient(t *testing.T) {
 	// communication
 	s.Sleep()
 	connection, _ := s.Connection().Component().Get(s.Connection().Component().GetEntities()[0])
-	var message any
-	select {
-	case message = <-connection.Conn().Messages():
-	default:
-	}
-	if message != s.Message {
-		t.Errorf("expected \"%v\" but got \"%v\"", s.Message, message)
+	messages := connection.Conn().Messages()
+	if len(messages) != 1 || messages[0] != s.Message {
+		t.Errorf("expected \"%v\" but got \"%v\"", s.Message, messages[0])
 		return
 	}
 

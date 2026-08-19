@@ -13,8 +13,8 @@ type Conn interface {
 	// send has block behavior
 	Send(message any) error
 
-	// closed channel can be returned if connection is closed
-	Messages() chan any
+	// returns messages from last call
+	Messages() []any
 	Close() error
 }
 
@@ -51,8 +51,8 @@ type Service interface {
 	Component() ecs.ComponentArray[ConnectionComponent]
 	Listener() ecs.ComponentArray[ListenerComponent]
 
-	Host(addr string) error
-	Connect(addr string) error
+	Host(entity ecs.EntityID, addr string) error
+	Connect(entity ecs.EntityID, addr string) error
 
 	TransferConnection(fromEntity, toEntity ecs.EntityID) error
 }

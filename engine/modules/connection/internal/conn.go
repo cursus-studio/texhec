@@ -5,16 +5,24 @@ import (
 	"fmt"
 	"math"
 	"net"
+	"sync"
 )
 
 type conn struct {
 	*service
 	conn     net.Conn
-	messages chan any
+	messages []any
+	msgMutex sync.Mutex
 }
 
-func (conn *conn) Close() error       { return conn.conn.Close() }
-func (conn *conn) Messages() chan any { return conn.messages }
+func (conn *conn) Close() error { return conn.conn.Close() }
+func (conn *conn) Messages() []any {
+	conn.msgMutex.Lock()
+	defer conn.msgMutex.Unlock()
+	messages := conn.messages
+	conn.messages = nil
+	return messages
+}
 
 func (conn *conn) Send(message any) error {
 	bytes, err := conn.Codec().Encode(message)

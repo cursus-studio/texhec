@@ -94,6 +94,7 @@ func newRegionService(c ioc.Dic) *regionsService {
 	s.chunksData = make(map[grid.ChunkCoordsComponent]ChunkData)
 
 	s.Tile().Grid().Chunk().OnUpsert(s.OnChunkUpsert)
+	s.Grid().Coords().OnUpsert(s.OnChunkUpsert)
 	events.Listen(s.EventsBuilder(), s.OnChunkUnload)
 	return s
 }
@@ -208,11 +209,11 @@ var neighborsCoords = []grid.Coords{
 func (s *regionsService) OnChunkUpsert(originalChunkEntity ecs.EntityID) {
 	originalChunkCoords, ok := s.Grid().Coords().Get(originalChunkEntity)
 	if !ok {
-		s.Logger().Fatal(pathfind.ErrInvalidServiceOrder)
+		return
 	}
 	originalChunk, ok := s.Tile().Grid().Chunk().Get(originalChunkEntity)
 	if !ok {
-		s.Logger().Fatal(pathfind.ErrInvalidServiceOrder)
+		return
 	}
 	for _, obstruction := range s.Obstruction().Obstructions().GetIndices() {
 		entityKey := NewChunkObstruction(originalChunkCoords, obstruction)
