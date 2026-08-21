@@ -1,2 +1,21 @@
 #!/bin/sh
-go run cicd fix
+set -e
+
+# build container
+docker build -t ci-runner cicd
+
+# prepare cache
+HOST_CACHE="$(pwd)/.cache"
+mkdir -p "$HOST_CACHE"
+chmod -R 777 "$HOST_CACHE"
+
+# run cicd command
+docker run --rm \
+  -u "$(id -u):$(id -g)" \
+  -e GOCACHE=/cache/go-cache \
+  -e GOPATH=/cache/go-path \
+  -e GOLANGCI_LINT_CACHE=/cache/golangci-lint \
+  -v "$HOST_CACHE:/cache" \
+  -v "$(pwd):/app" \
+  -w /app \
+  ci-runner go run cicd fix
