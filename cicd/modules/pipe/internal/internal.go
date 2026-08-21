@@ -101,7 +101,7 @@ func NewService(c ioc.Dic) pipe.Service {
 		}),
 		// pipeline
 		NewStage("Pipeline Security", func(ctx StageCtx) error {
-			cmd := exec.Command("trivy", "config", "--exit-code", "1", "--quiet", "--severity", "HIGH,CRITICAL", ".")
+			cmd := exec.Command("trivy", "config", "--skip-dirs", ".cache", "--exit-code", "1", "--quiet", "--severity", "HIGH,CRITICAL", ".")
 			if output, err := cmd.CombinedOutput(); err != nil {
 				return fmt.Errorf("%s", string(output))
 			}
