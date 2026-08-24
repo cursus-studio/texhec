@@ -8,10 +8,10 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                               6             71             27            417
+Go                               7            108             34            760
 Markdown                         1              1              0              5
 -------------------------------------------------------------------------------
-SUM:                             7             72             27            422
+SUM:                             8            109             34            765
 -------------------------------------------------------------------------------
 ```
 ## TODO
@@ -29,11 +29,24 @@ Type: `core/modules/pathfind.Service`
 #### method Service CanStep
 Type: `func(engine/modules/grid.Coords, core/modules/tile.SizeComponent, core/modules/obstruction.Component, core/modules/pathfind.StepComponent) bool`
 
+#### method Service CoordsRegion
+Type: `func(engine/modules/grid.Coords, core/modules/obstruction.Obstruction) (core/modules/pathfind.Region, bool)`
+
+#### method Service EntityRegion
+Type: `func(engine/modules/ecs.EntityID) (core/modules/pathfind.Region, bool)`
+
 #### method Service FindPath
 Type: `func(core/modules/pathfind.FindPathEvent)`
 
+#### method Service RegionObstruction
+Type: `func(core/modules/pathfind.Region) (core/modules/obstruction.Obstruction, bool)`
+region
+
 #### method Service Register
 Type: `func() error`
+
+#### method Service ShareRegion
+Type: `func(engine/modules/ecs.EntityID, engine/modules/grid.Coords) bool`
 
 #### method Service Speed
 Type: `func() engine/modules/ecs.ComponentArray[core/modules/pathfind.SpeedComponent]`
@@ -66,18 +79,25 @@ Otherwise step will be removed and warning will be logged.
 #### property StepComponent Coords
 Type: `engine/modules/grid.Coords`
 
+### type Region
+Type: `core/modules/pathfind.Region`
+this variable contains region index and is used for region connectivity
+
 ### type FindPathEvent
 Type: `core/modules/pathfind.FindPathEvent`
 
-#### property FindPathEvent Object
-Type: `core/modules/actions.FriendlyMobileObjectStep`
+#### property FindPathEvent Entity
+Type: `engine/modules/ecs.EntityID`
 
 #### property FindPathEvent Coords
-Type: `core/modules/actions.CoordsStep`
+Type: `engine/modules/grid.Coords`
 
 ## Variables
 ### var ErrInvalidPath
 Type: `error`
+
+### var NotARegion
+Type: `core/modules/pathfind.Region`
 
 ## Functions
 ### func NewTarget
@@ -105,9 +125,8 @@ Type: `func(entity engine/modules/ecs.EntityID, coords engine/modules/grid.Coord
   - `core/modules/actions.CoordsCursorComponent`
   - `core/modules/actions.CoordsStep`
   - `core/modules/actions.Entity`
-  - `core/modules/actions.FriendlyMobileObjectStep`
-  - `core/modules/actions.NewCoordsInteraction`
-  - `core/modules/actions.NewObjectInteraction`
+  - `core/modules/actions.FriendlyMobileEntityStep`
+  - `core/modules/actions.RegionAnchorComponent`
 
 `core/modules/obstruction`:
   - `core/modules/obstruction.Collisions`
@@ -115,30 +134,37 @@ Type: `func(entity engine/modules/ecs.EntityID, coords engine/modules/grid.Coord
   - `core/modules/obstruction.Grid`
   - `core/modules/obstruction.NewAABB`
   - `core/modules/obstruction.Obstruction`
+  - `core/modules/obstruction.Obstructions`
 
 `core/modules/pathfind`:
   - `core/modules/pathfind.CanStep`
   - `core/modules/pathfind.Coords`
+  - `core/modules/pathfind.Entity`
   - `core/modules/pathfind.ErrInvalidPath`
   - `core/modules/pathfind.FindPathEvent`
   - `core/modules/pathfind.InvSpeed`
+  - `core/modules/pathfind.NewFindPathEvent`
   - `core/modules/pathfind.NewSpeed`
   - `core/modules/pathfind.NewStep`
   - `core/modules/pathfind.NewTarget`
-  - `core/modules/pathfind.Object`
+  - `core/modules/pathfind.Region`
   - `core/modules/pathfind.Service`
   - `core/modules/pathfind.Speed`
   - `core/modules/pathfind.SpeedComponent`
   - `core/modules/pathfind.Step`
   - `core/modules/pathfind.StepComponent`
+  - `core/modules/pathfind.Target`
   - `core/modules/pathfind.TargetComponent`
 
 `core/modules/tile`:
   - `core/modules/tile.Aligned`
   - `core/modules/tile.Coord`
+  - `core/modules/tile.Coords`
   - `core/modules/tile.ErrInvalidPosition`
   - `core/modules/tile.ErrInvalidStep`
   - `core/modules/tile.ErrPositionAndSpeedIsRequiredToStep`
+  - `core/modules/tile.GetTile`
+  - `core/modules/tile.Grid`
   - `core/modules/tile.NewPos`
   - `core/modules/tile.NewRot`
   - `core/modules/tile.NewSize`
@@ -148,34 +174,53 @@ Type: `func(entity engine/modules/ecs.EntityID, coords engine/modules/grid.Coord
   - `core/modules/tile.RotComponent`
   - `core/modules/tile.Size`
   - `core/modules/tile.SizeComponent`
+  - `core/modules/tile.UnloadChunkEvent`
   - `core/modules/tile.X`
   - `core/modules/tile.Y`
 
+`engine/modules/datastructures`:
+  - `engine/modules/datastructures.NewSparseArray`
+  - `engine/modules/datastructures.NewSparseSet`
+  - `engine/modules/datastructures.SparseArray`
+  - `engine/modules/datastructures.SparseSet`
+
 `engine/modules/ecs`:
   - `engine/modules/ecs.ComponentArray`
+  - `engine/modules/ecs.DirtySet`
   - `engine/modules/ecs.EntityID`
   - `engine/modules/ecs.GetComponentArray`
+  - `engine/modules/ecs.NewDirtySet`
   - `engine/modules/ecs.SystemRegister`
+  - `engine/modules/ecs.World`
 
 `engine/modules/entityregistry`:
   - `engine/modules/entityregistry.Register`
   - `engine/modules/entityregistry.Service`
 
 `engine/modules/grid`:
+  - `engine/modules/grid.AbsoluteCoords`
+  - `engine/modules/grid.Chunk`
+  - `engine/modules/grid.ChunkCoordsComponent`
   - `engine/modules/grid.Component`
   - `engine/modules/grid.Coord`
   - `engine/modules/grid.Coords`
   - `engine/modules/grid.CoordsData`
+  - `engine/modules/grid.CoordsIndex`
   - `engine/modules/grid.GetTile`
+  - `engine/modules/grid.GetTiles`
   - `engine/modules/grid.Index`
+  - `engine/modules/grid.IndexCoords`
+  - `engine/modules/grid.NewChunk`
   - `engine/modules/grid.NewCoord`
   - `engine/modules/grid.NewCoords`
+  - `engine/modules/grid.RelativeCoords`
+  - `engine/modules/grid.ServiceT`
+  - `engine/modules/grid.SetTile`
   - `engine/modules/grid.X`
   - `engine/modules/grid.Y`
 
-`engine/modules/interactions`:
-  - `engine/modules/interactions.NewStep`
-  - `engine/modules/interactions.State`
+`engine/modules/grid/pkg`:
+  - `engine/modules/grid/pkg.PkgT`
 
 `engine/modules/interactions/pkg`:
   - `engine/modules/interactions/pkg.FeaturePkg`
@@ -183,6 +228,13 @@ Type: `func(entity engine/modules/ecs.EntityID, coords engine/modules/grid.Coord
 
 `engine/modules/loop`:
   - `engine/modules/loop.TickEvent`
+
+`engine/modules/relation`:
+  - `engine/modules/relation.Get`
+  - `engine/modules/relation.Service`
+
+`engine/modules/relation/pkg`:
+  - `engine/modules/relation/pkg.MapRelationPkg`
 
 `engine/modules/typeregistry/pkg`:
   - `engine/modules/typeregistry/pkg.PkgT`

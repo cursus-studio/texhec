@@ -7,7 +7,9 @@ import (
 	"core/modules/pathfind/internal"
 	"engine/modules/ecs"
 	"engine/modules/entityregistry"
+	gridpkg "engine/modules/grid/pkg"
 	interactionspkg "engine/modules/interactions/pkg"
+	relationpkg "engine/modules/relation/pkg"
 	typeregistrypkg "engine/modules/typeregistry/pkg"
 	"fmt"
 	"strconv"
@@ -15,6 +17,15 @@ import (
 
 	"github.com/ogiusek/ioc/v2"
 )
+
+type FindPathFeature struct {
+	Entity actions.FriendlyMobileEntityStep
+	Coords actions.CoordsStep
+}
+
+func (f FindPathFeature) Event() any {
+	return pathfind.NewFindPathEvent(f.Entity.State().Entity, f.Coords.State().Coords)
+}
 
 var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 	pkgs := []ioc.Pkg{
@@ -24,10 +35,24 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 
 		typeregistrypkg.PkgT[pathfind.FindPathEvent],
 
-		interactionspkg.FeaturePkg[pathfind.FindPathEvent](
+		interactionspkg.FeaturePkg[FindPathFeature](
 			interactionspkg.NewCopyRelation[actions.CoordsCursorComponent](
-				unsafe.Offsetof(pathfind.FindPathEvent{}.Object), unsafe.Offsetof(pathfind.FindPathEvent{}.Coords)),
+				unsafe.Offsetof(FindPathFeature{}.Entity), unsafe.Offsetof(FindPathFeature{}.Coords)),
+			interactionspkg.NewCopyRelation[actions.RegionAnchorComponent](
+				unsafe.Offsetof(FindPathFeature{}.Entity), unsafe.Offsetof(FindPathFeature{}.Coords)),
 		),
+		relationpkg.MapRelationPkg(
+			func(w ecs.World) ecs.DirtySet {
+				set := ecs.NewDirtySet()
+				arr := ecs.GetComponentArray[internal.ChunkObstructionComponent](w)
+				arr.AddDirtySet(set)
+				return set
+			},
+			func(w ecs.World) func(entity ecs.EntityID) (indexType internal.ChunkObstructionComponent, ok bool) {
+				return ecs.GetComponentArray[internal.ChunkObstructionComponent](w).Get
+			},
+		),
+		gridpkg.PkgT[internal.RegionFragment],
 	}
 	for _, pkg := range pkgs {
 		pkg(b)

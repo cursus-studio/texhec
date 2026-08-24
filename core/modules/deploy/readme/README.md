@@ -8,9 +8,9 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                               3             37             14            208
+Go                               3             46             14            249
 -------------------------------------------------------------------------------
-SUM:                             3             37             14            208
+SUM:                             3             46             14            249
 -------------------------------------------------------------------------------
 ```
 ## Types
@@ -34,6 +34,9 @@ Type: `func(core/modules/deploy.DestroyEvent)`
 #### method Service Reach
 Type: `func() core/modules/reach.ServiceT[core/modules/deploy.Component]`
 
+#### method Service Register
+Type: `func() error`
+
 ### type Component
 Type: `core/modules/deploy.Component`
 
@@ -44,19 +47,19 @@ Type: `[]engine/modules/ecs.EntityID`
 Type: `core/modules/deploy.DeployEvent`
 
 #### property DeployEvent By
-Type: `core/modules/actions.FriendlyBuilderObjectStep`
+Type: `engine/modules/ecs.EntityID`
 
 #### property DeployEvent Blueprint
-Type: `core/modules/actions.BlueprintStep`
+Type: `engine/modules/ecs.EntityID`
 
 #### property DeployEvent Coords
-Type: `core/modules/actions.CoordsStep`
+Type: `engine/modules/grid.Coords`
 
 ### type DestroyEvent
 Type: `core/modules/deploy.DestroyEvent`
 
-#### property DestroyEvent Object
-Type: `core/modules/actions.FriendlyObjectStep`
+#### property DestroyEvent Entity
+Type: `engine/modules/ecs.EntityID`
 
 ## Functions
 ### func NewDeploy
@@ -66,12 +69,13 @@ Type: `func(deployable ...engine/modules/ecs.EntityID) core/modules/deploy.Compo
 Type: `func(by engine/modules/ecs.EntityID, blueprint engine/modules/ecs.EntityID, coords engine/modules/grid.Coords) core/modules/deploy.DeployEvent`
 
 ### func NewDestroyEvent
-Type: `func(object engine/modules/ecs.EntityID) core/modules/deploy.DestroyEvent`
+Type: `func(entity engine/modules/ecs.EntityID) core/modules/deploy.DestroyEvent`
 
 
 ## Dependencies
 `core/game`:
   - `core/game.Deploy`
+  - `core/game.Economy`
   - `core/game.GameWorld`
   - `core/game.Obstruction`
   - `core/game.Player`
@@ -86,11 +90,8 @@ Type: `func(object engine/modules/ecs.EntityID) core/modules/deploy.DestroyEvent
   - `core/modules/actions.CoordsCursorComponent`
   - `core/modules/actions.CoordsStep`
   - `core/modules/actions.Entity`
-  - `core/modules/actions.FriendlyBuilderObjectStep`
-  - `core/modules/actions.FriendlyObjectStep`
-  - `core/modules/actions.NewBlueprintInteraction`
-  - `core/modules/actions.NewCoordsInteraction`
-  - `core/modules/actions.NewObjectInteraction`
+  - `core/modules/actions.FriendlyBuilderEntityStep`
+  - `core/modules/actions.FriendlyEntityStep`
 
 `core/modules/deploy`:
   - `core/modules/deploy.Blueprint`
@@ -99,9 +100,18 @@ Type: `func(object engine/modules/ecs.EntityID) core/modules/deploy.DestroyEvent
   - `core/modules/deploy.Coords`
   - `core/modules/deploy.DeployEvent`
   - `core/modules/deploy.DestroyEvent`
-  - `core/modules/deploy.Object`
+  - `core/modules/deploy.Entity`
+  - `core/modules/deploy.NewDeployEvent`
+  - `core/modules/deploy.NewDestroyEvent`
   - `core/modules/deploy.Reach`
   - `core/modules/deploy.Service`
+
+`core/modules/economy`:
+  - `core/modules/economy.Cost`
+  - `core/modules/economy.ErrToExpensive`
+  - `core/modules/economy.Money`
+  - `core/modules/economy.Pay`
+  - `core/modules/economy.Wallet`
 
 `core/modules/obstruction`:
   - `core/modules/obstruction.Collisions`
@@ -113,6 +123,7 @@ Type: `func(object engine/modules/ecs.EntityID) core/modules/deploy.DestroyEvent
   - `core/modules/obstruction.Obstruction`
 
 `core/modules/player`:
+  - `core/modules/player.ErrRequiresOwner`
   - `core/modules/player.NewOwner`
   - `core/modules/player.Owner`
 
@@ -138,6 +149,7 @@ Type: `func(object engine/modules/ecs.EntityID) core/modules/deploy.DestroyEvent
   - `engine/modules/ecs.ComponentArray`
   - `engine/modules/ecs.EntityID`
   - `engine/modules/ecs.GetComponentArray`
+  - `engine/modules/ecs.SystemRegister`
 
 `engine/modules/entityregistry`:
   - `engine/modules/entityregistry.Register`
@@ -151,13 +163,12 @@ Type: `func(object engine/modules/ecs.EntityID) core/modules/deploy.DestroyEvent
   - `engine/modules/inputs.LeftClick`
   - `engine/modules/inputs.NewLeftClick`
 
-`engine/modules/interactions`:
-  - `engine/modules/interactions.NewStep`
-  - `engine/modules/interactions.State`
-
 `engine/modules/interactions/pkg`:
   - `engine/modules/interactions/pkg.FeaturePkg`
   - `engine/modules/interactions/pkg.NewCopyRelation`
+
+`engine/modules/loop`:
+  - `engine/modules/loop.TickEvent`
 
 `engine/modules/seed`:
   - `engine/modules/seed.ErrWorldCanHaveOneSeed`

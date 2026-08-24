@@ -20,15 +20,15 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 
 //
 
-func FeaturePkg[Event any](
+func FeaturePkg[Feature interactions.Feature](
 	relations ...internal.RawRelation,
 ) ioc.Pkg {
 	return ioc.NewPkg(func(b ioc.Builder) {
-		ioc.Register(b, func(c ioc.Dic) internal.FeatureService[Event] {
-			return internal.NewFeatureService[Event](c, relations)
+		ioc.Register(b, func(c ioc.Dic) internal.FeatureService[Feature] {
+			return internal.NewFeatureService[Feature](c, relations)
 		})
 		ioc.Wrap(b, func(c ioc.Dic, s internal.Service) {
-			s.RegisterFeature(ioc.Get[internal.FeatureService[Event]](c))
+			s.RegisterFeature(ioc.Get[internal.FeatureService[Feature]](c))
 		})
 	})
 }

@@ -53,7 +53,7 @@ func (s *service) OnTileHover(e grid.HoverEvent) {
 
 	if anchor, ok := s.Anchor().Get(previewEntity); ok {
 		for _, reachCoords := range s.GameWorld.Deploy().Reach().TilesWithinReach(anchor.Entity) {
-			ind := s.Prototype().Clone(s.Definitions().Assets().Blank)
+			ind := s.World().NewEntity()
 			s.Hierarchy().SetParent(ind, previewEntity)
 			s.Transform().Inherit().Set(ind, transform.NewInherit(transform.Absolute))
 
@@ -71,6 +71,14 @@ func (s *service) OnTileHover(e grid.HoverEvent) {
 		}
 	}
 
+	if anchor, ok := s.RegionAnchor().Get(previewEntity); ok {
+		obstruction, _ := s.Pathfind().RegionObstruction(anchor.Region)
+		region, _ := s.Pathfind().CoordsRegion(coords, obstruction)
+		if region != anchor.Region {
+			canDeploy = false
+		}
+	}
+
 	if coordsCursor, ok := s.CoordsCursor().Get(previewEntity); ok {
 		blueprintObstruction, _ := s.Obstruction().Component().Get(coordsCursor.PropertiesEntity)
 		size, _ := s.Tile().Size().Get(coordsCursor.PropertiesEntity)
@@ -78,7 +86,7 @@ func (s *service) OnTileHover(e grid.HoverEvent) {
 		collisions := s.Obstruction().Collisions(aabb, blueprintObstruction.Obstruction)
 
 		for _, collision := range collisions {
-			ind := s.Prototype().Clone(s.Definitions().Assets().Blank)
+			ind := s.World().NewEntity()
 			s.Hierarchy().SetParent(ind, previewEntity)
 			s.Transform().Inherit().Set(ind, transform.NewInherit(transform.Absolute))
 

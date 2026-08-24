@@ -5,6 +5,7 @@ import (
 	"core/modules/attack"
 	"core/modules/definitions"
 	"core/modules/deploy"
+	"core/modules/economy"
 	"core/modules/fpslogger"
 	"core/modules/generation"
 	"core/modules/loading"
@@ -29,6 +30,7 @@ type GameWorld struct {
 	Attack      ioc.Lazy[attack.Service]      `inject:""`
 	Definitions ioc.Lazy[definitions.Service] `inject:""`
 	Deploy      ioc.Lazy[deploy.Service]      `inject:""`
+	Economy     ioc.Lazy[economy.Service]     `inject:""`
 	FpsLogger   ioc.Lazy[fpslogger.Service]   `inject:""`
 	Generation  ioc.Lazy[generation.Service]  `inject:""`
 	Loading     ioc.Lazy[loading.Service]     `inject:""`
@@ -43,6 +45,8 @@ type GameWorld struct {
 
 type MenuBuilder scene.Scene
 type GameBuilder scene.Scene
+type GameServerBuilder scene.Scene
+type GameClientBuilder scene.Scene
 type SettingsBuilder scene.Scene
 type CreditsBuilder scene.Scene
 
@@ -50,6 +54,8 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 	ioc.Wrap(b, func(c ioc.Dic, b scene.Service) {
 		b.SetScene(definitions.MenuID, scene.Scene(ioc.Get[MenuBuilder](c)))
 		b.SetScene(definitions.GameID, scene.Scene(ioc.Get[GameBuilder](c)))
+		b.SetScene(definitions.GameServerID, scene.Scene(ioc.Get[GameServerBuilder](c)))
+		b.SetScene(definitions.GameClientID, scene.Scene(ioc.Get[GameClientBuilder](c)))
 		b.SetScene(definitions.SettingsID, scene.Scene(ioc.Get[SettingsBuilder](c)))
 		b.SetScene(definitions.CreditsID, scene.Scene(ioc.Get[CreditsBuilder](c)))
 	})

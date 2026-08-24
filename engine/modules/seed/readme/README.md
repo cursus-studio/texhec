@@ -8,9 +8,9 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                               3             19              3             78
+Go                               3             19              3             85
 -------------------------------------------------------------------------------
-SUM:                             3             19              3             78
+SUM:                             3             19              3             85
 -------------------------------------------------------------------------------
 ```
 ## Types
@@ -68,6 +68,9 @@ Type: `func[Number golang.org/x/exp/constraints.Integer](s Number) engine/module
   - `engine/modules/seed.ErrWorldCanHaveOneSeed`
   - `engine/modules/seed.SeedComponent`
   - `engine/modules/seed.Service`
+
+`engine/modules/typeregistry/pkg`:
+  - `engine/modules/typeregistry/pkg.PkgT`
 
 ### Third Party
 - `github.com/ogiusek/ioc/v2`

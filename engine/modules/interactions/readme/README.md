@@ -13,10 +13,10 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                               8            131             62            672
+Go                               8            132             62            679
 Markdown                         2              1              0              6
 -------------------------------------------------------------------------------
-SUM:                            10            132             62            678
+SUM:                            10            133             62            685
 -------------------------------------------------------------------------------
 ```
 ## TODO
@@ -377,9 +377,12 @@ step
 #### method Step State
 Type: `func() State`
 
-### type Event
-Type: `engine/modules/interactions.Event`
+### type Feature
+Type: `engine/modules/interactions.Feature`
 feature
+
+#### method Feature Event
+Type: `func() any`
 
 ### type StatePreviewComponent
 Type: `engine/modules/interactions.StatePreviewComponent[State any]`
@@ -453,6 +456,8 @@ Type: `func() engine/modules/interactions.SelectFeatureEvent`
 
 `engine/modules/interactions`:
   - `engine/modules/interactions.AvailableFeaturesComponent`
+  - `engine/modules/interactions.Event`
+  - `engine/modules/interactions.Feature`
   - `engine/modules/interactions.FeatureKey`
   - `engine/modules/interactions.Features`
   - `engine/modules/interactions.InteractionKey`

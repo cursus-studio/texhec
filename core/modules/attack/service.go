@@ -1,28 +1,52 @@
 package attack
 
 import (
-	"core/modules/actions"
+	"core/modules/reach"
 	"engine/modules/ecs"
-	"engine/modules/interactions"
+	"engine/modules/transition"
+	"errors"
 )
 
-type AttackEvent struct {
-	By     actions.FriendlyBuilderObjectStep
-	Target actions.EnemyObjectStep
+var (
+	ErrCannotAttackEnemyOutOfReach error = errors.New("attack: enemy is out of reach and cannot follow him")
+)
+
+type Health uint32
+
+type TargetComponent struct {
+	Entity ecs.EntityID
+}
+type HealthComponent struct {
+	Health Health
+}
+type DamageComponent struct {
+	Damage Health
 }
 
-func NewDeployEvent(
-	by,
-	target ecs.EntityID,
-) AttackEvent {
-	return AttackEvent{
-		interactions.NewStep(actions.NewObjectInteraction(by)),
-		interactions.NewStep(actions.NewObjectInteraction(target)),
-	}
+func NewTarget(target ecs.EntityID) TargetComponent {
+	return TargetComponent{target}
+}
+func NewHealth(health Health) HealthComponent {
+	return HealthComponent{health}
+}
+func NewDamage(damage Health) DamageComponent {
+	return DamageComponent{damage}
+}
+
+func (HealthComponent) Smooth() {}
+func (c1 HealthComponent) Lerp(c2 HealthComponent, mix32 float32) HealthComponent {
+	return HealthComponent{transition.LerpInt(c1.Health, c2.Health, mix32)}
 }
 
 //
 
 type Service interface {
-	AttackEvent(AttackEvent)
+	ecs.SystemRegister
+	Reach() reach.ServiceT[TargetComponent]
+
+	Target() ecs.ComponentArray[TargetComponent]
+	Health() ecs.ComponentArray[HealthComponent]
+	Damage() ecs.ComponentArray[DamageComponent]
+
+	FullHealth(ecs.EntityID) (HealthComponent, bool)
 }

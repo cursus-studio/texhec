@@ -8,10 +8,10 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                               3             43             12            279
+Go                               3             41             12            272
 Markdown                         1              3              0             13
 -------------------------------------------------------------------------------
-SUM:                             4             46             12            292
+SUM:                             4             44             12            285
 -------------------------------------------------------------------------------
 ```
 ## Types
@@ -26,10 +26,15 @@ Type: `func() error`
 `core/game`:
   - `core/game.Definitions`
   - `core/game.Deploy`
+  - `core/game.Economy`
   - `core/game.GameWorld`
   - `core/game.Obstruction`
   - `core/game.Player`
   - `core/game.Tile`
+
+`core/modules/economy`:
+  - `core/modules/economy.NewWallet`
+  - `core/modules/economy.Wallet`
 
 `core/modules/generation`:
   - `core/modules/generation.Service`
@@ -42,7 +47,6 @@ Type: `func() error`
   - `core/modules/tile.Component`
   - `core/modules/tile.Coords`
   - `core/modules/tile.GetTile`
-  - `core/modules/tile.GetTileSize`
   - `core/modules/tile.Grid`
   - `core/modules/tile.ID`
   - `core/modules/tile.MissingChunkEvent`
@@ -54,10 +58,6 @@ Type: `func() error`
   - `engine/modules/batcher.NewBatch`
   - `engine/modules/batcher.NewTask`
   - `engine/modules/batcher.Queue`
-
-`engine/modules/collider`:
-  - `engine/modules/collider.Component`
-  - `engine/modules/collider.NewCollider`
 
 `engine/modules/datastructures`:
   - `engine/modules/datastructures.NewSparseArray`
@@ -88,10 +88,6 @@ Type: `func() error`
   - `engine/modules/grid.X`
   - `engine/modules/grid.Y`
 
-`engine/modules/inputs`:
-  - `engine/modules/inputs.Stack`
-  - `engine/modules/inputs.StackComponent`
-
 `engine/modules/metadata`:
   - `engine/modules/metadata.Name`
   - `engine/modules/metadata.NewName`
@@ -103,13 +99,6 @@ Type: `func() error`
   - `engine/modules/noise.NewLayer`
   - `engine/modules/noise.NewNoise`
   - `engine/modules/noise.Read`
-
-`engine/modules/transform`:
-  - `engine/modules/transform.NewPivotPoint`
-  - `engine/modules/transform.NewPos`
-  - `engine/modules/transform.PivotPoint`
-  - `engine/modules/transform.Pos`
-  - `engine/modules/transform.Size`
 
 ### Third Party
 - `github.com/go-gl/mathgl/mgl64`

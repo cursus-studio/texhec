@@ -4,6 +4,7 @@ import (
 	"core/game"
 	"core/modules/ui"
 	"engine/modules/assets"
+	"engine/modules/delay"
 	"engine/modules/ecs"
 	"engine/modules/render"
 	"engine/modules/transform"
@@ -16,7 +17,7 @@ import (
 
 type UpdateBgEvent struct{}
 
-type System struct {
+type updateBgSystem struct {
 	game.GameWorld `inject:""`
 
 	blueprint     ecs.EntityID
@@ -30,9 +31,9 @@ type System struct {
 	backgroundsFrames []int
 }
 
-func NewSystem(c ioc.Dic, bgTimePerFrame time.Duration) ecs.SystemRegister {
+func NewUpdateBgSystem(c ioc.Dic, bgTimePerFrame time.Duration) ecs.SystemRegister {
 	return ecs.NewSystemRegister(func() error {
-		s := ioc.GetServices[*System](c)
+		s := ioc.GetServices[*updateBgSystem](c)
 
 		s.blueprint = s.World().NewEntity()
 		s.Ui().AnimatedBackground().Set(s.blueprint, ui.AnimatedBackgroundComponent{})
@@ -68,7 +69,7 @@ func NewSystem(c ioc.Dic, bgTimePerFrame time.Duration) ecs.SystemRegister {
 	})
 }
 
-func (s *System) OnBackgroundUpsert(entity ecs.EntityID) {
+func (s *updateBgSystem) OnBackgroundUpsert(entity ecs.EntityID) {
 	if entity == s.blueprint {
 		return
 	}
@@ -88,7 +89,7 @@ func (s *System) OnBackgroundUpsert(entity ecs.EntityID) {
 	s.transitionArr.Set(entity, transitionComp)
 }
 
-func (s *System) ListenUpdateBg(event UpdateBgEvent) {
+func (s *updateBgSystem) ListenUpdateBg(event UpdateBgEvent) {
 	i := s.bgTexture % len(s.backgrounds)
 	s.bgTexture = i
 	bg, size := s.backgrounds[i], s.backgroundsFrames[i]
@@ -107,6 +108,6 @@ func (s *System) ListenUpdateBg(event UpdateBgEvent) {
 		))
 	}
 
-	events.Emit(s.Events(), transition.NewDelayedEvent(UpdateBgEvent{}, duration))
+	events.Emit(s.Events(), delay.NewDelayedEvent(UpdateBgEvent{}, duration))
 	s.bgTexture += 1
 }

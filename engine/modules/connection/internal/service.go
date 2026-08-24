@@ -108,21 +108,21 @@ func (s *service) Listener() ecs.ComponentArray[connection.ListenerComponent] {
 	return s.listenersArray
 }
 
-func (s *service) Host(addr string) error {
+func (s *service) Host(entity ecs.EntityID, addr string) error {
 	listener, err := net.Listen("tcp", addr)
 	if err != nil {
 		return err
 	}
-	s.AddListener(s.World().NewEntity(), listener)
+	s.AddListener(entity, listener)
 	return nil
 }
 
-func (s *service) Connect(addr string) error {
+func (s *service) Connect(entity ecs.EntityID, addr string) error {
 	rawConn, err := net.Dial("tcp", addr)
 	if err != nil {
 		return err
 	}
-	s.AddConnection(s.World().NewEntity(), rawConn)
+	s.AddConnection(entity, rawConn)
 	return nil
 }
 
@@ -161,9 +161,8 @@ func (s *service) AddListener(entity ecs.EntityID, rawListener net.Listener) {
 
 func (s *service) AddConnection(entity ecs.EntityID, rawConn net.Conn) {
 	conn := &conn{
-		service:  s,
-		conn:     rawConn,
-		messages: make(chan any),
+		service: s,
+		conn:    rawConn,
 	}
 	comp := connection.NewConnection(conn)
 	s.connectionArray.Set(entity, comp)
@@ -185,13 +184,13 @@ func (s *service) AddConnection(entity ecs.EntityID, rawConn net.Conn) {
 				continue
 			}
 			// f.logger.Info(fmt.Sprintf("received '***' type '%v'", reflect.TypeOf(message).String()))
-
-			conn.messages <- message
+			conn.msgMutex.Lock()
+			conn.messages = append(conn.messages, message)
+			conn.msgMutex.Unlock()
 		}
 		if connComp, ok := s.connectionArray.Get(entity); ok && connComp.Conn() == conn {
 			s.World().RemoveEntity(entity)
 		}
-		close(conn.messages)
 		_ = rawConn.Close()
 	}()
 }

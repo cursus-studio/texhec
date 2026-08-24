@@ -8,9 +8,9 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                               6             67             15            264
+Go                               6             57             13            231
 -------------------------------------------------------------------------------
-SUM:                             6             67             15            264
+SUM:                             6             57             13            231
 -------------------------------------------------------------------------------
 ```
 ## Types
@@ -62,15 +62,6 @@ Type: `engine/modules/ecs.EntityID`
 #### property TransitionEvent Component
 Type: `engine/modules/transition.TransitionComponent[Component]`
 
-### type DelayedEvent
-Type: `engine/modules/transition.DelayedEvent`
-
-#### property DelayedEvent Event
-Type: `any`
-
-#### property DelayedEvent Duration
-Type: `time.Duration`
-
 ### type EasingComponent
 Type: `engine/modules/transition.EasingComponent`
 
@@ -87,15 +78,15 @@ Type: `func(t engine/modules/transition.Progress) engine/modules/transition.Prog
 ### func Lerp
 Type: `func[Number, T golang.org/x/exp/constraints.Float](a Number, b Number, t T) Number`
 
+### func LerpInt
+Type: `func[Number golang.org/x/exp/constraints.Integer, T golang.org/x/exp/constraints.Float](a Number, b Number, t T) Number`
+
 ### func NewTransition
 Type: `func[Component any](from Component, to Component, duration time.Duration) engine/modules/transition.TransitionComponent[Component]`
 func NewTransition[Component LerpConstraint[Component]](
 
 ### func NewTransitionEvent
 Type: `func[Component engine/modules/transition.LerpConstraint[Component]](entity engine/modules/ecs.EntityID, from Component, to Component, duration time.Duration) engine/modules/transition.TransitionEvent[Component]`
-
-### func NewDelayedEvent
-Type: `func(event any, duration time.Duration) engine/modules/transition.DelayedEvent`
 
 ### func NewEasing
 Type: `func(id engine/modules/ecs.EntityID) engine/modules/transition.EasingComponent`
@@ -107,7 +98,6 @@ Type: `func(easingFunction func(t engine/modules/transition.Progress) engine/mod
 ## Dependencies
 `engine`:
   - `engine.EngineWorld`
-  - `engine.Events`
   - `engine.EventsBuilder`
   - `engine.Transition`
   - `engine.World`
@@ -134,13 +124,11 @@ Type: `func(easingFunction func(t engine/modules/transition.Progress) engine/mod
 
 `engine/modules/transition`:
   - `engine/modules/transition.Component`
-  - `engine/modules/transition.DelayedEvent`
   - `engine/modules/transition.Duration`
   - `engine/modules/transition.EasingComponent`
   - `engine/modules/transition.EasingFunction`
   - `engine/modules/transition.EasingFunctionComponent`
   - `engine/modules/transition.Entity`
-  - `engine/modules/transition.Event`
   - `engine/modules/transition.From`
   - `engine/modules/transition.ID`
   - `engine/modules/transition.Lerp`

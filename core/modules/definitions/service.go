@@ -23,10 +23,12 @@ type Service interface {
 }
 
 var (
-	MenuID     = scene.NewSceneId("menu")
-	GameID     = scene.NewSceneId("game")
-	SettingsID = scene.NewSceneId("settings")
-	CreditsID  = scene.NewSceneId("credits")
+	MenuID       = scene.NewSceneId("menu")
+	GameID       = scene.NewSceneId("game")
+	GameServerID = scene.NewSceneId("server")
+	GameClientID = scene.NewSceneId("client")
+	SettingsID   = scene.NewSceneId("settings")
+	CreditsID    = scene.NewSceneId("credits")
 )
 
 const (
@@ -102,11 +104,11 @@ type Tiles struct {
 }
 
 type Objects struct {
-	Farm    ecs.EntityID `path:"constructs/farm.png" name:"farm" object:"construct" obstruction:"lowland" size:"2x2" deployReach:"3"`
-	HouseT1 ecs.EntityID `path:"constructs/houseT1.png" name:"house t1" object:"construct" obstruction:"lowland" size:"1x1"`
-	HouseT2 ecs.EntityID `path:"constructs/houseT2.png" name:"house t2" object:"construct" obstruction:"lowland" size:"2x2"`
-	HouseT3 ecs.EntityID `path:"constructs/houseT3.png" name:"house t3" object:"construct" obstruction:"lowland" size:"3x3"`
-	HouseT4 ecs.EntityID `path:"constructs/houseT4.png" name:"house t4" object:"construct" obstruction:"lowland" size:"4x4"`
+	Farm    ecs.EntityID `path:"constructs/farm.png" name:"farm" object:"construct" obstruction:"lowland" size:"2x2" deployReach:"3" cost:"100" health:"30" factory:"10"`
+	HouseT1 ecs.EntityID `path:"constructs/houseT1.png" name:"house t1" object:"construct" obstruction:"lowland" size:"1x1" cost:"100" health:"100"`
+	HouseT2 ecs.EntityID `path:"constructs/houseT2.png" name:"house t2" object:"construct" obstruction:"lowland" size:"2x2" cost:"2000" health:"200"`
+	HouseT3 ecs.EntityID `path:"constructs/houseT3.png" name:"house t3" object:"construct" obstruction:"lowland" size:"3x3" cost:"3000" health:"300"`
+	HouseT4 ecs.EntityID `path:"constructs/houseT4.png" name:"house t4" object:"construct" obstruction:"lowland" size:"4x4" cost:"4000" health:"400" factory:"400"`
 
-	Tank ecs.EntityID `path:"units/tank.png" name:"tank" object:"unit" obstruction:"lowland" speed:"2" deployReach:"1"`
+	Tank ecs.EntityID `path:"units/tank.png" name:"tank" object:"unit" obstruction:"lowland" speed:"2" deployReach:"1" cost:"200" health:"20" damage:"10" attackReach:"3"`
 }

@@ -2,18 +2,16 @@ package internal
 
 import (
 	"core/game"
+	"core/modules/economy"
 	"core/modules/generation"
 	"core/modules/player"
 	"core/modules/tile"
 	"engine/modules/batcher"
-	"engine/modules/collider"
 	"engine/modules/datastructures"
 	"engine/modules/ecs"
 	"engine/modules/grid"
-	"engine/modules/inputs"
 	"engine/modules/metadata"
 	"engine/modules/noise"
-	"engine/modules/transform"
 	"fmt"
 	"slices"
 
@@ -75,6 +73,19 @@ func (s *service) Chances() (*Config, []tile.ID) {
 		types = append(types, slices.Repeat([]tile.ID{tileComp.ID}, chance.chance)...)
 	}
 	return config, types
+}
+
+func (s *service) GetPlayer(worldGenerationEntity ecs.EntityID, name string) ecs.EntityID {
+	for _, child := range s.Hierarchy().Children(worldGenerationEntity).GetIndices() {
+		if comp, ok := s.Metadata().Name().Get(child); ok && comp.Name == name {
+			return child
+		}
+	}
+	playerEntity := s.World().NewEntity()
+	s.Hierarchy().SetParent(playerEntity, worldGenerationEntity)
+	s.Metadata().Name().Set(playerEntity, metadata.NewName(name))
+	s.Economy().Wallet().Set(playerEntity, economy.NewWallet(0))
+	return playerEntity
 }
 
 func (s *service) GenerateOn(event tile.MissingChunkEvent) {
@@ -212,34 +223,13 @@ func (s *service) GenerateOn(event tile.MissingChunkEvent) {
 	flushBatch := batcher.NewBatch(1, func(i int) {
 		chunkEntity := s.World().NewEntity()
 
-		s.Hierarchy().SetParent(chunkEntity, worldGenerationEntity)
-		s.Groups().InheritGroups(chunkEntity)
-		size := s.Tile().GetTileSize()
-		size.Size[0] *= float32(s.Grid().ChunkSize())
-		size.Size[1] *= float32(s.Grid().ChunkSize())
-
-		s.Transform().Pos().Set(chunkEntity, transform.NewPos(
-			float32(event.Coords.X)*size.Size[0],
-			float32(event.Coords.Y)*size.Size[1],
-			0,
-		))
-		s.Transform().Size().Set(chunkEntity, size)
-		s.Transform().PivotPoint().Set(chunkEntity, transform.NewPivotPoint(0, 0, .5))
-
-		s.Collider().Component().Set(chunkEntity, collider.NewCollider(s.Definitions().Assets().SquareCollider))
-		s.Inputs().Stack().Set(chunkEntity, inputs.StackComponent{})
 		s.Grid().Coords().Set(chunkEntity, grid.NewChunkCoords(event.Coords.X, event.Coords.Y))
 		s.Tile().Grid().Chunk().Set(chunkEntity, gridStateComponent)
 		s.Obstruction().Grid().Chunk().Set(chunkEntity, obstructGridComponent)
 
-		playerEntity := s.World().NewEntity()
-		s.Hierarchy().SetParent(playerEntity, worldGenerationEntity)
-		s.Metadata().Name().Set(playerEntity, metadata.NewName("john"))
+		playerEntity := s.GetPlayer(worldGenerationEntity, "john")
 		s.Player().ActingPlayer().Set(playerEntity, player.NewActingPlayer())
-
-		player2Entity := s.World().NewEntity()
-		s.Hierarchy().SetParent(player2Entity, worldGenerationEntity)
-		s.Metadata().Name().Set(player2Entity, metadata.NewName("anna"))
+		player2Entity := s.GetPlayer(worldGenerationEntity, "anna")
 
 		// generates objects
 		type Deployed struct {
@@ -248,6 +238,7 @@ func (s *service) GenerateOn(event tile.MissingChunkEvent) {
 		}
 		toDeploy := []Deployed{
 			{s.Definitions().Objects().Farm, playerEntity},
+			{s.Definitions().Objects().Tank, playerEntity},
 			{s.Definitions().Objects().Tank, player2Entity},
 		}
 	loop:

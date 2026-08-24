@@ -14,6 +14,7 @@ import (
 	"engine/modules/entityregistry"
 	"engine/modules/graphics"
 	gridpkg "engine/modules/grid/pkg"
+	"engine/modules/inputs"
 	relationpkg "engine/modules/relation/pkg"
 	"engine/modules/render"
 	typeregistrypkg "engine/modules/typeregistry/pkg"
@@ -27,24 +28,6 @@ import (
 	"github.com/go-gl/gl/v4.5-core/gl"
 	"github.com/ogiusek/ioc/v2"
 )
-
-type config struct {
-	tileSize float32
-}
-
-func NewConfig() Config {
-	return &config{
-		tileSize: 100,
-	}
-}
-
-func (c *config) GetTileSize() float32     { return c.tileSize }
-func (c *config) SetTileSize(size float32) { c.tileSize = size }
-
-type Config interface {
-	GetTileSize() float32
-	SetTileSize(float32)
-}
 
 var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 	pkgs := []ioc.Pkg{
@@ -75,10 +58,6 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 		pkg(b)
 	}
 
-	ioc.Register(b, func(c ioc.Dic) Config {
-		return NewConfig()
-	})
-
 	ioc.Register(b, func(c ioc.Dic) graphics.VBOFactory[tile.ID] {
 		return func() graphics.VBOSetter[tile.ID] {
 			vbo := graphics.NewVBO[tile.ID](func() {
@@ -106,7 +85,6 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 			ecs.NewSystemRegister(func() error {
 				return tilerenderer.NewSystem(c)
 			}),
-			ioc.Get[Config](c).GetTileSize(),
 		)
 	})
 
@@ -172,6 +150,7 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 			world.Groups().InheritGroups(entity)
 
 			world.Collider().Component().Set(entity, collider.NewCollider(world.Definitions().Assets().SquareCollider))
+			world.Inputs().LeftClick().Set(entity, inputs.NewLeftClick(tile.NewClickEntityEvent()))
 		})
 		b.Register("tile", func(entity ecs.EntityID, structTagValue string) {
 			counter++

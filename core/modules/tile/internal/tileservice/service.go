@@ -26,11 +26,9 @@ type service struct {
 	size  ecs.ComponentArray[tile.SizeComponent]
 	rot   ecs.ComponentArray[tile.RotComponent]
 	layer ecs.ComponentArray[tile.LayerComponent]
-
-	tileSize float32
 }
 
-func NewService(c ioc.Dic, system, renderer ecs.SystemRegister, tileSize float32) tile.Service {
+func NewService(c ioc.Dic, system, renderer ecs.SystemRegister) tile.Service {
 	s := ioc.GetServices[*service](c)
 	s.SystemRegister = system
 	s.renderer = renderer
@@ -44,8 +42,6 @@ func NewService(c ioc.Dic, system, renderer ecs.SystemRegister, tileSize float32
 
 	s.size.SetEmpty(tile.NewSize(1, 1))
 	s.layer.SetEmpty(tile.NewLayer(definitions.TileLayer))
-
-	s.tileSize = tileSize
 
 	return s
 }
@@ -68,13 +64,10 @@ func (s *service) Layer() ecs.ComponentArray[tile.LayerComponent] { return s.lay
 // NewBiomeAsset in other file
 
 func (s *service) GetPos(coords grid.Coords) transform.PosComponent {
-	size := s.GetTileSize().Size
+	size := s.GameWorld.Grid().GetTileSize().Size
 	return transform.NewPos(
 		size.X()*(float32(coords.X)+.5),
 		size.Y()*(float32(coords.Y)+.5),
 		size.Z(),
 	)
-}
-func (s *service) GetTileSize() transform.SizeComponent {
-	return transform.NewSize(s.tileSize, s.tileSize, 1)
 }

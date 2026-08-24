@@ -3,24 +3,20 @@ package main
 import (
 	"core/game"
 	"core/modules/definitions"
-	"core/modules/settings"
+	"core/modules/obstruction"
 	"core/modules/tile"
-	tilepkg "core/modules/tile/pkg"
 	corepkg "core/pkg"
-	"engine/modules/camera"
 	colliderpkg "engine/modules/collider/pkg"
-	"engine/modules/drag"
 	"engine/modules/graphics"
 	"engine/modules/grid"
 	gridpkg "engine/modules/grid/pkg"
-	"engine/modules/inputs"
 	"engine/modules/logger"
 	loggerpkg "engine/modules/logger/pkg"
 	netsyncpkg "engine/modules/netsync/pkg"
 	"engine/modules/record"
+	"engine/modules/seed"
 	"engine/modules/text"
 	textpkg "engine/modules/text/pkg"
-	"engine/modules/transform"
 	"engine/modules/window"
 	"errors"
 	"fmt"
@@ -106,29 +102,21 @@ func getDic() ioc.Dic {
 					}
 				})
 			})
+
 			ioc.Wrap(b, func(c ioc.Dic, config netsyncpkg.Config) {
 				config.SetMaxPredictions(150)
-				record.AddToConfig[transform.PosComponent](config.RecordConfig())
-				record.AddToConfig[camera.OrthoComponent](config.RecordConfig())
+				// i want to sync:
+				// - world: seed
+				record.AddToConfig[seed.SeedComponent](config.RecordConfig())
+				// - chunks: chukn coords, grid content
+				record.AddToConfig[grid.ChunkCoordsComponent](config.RecordConfig())
 				record.AddToConfig[grid.ChunkComponent[tile.ID]](config.RecordConfig())
-				// netsyncpkg.AddComponent[transform.PosComponent](config)
-				// netsyncpkg.AddComponent[camera.OrthoComponent](config)
-				// netsyncpkg.AddComponent[definition.DefinitionLinkComponent](config)
-				// netsyncpkg.AddComponent[tile.PosComponent](config)
-
-				// syncpkg.AddEvent[scenessys.ChangeSceneEvent](config)
-				netsyncpkg.AddEvent[drag.DraggableEvent](config)
-				netsyncpkg.AddEvent[inputs.DragEvent](config)
-
-				netsyncpkg.AddTransparentEvent[settings.EnterSettingsEvent](config)
-				// netsyncpkg.AddTransparentEvent[tile.TileHoverEvent](config)
-
-				// netsyncpkg.AddEventAuthorization(config, func(c inputs.DragEvent) error {
-				// 	return errors.New("no")
-				// })
+				record.AddToConfig[grid.ChunkComponent[obstruction.Obstruction]](config.RecordConfig())
+				// - objects: coords, blueprint, owner, deployed mark
+				// - players: name, wallet
 			})
 			ioc.Wrap(b, func(c ioc.Dic, config colliderpkg.Config) {
-				tileSize := ioc.Get[tilepkg.Config](c).GetTileSize()
+				tileSize := ioc.Get[gridpkg.Config](c).GetTileSize()
 				chunkSize := float32(ioc.Get[gridpkg.Config](c).GetChunkSize().Val())
 				config.SetChunkSize(tileSize * chunkSize / 2)
 			})

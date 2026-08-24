@@ -11,6 +11,7 @@ import (
 	colliderpkg "engine/modules/collider/pkg"
 	connectionpkg "engine/modules/connection/pkg"
 	consolepkg "engine/modules/console/pkg"
+	delaypkg "engine/modules/delay/pkg"
 	dragpkg "engine/modules/drag/pkg"
 	ecspkg "engine/modules/ecs/pkg"
 	entityregistrypkg "engine/modules/entityregistry/pkg"
@@ -55,6 +56,7 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 		colliderpkg.Pkg,
 		connectionpkg.Pkg,
 		consolepkg.Pkg,
+		delaypkg.Pkg,
 		dragpkg.Pkg,
 		ecspkg.Pkg,
 		entityregistrypkg.Pkg,

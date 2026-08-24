@@ -21,4 +21,7 @@ func PkgT[Component any](b ioc.Builder) {
 	ioc.Wrap(b, func(c ioc.Dic, _ smooth.Service) {
 		internal.NewSystems[Component](c)
 	})
+	ioc.Register(b, func(c ioc.Dic) smooth.ServiceT[Component] {
+		return ioc.Get[*internal.ServiceT[Component]](c)
+	})
 }

@@ -3,6 +3,7 @@ package transition
 
 import (
 	"engine/modules/ecs"
+	"math"
 	"time"
 
 	"golang.org/x/exp/constraints"
@@ -22,6 +23,9 @@ type LerpConstraint[Component any] interface {
 
 func Lerp[Number, T constraints.Float](a, b Number, t T) Number {
 	return a + Number(t)*(b-a)
+}
+func LerpInt[Number constraints.Integer, T constraints.Float](a, b Number, t T) Number {
+	return Number(math.Round(Lerp(float64(a), float64(b), t)))
 }
 
 //
@@ -68,23 +72,6 @@ func NewTransitionEvent[Component LerpConstraint[Component]](
 			from, to,
 			duration,
 		),
-	}
-}
-
-//
-
-type DelayedEvent struct {
-	Event    any
-	Duration time.Duration
-}
-
-func NewDelayedEvent(
-	event any,
-	duration time.Duration,
-) DelayedEvent {
-	return DelayedEvent{
-		Event:    event,
-		Duration: duration,
 	}
 }
 

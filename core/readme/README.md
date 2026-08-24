@@ -17,6 +17,7 @@ Map scale preview:
 - [attack](/core/modules/attack/readme/README.md)
 - [definitions](/core/modules/definitions/readme/README.md)
 - [deploy](/core/modules/deploy/readme/README.md)
+- [economy](/core/modules/economy/readme/README.md)
 - [fpslogger](/core/modules/fpslogger/readme/README.md)
 - [generation](/core/modules/generation/readme/README.md)
 - [loading](/core/modules/loading/readme/README.md)
@@ -38,11 +39,11 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                              73            831            262           4710
-Markdown                        16             25              0            151
+Go                              79            930            275           5629
+Markdown                        17             25              0            152
 GLSL                             3             31              2            112
 -------------------------------------------------------------------------------
-SUM:                            92            887            264           4973
+SUM:                            99            986            277           5893
 -------------------------------------------------------------------------------
 ```
 ## Dependencies

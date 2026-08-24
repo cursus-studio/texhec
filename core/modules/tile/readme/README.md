@@ -103,11 +103,11 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                               8            177             93            980
+Go                               8            170             92            958
 GLSL                             3             31              2            112
 Markdown                         3             10              0             85
 -------------------------------------------------------------------------------
-SUM:                            14            218             95           1177
+SUM:                            14            211             94           1155
 -------------------------------------------------------------------------------
 ```
 ## TODO
@@ -126,11 +126,6 @@ Type: `func(coords engine/modules/grid.Coords) engine/modules/transform.PosCompo
 #### method Service GetTile
 Type: `func(core/modules/tile.ID) (engine/modules/ecs.EntityID, bool)`
 
-#### method Service GetTileSize
-Type: `func() engine/modules/transform.SizeComponent`
-transform 1x1 tile size.
-can be used for graphics or collisions.
-
 #### method Service Grid
 Type: `func() engine/modules/grid.ServiceT[core/modules/tile.ID]`
 
@@ -148,6 +143,7 @@ src images should be:
 
 #### method Service Pos
 Type: `func() engine/modules/ecs.ComponentArray[core/modules/tile.PosComponent]`
+is often used to check is element a prototype or a placed object
 
 #### method Service Register
 Type: `func() error`
@@ -333,13 +329,13 @@ Type: `func(deployed engine/modules/ecs.EntityID) core/modules/tile.ClickBluepri
   - `core/modules/tile.BiomeAsset`
   - `core/modules/tile.Component`
   - `core/modules/tile.Coord`
-  - `core/modules/tile.GetTileSize`
   - `core/modules/tile.Grid`
   - `core/modules/tile.ID`
   - `core/modules/tile.Images`
   - `core/modules/tile.Layer`
   - `core/modules/tile.LayerComponent`
   - `core/modules/tile.NewBiomeAsset`
+  - `core/modules/tile.NewClickEntityEvent`
   - `core/modules/tile.NewLayer`
   - `core/modules/tile.NewRot`
   - `core/modules/tile.NewSize`
@@ -425,6 +421,7 @@ Type: `func(deployed engine/modules/ecs.EntityID) core/modules/tile.ClickBluepri
   - `engine/modules/grid.Coord`
   - `engine/modules/grid.Coords`
   - `engine/modules/grid.GetChunk`
+  - `engine/modules/grid.GetTileSize`
   - `engine/modules/grid.GetTiles`
   - `engine/modules/grid.NewChunkCoords`
   - `engine/modules/grid.NewCoord`
@@ -435,6 +432,11 @@ Type: `func(deployed engine/modules/ecs.EntityID) core/modules/tile.ClickBluepri
 
 `engine/modules/grid/pkg`:
   - `engine/modules/grid/pkg.PkgT`
+
+`engine/modules/inputs`:
+  - `engine/modules/inputs.LeftClick`
+  - `engine/modules/inputs.NewLeftClick`
+  - `engine/modules/inputs.Stack`
 
 `engine/modules/relation`:
   - `engine/modules/relation.Get`

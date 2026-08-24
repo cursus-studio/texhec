@@ -14,9 +14,9 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                               7             89             17            411
+Go                               7             88             17            415
 -------------------------------------------------------------------------------
-SUM:                             7             89             17            411
+SUM:                             7             88             17            415
 -------------------------------------------------------------------------------
 ```
 ## Types
@@ -27,10 +27,10 @@ Type: `engine/modules/connection.Service`
 Type: `func() engine/modules/ecs.ComponentArray[engine/modules/connection.ConnectionComponent]`
 
 #### method Service Connect
-Type: `func(addr string) error`
+Type: `func(entity engine/modules/ecs.EntityID, addr string) error`
 
 #### method Service Host
-Type: `func(addr string) error`
+Type: `func(entity engine/modules/ecs.EntityID, addr string) error`
 
 #### method Service Listener
 Type: `func() engine/modules/ecs.ComponentArray[engine/modules/connection.ListenerComponent]`
@@ -49,8 +49,8 @@ singular connection interface
 Type: `func() error`
 
 #### method Conn Messages
-Type: `func() chan any`
-closed channel can be returned if connection is closed
+Type: `func() []any`
+returns messages from last call
 
 #### method Conn Send
 Type: `func(message any) error`

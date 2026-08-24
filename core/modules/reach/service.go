@@ -34,5 +34,6 @@ type Service interface {
 type ServiceT[FeatureComponent any] interface {
 	Component() ecs.ComponentArray[Component[FeatureComponent]]
 	Reaches(fromEntity, toEntity ecs.EntityID) bool
+	TilesFrom(tile.PosComponent, tile.SizeComponent, Component[FeatureComponent]) []grid.Coords
 	TilesWithinReach(entity ecs.EntityID) []grid.Coords
 }

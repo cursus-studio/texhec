@@ -149,6 +149,7 @@ type Service interface {
 	Grid() grid.ServiceT[ID]
 	GetTile(ID) (ecs.EntityID, bool)
 
+	// is often used to check is element a prototype or a placed object
 	Pos() ecs.ComponentArray[PosComponent]
 	Size() ecs.ComponentArray[SizeComponent]
 	Rot() ecs.ComponentArray[RotComponent]
@@ -163,7 +164,4 @@ type Service interface {
 	NewBiomeAsset(srcImages [6][]image.Image) (BiomeAsset, error)
 
 	GetPos(coords grid.Coords) transform.PosComponent
-	// transform 1x1 tile size.
-	// can be used for graphics or collisions.
-	GetTileSize() transform.SizeComponent
 }

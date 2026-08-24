@@ -3,6 +3,7 @@ package obstruction
 
 import (
 	"core/modules/tile"
+	"engine/modules/datastructures"
 	"engine/modules/ecs"
 	"engine/modules/grid"
 	"errors"
@@ -66,4 +67,6 @@ type Service interface {
 	Deployed() ecs.ComponentArray[DeployedComponent]
 
 	Collisions(AABB, Obstruction) []grid.Coords
+
+	Obstructions() datastructures.SparseSet[Obstruction]
 }

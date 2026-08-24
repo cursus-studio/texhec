@@ -8,9 +8,9 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                               4             25              8            133
+Go                               4             37             13            230
 -------------------------------------------------------------------------------
-SUM:                             4             25              8            133
+SUM:                             4             37             13            230
 -------------------------------------------------------------------------------
 ```
 ## Types
@@ -23,6 +23,14 @@ Type: `func() engine/modules/ecs.SystemRegister`
 #### method Service Stop
 Type: `func() engine/modules/ecs.SystemRegister`
 
+### type ServiceT
+Type: `engine/modules/smooth.ServiceT[StateComponent any]`
+
+#### method ServiceT AddWaypoint
+Type: `func(engine/modules/ecs.EntityID, StateComponent)`
+AddWaypoint appends a state snapshot for the next tick interval.
+Multiple waypoints within a single tick period are distributed evenly across the frame duration.
+
 ### type SmoothConstraint
 Type: `engine/modules/smooth.SmoothConstraint[Component any]`
 
@@ -31,19 +39,39 @@ Type: `func(Component, float32) Component`
 
 #### method SmoothConstraint Smooth
 Type: `func()`
-this method is a tag that component is smooothed
+this method is a tag that component is smoothed
+each lerpable component with this method will automatically be registered to be smoothed
+
+### type AddWaypointEvent
+Type: `engine/modules/smooth.AddWaypointEvent[StateComponent any]`
+
+#### property AddWaypointEvent Entity
+Type: `engine/modules/ecs.EntityID`
+
+#### property AddWaypointEvent State
+Type: `StateComponent`
+
+## Functions
+### func NewAddWaypointEvent
+Type: `func[StateComponent any](entity engine/modules/ecs.EntityID, state StateComponent) engine/modules/smooth.AddWaypointEvent[StateComponent]`
 
 
 ## Dependencies
 `engine`:
+  - `engine.Delay`
   - `engine.EngineWorld`
   - `engine.Events`
   - `engine.EventsBuilder`
   - `engine.Record`
   - `engine.World`
 
+`engine/modules/delay`:
+  - `engine/modules/delay.Delay`
+  - `engine/modules/delay.NewDelayedEvent`
+
 `engine/modules/ecs`:
   - `engine/modules/ecs.ComponentArray`
+  - `engine/modules/ecs.EntityID`
   - `engine/modules/ecs.GetComponentArray`
   - `engine/modules/ecs.NewSystemRegister`
   - `engine/modules/ecs.SystemRegister`
@@ -63,13 +91,16 @@ this method is a tag that component is smooothed
   - `engine/modules/record.Stop`
 
 `engine/modules/smooth`:
+  - `engine/modules/smooth.AddWaypointEvent`
+  - `engine/modules/smooth.Entity`
   - `engine/modules/smooth.Service`
+  - `engine/modules/smooth.ServiceT`
   - `engine/modules/smooth.SmoothConstraint`
+  - `engine/modules/smooth.State`
 
 `engine/modules/transition`:
   - `engine/modules/transition.LerpConstraint`
   - `engine/modules/transition.NewTransition`
-  - `engine/modules/transition.To`
   - `engine/modules/transition.TransitionComponent`
 
 ### Third Party

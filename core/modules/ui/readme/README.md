@@ -8,10 +8,10 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                               7             83             13            418
+Go                               8             93             14            481
 Markdown                         1              8              0             27
 -------------------------------------------------------------------------------
-SUM:                             8             91             13            445
+SUM:                             9            101             14            508
 -------------------------------------------------------------------------------
 ```
 ## Types
@@ -52,8 +52,10 @@ Type: `core/modules/ui.CursorCameraComponent`
 
 ## Dependencies
 `core/game`:
+  - `core/game.Attack`
   - `core/game.Definitions`
   - `core/game.GameWorld`
+  - `core/game.Tile`
   - `core/game.Ui`
 
 `core/modules/ui`:
@@ -73,6 +75,9 @@ Type: `core/modules/ui.CursorCameraComponent`
   - `engine/modules/collider.Direction`
   - `engine/modules/collider.NewCollider`
   - `engine/modules/collider.Pos`
+
+`engine/modules/delay`:
+  - `engine/modules/delay.NewDelayedEvent`
 
 `engine/modules/ecs`:
   - `engine/modules/ecs.ComponentArray`
@@ -141,11 +146,11 @@ Type: `core/modules/ui.CursorCameraComponent`
   - `engine/modules/transform.PivotPoint`
   - `engine/modules/transform.Pos`
   - `engine/modules/transform.RelativePos`
+  - `engine/modules/transform.RelativeSizeX`
   - `engine/modules/transform.RelativeSizeXY`
   - `engine/modules/transform.Size`
 
 `engine/modules/transition`:
-  - `engine/modules/transition.NewDelayedEvent`
   - `engine/modules/transition.NewTransition`
   - `engine/modules/transition.NewTransitionEvent`
   - `engine/modules/transition.TransitionComponent`
