@@ -209,26 +209,26 @@ goos: linux
 goarch: amd64
 pkg: engine/modules/ecs/test
 cpu: Intel(R) Core(TM) i5-8350U CPU @ 1.70GHz
-BenchmarkDirtySetDirty-8               	137151241	         8.231 ns/op
-BenchmarkDirtySetDirtyInversed-8       	144657516	         7.394 ns/op
-BenchmarkDirtySetGet-8                 	590244398	         2.090 ns/op
-BenchmarkDirtySetDirtyAndGet-8         	169425655	         7.102 ns/op
-BenchmarkDirtySetDirtyAnd1Get-8        	127674126	         8.851 ns/op
-Benchmark4SavesWith7Systems-8          	26503406	        42.23 ns/op
-Benchmark16SavesWith7Systems-8         	 6938511	       165.1 ns/op
-Benchmark256SavesWith7Systems-8        	  488564	      2509 ns/op
-Benchmark4096SavesWith7Systems-8       	   29869	     40203 ns/op
-Benchmark16384SavesWith7Systems-8      	    7695	    159021 ns/op
-Benchmark65536SavesWith7Systems-8      	    1840	    643265 ns/op
-Benchmark262144SavesWith7Systems-8     	     460	   2573859 ns/op
-BenchmarkGetComponent-8                	81757089	        14.96 ns/op
-BenchmarkCreateComponents-8            	39956193	        31.43 ns/op
-BenchmarkUpdateComponents-8            	100000000	        11.46 ns/op
-BenchmarkRemoveComponent-8             	77082870	        15.48 ns/op
-BenchmarkRemoveEntityWithComponent-8   	35099274	        35.41 ns/op
-BenchmarkRemoveEntity-8                	65063078	        18.66 ns/op
+BenchmarkDirtySetDirty-8               	140561096	         8.250 ns/op
+BenchmarkDirtySetDirtyInversed-8       	144428928	         7.557 ns/op
+BenchmarkDirtySetGet-8                 	613425199	         1.956 ns/op
+BenchmarkDirtySetDirtyAndGet-8         	177303746	         6.750 ns/op
+BenchmarkDirtySetDirtyAnd1Get-8        	125245519	         9.138 ns/op
+Benchmark4SavesWith7Systems-8          	29067450	        40.04 ns/op
+Benchmark16SavesWith7Systems-8         	 6588759	       177.5 ns/op
+Benchmark256SavesWith7Systems-8        	  488450	      2464 ns/op
+Benchmark4096SavesWith7Systems-8       	   30591	     39077 ns/op
+Benchmark16384SavesWith7Systems-8      	    7671	    159330 ns/op
+Benchmark65536SavesWith7Systems-8      	    1890	    630295 ns/op
+Benchmark262144SavesWith7Systems-8     	     476	   2526259 ns/op
+BenchmarkGetComponent-8                	81262482	        14.76 ns/op
+BenchmarkCreateComponents-8            	40241900	        31.90 ns/op
+BenchmarkUpdateComponents-8            	100000000	        11.04 ns/op
+BenchmarkRemoveComponent-8             	75449138	        14.47 ns/op
+BenchmarkRemoveEntityWithComponent-8   	33417891	        34.63 ns/op
+BenchmarkRemoveEntity-8                	60351850	        19.59 ns/op
 PASS
-ok  	engine/modules/ecs/test	37.578s
+ok  	engine/modules/ecs/test	38.275s
 ```
 ## Lines of code
 ```
@@ -236,10 +236,10 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                              13            218             43            920
+Go                              13            220             43            924
 Markdown                         1             44              0            157
 -------------------------------------------------------------------------------
-SUM:                            14            262             43           1077
+SUM:                            14            264             43           1081
 -------------------------------------------------------------------------------
 ```
 ## Types
@@ -319,6 +319,9 @@ Type: `func(engine/modules/ecs/internal/ecstypes.DirtySet)`
 #### method AnyComponentArray BeforeGet
 Type: `func(engine/modules/ecs/internal/ecstypes.BeforeGet)`
 
+#### method AnyComponentArray ComponentType
+Type: `func() reflect.Type`
+
 #### method AnyComponentArray GetAny
 Type: `func(entity engine/modules/ecs/internal/ecstypes.EntityID) (engine/modules/ecs/internal/ecstypes.Component, bool)`
 
@@ -351,6 +354,9 @@ Type: `func(engine/modules/ecs/internal/ecstypes.DirtySet)`
 
 #### method ComponentArray BeforeGet
 Type: `func(engine/modules/ecs/internal/ecstypes.BeforeGet)`
+
+#### method ComponentArray ComponentType
+Type: `func() reflect.Type`
 
 #### method ComponentArray Get
 Type: `func(entity engine/modules/ecs/internal/ecstypes.EntityID) (Component, bool)`

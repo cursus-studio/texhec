@@ -174,3 +174,7 @@ func (c *componentArray[Component]) OnMod(onMod ecstypes.OnMod) {
 	c.OnUpsert(onMod)
 	c.OnRemove(onMod)
 }
+
+func (c *componentArray[Component]) ComponentType() reflect.Type {
+	return reflect.TypeFor[Component]()
+}

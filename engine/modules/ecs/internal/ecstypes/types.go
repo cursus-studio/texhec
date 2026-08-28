@@ -65,6 +65,8 @@ type AnyComponentArray interface {
 	OnRemove(OnMod)
 	// is called OnUpsert and OnRemove
 	OnMod(OnMod)
+
+	ComponentType() reflect.Type
 }
 type ComponentArray[Component any] interface {
 	AnyComponentArray
