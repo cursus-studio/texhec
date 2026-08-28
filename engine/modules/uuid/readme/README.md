@@ -10,9 +10,9 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                               4             25              6             96
+Go                               4             26              6            100
 -------------------------------------------------------------------------------
-SUM:                             4             25              6             96
+SUM:                             4             26              6            100
 -------------------------------------------------------------------------------
 ```
 ## Types
@@ -28,11 +28,17 @@ Type: `func(engine/modules/uuid.UUID) (engine/modules/ecs.EntityID, bool)`
 #### method Service NewUUID
 Type: `func() engine/modules/uuid.UUID`
 
+#### method Service NewUUIDFromString
+Type: `func(string) engine/modules/uuid.UUID`
+
 ### type Factory
 Type: `engine/modules/uuid.Factory`
 
 #### method Factory NewUUID
 Type: `func() engine/modules/uuid.UUID`
+
+#### method Factory NewUUIDFromString
+Type: `func(string) engine/modules/uuid.UUID`
 
 ### type Component
 Type: `engine/modules/uuid.Component`

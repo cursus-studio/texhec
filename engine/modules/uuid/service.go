@@ -34,4 +34,5 @@ func (uuid *UUID) Bytes() []byte { return uuid[:] }
 
 type Factory interface {
 	NewUUID() UUID
+	NewUUIDFromString(string) UUID
 }

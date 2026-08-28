@@ -56,10 +56,15 @@ func (s *service) populateValue(v reflect.Value) error {
 			}
 			continue
 		}
+		uuidValue := s.UUID().NewUUIDFromString(string(fieldType.Tag))
+		if entity, ok := s.UUID().Entity(uuidValue); ok {
+			fieldValue.Set(reflect.ValueOf(entity))
+			continue
+		}
 
 		entity := s.World().NewEntity()
 		fieldValue.Set(reflect.ValueOf(entity))
-		s.UUID().Component().Set(entity, uuid.New(s.UUID().NewUUID()))
+		s.UUID().Component().Set(entity, uuid.New(uuidValue))
 
 		for tagIndex, tagName := range s.tags {
 			tagValue, ok := fieldType.Tag.Lookup(tagName)
