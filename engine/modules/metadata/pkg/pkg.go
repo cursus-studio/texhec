@@ -12,6 +12,8 @@ import (
 
 var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 	pkgs := []ioc.Pkg{
+		typeregistrypkg.PkgT[metadata.NameComponent],
+		typeregistrypkg.PkgT[metadata.DescriptionComponent],
 		typeregistrypkg.PkgT[metadata.LinkComponent],
 	}
 	for _, pkg := range pkgs {
