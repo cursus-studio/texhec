@@ -19,6 +19,7 @@ var (
 	ErrInvalidPosition                  error = errors.New("tile:position not found on the grid")
 	ErrInvalidStep                      error = errors.New("tile:invalid step")
 	ErrPositionAndSpeedIsRequiredToStep error = errors.New("tile:to step you need to have speed and position")
+	ErrBlueprintIsMissingUUID           error = errors.New("blueprint is missing UUID")
 )
 
 type ID uint8

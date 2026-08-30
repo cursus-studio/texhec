@@ -10,10 +10,7 @@ import (
 	"core/modules/tile"
 	"engine/modules/ecs"
 	"engine/modules/grid"
-	"engine/modules/inputs"
 	"engine/modules/loop"
-	"engine/modules/seed"
-	"engine/modules/uuid"
 
 	"github.com/ogiusek/events"
 	"github.com/ogiusek/ioc/v2"
@@ -59,10 +56,6 @@ func (s *service) Deploy(
 	owner ecs.EntityID,
 	coords grid.Coords,
 ) (ecs.EntityID, error) {
-	worldEntity, ok := s.Seed().WorldSeed()
-	if !ok {
-		return 0, seed.ErrWorldCanHaveOneSeed
-	}
 	// check can place:
 
 	// - is position occuped
@@ -74,14 +67,16 @@ func (s *service) Deploy(
 		return 0, obstruction.ErrPositionIsOccupied
 	}
 
-	// place
-	deployed := s.Prototype().Clone(blueprint)
-	s.UUID().Component().Set(deployed, uuid.New(s.UUID().NewUUID()))
-	s.Hierarchy().SetParent(deployed, worldEntity)
+	blueprintUUID, ok := s.UUID().Component().Get(blueprint)
+	if !ok {
+		s.Logger().Fatal(tile.ErrBlueprintIsMissingUUID)
+	}
 
+	// place
+	deployed := s.World().NewEntity()
 	s.Player().Owner().Set(deployed, player.NewOwner(owner))
 	s.Obstruction().Deployed().Set(deployed, obstruction.NewDeployed())
-	s.Inputs().LeftClick().Set(deployed, inputs.NewLeftClick(tile.NewClickEntityEvent()))
+	s.Tile().Link().Set(deployed, tile.NewLink(blueprintUUID))
 	s.Tile().Pos().Set(deployed, pos)
 	return deployed, nil
 }
@@ -91,11 +86,6 @@ func (s *service) DeployEvent(e deploy.DeployEvent) {
 	s.boughtComponent.Set(entity, NewBought(e))
 }
 func (s *service) OnTick(loop.TickEvent) {
-	worldEntity, ok := s.Seed().WorldSeed()
-	if !ok {
-		return
-	}
-
 	entities := s.boughtComponent.GetEntities()
 	for _, entity := range entities {
 		event, ok := s.boughtComponent.Get(entity)
@@ -154,12 +144,16 @@ func (s *service) OnTick(loop.TickEvent) {
 			s.Economy().Wallet().Set(owner.Owner, wallet.Pay(cost))
 		}
 
+		blueprintUUID, ok := s.UUID().Component().Get(event.Blueprint)
+		if !ok {
+			s.Logger().Fatal(tile.ErrBlueprintIsMissingUUID)
+		}
+
 		// place
-		deployed := s.Prototype().Clone(event.Blueprint)
-		s.UUID().Component().Set(deployed, uuid.New(s.UUID().NewUUID()))
-		s.Hierarchy().SetParent(deployed, worldEntity)
+		deployed := s.World().NewEntity()
 		s.Player().Owner().Set(deployed, owner)
 		s.Obstruction().Deployed().Set(deployed, obstruction.NewDeployed())
+		s.Tile().Link().Set(deployed, tile.NewLink(blueprintUUID))
 		s.Tile().Pos().Set(deployed, tile.NewPos(event.Coords.Coords()))
 	}
 }

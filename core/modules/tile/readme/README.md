@@ -103,11 +103,11 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                               8            179             93           1004
+Go                               8            184             95           1023
 GLSL                             3             31              2            112
 Markdown                         3             10              0             85
 -------------------------------------------------------------------------------
-SUM:                            14            220             95           1201
+SUM:                            14            225             97           1220
 -------------------------------------------------------------------------------
 ```
 ## TODO
@@ -309,6 +309,9 @@ Type: `error`
 ### var ErrPositionAndSpeedIsRequiredToStep
 Type: `error`
 
+### var ErrBlueprintIsMissingUUID
+Type: `error`
+
 ### var Tau
 Type: `untyped float`
 
@@ -354,6 +357,7 @@ Type: `func(deployed engine/modules/ecs.EntityID) core/modules/tile.ClickBluepri
 `core/game`:
   - `core/game.Definitions`
   - `core/game.GameWorld`
+  - `core/game.Obstruction`
   - `core/game.Tile`
 
 `core/modules/definitions`:
@@ -370,6 +374,7 @@ Type: `func(deployed engine/modules/ecs.EntityID) core/modules/tile.ClickBluepri
   - `core/modules/tile.Component`
   - `core/modules/tile.Coord`
   - `core/modules/tile.Entity`
+  - `core/modules/tile.GetLink`
   - `core/modules/tile.Grid`
   - `core/modules/tile.ID`
   - `core/modules/tile.Images`
@@ -383,7 +388,6 @@ Type: `func(deployed engine/modules/ecs.EntityID) core/modules/tile.ClickBluepri
   - `core/modules/tile.NewCachedLink`
   - `core/modules/tile.NewClickEntityEvent`
   - `core/modules/tile.NewLayer`
-  - `core/modules/tile.NewLink`
   - `core/modules/tile.NewName`
   - `core/modules/tile.NewRot`
   - `core/modules/tile.NewSize`
@@ -526,6 +530,8 @@ Type: `func(deployed engine/modules/ecs.EntityID) core/modules/tile.ClickBluepri
   - `engine/modules/uuid.Component`
   - `engine/modules/uuid.Entity`
   - `engine/modules/uuid.ID`
+  - `engine/modules/uuid.New`
+  - `engine/modules/uuid.NewUUID`
 
 ### Third Party
 - `github.com/go-gl/gl/v4.5-core/gl`

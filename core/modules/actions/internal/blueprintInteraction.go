@@ -35,12 +35,7 @@ func (s *service) OnBlueprintMissingUpsert(entity ecs.EntityID) {
 		return
 	}
 
-	linkEntity, ok := s.Tile().GetLink(canDeploy.Entity)
-	if !ok {
-		return
-	}
-
-	deployed, _ := s.Deploy().Component().Get(linkEntity)
+	deployed, _ := s.Deploy().Component().Get(canDeploy.Entity)
 	if len(deployed.Deployable) == 0 {
 		return
 	}

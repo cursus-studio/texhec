@@ -2,8 +2,13 @@ package tilesystem
 
 import (
 	"core/game"
+	"core/modules/tile"
+	"engine/modules/collider"
 	"engine/modules/ecs"
+	"engine/modules/inputs"
+	"engine/modules/render"
 	"engine/modules/transform"
+	"engine/modules/uuid"
 
 	"github.com/ogiusek/ioc/v2"
 )
@@ -27,6 +32,9 @@ func NewSystem(c ioc.Dic) ecs.SystemRegister {
 		s.Tile().Pos().OnUpsert(s.OnTilePosSizeRotUpsert)
 		s.Tile().Size().OnUpsert(s.OnTilePosSizeRotUpsert)
 		s.Tile().Rot().OnUpsert(s.OnTilePosSizeRotUpsert)
+
+		s.Tile().Link().OnUpsert(s.OnLinkUpsert)
+		s.Obstruction().Deployed().OnUpsert(s.OnObstructionUpsert)
 
 		//
 
@@ -64,6 +72,38 @@ func (s *system) OnTilePosSizeRotUpsert(entity ecs.EntityID) {
 	s.Transform().Pos().Set(entity, transformPos)
 	s.Transform().Size().Set(entity, transformSize)
 	s.Transform().Rotation().Set(entity, transformRot)
+}
+
+// all objects have it including shadow/placeholder objects
+func (s *system) OnLinkUpsert(entity ecs.EntityID) {
+	worldEntity, ok := s.Seed().WorldSeed()
+	if !ok {
+		return
+	}
+	linkEntity, ok := s.Tile().GetLink(entity)
+	if !ok {
+		return
+	}
+	uuid, ok := s.UUID().Component().Get(entity)
+	s.Prototype().CloneTo(linkEntity, entity)
+	if ok {
+		s.UUID().Component().Set(entity, uuid)
+	}
+
+	s.Hierarchy().SetParent(entity, worldEntity)
+
+	s.Tile().Rot().Set(entity, tile.NewRot(0))
+	s.Render().Mesh().Set(entity, render.NewMesh(s.Definitions().Assets().SquareMesh))
+	s.Render().Texture().Set(entity, render.NewTexture(linkEntity))
+
+	s.Groups().InheritGroups(entity)
+}
+
+// this is for deployed objects
+func (s *system) OnObstructionUpsert(entity ecs.EntityID) {
+	s.UUID().Component().Set(entity, uuid.New(s.UUID().NewUUID()))
+	s.Collider().Component().Set(entity, collider.NewCollider(s.Definitions().Assets().SquareCollider))
+	s.Inputs().LeftClick().Set(entity, inputs.NewLeftClick(tile.NewClickEntityEvent()))
 }
 
 // V1:

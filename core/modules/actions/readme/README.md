@@ -8,10 +8,10 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                               6             88             13            474
+Go                               6             86             13            467
 Markdown                         1              0              0              1
 -------------------------------------------------------------------------------
-SUM:                             7             88             13            475
+SUM:                             7             86             13            468
 -------------------------------------------------------------------------------
 ```
 ## Types
@@ -250,11 +250,14 @@ Type: `func(entity engine/modules/ecs.EntityID) core/modules/actions.BlueprintIn
   - `core/modules/tile.ClickBlueprintEvent`
   - `core/modules/tile.ClickEntityEvent`
   - `core/modules/tile.Entity`
+  - `core/modules/tile.ErrBlueprintIsMissingUUID`
   - `core/modules/tile.GetLink`
   - `core/modules/tile.Layer`
+  - `core/modules/tile.Link`
   - `core/modules/tile.Name`
   - `core/modules/tile.NewClickBlueprintEvent`
   - `core/modules/tile.NewLayer`
+  - `core/modules/tile.NewLink`
   - `core/modules/tile.NewPos`
   - `core/modules/tile.Pos`
   - `core/modules/tile.Size`
