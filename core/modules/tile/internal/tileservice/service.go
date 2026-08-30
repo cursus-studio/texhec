@@ -26,6 +26,10 @@ type service struct {
 	size  ecs.ComponentArray[tile.SizeComponent]
 	rot   ecs.ComponentArray[tile.RotComponent]
 	layer ecs.ComponentArray[tile.LayerComponent]
+
+	name       ecs.ComponentArray[tile.NameComponent]
+	link       ecs.ComponentArray[tile.LinkComponent]
+	cachedLink ecs.ComponentArray[tile.CachedLinkComponent]
 }
 
 func NewService(c ioc.Dic, system, renderer ecs.SystemRegister) tile.Service {
@@ -39,6 +43,10 @@ func NewService(c ioc.Dic, system, renderer ecs.SystemRegister) tile.Service {
 	s.size = ecs.GetComponentArray[tile.SizeComponent](s.World())
 	s.rot = ecs.GetComponentArray[tile.RotComponent](s.World())
 	s.layer = ecs.GetComponentArray[tile.LayerComponent](s.World())
+
+	s.name = ecs.GetComponentArray[tile.NameComponent](s.World())
+	s.link = ecs.GetComponentArray[tile.LinkComponent](s.World())
+	s.cachedLink = ecs.GetComponentArray[tile.CachedLinkComponent](s.World())
 
 	s.size.SetEmpty(tile.NewSize(1, 1))
 	s.layer.SetEmpty(tile.NewLayer(definitions.TileLayer))
@@ -60,6 +68,25 @@ func (s *service) Pos() ecs.ComponentArray[tile.PosComponent]     { return s.pos
 func (s *service) Size() ecs.ComponentArray[tile.SizeComponent]   { return s.size }
 func (s *service) Rot() ecs.ComponentArray[tile.RotComponent]     { return s.rot }
 func (s *service) Layer() ecs.ComponentArray[tile.LayerComponent] { return s.layer }
+
+func (s *service) Name() ecs.ComponentArray[tile.NameComponent]             { return s.name }
+func (s *service) Link() ecs.ComponentArray[tile.LinkComponent]             { return s.link }
+func (s *service) CachedLink() ecs.ComponentArray[tile.CachedLinkComponent] { return s.cachedLink }
+func (s *service) GetLink(object ecs.EntityID) (source ecs.EntityID, ok bool) {
+	if cache, ok := s.cachedLink.Get(object); ok {
+		return cache.Entity, true
+	}
+	link, ok := s.link.Get(object)
+	if !ok {
+		return 0, false
+	}
+	entity, ok := s.UUID().Entity(link.UUID.ID)
+	if !ok {
+		return 0, false
+	}
+	s.cachedLink.Set(object, tile.NewCachedLink(entity))
+	return entity, true
+}
 
 // NewBiomeAsset in other file
 

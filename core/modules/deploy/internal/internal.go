@@ -75,6 +75,7 @@ func (s *service) Deploy(
 
 	// place
 	deployed := s.Prototype().Clone(blueprint)
+	s.UUID().Component().Remove(deployed)
 	s.Hierarchy().SetParent(deployed, worldEntity)
 
 	s.Player().Owner().Set(deployed, player.NewOwner(owner))
@@ -154,6 +155,7 @@ func (s *service) OnTick(loop.TickEvent) {
 
 		// place
 		deployed := s.Prototype().Clone(event.Blueprint)
+		s.UUID().Component().Remove(deployed)
 		s.Hierarchy().SetParent(deployed, worldEntity)
 		s.Player().Owner().Set(deployed, owner)
 		s.Obstruction().Deployed().Set(deployed, obstruction.NewDeployed())

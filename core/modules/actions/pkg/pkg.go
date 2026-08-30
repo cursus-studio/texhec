@@ -48,8 +48,8 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 				if err := world.Player().ControlsObject(state.Entity); err != nil {
 					return err
 				}
-				link, _ := world.Metadata().Link().Get(state.Entity)
-				if _, ok := world.Deploy().Component().Get(link.Entity); !ok {
+				linkEntity, _ := world.Tile().GetLink(state.Entity)
+				if _, ok := world.Deploy().Component().Get(linkEntity); !ok {
 					return actions.ErrRequiresDeploy
 				}
 				return nil

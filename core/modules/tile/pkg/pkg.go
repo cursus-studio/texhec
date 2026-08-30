@@ -53,6 +53,10 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 		typeregistrypkg.PkgT[tile.SizeComponent],
 		typeregistrypkg.PkgT[tile.RotComponent],
 		typeregistrypkg.PkgT[tile.LayerComponent],
+
+		typeregistrypkg.PkgT[tile.NameComponent],
+		typeregistrypkg.PkgT[tile.LinkComponent],
+		typeregistrypkg.PkgT[tile.CachedLinkComponent],
 	}
 	for _, pkg := range pkgs {
 		pkg(b)
@@ -148,9 +152,17 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 			world.Render().Mesh().Set(entity, render.NewMesh(world.Definitions().Assets().SquareMesh))
 			world.Render().Texture().Set(entity, render.NewTexture(entity))
 			world.Groups().InheritGroups(entity)
+			if uuid, ok := world.UUID().Component().Get(entity); ok {
+				world.Tile().Link().Set(entity, tile.NewLink(uuid))
+			} else {
+				world.Logger().Fatal(fmt.Errorf("expected entity registry to add UUID to object before using it"))
+			}
 
 			world.Collider().Component().Set(entity, collider.NewCollider(world.Definitions().Assets().SquareCollider))
 			world.Inputs().LeftClick().Set(entity, inputs.NewLeftClick(tile.NewClickEntityEvent()))
+		})
+		b.Register("name", func(entity ecs.EntityID, structTagValue string) {
+			world.Tile().Name().Set(entity, tile.NewName(structTagValue))
 		})
 		b.Register("tile", func(entity ecs.EntityID, structTagValue string) {
 			counter++

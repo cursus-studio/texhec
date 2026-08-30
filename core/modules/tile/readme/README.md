@@ -103,11 +103,11 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                               8            170             92            958
+Go                               8            179             93           1004
 GLSL                             3             31              2            112
 Markdown                         3             10              0             85
 -------------------------------------------------------------------------------
-SUM:                            14            211             94           1155
+SUM:                            14            220             95           1201
 -------------------------------------------------------------------------------
 ```
 ## TODO
@@ -117,8 +117,14 @@ Currently animated tiles aren't supported and there is a big chance that they wo
 ### type Service
 Type: `core/modules/tile.Service`
 
+#### method Service CachedLink
+Type: `func() engine/modules/ecs.ComponentArray[core/modules/tile.CachedLinkComponent]`
+
 #### method Service Component
 Type: `func() engine/modules/ecs.ComponentArray[core/modules/tile.Component]`
+
+#### method Service GetLink
+Type: `func(object engine/modules/ecs.EntityID) (source engine/modules/ecs.EntityID, ok bool)`
 
 #### method Service GetPos
 Type: `func(coords engine/modules/grid.Coords) engine/modules/transform.PosComponent`
@@ -131,6 +137,12 @@ Type: `func() engine/modules/grid.ServiceT[core/modules/tile.ID]`
 
 #### method Service Layer
 Type: `func() engine/modules/ecs.ComponentArray[core/modules/tile.LayerComponent]`
+
+#### method Service Link
+Type: `func() engine/modules/ecs.ComponentArray[core/modules/tile.LinkComponent]`
+
+#### method Service Name
+Type: `func() engine/modules/ecs.ComponentArray[core/modules/tile.NameComponent]`
 
 #### method Service NewBiomeAsset
 Type: `func(srcImages [6][]image.Image) (core/modules/tile.BiomeAsset, error)`
@@ -214,6 +226,24 @@ Type: `core/modules/tile.LayerComponent`
 #### property LayerComponent Z
 Type: `core/modules/tile.Coord`
 
+### type NameComponent
+Type: `core/modules/tile.NameComponent`
+
+#### property NameComponent Name
+Type: `string`
+
+### type LinkComponent
+Type: `core/modules/tile.LinkComponent`
+
+#### property LinkComponent UUID
+Type: `engine/modules/uuid.Component`
+
+### type CachedLinkComponent
+Type: `core/modules/tile.CachedLinkComponent`
+
+#### property CachedLinkComponent Entity
+Type: `engine/modules/ecs.EntityID`
+
 ### type SizeComponent
 Type: `core/modules/tile.SizeComponent`
 
@@ -292,6 +322,15 @@ Type: `func[Number golang.org/x/exp/constraints.Integer | golang.org/x/exp/const
 ### func NewLayer
 Type: `func[Number golang.org/x/exp/constraints.Integer | golang.org/x/exp/constraints.Float](z Number) core/modules/tile.LayerComponent`
 
+### func NewName
+Type: `func(name string) core/modules/tile.NameComponent`
+
+### func NewLink
+Type: `func(uuid engine/modules/uuid.Component) core/modules/tile.LinkComponent`
+
+### func NewCachedLink
+Type: `func(entity engine/modules/ecs.EntityID) core/modules/tile.CachedLinkComponent`
+
 ### func NewSize
 Type: `func[Number golang.org/x/exp/constraints.Integer](x Number, y Number) core/modules/tile.SizeComponent`
 
@@ -327,16 +366,25 @@ Type: `func(deployed engine/modules/ecs.EntityID) core/modules/tile.ClickBluepri
 
 `core/modules/tile`:
   - `core/modules/tile.BiomeAsset`
+  - `core/modules/tile.CachedLinkComponent`
   - `core/modules/tile.Component`
   - `core/modules/tile.Coord`
+  - `core/modules/tile.Entity`
   - `core/modules/tile.Grid`
   - `core/modules/tile.ID`
   - `core/modules/tile.Images`
   - `core/modules/tile.Layer`
   - `core/modules/tile.LayerComponent`
+  - `core/modules/tile.Link`
+  - `core/modules/tile.LinkComponent`
+  - `core/modules/tile.Name`
+  - `core/modules/tile.NameComponent`
   - `core/modules/tile.NewBiomeAsset`
+  - `core/modules/tile.NewCachedLink`
   - `core/modules/tile.NewClickEntityEvent`
   - `core/modules/tile.NewLayer`
+  - `core/modules/tile.NewLink`
+  - `core/modules/tile.NewName`
   - `core/modules/tile.NewRot`
   - `core/modules/tile.NewSize`
   - `core/modules/tile.NewTile`
@@ -348,6 +396,7 @@ Type: `func(deployed engine/modules/ecs.EntityID) core/modules/tile.ClickBluepri
   - `core/modules/tile.Service`
   - `core/modules/tile.Size`
   - `core/modules/tile.SizeComponent`
+  - `core/modules/tile.UUID`
   - `core/modules/tile.X`
   - `core/modules/tile.Y`
   - `core/modules/tile.Z`
@@ -472,6 +521,11 @@ Type: `func(deployed engine/modules/ecs.EntityID) core/modules/tile.ClickBluepri
 
 `engine/modules/typeregistry/pkg`:
   - `engine/modules/typeregistry/pkg.PkgT`
+
+`engine/modules/uuid`:
+  - `engine/modules/uuid.Component`
+  - `engine/modules/uuid.Entity`
+  - `engine/modules/uuid.ID`
 
 ### Third Party
 - `github.com/go-gl/gl/v4.5-core/gl`

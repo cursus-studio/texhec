@@ -38,8 +38,8 @@ func (s *service) Health() ecs.ComponentArray[attack.HealthComponent] { return s
 func (s *service) Damage() ecs.ComponentArray[attack.DamageComponent] { return s.damage }
 
 func (s *service) FullHealth(entity ecs.EntityID) (attack.HealthComponent, bool) {
-	if link, ok := s.Metadata().Link().Get(entity); ok {
-		return s.health.Get(link.Entity)
+	if linkEntity, ok := s.Tile().GetLink(entity); ok {
+		return s.health.Get(linkEntity)
 	}
 	return s.zeroHealth, false
 }

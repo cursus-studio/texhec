@@ -35,17 +35,17 @@ func (s *service) OnBlueprintMissingUpsert(entity ecs.EntityID) {
 		return
 	}
 
-	link, ok := s.Metadata().Link().Get(canDeploy.Entity)
+	linkEntity, ok := s.Tile().GetLink(canDeploy.Entity)
 	if !ok {
 		return
 	}
 
-	deployed, _ := s.Deploy().Component().Get(link.Entity)
+	deployed, _ := s.Deploy().Component().Get(linkEntity)
 	if len(deployed.Deployable) == 0 {
 		return
 	}
 	for _, deployed := range deployed.Deployable {
-		name, ok := s.Metadata().Name().Get(deployed)
+		name, ok := s.Tile().Name().Get(deployed)
 		if !ok {
 			s.Logger().Log(errors.New("expected entity to have name component"))
 			continue

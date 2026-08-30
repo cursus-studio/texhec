@@ -32,7 +32,6 @@ It follows **DOD** (data oriented design) and stores all game objects using **EC
 - [layout](/engine/modules/layout/readme/README.md)
 - [logger](/engine/modules/logger/readme/README.md)
 - [loop](/engine/modules/loop/readme/README.md)
-- [metadata](/engine/modules/metadata/readme/README.md)
 - [netsync](/engine/modules/netsync/readme/README.md)
 - [noise](/engine/modules/noise/readme/README.md)
 - [prototype](/engine/modules/prototype/readme/README.md)
@@ -60,11 +59,11 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                             288           3132            964          14852
+Go                             285           3111            959          14761
 Markdown                        22             51              0            241
 GLSL                             5             35              4             99
 -------------------------------------------------------------------------------
-SUM:                           315           3218            968          15192
+SUM:                           312           3197            963          15101
 -------------------------------------------------------------------------------
 ```
 ## Dependencies

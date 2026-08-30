@@ -8,10 +8,10 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                               3             17              3             73
+Go                               3             17              3             85
 Markdown                         2              0              0              3
 -------------------------------------------------------------------------------
-SUM:                             5             17              3             76
+SUM:                             5             17              3             88
 -------------------------------------------------------------------------------
 ```
 ## TODO
@@ -32,9 +32,18 @@ returns nil if object is controled
 #### method Service Owner
 Type: `func() engine/modules/ecs.ComponentArray[core/modules/player.OwnerComponent]`
 
+#### method Service Player
+Type: `func() engine/modules/ecs.ComponentArray[core/modules/player.PlayerComponent]`
+
+### type PlayerComponent
+Type: `core/modules/player.PlayerComponent`
+marks that player is performing a move
+
+#### property PlayerComponent Name
+Type: `string`
+
 ### type ActingPlayerComponent
 Type: `core/modules/player.ActingPlayerComponent`
-marks that player is performing a move
 
 ### type OwnerComponent
 Type: `core/modules/player.OwnerComponent`
@@ -53,6 +62,9 @@ Type: `error`
 Type: `error`
 
 ## Functions
+### func NewPlayer
+Type: `func(name string) core/modules/player.PlayerComponent`
+
 ### func NewActingPlayer
 Type: `func() core/modules/player.ActingPlayerComponent`
 
@@ -63,15 +75,14 @@ Type: `func(owner engine/modules/ecs.EntityID) core/modules/player.OwnerComponen
 ## Dependencies
 `core/game`:
   - `core/game.GameWorld`
-  - `core/game.Player`
 
 `core/modules/player`:
-  - `core/modules/player.ActingPlayer`
   - `core/modules/player.ActingPlayerComponent`
   - `core/modules/player.ErrRequiresControl`
   - `core/modules/player.ErrRequiresOwner`
   - `core/modules/player.Owner`
   - `core/modules/player.OwnerComponent`
+  - `core/modules/player.PlayerComponent`
   - `core/modules/player.Service`
 
 `engine/modules/ecs`:

@@ -10,6 +10,8 @@ import (
 
 var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 	pkgs := []ioc.Pkg{
+		typeregistrypkg.PkgT[player.PlayerComponent],
+		typeregistrypkg.PkgT[player.ActingPlayerComponent],
 		typeregistrypkg.PkgT[player.OwnerComponent],
 	}
 	for _, pkg := range pkgs {

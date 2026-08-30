@@ -12,17 +12,22 @@ var (
 )
 
 // marks that player is performing a move
+type PlayerComponent struct {
+	Name string
+}
 type ActingPlayerComponent struct{}
 type OwnerComponent struct {
 	Owner ecs.EntityID
 }
 
+func NewPlayer(name string) PlayerComponent      { return PlayerComponent{name} }
 func NewActingPlayer() ActingPlayerComponent     { return ActingPlayerComponent{} }
 func NewOwner(owner ecs.EntityID) OwnerComponent { return OwnerComponent{owner} }
 
 //
 
 type Service interface {
+	Player() ecs.ComponentArray[PlayerComponent]
 	ActingPlayer() ecs.ComponentArray[ActingPlayerComponent]
 	Owner() ecs.ComponentArray[OwnerComponent]
 
