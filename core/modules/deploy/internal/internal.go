@@ -13,6 +13,7 @@ import (
 	"engine/modules/inputs"
 	"engine/modules/loop"
 	"engine/modules/seed"
+	"engine/modules/uuid"
 
 	"github.com/ogiusek/events"
 	"github.com/ogiusek/ioc/v2"
@@ -75,7 +76,7 @@ func (s *service) Deploy(
 
 	// place
 	deployed := s.Prototype().Clone(blueprint)
-	s.UUID().Component().Remove(deployed)
+	s.UUID().Component().Set(deployed, uuid.New(s.UUID().NewUUID()))
 	s.Hierarchy().SetParent(deployed, worldEntity)
 
 	s.Player().Owner().Set(deployed, player.NewOwner(owner))
@@ -155,7 +156,7 @@ func (s *service) OnTick(loop.TickEvent) {
 
 		// place
 		deployed := s.Prototype().Clone(event.Blueprint)
-		s.UUID().Component().Remove(deployed)
+		s.UUID().Component().Set(deployed, uuid.New(s.UUID().NewUUID()))
 		s.Hierarchy().SetParent(deployed, worldEntity)
 		s.Player().Owner().Set(deployed, owner)
 		s.Obstruction().Deployed().Set(deployed, obstruction.NewDeployed())

@@ -8,9 +8,9 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                               3             46             14            251
+Go                               3             46             14            252
 -------------------------------------------------------------------------------
-SUM:                             3             46             14            251
+SUM:                             3             46             14            252
 -------------------------------------------------------------------------------
 ```
 ## Types
@@ -173,6 +173,11 @@ Type: `func(entity engine/modules/ecs.EntityID) core/modules/deploy.DestroyEvent
 `engine/modules/seed`:
   - `engine/modules/seed.ErrWorldCanHaveOneSeed`
   - `engine/modules/seed.WorldSeed`
+
+`engine/modules/uuid`:
+  - `engine/modules/uuid.Component`
+  - `engine/modules/uuid.New`
+  - `engine/modules/uuid.NewUUID`
 
 ### Third Party
 - `github.com/ogiusek/events`
