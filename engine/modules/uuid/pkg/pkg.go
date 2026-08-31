@@ -40,3 +40,16 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 		return internal.NewService(c)
 	})
 })
+
+func LinkPkgT[Wrapped any](b ioc.Builder) {
+	pkgs := []ioc.Pkg{
+		typeregistrypkg.PkgT[uuid.LinkUUIDComponent[Wrapped]],
+		typeregistrypkg.PkgT[uuid.LinkCacheComponent[Wrapped]],
+	}
+	for _, pkg := range pkgs {
+		pkg(b)
+	}
+	ioc.Register(b, func(c ioc.Dic) uuid.LinkService[Wrapped] {
+		return internal.NewLinkService[Wrapped](c)
+	})
+}

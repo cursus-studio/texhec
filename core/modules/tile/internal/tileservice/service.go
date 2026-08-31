@@ -8,14 +8,16 @@ import (
 	"engine/modules/grid"
 	"engine/modules/relation"
 	"engine/modules/transform"
+	"engine/modules/uuid"
 
 	"github.com/ogiusek/ioc/v2"
 )
 
 type service struct {
 	game.GameWorld   `inject:""`
-	TileGridService  grid.ServiceT[tile.ID]    `inject:""`
-	TileTypeRelation relation.Service[tile.ID] `inject:""`
+	TileGridService  grid.ServiceT[tile.ID]               `inject:""`
+	TileTypeRelation relation.Service[tile.ID]            `inject:""`
+	BlueprintLink    uuid.LinkService[tile.BlueprintLink] `inject:""`
 
 	ecs.SystemRegister
 	renderer ecs.SystemRegister
@@ -27,9 +29,7 @@ type service struct {
 	rot   ecs.ComponentArray[tile.RotComponent]
 	layer ecs.ComponentArray[tile.LayerComponent]
 
-	name       ecs.ComponentArray[tile.NameComponent]
-	link       ecs.ComponentArray[tile.LinkComponent]
-	cachedLink ecs.ComponentArray[tile.CachedLinkComponent]
+	name ecs.ComponentArray[tile.NameComponent]
 }
 
 func NewService(c ioc.Dic, system, renderer ecs.SystemRegister) tile.Service {
@@ -45,8 +45,6 @@ func NewService(c ioc.Dic, system, renderer ecs.SystemRegister) tile.Service {
 	s.layer = ecs.GetComponentArray[tile.LayerComponent](s.World())
 
 	s.name = ecs.GetComponentArray[tile.NameComponent](s.World())
-	s.link = ecs.GetComponentArray[tile.LinkComponent](s.World())
-	s.cachedLink = ecs.GetComponentArray[tile.CachedLinkComponent](s.World())
 
 	s.size.SetEmpty(tile.NewSize(1, 1))
 	s.layer.SetEmpty(tile.NewLayer(definitions.TileLayer))
@@ -69,24 +67,8 @@ func (s *service) Size() ecs.ComponentArray[tile.SizeComponent]   { return s.siz
 func (s *service) Rot() ecs.ComponentArray[tile.RotComponent]     { return s.rot }
 func (s *service) Layer() ecs.ComponentArray[tile.LayerComponent] { return s.layer }
 
-func (s *service) Name() ecs.ComponentArray[tile.NameComponent]             { return s.name }
-func (s *service) Link() ecs.ComponentArray[tile.LinkComponent]             { return s.link }
-func (s *service) CachedLink() ecs.ComponentArray[tile.CachedLinkComponent] { return s.cachedLink }
-func (s *service) GetLink(object ecs.EntityID) (source ecs.EntityID, ok bool) {
-	if cache, ok := s.cachedLink.Get(object); ok {
-		return cache.Entity, true
-	}
-	link, ok := s.link.Get(object)
-	if !ok {
-		return 0, false
-	}
-	entity, ok := s.UUID().Entity(link.UUID.ID)
-	if !ok {
-		return 0, false
-	}
-	s.cachedLink.Set(object, tile.NewCachedLink(entity))
-	return entity, true
-}
+func (s *service) Name() ecs.ComponentArray[tile.NameComponent] { return s.name }
+func (s *service) Link() uuid.LinkService[tile.BlueprintLink]   { return s.BlueprintLink }
 
 // NewBiomeAsset in other file
 

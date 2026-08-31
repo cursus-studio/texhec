@@ -15,6 +15,7 @@ import (
 	gridpkg "engine/modules/grid/pkg"
 	relationpkg "engine/modules/relation/pkg"
 	typeregistrypkg "engine/modules/typeregistry/pkg"
+	uuidpkg "engine/modules/uuid/pkg"
 	"fmt"
 	"image"
 	"os"
@@ -44,6 +45,7 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 			},
 			func(index tile.ID) uint32 { return uint32(index) },
 		),
+		uuidpkg.LinkPkgT[tile.BlueprintLink],
 
 		typeregistrypkg.PkgT[tile.Component],
 		typeregistrypkg.PkgT[tile.PosComponent],
@@ -52,8 +54,6 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 		typeregistrypkg.PkgT[tile.LayerComponent],
 
 		typeregistrypkg.PkgT[tile.NameComponent],
-		typeregistrypkg.PkgT[tile.LinkComponent],
-		typeregistrypkg.PkgT[tile.CachedLinkComponent],
 	}
 	for _, pkg := range pkgs {
 		pkg(b)

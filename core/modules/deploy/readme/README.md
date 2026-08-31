@@ -142,7 +142,6 @@ Type: `func(entity engine/modules/ecs.EntityID) core/modules/deploy.DestroyEvent
   - `core/modules/tile.Coord`
   - `core/modules/tile.ErrBlueprintIsMissingUUID`
   - `core/modules/tile.Link`
-  - `core/modules/tile.NewLink`
   - `core/modules/tile.NewPos`
   - `core/modules/tile.Pos`
   - `core/modules/tile.Size`

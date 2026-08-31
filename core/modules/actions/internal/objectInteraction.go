@@ -32,7 +32,7 @@ func (s *service) OnClickObject(event tile.ClickEntityEvent) {
 		return
 	}
 
-	linkEntity, ok := s.Tile().GetLink(event.Entity)
+	linkEntity, ok := s.Tile().Link().Get(event.Entity)
 	if !ok {
 		s.Logger().Warn(fmt.Errorf("cannot click entity which doesn't have original entity"))
 		return

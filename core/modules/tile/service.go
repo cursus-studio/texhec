@@ -71,12 +71,9 @@ func NewLayer[Number constraints.Integer | constraints.Float](z Number) LayerCom
 //
 
 type NameComponent struct{ Name string }
-type LinkComponent struct{ UUID uuid.Component }       // link to object
-type CachedLinkComponent struct{ Entity ecs.EntityID } // cached link to object
+type BlueprintLink struct{}
 
-func NewName(name string) NameComponent                     { return NameComponent{name} }
-func NewLink(uuid uuid.Component) LinkComponent             { return LinkComponent{uuid} }
-func NewCachedLink(entity ecs.EntityID) CachedLinkComponent { return CachedLinkComponent{entity} }
+func NewName(name string) NameComponent { return NameComponent{name} }
 
 //
 
@@ -168,10 +165,7 @@ type Service interface {
 	Layer() ecs.ComponentArray[LayerComponent]
 
 	Name() ecs.ComponentArray[NameComponent]
-	Link() ecs.ComponentArray[LinkComponent]
-	CachedLink() ecs.ComponentArray[CachedLinkComponent]
-
-	GetLink(object ecs.EntityID) (source ecs.EntityID, ok bool)
+	Link() uuid.LinkService[BlueprintLink]
 
 	// src images should be:
 	// - 1111
