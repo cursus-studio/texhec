@@ -71,10 +71,14 @@ func (s *service) Deploy(
 	if !ok {
 		s.Logger().Fatal(tile.ErrBlueprintIsMissingUUID)
 	}
+	ownerUUID, ok := s.UUID().Component().Get(owner)
+	if !ok {
+		s.Logger().Fatal(player.ErrRequiresOwner)
+	}
 
 	// place
 	deployed := s.World().NewEntity()
-	s.Player().Owner().Set(deployed, player.NewOwner(owner))
+	s.Player().Owner().SetUUID(deployed, ownerUUID.ID)
 	s.Obstruction().Deployed().Set(deployed, obstruction.NewDeployed())
 	s.Tile().Link().SetUUID(deployed, blueprintUUID.ID)
 	s.Tile().Pos().Set(deployed, pos)
@@ -136,22 +140,26 @@ func (s *service) OnTick(loop.TickEvent) {
 
 		// pay
 		if cost, ok := s.Economy().Cost().Get(event.Blueprint); ok {
-			wallet, ok := s.Economy().Wallet().Get(owner.Owner)
+			wallet, ok := s.Economy().Wallet().Get(owner)
 			if !ok || cost.Cost > wallet.Money {
 				s.Logger().Log(economy.ErrToExpensive)
 				continue
 			}
-			s.Economy().Wallet().Set(owner.Owner, wallet.Pay(cost))
+			s.Economy().Wallet().Set(owner, wallet.Pay(cost))
 		}
 
 		blueprintUUID, ok := s.UUID().Component().Get(event.Blueprint)
 		if !ok {
 			s.Logger().Fatal(tile.ErrBlueprintIsMissingUUID)
 		}
+		ownerUUID, ok := s.UUID().Component().Get(event.By)
+		if !ok {
+			s.Logger().Fatal(player.ErrRequiresOwner)
+		}
 
 		// place
 		deployed := s.World().NewEntity()
-		s.Player().Owner().Set(deployed, owner)
+		s.Player().Owner().SetUUID(deployed, ownerUUID.ID)
 		s.Obstruction().Deployed().Set(deployed, obstruction.NewDeployed())
 		s.Tile().Link().SetUUID(deployed, blueprintUUID.ID)
 		s.Tile().Pos().Set(deployed, tile.NewPos(event.Coords.Coords()))

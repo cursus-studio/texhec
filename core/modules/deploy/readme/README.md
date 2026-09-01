@@ -8,9 +8,9 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                               3             46             14            246
+Go                               3             46             14            254
 -------------------------------------------------------------------------------
-SUM:                             3             46             14            246
+SUM:                             3             46             14            254
 -------------------------------------------------------------------------------
 ```
 ## Types
@@ -124,7 +124,6 @@ Type: `func(entity engine/modules/ecs.EntityID) core/modules/deploy.DestroyEvent
 
 `core/modules/player`:
   - `core/modules/player.ErrRequiresOwner`
-  - `core/modules/player.NewOwner`
   - `core/modules/player.Owner`
 
 `core/modules/reach`:

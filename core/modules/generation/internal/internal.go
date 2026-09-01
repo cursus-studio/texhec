@@ -2,7 +2,6 @@ package internal
 
 import (
 	"core/game"
-	"core/modules/economy"
 	"core/modules/generation"
 	"core/modules/player"
 	"core/modules/tile"
@@ -81,9 +80,7 @@ func (s *service) GetPlayer(worldGenerationEntity ecs.EntityID, name string) ecs
 		}
 	}
 	playerEntity := s.World().NewEntity()
-	s.Hierarchy().SetParent(playerEntity, worldGenerationEntity)
 	s.Player().Player().Set(playerEntity, player.NewPlayer(name))
-	s.Economy().Wallet().Set(playerEntity, economy.NewWallet(0))
 	return playerEntity
 }
 
