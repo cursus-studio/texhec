@@ -68,7 +68,7 @@ func (s *service) Rot() ecs.ComponentArray[tile.RotComponent]     { return s.rot
 func (s *service) Layer() ecs.ComponentArray[tile.LayerComponent] { return s.layer }
 
 func (s *service) Name() ecs.ComponentArray[tile.NameComponent] { return s.name }
-func (s *service) Link() uuid.LinkService[tile.BlueprintLink]   { return s.BlueprintLink }
+func (s *service) Blueprint() uuid.LinkService[tile.BlueprintLink]   { return s.BlueprintLink }
 
 // NewBiomeAsset in other file
 

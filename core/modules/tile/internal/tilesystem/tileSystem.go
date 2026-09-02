@@ -33,7 +33,7 @@ func NewSystem(c ioc.Dic) ecs.SystemRegister {
 		s.Tile().Size().OnUpsert(s.OnTilePosSizeRotUpsert)
 		s.Tile().Rot().OnUpsert(s.OnTilePosSizeRotUpsert)
 
-		s.Tile().Link().UUID().OnUpsert(s.OnLinkUpsert)
+		s.Tile().Blueprint().UUID().OnUpsert(s.OnLinkUpsert)
 		s.Obstruction().Deployed().OnUpsert(s.OnObstructionUpsert)
 
 		//
@@ -80,7 +80,7 @@ func (s *system) OnLinkUpsert(entity ecs.EntityID) {
 	if !ok {
 		return
 	}
-	linkEntity, ok := s.Tile().Link().Get(entity)
+	linkEntity, ok := s.Tile().Blueprint().Get(entity)
 	if !ok {
 		return
 	}

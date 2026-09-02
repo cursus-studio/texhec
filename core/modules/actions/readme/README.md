@@ -247,12 +247,12 @@ Type: `func(entity engine/modules/ecs.EntityID) core/modules/actions.BlueprintIn
   - `core/modules/player.ErrRequiresToBeEnemy`
 
 `core/modules/tile`:
+  - `core/modules/tile.Blueprint`
   - `core/modules/tile.ClickBlueprintEvent`
   - `core/modules/tile.ClickEntityEvent`
   - `core/modules/tile.Entity`
   - `core/modules/tile.ErrBlueprintIsMissingUUID`
   - `core/modules/tile.Layer`
-  - `core/modules/tile.Link`
   - `core/modules/tile.Name`
   - `core/modules/tile.NewClickBlueprintEvent`
   - `core/modules/tile.NewLayer`

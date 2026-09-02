@@ -165,7 +165,7 @@ type Service interface {
 	Layer() ecs.ComponentArray[LayerComponent]
 
 	Name() ecs.ComponentArray[NameComponent]
-	Link() uuid.LinkService[BlueprintLink]
+	Blueprint() uuid.LinkService[BlueprintLink]
 
 	// src images should be:
 	// - 1111

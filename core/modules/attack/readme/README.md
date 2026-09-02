@@ -128,7 +128,7 @@ Type: `func(damage core/modules/attack.Health) core/modules/attack.DamageCompone
   - `core/modules/reach/pkg.PkgT`
 
 `core/modules/tile`:
-  - `core/modules/tile.Link`
+  - `core/modules/tile.Blueprint`
   - `core/modules/tile.NewPos`
   - `core/modules/tile.Pos`
   - `core/modules/tile.Size`

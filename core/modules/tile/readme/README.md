@@ -117,6 +117,9 @@ Currently animated tiles aren't supported and there is a big chance that they wo
 ### type Service
 Type: `core/modules/tile.Service`
 
+#### method Service Blueprint
+Type: `func() engine/modules/uuid.LinkService[core/modules/tile.BlueprintLink]`
+
 #### method Service Component
 Type: `func() engine/modules/ecs.ComponentArray[core/modules/tile.Component]`
 
@@ -131,9 +134,6 @@ Type: `func() engine/modules/grid.ServiceT[core/modules/tile.ID]`
 
 #### method Service Layer
 Type: `func() engine/modules/ecs.ComponentArray[core/modules/tile.LayerComponent]`
-
-#### method Service Link
-Type: `func() engine/modules/uuid.LinkService[core/modules/tile.BlueprintLink]`
 
 #### method Service Name
 Type: `func() engine/modules/ecs.ComponentArray[core/modules/tile.NameComponent]`
@@ -349,6 +349,7 @@ Type: `func(deployed engine/modules/ecs.EntityID) core/modules/tile.ClickBluepri
 
 `core/modules/tile`:
   - `core/modules/tile.BiomeAsset`
+  - `core/modules/tile.Blueprint`
   - `core/modules/tile.BlueprintLink`
   - `core/modules/tile.Component`
   - `core/modules/tile.Coord`
@@ -357,7 +358,6 @@ Type: `func(deployed engine/modules/ecs.EntityID) core/modules/tile.ClickBluepri
   - `core/modules/tile.Images`
   - `core/modules/tile.Layer`
   - `core/modules/tile.LayerComponent`
-  - `core/modules/tile.Link`
   - `core/modules/tile.Name`
   - `core/modules/tile.NameComponent`
   - `core/modules/tile.NewBiomeAsset`

@@ -124,7 +124,7 @@ func (s *service) OnCoordsMissingUpsert(entity ecs.EntityID) {
 	if !ok {
 		s.Logger().Fatal(tile.ErrBlueprintIsMissingUUID)
 	}
-	s.Tile().Link().SetUUID(entity, propertiesUUID.ID)
+	s.Tile().Blueprint().SetUUID(entity, propertiesUUID.ID)
 	s.Tile().Layer().Set(entity, tile.NewLayer(definitions.ObjectPlaceholderLayer))
 
 	if !coordsCursor.CustomImage {
