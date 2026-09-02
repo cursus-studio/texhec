@@ -88,6 +88,8 @@ func (s *system) OnLinkUpsert(entity ecs.EntityID) {
 	s.Prototype().CloneTo(linkEntity, entity)
 	if ok {
 		s.UUID().Component().Set(entity, uuid)
+	} else {
+		s.UUID().Component().Remove(entity)
 	}
 
 	s.Hierarchy().SetParent(entity, worldEntity)
@@ -101,7 +103,9 @@ func (s *system) OnLinkUpsert(entity ecs.EntityID) {
 
 // this is for deployed objects
 func (s *system) OnObstructionUpsert(entity ecs.EntityID) {
-	s.UUID().Component().Set(entity, uuid.New(s.UUID().NewUUID()))
+	if _, ok := s.UUID().Component().Get(entity); !ok {
+		s.UUID().Component().Set(entity, uuid.New(s.UUID().NewUUID()))
+	}
 	s.Collider().Component().Set(entity, collider.NewCollider(s.Definitions().Assets().SquareCollider))
 	s.Inputs().LeftClick().Set(entity, inputs.NewLeftClick(tile.NewClickEntityEvent()))
 }
