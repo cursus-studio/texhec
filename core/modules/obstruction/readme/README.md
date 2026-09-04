@@ -6,7 +6,7 @@ defines how obstruction map is stored and accessed
 ```
 $ go test ./... -bench=.
 PASS
-ok  	core/modules/obstruction/test	0.007s
+ok  	core/modules/obstruction/test	0.013s
 ```
 ## Lines of code
 ```
@@ -14,9 +14,9 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                               6             56             11            327
+Go                               6             57             11            315
 -------------------------------------------------------------------------------
-SUM:                             6             56             11            327
+SUM:                             6             57             11            315
 -------------------------------------------------------------------------------
 ```
 ## Types
@@ -101,7 +101,6 @@ Type: `func() core/modules/obstruction.DeployedComponent`
   - `core/modules/obstruction.Component`
   - `core/modules/obstruction.Deployed`
   - `core/modules/obstruction.DeployedComponent`
-  - `core/modules/obstruction.ErrPositionIsOccupied`
   - `core/modules/obstruction.Grid`
   - `core/modules/obstruction.NewAABB`
   - `core/modules/obstruction.NewObstruction`

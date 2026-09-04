@@ -14,6 +14,7 @@ type UUIDForwardRecording struct {
 type UUIDBackwardRecording struct {
 	Config          record.Config
 	WorldCopyArrays []ecs.AnyComponentArray
+	EntitiesOrder   []uuid.UUID
 	Entities        map[uuid.UUID][]any
 }
 
@@ -55,6 +56,7 @@ func (t *uuidKeyedRecorder) GetState(config record.Config) record.UUIDRecording 
 }
 
 func (t *uuidKeyedRecorder) StartBackwardsRecording(config record.Config) record.UUIDRecordingID {
+	t.WarmUp().WarmUp()
 	t.mutex.Lock()
 	defer t.mutex.Unlock()
 	t.SyncBackwardsRecordingState()
@@ -76,6 +78,7 @@ func (t *uuidKeyedRecorder) StartBackwardsRecording(config record.Config) record
 	return id
 }
 func (t *uuidKeyedRecorder) StartRecording(config record.Config) record.UUIDRecordingID {
+	t.WarmUp().WarmUp()
 	t.mutex.Lock()
 	defer t.mutex.Unlock()
 	t.SyncBackwardsRecordingState()
@@ -95,6 +98,7 @@ func (t *uuidKeyedRecorder) StartRecording(config record.Config) record.UUIDReco
 	return id
 }
 func (t *uuidKeyedRecorder) Stop(id record.UUIDRecordingID) (record.UUIDRecording, bool) {
+	t.WarmUp().WarmUp()
 	t.mutex.Lock()
 	defer t.mutex.Unlock()
 
@@ -117,7 +121,10 @@ func (t *uuidKeyedRecorder) Stop(id record.UUIDRecordingID) (record.UUIDRecordin
 		t.backwardsRecordings.Remove(id)
 		t.holes.Add(id)
 
-		return record.UUIDRecording{Entities: recording.Entities}, true
+		return record.UUIDRecording{
+			EntitiesOrder: recording.EntitiesOrder,
+			Entities:      recording.Entities,
+		}, true
 	}
 	return record.UUIDRecording{}, false
 }
@@ -129,7 +136,8 @@ func (t *uuidKeyedRecorder) Apply(config record.Config, recordings ...record.UUI
 	}
 
 	for _, recording := range recordings {
-		for uuidValue, components := range recording.Entities {
+		for _, uuidValue := range recording.EntitiesOrder {
+			components := recording.Entities[uuidValue]
 			entity, ok := t.EngineWorld.UUID().Entity(uuidValue)
 			if !ok && components != nil {
 				entity = t.World().NewEntity()
@@ -177,6 +185,7 @@ func (t *uuidKeyedRecorder) getStateFor(config record.Config, entities []ecs.Ent
 			}
 			components = append(components, v)
 		}
+		recording.EntitiesOrder = append(recording.EntitiesOrder, uuidComponent.ID)
 		recording.Entities[uuidComponent.ID] = components
 	}
 

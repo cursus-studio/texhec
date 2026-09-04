@@ -54,6 +54,7 @@ func (t *entityKeyedRecorder) GetState(config record.Config) record.Recording {
 	return t.getStateFor(config, entities.GetIndices())
 }
 func (t *entityKeyedRecorder) StartBackwardsRecording(config record.Config) record.RecordingID {
+	t.WarmUp().WarmUp()
 	t.mutex.Lock()
 	defer t.mutex.Unlock()
 	t.SyncBackwardsRecordingState()
@@ -75,6 +76,7 @@ func (t *entityKeyedRecorder) StartBackwardsRecording(config record.Config) reco
 	return id
 }
 func (t *entityKeyedRecorder) StartRecording(config record.Config) record.RecordingID {
+	t.WarmUp().WarmUp()
 	t.mutex.Lock()
 	defer t.mutex.Unlock()
 
@@ -93,6 +95,7 @@ func (t *entityKeyedRecorder) StartRecording(config record.Config) record.Record
 	return id
 }
 func (t *entityKeyedRecorder) Stop(id record.RecordingID) (record.Recording, bool) {
+	t.WarmUp().WarmUp()
 	t.mutex.Lock()
 	defer t.mutex.Unlock()
 	if recording, ok := t.forwardRecordings.Get(id); ok {

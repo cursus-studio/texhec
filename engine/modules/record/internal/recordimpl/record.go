@@ -131,6 +131,7 @@ func (t *service) synchronizeArrayState(
 				components = append(components, component)
 			}
 		saveUUID:
+			recording.EntitiesOrder = append(recording.EntitiesOrder, uuid.ID)
 			recording.Entities[uuid.ID] = components
 		}
 	}
