@@ -110,98 +110,98 @@ func NewService(c ioc.Dic, config config.Config) *Service {
 // public methods
 
 // doesn't send event to server
-func (t *Service) BeforeEventRecord(event any) {
-	clientConn := t.getConnection()
+func (s *Service) BeforeEventRecord(event any) {
+	clientConn := s.getConnection()
 	if clientConn == nil {
 		return
 	}
 
-	if !t.recordNextEvent {
-		t.recordNextEvent = true
+	if !s.recordNextEvent {
+		s.recordNextEvent = true
 		return
 	}
 
-	if len(t.predictions) > t.MaxPredictions {
-		t.Logger().Log(ErrExceededPredictions)
-		t.undoPredictions()
+	if len(s.predictions) > s.MaxPredictions {
+		s.Logger().Log(ErrExceededPredictions)
+		s.undoPredictions()
 		// reconciliate
 		if err := clientConn.Send(clienttypes.FetchStateDTO{}); err != nil {
-			t.Logger().Log(err)
+			s.Logger().Log(err)
 		}
 		return
 	}
 
-	t.recordingID = t.Record().UUID().StartBackwardsRecording(t.RecordConfig)
-	t.recordedPrediction = &recordedPrediction{
+	s.recordingID = s.Record().UUID().StartBackwardsRecording(s.RecordConfig)
+	s.recordedPrediction = &recordedPrediction{
 		PredictedEvent: clienttypes.PredictedEvent{
-			ID:    t.UUID().NewUUID(),
+			ID:    s.UUID().NewUUID(),
 			Event: event,
 		},
 	}
 }
 
-func (t *Service) BeforeEvent(event any) {
-	clientConn := t.getConnection()
+func (s *Service) BeforeEvent(event any) {
+	clientConn := s.getConnection()
 	if clientConn == nil {
 		return
 	}
-	t.BeforeEventRecord(event)
-	if t.recordedPrediction == nil {
+	s.BeforeEventRecord(event)
+	if s.recordedPrediction == nil {
 		return
 	}
 
-	dto := clienttypes.EmitEventDTO(t.recordedPrediction.PredictedEvent)
+	dto := clienttypes.EmitEventDTO(s.recordedPrediction.PredictedEvent)
 	if err := clientConn.Send(dto); err != nil {
-		t.Logger().Log(err)
+		s.Logger().Log(err)
 	}
 }
 
-func (t *Service) AfterEvent(event any) {
-	conn := t.getConnection()
+func (s *Service) AfterEvent(event any) {
+	conn := s.getConnection()
 	if conn == nil {
 		return
 	}
 
-	if t.recordedPrediction == nil {
+	if s.recordedPrediction == nil {
 		return
 	}
 
-	recording, ok := t.Record().UUID().Stop(t.recordingID)
-	t.recordingID = 0
+	recording, ok := s.Record().UUID().Stop(s.recordingID)
+	s.recordingID = 0
 	if !ok {
 		return
 	}
 	newPrediction := savedPrediction{
-		PredictedEvent: t.recordedPrediction.PredictedEvent,
+		PredictedEvent: s.recordedPrediction.PredictedEvent,
 		Snapshot:       recording,
 	}
-	t.recordedPrediction = nil
+	s.recordedPrediction = nil
 
-	t.predictions = append(t.predictions, newPrediction)
+	s.predictions = append(s.predictions, newPrediction)
 }
 
-func (t *Service) OnTransparentEvent(event any) {
-	if t.receivedTransparentEvent {
-		t.receivedTransparentEvent = false
+func (s *Service) OnTransparentEvent(event any) {
+	if s.receivedTransparentEvent {
+		s.receivedTransparentEvent = false
 		return
 	}
-	conn := t.getConnection()
+	conn := s.getConnection()
 	if conn == nil {
 		return
 	}
 
-	t.sentTransparentEvent = true
+	s.sentTransparentEvent = true
 	err := conn.Send(clienttypes.TransparentEventDTO{Event: event})
-	t.Logger().Log(err)
+	s.Logger().Log(err)
 }
 
-func (t *Service) ListenSendChange(dto servertypes.SendChangeDTO) {
-	conn := t.getConnection()
+func (s *Service) ListenSendChange(dto servertypes.SendChangeDTO) {
+	conn := s.getConnection()
 	if conn == nil {
 		return
 	}
 	if dto.Error != nil {
-		predictedEvents := t.undoPredictions()
+		predictedEvents := s.undoPredictions()
 		// reApplied events are events without applied event
 		reEmitedEvents := make([]clienttypes.PredictedEvent, 0, len(predictedEvents))
 		for _, predictedEvent := range predictedEvents {
@@ -209,18 +209,18 @@ func (t *Service) ListenSendChange(dto servertypes.SendChangeDTO) {
 				reEmitedEvents = append(reEmitedEvents, predictedEvent)
 			}
 		}
-		t.applyPredictedEvents(reEmitedEvents)
-		t.Logger().Log(dto.Error)
+		s.applyPredictedEvents(reEmitedEvents)
+		s.Logger().Log(dto.Error)
 		return
 	}
 	// check is event predicted. if is then remove first event from queue
 	// if isn't then undo predictions, emit server event(as not recordable), emit all predicted events again
-	if len(t.predictions) == 0 {
-		t.Record().UUID().Apply(t.RecordConfig, dto.Changes)
+	if len(s.predictions) == 0 {
+		s.Record().UUID().Apply(s.RecordConfig, dto.Changes)
 		return
 	}
-	if t.predictions[0].PredictedEvent.ID == dto.EventID {
-		t.predictions = t.predictions[1:]
+	if s.predictions[0].PredictedEvent.ID == dto.EventID {
+		s.predictions = s.predictions[1:]
 		return
 		// TODO later. add test is prediction correct
 		// replace this with state comparer for first prediction
@@ -234,8 +234,8 @@ func (t *Service) ListenSendChange(dto servertypes.SendChangeDTO) {
 		// 	t.predictions = t.predictions[1:]
 		// }
 	}
-	predictedEvents := t.undoPredictions()
-	t.Record().UUID().Apply(t.RecordConfig, dto.Changes)
+	predictedEvents := s.undoPredictions()
+	s.Record().UUID().Apply(s.RecordConfig, dto.Changes)
 	// reApplied events are events without applied event
 	reEmitedEvents := make([]clienttypes.PredictedEvent, 0, len(predictedEvents))
 	for _, predictedEvent := range predictedEvents {
@@ -243,7 +243,7 @@ func (t *Service) ListenSendChange(dto servertypes.SendChangeDTO) {
 			reEmitedEvents = append(reEmitedEvents, predictedEvent)
 		}
 	}
-	t.applyPredictedEvents(reEmitedEvents)
+	s.applyPredictedEvents(reEmitedEvents)
 }
 
 // reconciliate
@@ -262,54 +262,54 @@ func (s *Service) ListenSendState(dto servertypes.SendStateDTO) {
 	s.Record().UUID().Apply(s.RecordConfig, dto.State)
 }
 
-func (t *Service) ListenTransparentEvent(dto servertypes.TransparentEventDTO) {
-	if t.sentTransparentEvent {
-		t.sentTransparentEvent = false
+func (s *Service) ListenTransparentEvent(dto servertypes.TransparentEventDTO) {
+	if s.sentTransparentEvent {
+		s.sentTransparentEvent = false
 		return
 	}
 	if dto.Error != nil {
-		t.Logger().Log(dto.Error)
+		s.Logger().Log(dto.Error)
 		return
 	}
-	t.receivedTransparentEvent = true
-	events.EmitAny(t.Events(), dto.Event)
+	s.receivedTransparentEvent = true
+	events.EmitAny(s.Events(), dto.Event)
 }
 
 // private methods
 
-func (t *Service) undoPredictions() []clienttypes.PredictedEvent {
+func (s *Service) undoPredictions() []clienttypes.PredictedEvent {
 	// add events to the list
 	var unDoneEvents []clienttypes.PredictedEvent
-	snapshots := make([]record.UUIDRecording, len(t.predictions))
-	for _, prediction := range t.predictions {
+	snapshots := make([]record.UUIDRecording, len(s.predictions))
+	for _, prediction := range s.predictions {
 		unDoneEvents = append(unDoneEvents, prediction.PredictedEvent)
 		// snapshots = append([]record.UUIDRecording{prediction.Snapshot}, snapshots...)
 		snapshots = append(snapshots, prediction.Snapshot)
 	}
-	t.Record().UUID().Apply(t.RecordConfig, snapshots...)
-	t.predictions = nil
+	s.Record().UUID().Apply(s.RecordConfig, snapshots...)
+	s.predictions = nil
 	return unDoneEvents
 }
 
-func (t *Service) applyPredictedEvents(predictedEvents []clienttypes.PredictedEvent) {
+func (s *Service) applyPredictedEvents(predictedEvents []clienttypes.PredictedEvent) {
 	for _, predictedEvent := range predictedEvents[1:] {
-		t.recordNextEvent = false
-		events.EmitAny(t.Events(), predictedEvent.Event)
+		s.recordNextEvent = false
+		events.EmitAny(s.Events(), predictedEvent.Event)
 	}
 }
 
-func (t *Service) getConnection() connection.Conn {
+func (s *Service) getConnection() connection.Conn {
 	var conn connection.Conn
-	if entities := t.NetSync().Server().GetEntities(); len(entities) == 1 {
+	if entities := s.NetSync().Server().GetEntities(); len(entities) == 1 {
 		server := entities[0]
-		comp, ok := t.Connection().Component().Get(server)
+		comp, ok := s.Connection().Component().Get(server)
 		if ok {
 			conn = comp.Conn()
 		}
 	}
 	if conn == nil { // isn't client clear all client data
-		t.recordedPrediction = nil
-		t.predictions = nil
+		s.recordedPrediction = nil
+		s.predictions = nil
 	}
 	return conn
 }

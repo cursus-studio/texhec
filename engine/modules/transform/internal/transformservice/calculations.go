@@ -7,19 +7,19 @@ import (
 	"github.com/go-gl/mathgl/mgl32"
 )
 
-func (t *service) GetRelativeParentPos(entity ecs.EntityID) mgl32.Vec3 {
-	parent, ok := t.Hierarchy().Component().Get(entity)
+func (s *service) GetRelativeParentPos(entity ecs.EntityID) mgl32.Vec3 {
+	parent, ok := s.Hierarchy().Component().Get(entity)
 	if !ok {
 		return mgl32.Vec3{}
 	}
-	parentMask, _ := t.InheritMaskArray.Get(entity)
+	parentMask, _ := s.InheritMaskArray.Get(entity)
 	if parentMask.RelativeMask&transform.RelativePos == 0 {
 		return mgl32.Vec3{}
 	}
-	parentPos, _ := t.AbsolutePosArray.Get(parent.Parent)
-	parentSize, _ := t.AbsoluteSizeArray.Get(parent.Parent)
-	parentPivot, _ := t.ParentPivotPointArray.Get(entity)
-	parentPivot.Point = parentPivot.Point.Sub(t.defaultParentPivot.Point)
+	parentPos, _ := s.AbsolutePosArray.Get(parent.Parent)
+	parentSize, _ := s.AbsoluteSizeArray.Get(parent.Parent)
+	parentPivot, _ := s.ParentPivotPointArray.Get(entity)
+	parentPivot.Point = parentPivot.Point.Sub(s.defaultParentPivot.Point)
 	return parentPos.Pos.Add(mgl32.Vec3{
 		parentSize.Size[0] * parentPivot.Point[0],
 		parentSize.Size[1] * parentPivot.Point[1],
@@ -27,12 +27,12 @@ func (t *service) GetRelativeParentPos(entity ecs.EntityID) mgl32.Vec3 {
 	})
 }
 
-func (t *service) GetPivotPos(entity ecs.EntityID, size transform.AbsoluteSizeComponent) mgl32.Vec3 {
-	pivot, _ := t.PivotPointArray.Get(entity)
-	if pivot == t.defaultPivot {
+func (s *service) GetPivotPos(entity ecs.EntityID, size transform.AbsoluteSizeComponent) mgl32.Vec3 {
+	pivot, _ := s.PivotPointArray.Get(entity)
+	if pivot == s.defaultPivot {
 		return mgl32.Vec3{}
 	}
-	pivot.Point = pivot.Point.Sub(t.defaultPivot.Point)
+	pivot.Point = pivot.Point.Sub(s.defaultPivot.Point)
 	return mgl32.Vec3{
 		size.Size[0] * (-pivot.Point[0]),
 		size.Size[1] * (-pivot.Point[1]),
@@ -42,29 +42,29 @@ func (t *service) GetPivotPos(entity ecs.EntityID, size transform.AbsoluteSizeCo
 
 //
 
-func (t *service) GetRelativeParentRotation(entity ecs.EntityID) mgl32.Quat {
-	parent, ok := t.Hierarchy().Component().Get(entity)
+func (s *service) GetRelativeParentRotation(entity ecs.EntityID) mgl32.Quat {
+	parent, ok := s.Hierarchy().Component().Get(entity)
 	if !ok {
 		return mgl32.QuatIdent()
 	}
-	parentMask, _ := t.InheritMaskArray.Get(entity)
+	parentMask, _ := s.InheritMaskArray.Get(entity)
 	if parentMask.RelativeMask&transform.RelativeRotation == 0 {
 		return mgl32.QuatIdent()
 	}
-	parentRot, _ := t.AbsoluteRotationArray.Get(parent.Parent)
+	parentRot, _ := s.AbsoluteRotationArray.Get(parent.Parent)
 	return parentRot.Rotation
 }
 
 //
 
-func (t *service) GetRelativeParentSize(entity ecs.EntityID) mgl32.Vec3 {
-	size := t.defaultSize.Size
-	parent, ok := t.Hierarchy().Component().Get(entity)
+func (s *service) GetRelativeParentSize(entity ecs.EntityID) mgl32.Vec3 {
+	size := s.defaultSize.Size
+	parent, ok := s.Hierarchy().Component().Get(entity)
 	if !ok {
 		return size
 	}
-	parentMask, _ := t.InheritMaskArray.Get(entity)
-	parentSize, _ := t.AbsoluteSizeArray.Get(parent.Parent)
+	parentMask, _ := s.InheritMaskArray.Get(entity)
+	parentSize, _ := s.AbsoluteSizeArray.Get(parent.Parent)
 	if parentMask.RelativeMask&transform.RelativeSizeX != 0 {
 		size[0] = parentSize.Size[0]
 	}
@@ -77,8 +77,8 @@ func (t *service) GetRelativeParentSize(entity ecs.EntityID) mgl32.Vec3 {
 	return size
 }
 
-func (t *service) ApplyMinMaxSize(entity ecs.EntityID, size *transform.SizeComponent) {
-	if maxSize, ok := t.MaxSizeArray.Get(entity); ok {
+func (s *service) ApplyMinMaxSize(entity ecs.EntityID, size *transform.SizeComponent) {
+	if maxSize, ok := s.MaxSizeArray.Get(entity); ok {
 		if maxSize.Size[0] != 0 && size.Size[0] > maxSize.Size[0] {
 			size.Size[0] = maxSize.Size[0]
 		}
@@ -89,7 +89,7 @@ func (t *service) ApplyMinMaxSize(entity ecs.EntityID, size *transform.SizeCompo
 			size.Size[2] = maxSize.Size[2]
 		}
 	}
-	if minSize, ok := t.MinSizeArray.Get(entity); ok {
+	if minSize, ok := s.MinSizeArray.Get(entity); ok {
 		if minSize.Size[0] != 0 && size.Size[0] < minSize.Size[0] {
 			size.Size[0] = minSize.Size[0]
 		}
@@ -105,7 +105,7 @@ func (t *service) ApplyMinMaxSize(entity ecs.EntityID, size *transform.SizeCompo
 // its used by full ApplyAspectRatio method.
 // ignores min and max size.
 // also concludes that aspect ratio is verified.
-func (t *service) getAspectRatio(size transform.SizeComponent, ratio transform.AspectRatioComponent) transform.SizeComponent {
+func (s *service) getAspectRatio(size transform.SizeComponent, ratio transform.AspectRatioComponent) transform.SizeComponent {
 	var base float32
 	switch ratio.PrimaryAxis {
 	case transform.PrimaryAxisX:
@@ -130,13 +130,13 @@ func (t *service) getAspectRatio(size transform.SizeComponent, ratio transform.A
 }
 
 // integrates min and max size
-func (t *service) ApplyAspectRatio(entity ecs.EntityID, size *transform.SizeComponent) {
-	ratio, _ := t.AspectRatioArray.Get(entity)
+func (s *service) ApplyAspectRatio(entity ecs.EntityID, size *transform.SizeComponent) {
+	ratio, _ := s.AspectRatioArray.Get(entity)
 	if ratio.PrimaryAxis == 0 || ratio.PrimaryAxis > 3 || ratio.AspectRatio[ratio.PrimaryAxis-1] == 0 {
 		return
 	}
-	sizeRatio := t.getAspectRatio(*size, ratio)
-	if maxSize, ok := t.MaxSizeArray.Get(entity); ok {
+	sizeRatio := s.getAspectRatio(*size, ratio)
+	if maxSize, ok := s.MaxSizeArray.Get(entity); ok {
 		for i := range 3 {
 			if maxSize.Size[i] == 0 {
 				maxSize.Size[i] = sizeRatio.Size[i]
@@ -154,7 +154,7 @@ func (t *service) ApplyAspectRatio(entity ecs.EntityID, size *transform.SizeComp
 		if primaryAxisIndex != -1 {
 			maxSizeRatio.PrimaryAxis = transform.PrimaryAxis(primaryAxisIndex + 1) // +1 because 0 isn't an axis
 			maxSize = transform.MaxSizeComponent(
-				t.getAspectRatio(transform.SizeComponent(maxSize), maxSizeRatio),
+				s.getAspectRatio(transform.SizeComponent(maxSize), maxSizeRatio),
 			)
 			for i := range 3 {
 				if maxSize.Size[i] >= sizeRatio.Size[i] {
@@ -165,7 +165,7 @@ func (t *service) ApplyAspectRatio(entity ecs.EntityID, size *transform.SizeComp
 			}
 		}
 	}
-	if minSize, ok := t.MinSizeArray.Get(entity); ok {
+	if minSize, ok := s.MinSizeArray.Get(entity); ok {
 		minSizeRatio := ratio
 
 		primaryAxisIndex := -1
@@ -178,7 +178,7 @@ func (t *service) ApplyAspectRatio(entity ecs.EntityID, size *transform.SizeComp
 		if primaryAxisIndex != -1 {
 			minSizeRatio.PrimaryAxis = transform.PrimaryAxis(primaryAxisIndex + 1) // +1 because 0 isn't an axis
 			minSize = transform.MinSizeComponent(
-				t.getAspectRatio(transform.SizeComponent(minSize), minSizeRatio),
+				s.getAspectRatio(transform.SizeComponent(minSize), minSizeRatio),
 			)
 			for i := range 3 {
 				if minSize.Size[i] <= sizeRatio.Size[i] {
@@ -194,10 +194,10 @@ func (t *service) ApplyAspectRatio(entity ecs.EntityID, size *transform.SizeComp
 
 //
 
-func (t *service) CalculateAbsolutePos(entity ecs.EntityID, size transform.AbsoluteSizeComponent) transform.AbsolutePosComponent {
-	pos, _ := t.PosArray.Get(entity)
-	relativeToParentPos := t.GetRelativeParentPos(entity)
-	pivotPos := t.GetPivotPos(entity, size)
+func (s *service) CalculateAbsolutePos(entity ecs.EntityID, size transform.AbsoluteSizeComponent) transform.AbsolutePosComponent {
+	pos, _ := s.PosArray.Get(entity)
+	relativeToParentPos := s.GetRelativeParentPos(entity)
+	pivotPos := s.GetPivotPos(entity, size)
 
 	pos.Pos = pos.Pos.
 		Add(relativeToParentPos).
@@ -205,33 +205,33 @@ func (t *service) CalculateAbsolutePos(entity ecs.EntityID, size transform.Absol
 
 	return transform.AbsolutePosComponent(pos)
 }
-func (t *service) CalculateAbsoluteRot(entity ecs.EntityID) transform.AbsoluteRotationComponent {
-	rot, _ := t.RotationArray.Get(entity)
+func (s *service) CalculateAbsoluteRot(entity ecs.EntityID) transform.AbsoluteRotationComponent {
+	rot, _ := s.RotationArray.Get(entity)
 	rot.Rotation = rot.Rotation.
-		Mul(t.GetRelativeParentRotation(entity))
+		Mul(s.GetRelativeParentRotation(entity))
 
 	return transform.AbsoluteRotationComponent(rot)
 }
-func (t *service) CalculateAbsoluteSize(entity ecs.EntityID) transform.AbsoluteSizeComponent {
-	size, _ := t.SizeArray.Get(entity)
+func (s *service) CalculateAbsoluteSize(entity ecs.EntityID) transform.AbsoluteSizeComponent {
+	size, _ := s.SizeArray.Get(entity)
 
-	relativeParentSize := t.GetRelativeParentSize(entity)
+	relativeParentSize := s.GetRelativeParentSize(entity)
 	size.Size = mgl32.Vec3{
 		size.Size[0] * relativeParentSize[0],
 		size.Size[1] * relativeParentSize[1],
 		size.Size[2] * relativeParentSize[2],
 	}
-	t.ApplyAspectRatio(entity, &size)
-	t.ApplyMinMaxSize(entity, &size)
+	s.ApplyAspectRatio(entity, &size)
+	s.ApplyMinMaxSize(entity, &size)
 
 	return transform.AbsoluteSizeComponent(size)
 }
 
-func (t *service) CalculateAbsolute(
+func (s *service) CalculateAbsolute(
 	entity ecs.EntityID,
 ) (transform.AbsolutePosComponent, transform.AbsoluteRotationComponent, transform.AbsoluteSizeComponent) {
-	rot := t.CalculateAbsoluteRot(entity)
-	size := t.CalculateAbsoluteSize(entity)
-	pos := t.CalculateAbsolutePos(entity, size)
+	rot := s.CalculateAbsoluteRot(entity)
+	size := s.CalculateAbsoluteSize(entity)
+	pos := s.CalculateAbsolutePos(entity, size)
 	return pos, rot, size
 }

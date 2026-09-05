@@ -18,13 +18,13 @@ type service struct {
 }
 
 func NewService(c ioc.Dic) uuid.Service {
-	t := ioc.GetServices[*service](c)
-	t.uuidArray = ecs.GetComponentArray[uuid.Component](t.World())
-	return t
+	s := ioc.GetServices[*service](c)
+	s.uuidArray = ecs.GetComponentArray[uuid.Component](s.World())
+	return s
 }
 
-func (t *service) Component() ecs.ComponentArray[uuid.Component] { return t.uuidArray }
+func (s *service) Component() ecs.ComponentArray[uuid.Component] { return s.uuidArray }
 
-func (t *service) Entity(uuid uuid.UUID) (ecs.EntityID, bool) {
-	return t.Get(uuid)
+func (s *service) Entity(uuid uuid.UUID) (ecs.EntityID, bool) {
+	return s.Get(uuid)
 }

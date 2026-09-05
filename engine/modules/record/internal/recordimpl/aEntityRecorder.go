@@ -43,88 +43,88 @@ func newEntityKeyedRecorder(
 	return entityKeyedRecorder
 }
 
-func (t *entityKeyedRecorder) GetState(config record.Config) record.Recording {
+func (s *entityKeyedRecorder) GetState(config record.Config) record.Recording {
 	entities := datastructures.NewSparseSet[ecs.EntityID]()
 	for _, arrayType := range *config.ComponentsOrder {
-		array := t.GetWorldArray(arrayType, config)
+		array := s.GetWorldArray(arrayType, config)
 		for _, entity := range array.GetEntities() {
 			entities.Add(entity)
 		}
 	}
-	return t.getStateFor(config, entities.GetIndices())
+	return s.getStateFor(config, entities.GetIndices())
 }
-func (t *entityKeyedRecorder) StartBackwardsRecording(config record.Config) record.RecordingID {
-	t.WarmUp().WarmUp()
-	t.mutex.Lock()
-	defer t.mutex.Unlock()
-	t.SyncBackwardsRecordingState()
+func (s *entityKeyedRecorder) StartBackwardsRecording(config record.Config) record.RecordingID {
+	s.WarmUp().WarmUp()
+	s.mutex.Lock()
+	defer s.mutex.Unlock()
+	s.SyncBackwardsRecordingState()
 
-	id := t.getID()
+	id := s.getID()
 	recording := &BackwardRecording{
 		Config:          config,
 		WorldCopyArrays: make([]ecs.AnyComponentArray, 0, len(*config.ComponentsOrder)),
 		Entities:        datastructures.NewSparseArray[ecs.EntityID, []any](),
 	}
 	for _, arrayType := range *config.ComponentsOrder {
-		array := t.GetWorldArray(arrayType, config)
+		array := s.GetWorldArray(arrayType, config)
 		array.dependencies.Add(recording)
-		worldCopyArray := t.GetWorldCopyArray(arrayType, config)
+		worldCopyArray := s.GetWorldCopyArray(arrayType, config)
 		recording.WorldCopyArrays = append(recording.WorldCopyArrays, worldCopyArray)
 	}
-	t.backwardsRecordings.Set(id, recording)
+	s.backwardsRecordings.Set(id, recording)
 
 	return id
 }
-func (t *entityKeyedRecorder) StartRecording(config record.Config) record.RecordingID {
-	t.WarmUp().WarmUp()
-	t.mutex.Lock()
-	defer t.mutex.Unlock()
+func (s *entityKeyedRecorder) StartRecording(config record.Config) record.RecordingID {
+	s.WarmUp().WarmUp()
+	s.mutex.Lock()
+	defer s.mutex.Unlock()
 
-	id := t.getID()
+	id := s.getID()
 	recording := &FowardRecording{
 		Config:   config,
 		DirtySet: ecs.NewDirtySet(),
 	}
 	for _, arrayType := range *config.ComponentsOrder {
-		array := t.GetWorldArray(arrayType, config)
+		array := s.GetWorldArray(arrayType, config)
 		array.AddDirtySet(recording.DirtySet)
 	}
 	recording.DirtySet.Clear()
-	t.forwardRecordings.Set(id, recording)
+	s.forwardRecordings.Set(id, recording)
 
 	return id
 }
-func (t *entityKeyedRecorder) Stop(id record.RecordingID) (record.Recording, bool) {
-	t.WarmUp().WarmUp()
-	t.mutex.Lock()
-	defer t.mutex.Unlock()
-	if recording, ok := t.forwardRecordings.Get(id); ok {
+func (s *entityKeyedRecorder) Stop(id record.RecordingID) (record.Recording, bool) {
+	s.WarmUp().WarmUp()
+	s.mutex.Lock()
+	defer s.mutex.Unlock()
+	if recording, ok := s.forwardRecordings.Get(id); ok {
 		entities := recording.DirtySet.Get()
 		recording.DirtySet.Release()
 
-		t.forwardRecordings.Remove(id)
-		t.holes.Add(id)
+		s.forwardRecordings.Remove(id)
+		s.holes.Add(id)
 
-		return t.getStateFor(recording.Config, entities), true
+		return s.getStateFor(recording.Config, entities), true
 	}
-	if recording, ok := t.backwardsRecordings.Get(id); ok {
-		t.SyncBackwardsRecordingState()
+	if recording, ok := s.backwardsRecordings.Get(id); ok {
+		s.SyncBackwardsRecordingState()
 		for _, arrayType := range *recording.Config.ComponentsOrder {
-			array := t.GetWorldArray(arrayType, recording.Config)
+			array := s.GetWorldArray(arrayType, recording.Config)
 			array.dependencies.RemoveElements(recording)
 		}
 
-		t.backwardsRecordings.Remove(id)
-		t.holes.Add(id)
+		s.backwardsRecordings.Remove(id)
+		s.holes.Add(id)
 
 		return record.Recording{Entities: recording.Entities}, true
 	}
 	return record.Recording{}, false
 }
-func (t *entityKeyedRecorder) Apply(config record.Config, recordings ...record.Recording) {
+func (s *entityKeyedRecorder) Apply(config record.Config, recordings ...record.Recording) {
 	arrays := make([]ecs.AnyComponentArray, 0, len(*config.ComponentsOrder))
 	for _, arrayType := range *config.ComponentsOrder {
-		array := t.GetWorldArray(arrayType, config)
+		array := s.GetWorldArray(arrayType, config)
 		arrays = append(arrays, array)
 	}
 
@@ -135,7 +135,7 @@ func (t *entityKeyedRecorder) Apply(config record.Config, recordings ...record.R
 				continue
 			}
 			if components == nil {
-				t.World().RemoveEntity(entity)
+				s.World().RemoveEntity(entity)
 				continue
 			}
 			for i, component := range components {
@@ -150,10 +150,10 @@ func (t *entityKeyedRecorder) Apply(config record.Config, recordings ...record.R
 	}
 }
 
-func (t *entityKeyedRecorder) getStateFor(config record.Config, entities []ecs.EntityID) record.Recording {
+func (s *entityKeyedRecorder) getStateFor(config record.Config, entities []ecs.EntityID) record.Recording {
 	arrays := make([]ecs.AnyComponentArray, 0, len(*config.ComponentsOrder))
 	for _, arrayType := range *config.ComponentsOrder {
-		array := t.GetWorldArray(arrayType, config)
+		array := s.GetWorldArray(arrayType, config)
 		arrays = append(arrays, array)
 	}
 
@@ -178,13 +178,13 @@ func (t *entityKeyedRecorder) getStateFor(config record.Config, entities []ecs.E
 
 //
 
-func (t *entityKeyedRecorder) getID() record.RecordingID {
-	if holes := t.holes.GetIndices(); len(holes) != 0 {
+func (s *entityKeyedRecorder) getID() record.RecordingID {
+	if holes := s.holes.GetIndices(); len(holes) != 0 {
 		hole := holes[0]
-		t.holes.Remove(hole)
+		s.holes.Remove(hole)
 		return hole
 	}
-	i := t.i
-	t.i++
+	i := s.i
+	s.i++
 	return i
 }
