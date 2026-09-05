@@ -61,6 +61,11 @@ type AnyComponentArray interface {
 	AddDirtySet(DirtySet)
 	BeforeGet(BeforeGet)
 
+	// freezes immediate listeners
+	PrepareBulk()
+	// releases immediate listeners
+	CommitBulk()
+
 	OnUpsert(OnMod)
 	OnRemove(OnMod)
 	// is called OnUpsert and OnRemove

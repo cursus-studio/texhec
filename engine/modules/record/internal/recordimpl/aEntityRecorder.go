@@ -125,6 +125,7 @@ func (s *entityKeyedRecorder) Apply(config record.Config, recordings ...record.R
 	arrays := make([]ecs.AnyComponentArray, 0, len(*config.ComponentsOrder))
 	for _, arrayType := range *config.ComponentsOrder {
 		array := s.GetWorldArray(arrayType, config)
+		array.PrepareBulk()
 		arrays = append(arrays, array)
 	}
 
@@ -147,6 +148,9 @@ func (s *entityKeyedRecorder) Apply(config record.Config, recordings ...record.R
 				array.SetAny(entity, component)
 			}
 		}
+	}
+	for _, array := range arrays {
+		array.CommitBulk()
 	}
 }
 
