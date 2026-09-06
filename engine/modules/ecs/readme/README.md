@@ -209,26 +209,26 @@ goos: linux
 goarch: amd64
 pkg: engine/modules/ecs/test
 cpu: Intel(R) Core(TM) i5-8350U CPU @ 1.70GHz
-BenchmarkDirtySetDirty-8               	137151241	         8.231 ns/op
-BenchmarkDirtySetDirtyInversed-8       	144657516	         7.394 ns/op
-BenchmarkDirtySetGet-8                 	590244398	         2.090 ns/op
-BenchmarkDirtySetDirtyAndGet-8         	169425655	         7.102 ns/op
-BenchmarkDirtySetDirtyAnd1Get-8        	127674126	         8.851 ns/op
-Benchmark4SavesWith7Systems-8          	26503406	        42.23 ns/op
-Benchmark16SavesWith7Systems-8         	 6938511	       165.1 ns/op
-Benchmark256SavesWith7Systems-8        	  488564	      2509 ns/op
-Benchmark4096SavesWith7Systems-8       	   29869	     40203 ns/op
-Benchmark16384SavesWith7Systems-8      	    7695	    159021 ns/op
-Benchmark65536SavesWith7Systems-8      	    1840	    643265 ns/op
-Benchmark262144SavesWith7Systems-8     	     460	   2573859 ns/op
-BenchmarkGetComponent-8                	81757089	        14.96 ns/op
-BenchmarkCreateComponents-8            	39956193	        31.43 ns/op
-BenchmarkUpdateComponents-8            	100000000	        11.46 ns/op
-BenchmarkRemoveComponent-8             	77082870	        15.48 ns/op
-BenchmarkRemoveEntityWithComponent-8   	35099274	        35.41 ns/op
-BenchmarkRemoveEntity-8                	65063078	        18.66 ns/op
+BenchmarkDirtySetDirty-8               	165129849	         7.835 ns/op
+BenchmarkDirtySetDirtyInversed-8       	174412747	         6.861 ns/op
+BenchmarkDirtySetGet-8                 	601250739	         2.045 ns/op
+BenchmarkDirtySetDirtyAndGet-8         	173398975	         7.030 ns/op
+BenchmarkDirtySetDirtyAnd1Get-8        	149764879	         8.698 ns/op
+Benchmark4SavesWith7Systems-8          	26502996	        42.84 ns/op
+Benchmark16SavesWith7Systems-8         	 6960744	       173.0 ns/op
+Benchmark256SavesWith7Systems-8        	  407770	      2661 ns/op
+Benchmark4096SavesWith7Systems-8       	   28305	     42301 ns/op
+Benchmark16384SavesWith7Systems-8      	    7105	    168759 ns/op
+Benchmark65536SavesWith7Systems-8      	    1782	    686145 ns/op
+Benchmark262144SavesWith7Systems-8     	     438	   2690931 ns/op
+BenchmarkGetComponent-8                	84988351	        14.37 ns/op
+BenchmarkCreateComponents-8            	42856870	        27.55 ns/op
+BenchmarkUpdateComponents-8            	100000000	        10.49 ns/op
+BenchmarkRemoveComponent-8             	80926964	        14.60 ns/op
+BenchmarkRemoveEntityWithComponent-8   	36323707	        33.56 ns/op
+BenchmarkRemoveEntity-8                	68558644	        17.65 ns/op
 PASS
-ok  	engine/modules/ecs/test	37.578s
+ok  	engine/modules/ecs/test	37.050s
 ```
 ## Lines of code
 ```
@@ -236,10 +236,10 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                              13            218             43            920
+Go                              13            229             47            960
 Markdown                         1             44              0            157
 -------------------------------------------------------------------------------
-SUM:                            14            262             43           1077
+SUM:                            14            273             47           1117
 -------------------------------------------------------------------------------
 ```
 ## Types
@@ -319,6 +319,12 @@ Type: `func(engine/modules/ecs/internal/ecstypes.DirtySet)`
 #### method AnyComponentArray BeforeGet
 Type: `func(engine/modules/ecs/internal/ecstypes.BeforeGet)`
 
+#### method AnyComponentArray CommitBulk
+Type: `func()`
+
+#### method AnyComponentArray ComponentType
+Type: `func() reflect.Type`
+
 #### method AnyComponentArray GetAny
 Type: `func(entity engine/modules/ecs/internal/ecstypes.EntityID) (engine/modules/ecs/internal/ecstypes.Component, bool)`
 
@@ -333,6 +339,9 @@ Type: `func(engine/modules/ecs/internal/ecstypes.OnMod)`
 
 #### method AnyComponentArray OnUpsert
 Type: `func(engine/modules/ecs/internal/ecstypes.OnMod)`
+
+#### method AnyComponentArray PrepareBulk
+Type: `func()`
 
 #### method AnyComponentArray Remove
 Type: `func(engine/modules/ecs/internal/ecstypes.EntityID)`
@@ -351,6 +360,12 @@ Type: `func(engine/modules/ecs/internal/ecstypes.DirtySet)`
 
 #### method ComponentArray BeforeGet
 Type: `func(engine/modules/ecs/internal/ecstypes.BeforeGet)`
+
+#### method ComponentArray CommitBulk
+Type: `func()`
+
+#### method ComponentArray ComponentType
+Type: `func() reflect.Type`
 
 #### method ComponentArray Get
 Type: `func(entity engine/modules/ecs/internal/ecstypes.EntityID) (Component, bool)`
@@ -372,6 +387,9 @@ Type: `func(engine/modules/ecs/internal/ecstypes.OnMod)`
 
 #### method ComponentArray OnUpsert
 Type: `func(engine/modules/ecs/internal/ecstypes.OnMod)`
+
+#### method ComponentArray PrepareBulk
+Type: `func()`
 
 #### method ComponentArray Remove
 Type: `func(engine/modules/ecs/internal/ecstypes.EntityID)`

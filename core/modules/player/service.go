@@ -2,6 +2,7 @@ package player
 
 import (
 	"engine/modules/ecs"
+	"engine/modules/uuid"
 	"errors"
 )
 
@@ -12,19 +13,22 @@ var (
 )
 
 // marks that player is performing a move
-type ActingPlayerComponent struct{}
-type OwnerComponent struct {
-	Owner ecs.EntityID
+type PlayerComponent struct {
+	Name string
 }
+type ActingPlayerComponent struct{}
 
-func NewActingPlayer() ActingPlayerComponent     { return ActingPlayerComponent{} }
-func NewOwner(owner ecs.EntityID) OwnerComponent { return OwnerComponent{owner} }
+func NewPlayer(name string) PlayerComponent  { return PlayerComponent{name} }
+func NewActingPlayer() ActingPlayerComponent { return ActingPlayerComponent{} }
+
+type OwnerLink struct{}
 
 //
 
 type Service interface {
+	Player() ecs.ComponentArray[PlayerComponent]
 	ActingPlayer() ecs.ComponentArray[ActingPlayerComponent]
-	Owner() ecs.ComponentArray[OwnerComponent]
+	Owner() uuid.LinkService[OwnerLink]
 
 	// returns nil if object is controled
 	ControlsObject(ecs.EntityID) error

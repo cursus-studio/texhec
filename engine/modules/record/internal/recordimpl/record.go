@@ -36,42 +36,42 @@ type service struct {
 }
 
 func NewService(c ioc.Dic) record.Service {
-	t := ioc.GetServices[*service](c)
-	t.worldArrays = make(map[string]entityArray)
+	s := ioc.GetServices[*service](c)
+	s.worldArrays = make(map[string]entityArray)
 
-	t.worldCopy = ecs.NewWorld()
-	t.worldCopyUUID = ecs.GetComponentArray[uuid.Component](t.worldCopy)
-	t.worldCopyArrays = make(map[string]ecs.AnyComponentArray)
+	s.worldCopy = ecs.NewWorld()
+	s.worldCopyUUID = ecs.GetComponentArray[uuid.Component](s.worldCopy)
+	s.worldCopyArrays = make(map[string]ecs.AnyComponentArray)
 
-	t.mutex = &sync.Mutex{}
+	s.mutex = &sync.Mutex{}
 
-	t.entity = newEntityKeyedRecorder(t)
-	t.uuid = newUUIDKeyedRecorder(t)
+	s.entity = newEntityKeyedRecorder(s)
+	s.uuid = newUUIDKeyedRecorder(s)
 
-	return t
+	return s
 }
 
 //
 
-func (t *service) Entity() record.EntityKeyedRecorder {
-	return t.entity
+func (s *service) Entity() record.EntityKeyedRecorder {
+	return s.entity
 }
-func (t *service) UUID() record.UUIDKeyedRecorder {
-	return t.uuid
+func (s *service) UUID() record.UUIDKeyedRecorder {
+	return s.uuid
 }
 
 //
 
-func (t *service) SyncBackwardsRecordingState() {
-	for arrayType, array := range t.worldArrays {
-		t.synchronizeArrayState(
+func (s *service) SyncBackwardsRecordingState() {
+	for arrayType, array := range s.worldArrays {
+		s.synchronizeArrayState(
 			array,
-			t.worldCopyArrays[arrayType],
+			s.worldCopyArrays[arrayType],
 		)
 	}
 }
 
-func (t *service) synchronizeArrayState(
+func (s *service) synchronizeArrayState(
 	worldArray entityArray,
 	worldCopyArray ecs.AnyComponentArray,
 ) {
@@ -81,13 +81,13 @@ func (t *service) synchronizeArrayState(
 	}
 
 	// apply in Entity arrays
-	for _, recording := range t.entity.backwardsRecordings.GetValues() {
+	for _, recording := range s.entity.backwardsRecordings.GetValues() {
 		for _, entity := range entities {
 			if _, ok := recording.Entities.Get(entity); ok {
 				continue
 			}
 			var components []any
-			if !t.worldCopy.EntityExists(entity) {
+			if !s.worldCopy.EntityExists(entity) {
 				goto saveEntity
 			}
 			components = make([]any, 0, len(recording.WorldCopyArrays))
@@ -104,22 +104,22 @@ func (t *service) synchronizeArrayState(
 	}
 
 	// apply in UUID arrays
-	for _, recording := range t.uuid.backwardsRecordings.GetValues() {
+	for _, recording := range s.uuid.backwardsRecordings.GetValues() {
 		for _, entity := range entities {
-			uuid, ok := t.worldCopyUUID.Get(entity)
+			uuid, ok := s.worldCopyUUID.Get(entity)
 			if !ok {
-				uuid, ok = t.EngineWorld.UUID().Component().Get(entity)
+				uuid, ok = s.EngineWorld.UUID().Component().Get(entity)
 				if !ok {
-					uuid.ID = t.EngineWorld.UUID().NewUUID()
-					t.EngineWorld.UUID().Component().Set(entity, uuid)
+					uuid.ID = s.EngineWorld.UUID().NewUUID()
+					s.EngineWorld.UUID().Component().Set(entity, uuid)
 				}
-				t.worldCopyUUID.Set(entity, uuid)
+				s.worldCopyUUID.Set(entity, uuid)
 			}
 			if _, ok := recording.Entities[uuid.ID]; ok {
 				continue
 			}
 			var components []any
-			if !t.worldCopy.EntityExists(entity) {
+			if !s.worldCopy.EntityExists(entity) {
 				goto saveUUID
 			}
 			components = make([]any, 0, len(recording.WorldCopyArrays))
@@ -131,6 +131,7 @@ func (t *service) synchronizeArrayState(
 				components = append(components, component)
 			}
 		saveUUID:
+			recording.EntitiesOrder = append(recording.EntitiesOrder, uuid.ID)
 			recording.Entities[uuid.ID] = components
 		}
 	}
@@ -138,21 +139,21 @@ func (t *service) synchronizeArrayState(
 	// apply in world
 	for _, entity := range entities {
 		if component, ok := worldArray.GetAny(entity); ok {
-			t.worldCopy.EnsureExists(entity)
+			s.worldCopy.EnsureExists(entity)
 			worldCopyArray.SetAny(entity, component)
 			continue
 		}
-		if t.World().EntityExists(entity) {
+		if s.World().EntityExists(entity) {
 			worldCopyArray.Remove(entity)
 			continue
 		}
-		t.worldCopy.RemoveEntity(entity)
+		s.worldCopy.RemoveEntity(entity)
 	}
 }
 
-func (t *service) GetWorldArray(arrayType reflect.Type, config record.Config) entityArray {
+func (s *service) GetWorldArray(arrayType reflect.Type, config record.Config) entityArray {
 	arrayKey := arrayType.String()
-	if array, ok := t.worldArrays[arrayKey]; ok {
+	if array, ok := s.worldArrays[arrayKey]; ok {
 		return array
 	}
 	arrayCtor := config.RecordedComponents[arrayType]
@@ -161,15 +162,15 @@ func (t *service) GetWorldArray(arrayType reflect.Type, config record.Config) en
 		dirtySet:          ecs.NewDirtySet(),
 		dependencies:      datastructures.NewSet[*BackwardRecording](),
 		uuidDependencies:  datastructures.NewSet[*UUIDBackwardRecording](),
-		AnyComponentArray: arrayCtor(t.World()),
+		AnyComponentArray: arrayCtor(s.World()),
 	}
 	entityArray.AddDirtySet(entityArray.dirtySet)
-	t.worldArrays[arrayKey] = entityArray
+	s.worldArrays[arrayKey] = entityArray
 	entityArray.dirtySet.Clear()
 
-	inheritCtor(t.World())
-	array := arrayCtor(t.worldCopy)
-	t.worldCopyArrays[arrayKey] = array
+	inheritCtor(s.World())
+	array := arrayCtor(s.worldCopy)
+	s.worldCopyArrays[arrayKey] = array
 
 	for _, entity := range entityArray.GetEntities() {
 		component, _ := entityArray.GetAny(entity)
@@ -179,9 +180,9 @@ func (t *service) GetWorldArray(arrayType reflect.Type, config record.Config) en
 	return entityArray
 }
 
-func (t *service) GetWorldCopyArray(arrayType reflect.Type, config record.Config) ecs.AnyComponentArray {
+func (s *service) GetWorldCopyArray(arrayType reflect.Type, config record.Config) ecs.AnyComponentArray {
 	arrayKey := arrayType.String()
-	if array, ok := t.worldCopyArrays[arrayKey]; ok {
+	if array, ok := s.worldCopyArrays[arrayKey]; ok {
 		return array
 	}
 	arrayCtor := config.RecordedComponents[arrayType]
@@ -190,15 +191,15 @@ func (t *service) GetWorldCopyArray(arrayType reflect.Type, config record.Config
 		dirtySet:          ecs.NewDirtySet(),
 		dependencies:      datastructures.NewSet[*BackwardRecording](),
 		uuidDependencies:  datastructures.NewSet[*UUIDBackwardRecording](),
-		AnyComponentArray: arrayCtor(t.World()),
+		AnyComponentArray: arrayCtor(s.World()),
 	}
 	entityArray.AddDirtySet(entityArray.dirtySet)
-	t.worldArrays[arrayKey] = entityArray
+	s.worldArrays[arrayKey] = entityArray
 	entityArray.dirtySet.Clear()
 
-	inheritCtor(t.World())
-	array := arrayCtor(t.worldCopy)
-	t.worldCopyArrays[arrayKey] = array
+	inheritCtor(s.World())
+	array := arrayCtor(s.worldCopy)
+	s.worldCopyArrays[arrayKey] = array
 
 	for _, entity := range entityArray.GetEntities() {
 		component, _ := entityArray.GetAny(entity)

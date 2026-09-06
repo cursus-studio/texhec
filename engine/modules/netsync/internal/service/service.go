@@ -19,10 +19,10 @@ type service struct {
 }
 
 func NewService(c ioc.Dic) netsync.Service {
-	t := ioc.GetServices[*service](c)
-	t.server = ecs.GetComponentArray[netsync.ServerComponent](t.World())
-	t.client = ecs.GetComponentArray[netsync.ClientComponent](t.World())
-	return t
+	s := ioc.GetServices[*service](c)
+	s.server = ecs.GetComponentArray[netsync.ServerComponent](s.World())
+	s.client = ecs.GetComponentArray[netsync.ClientComponent](s.World())
+	return s
 }
 
 func (s *service) Start() ecs.SystemRegister {
@@ -37,6 +37,7 @@ func (s *service) Start() ecs.SystemRegister {
 			listen(s.EventsBuilder(), s.ClientService().OnTransparentEvent)
 		}
 
+		s.ServerService().AddBeforeListeners()
 		for _, listen := range s.ServerService().ListenToEvents {
 			listen(s.EventsBuilder(), s.ServerService().BeforeEvent)
 		}

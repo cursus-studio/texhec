@@ -19,44 +19,43 @@ type service struct {
 	dirtyChildren ecs.DirtySet
 }
 
-func NewLayoutService(c ioc.Dic,
-) layout.Service {
-	t := ioc.GetServices[*service](c)
-	t.align = ecs.GetComponentArray[layout.AlignComponent](t.World())
-	t.order = ecs.GetComponentArray[layout.OrderComponent](t.World())
-	t.gap = ecs.GetComponentArray[layout.GapComponent](t.World())
-	t.dirtyParents = ecs.NewDirtySet()
-	t.dirtyChildren = ecs.NewDirtySet()
-	t.Init()
-	return t
+func NewLayoutService(c ioc.Dic) layout.Service {
+	s := ioc.GetServices[*service](c)
+	s.align = ecs.GetComponentArray[layout.AlignComponent](s.World())
+	s.order = ecs.GetComponentArray[layout.OrderComponent](s.World())
+	s.gap = ecs.GetComponentArray[layout.GapComponent](s.World())
+	s.dirtyParents = ecs.NewDirtySet()
+	s.dirtyChildren = ecs.NewDirtySet()
+	s.Init()
+	return s
 }
 
-func (t *service) Align() ecs.ComponentArray[layout.AlignComponent] { return t.align }
-func (t *service) Order() ecs.ComponentArray[layout.OrderComponent] { return t.order }
-func (t *service) Gap() ecs.ComponentArray[layout.GapComponent]     { return t.gap }
+func (s *service) Align() ecs.ComponentArray[layout.AlignComponent] { return s.align }
+func (s *service) Order() ecs.ComponentArray[layout.OrderComponent] { return s.order }
+func (s *service) Gap() ecs.ComponentArray[layout.GapComponent]     { return s.gap }
 
 //
 
-func (t *service) Init() {
+func (s *service) Init() {
 	// t.order.SetEmpty(layout.NewOrder(layout.OrderHorizontal))
-	t.align.SetEmpty(layout.NewAlign(.5, .5))
-	t.gap.SetEmpty(layout.NewGap(0))
+	s.align.SetEmpty(layout.NewAlign(.5, .5))
+	s.gap.SetEmpty(layout.NewGap(0))
 
-	t.Transform().AbsolutePos().AddDependency(t.align)
-	t.Transform().AbsolutePos().AddDependency(t.order)
-	t.Transform().AbsolutePos().AddDependency(t.gap)
+	s.Transform().AbsolutePos().AddDependency(s.align)
+	s.Transform().AbsolutePos().AddDependency(s.order)
+	s.Transform().AbsolutePos().AddDependency(s.gap)
 
-	t.align.AddDirtySet(t.dirtyParents)
-	t.order.AddDirtySet(t.dirtyParents)
-	t.gap.AddDirtySet(t.dirtyParents)
-	t.Transform().AddDirtySet(t.dirtyParents)
+	s.align.AddDirtySet(s.dirtyParents)
+	s.order.AddDirtySet(s.dirtyParents)
+	s.gap.AddDirtySet(s.dirtyParents)
+	s.Transform().AddDirtySet(s.dirtyParents)
 
-	t.Transform().AddDirtySet(t.dirtyChildren)
-	t.Hierarchy().Component().AddDirtySet(t.dirtyChildren)
+	s.Transform().AddDirtySet(s.dirtyChildren)
+	s.Hierarchy().Component().AddDirtySet(s.dirtyChildren)
 
 	// before get trigger
-	t.Transform().AbsolutePos().BeforeGet(t.BeforeGet)
-	t.Transform().AbsoluteSize().BeforeGet(t.BeforeGet)
+	s.Transform().AbsolutePos().BeforeGet(s.BeforeGet)
+	s.Transform().AbsoluteSize().BeforeGet(s.BeforeGet)
 }
 
 type save struct {
@@ -66,55 +65,55 @@ type save struct {
 	parentPivot transform.ParentPivotPointComponent
 }
 
-func (t *service) BeforeGet() {
-	for _, child := range t.dirtyChildren.Get() {
-		if parent, ok := t.Hierarchy().Parent(child); ok {
-			t.dirtyParents.Dirty(parent)
+func (s *service) BeforeGet() {
+	for _, child := range s.dirtyChildren.Get() {
+		if parent, ok := s.Hierarchy().Parent(child); ok {
+			s.dirtyParents.Dirty(parent)
 		}
 	}
-	parents := t.dirtyParents.Get()
+	parents := s.dirtyParents.Get()
 	if len(parents) == 0 {
 		return
 	}
-	defer t.dirtyChildren.Clear()
-	defer t.dirtyParents.Clear()
+	defer s.dirtyChildren.Clear()
+	defer s.dirtyParents.Clear()
 
 	saves := []save{}
 
 	for _, parent := range parents {
-		parentSaves := t.handleParentChildren(parent)
+		parentSaves := s.handleParentChildren(parent)
 		saves = append(saves, parentSaves...)
 	}
 
 	for _, save := range saves {
-		t.Transform().Pos().Set(save.entity, save.pos)
-		t.Transform().PivotPoint().Set(save.entity, save.pivot)
-		t.Transform().ParentPivotPoint().Set(save.entity, save.parentPivot)
+		s.Transform().Pos().Set(save.entity, save.pos)
+		s.Transform().PivotPoint().Set(save.entity, save.pivot)
+		s.Transform().ParentPivotPoint().Set(save.entity, save.parentPivot)
 	}
 }
 
-func (t *service) handleParentChildren(parent ecs.EntityID) []save {
-	children := t.Hierarchy().Children(parent).GetIndices()
+func (s *service) handleParentChildren(parent ecs.EntityID) []save {
+	children := s.Hierarchy().Children(parent).GetIndices()
 	if len(children) == 0 {
 		return nil
 	}
-	order, ok := t.order.Get(parent)
+	order, ok := s.order.Get(parent)
 	if !ok {
 		return nil
 	}
 	saves := make([]save, 0, len(children))
-	align, _ := t.align.Get(parent)
-	gap, _ := t.gap.Get(parent)
+	align, _ := s.align.Get(parent)
+	gap, _ := s.gap.Get(parent)
 
 	// including gaps
 	var totalSize float32 = 0
 	for _, child := range children {
-		size, _ := t.Transform().AbsoluteSize().Get(child)
+		size, _ := s.Transform().AbsoluteSize().Get(child)
 		totalSize += size.Size[order.Order] + gap.Gap
 	}
 	totalSize -= gap.Gap
 
-	size, _ := t.Transform().AbsoluteSize().Get(parent)
+	size, _ := s.Transform().AbsoluteSize().Get(parent)
 	progress := totalSize - size.Size[order.Primary()]
 	progress *= align.Primary
 
@@ -142,7 +141,7 @@ func (t *service) handleParentChildren(parent ecs.EntityID) []save {
 		saves = append(saves, save)
 
 		// update progress
-		size, _ := t.Transform().AbsoluteSize().Get(child)
+		size, _ := s.Transform().AbsoluteSize().Get(child)
 		progress -= size.Size[order.Primary()] + gap.Gap
 	}
 

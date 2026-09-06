@@ -10,9 +10,7 @@ import (
 	"core/modules/tile"
 	"engine/modules/ecs"
 	"engine/modules/grid"
-	"engine/modules/inputs"
 	"engine/modules/loop"
-	"engine/modules/seed"
 
 	"github.com/ogiusek/events"
 	"github.com/ogiusek/ioc/v2"
@@ -58,10 +56,6 @@ func (s *service) Deploy(
 	owner ecs.EntityID,
 	coords grid.Coords,
 ) (ecs.EntityID, error) {
-	worldEntity, ok := s.Seed().WorldSeed()
-	if !ok {
-		return 0, seed.ErrWorldCanHaveOneSeed
-	}
 	// check can place:
 
 	// - is position occuped
@@ -73,13 +67,20 @@ func (s *service) Deploy(
 		return 0, obstruction.ErrPositionIsOccupied
 	}
 
-	// place
-	deployed := s.Prototype().Clone(blueprint)
-	s.Hierarchy().SetParent(deployed, worldEntity)
+	blueprintUUID, ok := s.UUID().Component().Get(blueprint)
+	if !ok {
+		s.Logger().Fatal(tile.ErrBlueprintIsMissingUUID)
+	}
+	ownerUUID, ok := s.UUID().Component().Get(owner)
+	if !ok {
+		s.Logger().Fatal(player.ErrRequiresOwner)
+	}
 
-	s.Player().Owner().Set(deployed, player.NewOwner(owner))
+	// place
+	deployed := s.World().NewEntity()
+	s.Player().Owner().SetUUID(deployed, ownerUUID.ID)
 	s.Obstruction().Deployed().Set(deployed, obstruction.NewDeployed())
-	s.Inputs().LeftClick().Set(deployed, inputs.NewLeftClick(tile.NewClickEntityEvent()))
+	s.Tile().Blueprint().SetUUID(deployed, blueprintUUID.ID)
 	s.Tile().Pos().Set(deployed, pos)
 	return deployed, nil
 }
@@ -89,11 +90,6 @@ func (s *service) DeployEvent(e deploy.DeployEvent) {
 	s.boughtComponent.Set(entity, NewBought(e))
 }
 func (s *service) OnTick(loop.TickEvent) {
-	worldEntity, ok := s.Seed().WorldSeed()
-	if !ok {
-		return
-	}
-
 	entities := s.boughtComponent.GetEntities()
 	for _, entity := range entities {
 		event, ok := s.boughtComponent.Get(entity)
@@ -144,19 +140,28 @@ func (s *service) OnTick(loop.TickEvent) {
 
 		// pay
 		if cost, ok := s.Economy().Cost().Get(event.Blueprint); ok {
-			wallet, ok := s.Economy().Wallet().Get(owner.Owner)
+			wallet, ok := s.Economy().Wallet().Get(owner)
 			if !ok || cost.Cost > wallet.Money {
 				s.Logger().Log(economy.ErrToExpensive)
 				continue
 			}
-			s.Economy().Wallet().Set(owner.Owner, wallet.Pay(cost))
+			s.Economy().Wallet().Set(owner, wallet.Pay(cost))
+		}
+
+		blueprintUUID, ok := s.UUID().Component().Get(event.Blueprint)
+		if !ok {
+			s.Logger().Fatal(tile.ErrBlueprintIsMissingUUID)
+		}
+		ownerUUID, ok := s.UUID().Component().Get(event.By)
+		if !ok {
+			s.Logger().Fatal(player.ErrRequiresOwner)
 		}
 
 		// place
-		deployed := s.Prototype().Clone(event.Blueprint)
-		s.Hierarchy().SetParent(deployed, worldEntity)
-		s.Player().Owner().Set(deployed, owner)
+		deployed := s.World().NewEntity()
+		s.Player().Owner().SetUUID(deployed, ownerUUID.ID)
 		s.Obstruction().Deployed().Set(deployed, obstruction.NewDeployed())
+		s.Tile().Blueprint().SetUUID(deployed, blueprintUUID.ID)
 		s.Tile().Pos().Set(deployed, tile.NewPos(event.Coords.Coords()))
 	}
 }

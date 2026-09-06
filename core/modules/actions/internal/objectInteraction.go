@@ -32,15 +32,15 @@ func (s *service) OnClickObject(event tile.ClickEntityEvent) {
 		return
 	}
 
-	link, ok := s.Metadata().Link().Get(event.Entity)
+	linkEntity, ok := s.Tile().Blueprint().Get(event.Entity)
 	if !ok {
 		s.Logger().Warn(fmt.Errorf("cannot click entity which doesn't have original entity"))
 		return
 	}
 
 	propertiesEntity := s.World().NewEntity()
-	s.CanDeploy().Set(propertiesEntity, actions.NewCanDeploy(link.Entity))
-	s.CoordsCursor().Set(propertiesEntity, actions.NewCoordsCursor(link.Entity, false))
+	s.CanDeploy().Set(propertiesEntity, actions.NewCanDeploy(linkEntity))
+	s.CoordsCursor().Set(propertiesEntity, actions.NewCoordsCursor(linkEntity, false))
 	s.Anchor().Set(propertiesEntity, actions.NewAnchor(event.Entity))
 	s.RegionAnchor().Set(propertiesEntity, actions.NewRegionAnchor(region))
 

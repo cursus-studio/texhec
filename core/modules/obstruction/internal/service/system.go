@@ -4,7 +4,6 @@ import (
 	"core/modules/obstruction"
 	"core/modules/tile"
 	"engine/modules/ecs"
-	"engine/modules/grid"
 )
 
 func (s *service) Register() error {
@@ -71,23 +70,13 @@ entityLoop:
 		size, _ := s.Tile().Size().Get(entity)
 		obstructionComp, _ := s.Obstruction().Component().Get(entity)
 		aabb := obstruction.NewAABB(pos, size)
-		tilesData := make([]grid.CoordsData[obstruction.Obstruction], len(aabb.Tiles))
-		for i, coords := range aabb.Tiles {
+		for _, coords := range aabb.Tiles {
 			data, ok := s.Obstruction().Grid().CoordsData(coords)
 			if !ok {
 				s.Logger().Log(tile.ErrInvalidPosition)
 				continue
 			}
-			tilesData[i] = data
-			if data.Component.GetTile(data.Index)&obstructionComp.Obstruction == 0 {
-				continue
-			}
-			s.World().RemoveEntity(entity)
-			s.Logger().Log(obstruction.ErrPositionIsOccupied)
-			continue entityLoop
-		}
-		for i := range aabb.Tiles {
-			data := tilesData[i]
+
 			data.Component.SetTile(data.Index, data.Component.GetTile(data.Index)^obstructionComp.Obstruction)
 			s.Obstruction().Grid().Chunk().Set(data.Entity, data.Component)
 		}

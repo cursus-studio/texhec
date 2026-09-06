@@ -115,20 +115,16 @@ func (s *service) OnCoordsMissingUpsert(entity ecs.EntityID) {
 	if _, ok := s.CoordsInteraction().MissingPreview().Get(entity); !ok {
 		return
 	}
-	worldEntity, ok := s.Seed().WorldSeed()
-	if !ok {
-		return
-	}
 	coordsCursor, ok := s.CoordsCursor().Get(entity)
 	if !ok {
 		return
 	}
 
-	s.Prototype().CloneTo(coordsCursor.PropertiesEntity, entity)
-	s.Obstruction().Deployed().Remove(entity)
-	s.Collider().Component().Remove(entity)
-
-	s.Hierarchy().SetParent(entity, worldEntity)
+	propertiesUUID, ok := s.UUID().Component().Get(coordsCursor.PropertiesEntity)
+	if !ok {
+		s.Logger().Fatal(tile.ErrBlueprintIsMissingUUID)
+	}
+	s.Tile().Blueprint().SetUUID(entity, propertiesUUID.ID)
 	s.Tile().Layer().Set(entity, tile.NewLayer(definitions.ObjectPlaceholderLayer))
 
 	if !coordsCursor.CustomImage {

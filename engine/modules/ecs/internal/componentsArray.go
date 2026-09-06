@@ -17,8 +17,14 @@ type componentArray[Component any] struct {
 	dependencies []ecstypes.AnyComponentArray
 	dirtySets    datastructures.Set[ecstypes.DirtySet]
 	beforeGets   []ecstypes.BeforeGet
-	onUpsert     []ecstypes.OnMod
-	onRemove     []ecstypes.OnMod
+
+	preparingBulk bool
+
+	onUpsert   []ecstypes.OnMod
+	bulkUpsert []ecstypes.EntityID
+
+	onRemove   []ecstypes.OnMod
+	bulkRemove []ecstypes.EntityID
 }
 
 type Equaler[T any] interface {
@@ -52,8 +58,12 @@ func newComponentArray[Component any](entities entitiesImpl) *componentArray[Com
 		dependencies: nil,
 		dirtySets:    datastructures.NewSet[ecstypes.DirtySet](),
 		beforeGets:   nil,
-		onUpsert:     nil,
-		onRemove:     nil,
+
+		preparingBulk: false,
+		onUpsert:      nil,
+		bulkUpsert:    nil,
+		onRemove:      nil,
+		bulkRemove:    nil,
 	}
 	return array
 }
@@ -65,8 +75,12 @@ func (c *componentArray[Component]) Set(entity ecstypes.EntityID, component Comp
 	}
 	c.entities.EnsureExists(entity)
 	c.components.Set(entity, component)
-	for _, onMod := range c.onUpsert {
-		onMod(entity)
+	if c.preparingBulk {
+		c.bulkUpsert = append(c.bulkUpsert, entity)
+	} else {
+		for _, onMod := range c.onUpsert {
+			onMod(entity)
+		}
 	}
 	for _, dirtySet := range c.dirtySets.Get() {
 		if !dirtySet.Ok() {
@@ -91,8 +105,12 @@ func (c *componentArray[Component]) Remove(entity ecstypes.EntityID) {
 		return
 	}
 	c.components.Remove(entity)
-	for _, onMod := range c.onRemove {
-		onMod(entity)
+	if c.preparingBulk {
+		c.bulkRemove = append(c.bulkRemove, entity)
+	} else {
+		for _, onMod := range c.onRemove {
+			onMod(entity)
+		}
 	}
 	for _, dirtySet := range c.dirtySets.Get() {
 		if !dirtySet.Ok() {
@@ -162,6 +180,32 @@ func (c *componentArray[Component]) BeforeGet(listener ecstypes.BeforeGet) {
 	c.beforeGets = append([]ecstypes.BeforeGet{listener}, c.beforeGets...)
 }
 
+func (c *componentArray[Component]) PrepareBulk() {
+	c.preparingBulk = true
+}
+func (c *componentArray[Component]) CommitBulk() {
+	// reset data before triggering listeners to allow using bulk by listeners
+	c.preparingBulk = false
+
+	bulkUpsert := c.bulkUpsert
+	c.bulkUpsert = nil
+
+	bulkRemove := c.bulkRemove
+	c.bulkRemove = nil
+
+	// trigger listeners
+	for _, entity := range bulkUpsert {
+		for _, listener := range c.onUpsert {
+			listener(entity)
+		}
+	}
+	for _, entity := range bulkRemove {
+		for _, listener := range c.onRemove {
+			listener(entity)
+		}
+	}
+}
+
 func (c *componentArray[Component]) OnUpsert(onUpsert ecstypes.OnMod) {
 	c.onUpsert = append(c.onUpsert, onUpsert)
 }
@@ -173,4 +217,8 @@ func (c *componentArray[Component]) OnRemove(onRemove ecstypes.OnMod) {
 func (c *componentArray[Component]) OnMod(onMod ecstypes.OnMod) {
 	c.OnUpsert(onMod)
 	c.OnRemove(onMod)
+}
+
+func (c *componentArray[Component]) ComponentType() reflect.Type {
+	return reflect.TypeFor[Component]()
 }

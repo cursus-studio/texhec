@@ -103,11 +103,11 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                               8            170             92            958
+Go                               8            183             95           1004
 GLSL                             3             31              2            112
 Markdown                         3             10              0             85
 -------------------------------------------------------------------------------
-SUM:                            14            211             94           1155
+SUM:                            14            224             97           1201
 -------------------------------------------------------------------------------
 ```
 ## TODO
@@ -116,6 +116,9 @@ Currently animated tiles aren't supported and there is a big chance that they wo
 ## Types
 ### type Service
 Type: `core/modules/tile.Service`
+
+#### method Service Blueprint
+Type: `func() engine/modules/uuid.LinkService[core/modules/tile.BlueprintLink]`
 
 #### method Service Component
 Type: `func() engine/modules/ecs.ComponentArray[core/modules/tile.Component]`
@@ -131,6 +134,9 @@ Type: `func() engine/modules/grid.ServiceT[core/modules/tile.ID]`
 
 #### method Service Layer
 Type: `func() engine/modules/ecs.ComponentArray[core/modules/tile.LayerComponent]`
+
+#### method Service Name
+Type: `func() engine/modules/ecs.ComponentArray[core/modules/tile.NameComponent]`
 
 #### method Service NewBiomeAsset
 Type: `func(srcImages [6][]image.Image) (core/modules/tile.BiomeAsset, error)`
@@ -214,6 +220,15 @@ Type: `core/modules/tile.LayerComponent`
 #### property LayerComponent Z
 Type: `core/modules/tile.Coord`
 
+### type NameComponent
+Type: `core/modules/tile.NameComponent`
+
+#### property NameComponent Name
+Type: `string`
+
+### type BlueprintLink
+Type: `core/modules/tile.BlueprintLink`
+
 ### type SizeComponent
 Type: `core/modules/tile.SizeComponent`
 
@@ -279,6 +294,9 @@ Type: `error`
 ### var ErrPositionAndSpeedIsRequiredToStep
 Type: `error`
 
+### var ErrBlueprintIsMissingUUID
+Type: `error`
+
 ### var Tau
 Type: `untyped float`
 
@@ -291,6 +309,9 @@ Type: `func[Number golang.org/x/exp/constraints.Integer | golang.org/x/exp/const
 
 ### func NewLayer
 Type: `func[Number golang.org/x/exp/constraints.Integer | golang.org/x/exp/constraints.Float](z Number) core/modules/tile.LayerComponent`
+
+### func NewName
+Type: `func(name string) core/modules/tile.NameComponent`
 
 ### func NewSize
 Type: `func[Number golang.org/x/exp/constraints.Integer](x Number, y Number) core/modules/tile.SizeComponent`
@@ -315,6 +336,7 @@ Type: `func(deployed engine/modules/ecs.EntityID) core/modules/tile.ClickBluepri
 `core/game`:
   - `core/game.Definitions`
   - `core/game.GameWorld`
+  - `core/game.Obstruction`
   - `core/game.Tile`
 
 `core/modules/definitions`:
@@ -327,6 +349,8 @@ Type: `func(deployed engine/modules/ecs.EntityID) core/modules/tile.ClickBluepri
 
 `core/modules/tile`:
   - `core/modules/tile.BiomeAsset`
+  - `core/modules/tile.Blueprint`
+  - `core/modules/tile.BlueprintLink`
   - `core/modules/tile.Component`
   - `core/modules/tile.Coord`
   - `core/modules/tile.Grid`
@@ -334,9 +358,12 @@ Type: `func(deployed engine/modules/ecs.EntityID) core/modules/tile.ClickBluepri
   - `core/modules/tile.Images`
   - `core/modules/tile.Layer`
   - `core/modules/tile.LayerComponent`
+  - `core/modules/tile.Name`
+  - `core/modules/tile.NameComponent`
   - `core/modules/tile.NewBiomeAsset`
   - `core/modules/tile.NewClickEntityEvent`
   - `core/modules/tile.NewLayer`
+  - `core/modules/tile.NewName`
   - `core/modules/tile.NewRot`
   - `core/modules/tile.NewSize`
   - `core/modules/tile.NewTile`
@@ -472,6 +499,17 @@ Type: `func(deployed engine/modules/ecs.EntityID) core/modules/tile.ClickBluepri
 
 `engine/modules/typeregistry/pkg`:
   - `engine/modules/typeregistry/pkg.PkgT`
+
+`engine/modules/uuid`:
+  - `engine/modules/uuid.Component`
+  - `engine/modules/uuid.Get`
+  - `engine/modules/uuid.LinkService`
+  - `engine/modules/uuid.New`
+  - `engine/modules/uuid.NewUUID`
+  - `engine/modules/uuid.UUID`
+
+`engine/modules/uuid/pkg`:
+  - `engine/modules/uuid/pkg.LinkPkgT`
 
 ### Third Party
 - `github.com/go-gl/gl/v4.5-core/gl`

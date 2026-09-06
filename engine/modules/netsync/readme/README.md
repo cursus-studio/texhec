@@ -8,10 +8,10 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                              11            112             91            660
+Go                              11            113             91            672
 Markdown                         1              0              0              1
 -------------------------------------------------------------------------------
-SUM:                            12            112             91            661
+SUM:                            12            113             91            673
 -------------------------------------------------------------------------------
 ```
 ## TODO
@@ -80,6 +80,7 @@ entity with this component and connection will get notifications about changes
 
 `engine/modules/loop`:
   - `engine/modules/loop.FrameEvent`
+  - `engine/modules/loop.TickEvent`
 
 `engine/modules/netsync`:
   - `engine/modules/netsync.AuthorizedEvent`

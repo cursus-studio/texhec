@@ -14,48 +14,48 @@ type save struct {
 	size   transform.AbsoluteSizeComponent
 }
 
-func (t *service) Init() {
+func (s *service) Init() {
 	arrays := []ecs.AnyComponentArray{
-		t.AbsolutePosArray,
-		t.AbsoluteRotationArray,
-		t.AbsoluteSizeArray,
+		s.AbsolutePosArray,
+		s.AbsoluteRotationArray,
+		s.AbsoluteSizeArray,
 	}
 
-	t.PosArray.SetEmpty(transform.PosComponent{Pos: mgl32.Vec3{0, 0, 0}})
-	t.RotationArray.SetEmpty(t.defaultRot)
-	t.SizeArray.SetEmpty(t.defaultSize)
+	s.PosArray.SetEmpty(transform.PosComponent{Pos: mgl32.Vec3{0, 0, 0}})
+	s.RotationArray.SetEmpty(s.defaultRot)
+	s.SizeArray.SetEmpty(s.defaultSize)
 
-	t.MaxSizeArray.SetEmpty(transform.NewMaxSize(0, 0, 0)) // 0 means not set
-	t.MinSizeArray.SetEmpty(transform.NewMinSize(0, 0, 0)) // 0 means not set
+	s.MaxSizeArray.SetEmpty(transform.NewMaxSize(0, 0, 0)) // 0 means not set
+	s.MinSizeArray.SetEmpty(transform.NewMinSize(0, 0, 0)) // 0 means not set
 
-	t.AspectRatioArray.SetEmpty(transform.NewAspectRatio(0, 0, 0, 0)) // 0 means not set
-	t.PivotPointArray.SetEmpty(t.defaultPivot)
+	s.AspectRatioArray.SetEmpty(transform.NewAspectRatio(0, 0, 0, 0)) // 0 means not set
+	s.PivotPointArray.SetEmpty(s.defaultPivot)
 
-	t.InheritMaskArray.SetEmpty(transform.NewInherit(transform.RelativePos))
-	t.ParentPivotPointArray.SetEmpty(t.defaultParentPivot)
+	s.InheritMaskArray.SetEmpty(transform.NewInherit(transform.RelativePos))
+	s.ParentPivotPointArray.SetEmpty(s.defaultParentPivot)
 
-	t.AbsolutePosArray.SetEmpty(transform.AbsolutePosComponent{Pos: mgl32.Vec3{0, 0, 0}})
-	t.AbsoluteRotationArray.SetEmpty(transform.AbsoluteRotationComponent(t.defaultRot))
-	t.AbsoluteSizeArray.SetEmpty(transform.AbsoluteSizeComponent(t.defaultSize))
+	s.AbsolutePosArray.SetEmpty(transform.AbsolutePosComponent{Pos: mgl32.Vec3{0, 0, 0}})
+	s.AbsoluteRotationArray.SetEmpty(transform.AbsoluteRotationComponent(s.defaultRot))
+	s.AbsoluteSizeArray.SetEmpty(transform.AbsoluteSizeComponent(s.defaultSize))
 
 	for _, arr := range arrays {
-		arr.AddDependency(t.PosArray)
-		arr.AddDependency(t.RotationArray)
-		arr.AddDependency(t.SizeArray)
+		arr.AddDependency(s.PosArray)
+		arr.AddDependency(s.RotationArray)
+		arr.AddDependency(s.SizeArray)
 
-		arr.AddDependency(t.MaxSizeArray)
-		arr.AddDependency(t.MinSizeArray)
+		arr.AddDependency(s.MaxSizeArray)
+		arr.AddDependency(s.MinSizeArray)
 
-		arr.AddDependency(t.AspectRatioArray)
-		arr.AddDependency(t.PivotPointArray)
+		arr.AddDependency(s.AspectRatioArray)
+		arr.AddDependency(s.PivotPointArray)
 
-		arr.AddDependency(t.Hierarchy().Component())
-		arr.AddDependency(t.InheritMaskArray)
-		arr.AddDependency(t.ParentPivotPointArray)
+		arr.AddDependency(s.Hierarchy().Component())
+		arr.AddDependency(s.InheritMaskArray)
+		arr.AddDependency(s.ParentPivotPointArray)
 	}
 
 	for _, array := range arrays {
-		array.AddDirtySet(t.DirtySet)
-		array.BeforeGet(t.BeforeGet)
+		array.AddDirtySet(s.DirtySet)
+		array.BeforeGet(s.BeforeGet)
 	}
 }

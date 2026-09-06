@@ -8,9 +8,9 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                               3             46             14            249
+Go                               3             46             14            254
 -------------------------------------------------------------------------------
-SUM:                             3             46             14            249
+SUM:                             3             46             14            254
 -------------------------------------------------------------------------------
 ```
 ## Types
@@ -124,7 +124,6 @@ Type: `func(entity engine/modules/ecs.EntityID) core/modules/deploy.DestroyEvent
 
 `core/modules/player`:
   - `core/modules/player.ErrRequiresOwner`
-  - `core/modules/player.NewOwner`
   - `core/modules/player.Owner`
 
 `core/modules/reach`:
@@ -139,8 +138,9 @@ Type: `func(entity engine/modules/ecs.EntityID) core/modules/deploy.DestroyEvent
   - `core/modules/reach/pkg.PkgT`
 
 `core/modules/tile`:
+  - `core/modules/tile.Blueprint`
   - `core/modules/tile.Coord`
-  - `core/modules/tile.NewClickEntityEvent`
+  - `core/modules/tile.ErrBlueprintIsMissingUUID`
   - `core/modules/tile.NewPos`
   - `core/modules/tile.Pos`
   - `core/modules/tile.Size`
@@ -159,20 +159,12 @@ Type: `func(entity engine/modules/ecs.EntityID) core/modules/deploy.DestroyEvent
   - `engine/modules/grid.Coord`
   - `engine/modules/grid.Coords`
 
-`engine/modules/inputs`:
-  - `engine/modules/inputs.LeftClick`
-  - `engine/modules/inputs.NewLeftClick`
-
 `engine/modules/interactions/pkg`:
   - `engine/modules/interactions/pkg.FeaturePkg`
   - `engine/modules/interactions/pkg.NewCopyRelation`
 
 `engine/modules/loop`:
   - `engine/modules/loop.TickEvent`
-
-`engine/modules/seed`:
-  - `engine/modules/seed.ErrWorldCanHaveOneSeed`
-  - `engine/modules/seed.WorldSeed`
 
 ### Third Party
 - `github.com/ogiusek/events`

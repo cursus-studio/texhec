@@ -8,10 +8,10 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                               3             17              3             73
+Go                               3             20              3             97
 Markdown                         2              0              0              3
 -------------------------------------------------------------------------------
-SUM:                             5             17              3             76
+SUM:                             5             20              3            100
 -------------------------------------------------------------------------------
 ```
 ## TODO
@@ -30,17 +30,23 @@ Type: `func(engine/modules/ecs.EntityID) error`
 returns nil if object is controled
 
 #### method Service Owner
-Type: `func() engine/modules/ecs.ComponentArray[core/modules/player.OwnerComponent]`
+Type: `func() engine/modules/uuid.LinkService[core/modules/player.OwnerLink]`
+
+#### method Service Player
+Type: `func() engine/modules/ecs.ComponentArray[core/modules/player.PlayerComponent]`
+
+### type PlayerComponent
+Type: `core/modules/player.PlayerComponent`
+marks that player is performing a move
+
+#### property PlayerComponent Name
+Type: `string`
 
 ### type ActingPlayerComponent
 Type: `core/modules/player.ActingPlayerComponent`
-marks that player is performing a move
 
-### type OwnerComponent
-Type: `core/modules/player.OwnerComponent`
-
-#### property OwnerComponent Owner
-Type: `engine/modules/ecs.EntityID`
+### type OwnerLink
+Type: `core/modules/player.OwnerLink`
 
 ## Variables
 ### var ErrRequiresOwner
@@ -53,25 +59,28 @@ Type: `error`
 Type: `error`
 
 ## Functions
+### func NewPlayer
+Type: `func(name string) core/modules/player.PlayerComponent`
+
 ### func NewActingPlayer
 Type: `func() core/modules/player.ActingPlayerComponent`
-
-### func NewOwner
-Type: `func(owner engine/modules/ecs.EntityID) core/modules/player.OwnerComponent`
 
 
 ## Dependencies
 `core/game`:
+  - `core/game.Economy`
   - `core/game.GameWorld`
-  - `core/game.Player`
+
+`core/modules/economy`:
+  - `core/modules/economy.NewWallet`
+  - `core/modules/economy.Wallet`
 
 `core/modules/player`:
-  - `core/modules/player.ActingPlayer`
   - `core/modules/player.ActingPlayerComponent`
   - `core/modules/player.ErrRequiresControl`
   - `core/modules/player.ErrRequiresOwner`
-  - `core/modules/player.Owner`
-  - `core/modules/player.OwnerComponent`
+  - `core/modules/player.OwnerLink`
+  - `core/modules/player.PlayerComponent`
   - `core/modules/player.Service`
 
 `engine/modules/ecs`:
@@ -81,6 +90,16 @@ Type: `func(owner engine/modules/ecs.EntityID) core/modules/player.OwnerComponen
 
 `engine/modules/typeregistry/pkg`:
   - `engine/modules/typeregistry/pkg.PkgT`
+
+`engine/modules/uuid`:
+  - `engine/modules/uuid.Component`
+  - `engine/modules/uuid.Get`
+  - `engine/modules/uuid.LinkService`
+  - `engine/modules/uuid.New`
+  - `engine/modules/uuid.NewUUID`
+
+`engine/modules/uuid/pkg`:
+  - `engine/modules/uuid/pkg.LinkPkgT`
 
 ### Third Party
 - `github.com/ogiusek/ioc/v2`
