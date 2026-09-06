@@ -55,5 +55,7 @@ func (s *service) OnPlayerUpsert(player ecs.EntityID) {
 	}
 	s.Hierarchy().SetParent(player, worldGenerationEntity)
 	s.UUID().Component().Set(player, uuid.New(s.UUID().NewUUID()))
-	s.Economy().Wallet().Set(player, economy.NewWallet(0))
+	if _, ok := s.Economy().Wallet().Get(player); !ok {
+		s.Economy().Wallet().Set(player, economy.NewWallet(0))
+	}
 }

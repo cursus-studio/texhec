@@ -22,6 +22,7 @@ type Service struct {
 
 	recordedEventUUID *uuid.UUID
 	recordingID       record.UUIDRecordingID
+	onTick            []func()
 }
 
 func NewService(c ioc.Dic, config config.Config) *Service {
@@ -30,10 +31,16 @@ func NewService(c ioc.Dic, config config.Config) *Service {
 	s.recordedEventUUID = nil
 	s.recordingID = 0
 
+	return s
+}
+
+func (s *Service) AddBeforeListeners() {
 	// listen to server messages
 	listeners := map[reflect.Type]func(ecs.EntityID, any){
 		reflect.TypeFor[clienttypes.FetchStateDTO](): func(entity ecs.EntityID, a any) {
-			s.ListenFetchState(entity, a.(clienttypes.FetchStateDTO))
+			s.onTick = append(s.onTick, func() {
+				s.ListenFetchState(entity, a.(clienttypes.FetchStateDTO))
+			})
 		},
 		reflect.TypeFor[clienttypes.EmitEventDTO](): func(entity ecs.EntityID, a any) {
 			s.ListenEmitEvent(entity, a.(clienttypes.EmitEventDTO))
@@ -42,6 +49,7 @@ func NewService(c ioc.Dic, config config.Config) *Service {
 			s.ListenTransparentEvent(entity, a.(clienttypes.TransparentEventDTO))
 		},
 	}
+
 	events.Listen(s.EventsBuilder(), func(loop.FrameEvent) {
 		for _, clients := range s.NetSync().Client().GetEntities() {
 			for _, client := range s.Hierarchy().Children(clients).GetIndices() {
@@ -63,8 +71,12 @@ func NewService(c ioc.Dic, config config.Config) *Service {
 			}
 		}
 	})
-
-	return s
+	events.Listen(s.EventsBuilder(), func(loop.TickEvent) {
+		for _, listener := range s.onTick {
+			listener()
+		}
+		s.onTick = s.onTick[:0]
+	})
 }
 
 // public methods

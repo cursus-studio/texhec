@@ -37,6 +37,7 @@ func (s *service) Start() ecs.SystemRegister {
 			listen(s.EventsBuilder(), s.ClientService().OnTransparentEvent)
 		}
 
+		s.ServerService().AddBeforeListeners()
 		for _, listen := range s.ServerService().ListenToEvents {
 			listen(s.EventsBuilder(), s.ServerService().BeforeEvent)
 		}
