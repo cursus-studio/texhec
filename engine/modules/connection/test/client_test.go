@@ -49,10 +49,13 @@ func TestClient(t *testing.T) {
 	}
 
 	// communication
-	s.Sleep()
+	s.Poll()
 	connection, _ := s.Connection().Component().Get(s.Connection().Component().GetEntities()[0])
 	messages := connection.Conn().Messages()
-	if len(messages) != 1 || messages[0] != s.Message {
+	if len(messages) != 1 {
+		t.Errorf("expected \"%v\" but got \"%v\"", s.Message, nil)
+		return
+	} else if messages[0] != s.Message {
 		t.Errorf("expected \"%v\" but got \"%v\"", s.Message, messages[0])
 		return
 	}
@@ -63,7 +66,7 @@ func TestClient(t *testing.T) {
 		_ = conn.Close()
 	}
 
-	s.Sleep()
+	s.Poll()
 
 	if connections := len(s.Connection().Component().GetEntities()); connections != 0 {
 		t.Errorf("Expected 0 connection not %v", connections)

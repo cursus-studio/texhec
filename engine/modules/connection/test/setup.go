@@ -3,6 +3,8 @@ package test
 import (
 	"encoding/binary"
 	"engine"
+	"engine/modules/ecs"
+	"engine/modules/loop"
 	typeregistrypkg "engine/modules/typeregistry/pkg"
 	enginepkg "engine/pkg"
 	"fmt"
@@ -11,6 +13,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/ogiusek/events"
 	"github.com/ogiusek/ioc/v2"
 )
 
@@ -34,6 +37,9 @@ func NewSetup() Setup {
 		typeregistrypkg.PkgT[Message],
 	)
 	s := ioc.GetServices[Setup](c)
+	_ = ecs.RegisterSystems(
+		s.Connection(),
+	)
 	s.Message.Content = "example message"
 	s.Network = "tcp"
 	s.Addr = "localhost:9999"
@@ -43,8 +49,9 @@ func NewSetup() Setup {
 func (s *Setup) Connect() (net.Conn, error)  { return net.Dial(s.Network, s.Addr) }
 func (s *Setup) Host() (net.Listener, error) { return net.Listen(s.Network, s.Addr) }
 
-func (s *Setup) Sleep() {
-	time.Sleep(time.Millisecond * 10)
+func (s *Setup) Poll() {
+	time.Sleep(time.Millisecond * 10)          // wait for message to be delivered
+	events.Emit(s.Events(), loop.FrameEvent{}) // poll them
 }
 
 func (s *Setup) Send(conn net.Conn, message Message) error {

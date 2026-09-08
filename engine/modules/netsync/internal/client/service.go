@@ -96,7 +96,7 @@ func NewService(c ioc.Dic, config config.Config) *Service {
 				listener, ok := listeners[messageType]
 				if !ok {
 					s.Logger().Log(fmt.Errorf("invalid listener of type '%v' called", messageType.String()))
-					_ = conn.Conn().Close()
+					conn.Conn().Close()
 					return
 				}
 				listener(msg)
@@ -255,7 +255,7 @@ func (s *Service) ListenSendState(dto servertypes.SendStateDTO) {
 	if dto.Error != nil {
 		s.predictions = nil
 		s.Logger().Log(dto.Error)
-		_ = conn.Close()
+		conn.Close()
 		return
 	}
 	s.predictions = nil

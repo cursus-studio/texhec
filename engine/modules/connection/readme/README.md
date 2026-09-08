@@ -2,21 +2,15 @@
 ## Architecture
 defines connection and stores it in component
 
-## Benchmarks
-```
-$ go test ./... -bench=.
-PASS
-ok  	engine/modules/connection/test	0.052s
-```
 ## Lines of code
 ```
 github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                               7             88             17            415
+Go                               8            102             25            470
 -------------------------------------------------------------------------------
-SUM:                             7             88             17            415
+SUM:                             8            102             25            470
 -------------------------------------------------------------------------------
 ```
 ## Types
@@ -46,7 +40,7 @@ Type: `engine/modules/connection.Conn`
 singular connection interface
 
 #### method Conn Close
-Type: `func() error`
+Type: `func()`
 
 #### method Conn Messages
 Type: `func() []any`
@@ -79,13 +73,17 @@ Type: `func(conn engine/modules/connection.Conn) engine/modules/connection.Conne
 ## Dependencies
 `engine`:
   - `engine.Codec`
+  - `engine.Connection`
   - `engine.EngineWorld`
+  - `engine.Events`
+  - `engine.EventsBuilder`
   - `engine.Hierarchy`
   - `engine.Logger`
   - `engine.World`
 
 `engine/modules/connection`:
   - `engine/modules/connection.Close`
+  - `engine/modules/connection.Component`
   - `engine/modules/connection.Conn`
   - `engine/modules/connection.ConnectionComponent`
   - `engine/modules/connection.Listener`
@@ -104,7 +102,11 @@ Type: `func(conn engine/modules/connection.Conn) engine/modules/connection.Conne
   - `engine/modules/ecs.EntityID`
   - `engine/modules/ecs.GetComponentArray`
   - `engine/modules/ecs.NewDirtySet`
+  - `engine/modules/ecs.RegisterSystems`
   - `engine/modules/ecs.SystemRegister`
+
+`engine/modules/loop`:
+  - `engine/modules/loop.FrameEvent`
 
 `engine/modules/typeregistry/pkg`:
   - `engine/modules/typeregistry/pkg.PkgT`
@@ -113,4 +115,5 @@ Type: `func(conn engine/modules/connection.Conn) engine/modules/connection.Conne
   - `engine/pkg.Pkg`
 
 ### Third Party
+- `github.com/ogiusek/events`
 - `github.com/ogiusek/ioc/v2`

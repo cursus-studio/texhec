@@ -1,14 +1,13 @@
 package internal
 
 import (
-	"encoding/binary"
 	"engine"
 	"engine/modules/connection"
 	"engine/modules/datastructures"
 	"engine/modules/ecs"
-	"io"
 	"net"
 
+	"github.com/ogiusek/events"
 	"github.com/ogiusek/ioc/v2"
 )
 
@@ -93,11 +92,12 @@ func (s *service) BeforeConnectionGet(ecs.EntityID) {
 			continue
 		}
 		s.connections.RemoveElements(connection)
-		_ = connection.Close()
+		connection.Close()
 	}
 }
 
 func (s *service) Register() error {
+	events.Listen(s.EventsBuilder(), s.OnFrame)
 	return nil
 }
 
@@ -162,35 +162,9 @@ func (s *service) AddListener(entity ecs.EntityID, rawListener net.Listener) {
 func (s *service) AddConnection(entity ecs.EntityID, rawConn net.Conn) {
 	conn := &conn{
 		service: s,
-		conn:    rawConn,
+		conn:    ConnBuffer{Conn: rawConn},
 	}
+
 	comp := connection.NewConnection(conn)
 	s.connectionArray.Set(entity, comp)
-	go func() {
-		for {
-			messageLengthInBytes := make([]byte, 4)
-			if _, err := io.ReadFull(rawConn, messageLengthInBytes); err != nil {
-				break
-			}
-			messageLength := binary.BigEndian.Uint32(messageLengthInBytes)
-			messageBytes := make([]byte, messageLength)
-			if _, err := io.ReadFull(rawConn, messageBytes); err != nil {
-				break
-			}
-
-			message, err := s.Codec().Decode(messageBytes)
-			if err != nil {
-				s.Logger().Log(err)
-				continue
-			}
-			// f.logger.Info(fmt.Sprintf("received '***' type '%v'", reflect.TypeOf(message).String()))
-			conn.msgMutex.Lock()
-			conn.messages = append(conn.messages, message)
-			conn.msgMutex.Unlock()
-		}
-		if connComp, ok := s.connectionArray.Get(entity); ok && connComp.Conn() == conn {
-			s.World().RemoveEntity(entity)
-		}
-		_ = rawConn.Close()
-	}()
 }
