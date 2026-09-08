@@ -140,23 +140,6 @@ func (s *service) AddListener(entity ecs.EntityID, rawListener net.Listener) {
 	s.listeners.Add(rawListener)
 	comp := connection.NewListener(rawListener)
 	s.listenersArray.Set(entity, comp)
-
-	go func() {
-		for {
-			rawConn, err := rawListener.Accept()
-			if err != nil {
-				break
-			}
-			clientEntity := s.World().NewEntity()
-			s.Hierarchy().SetParent(clientEntity, entity)
-			s.AddConnection(clientEntity, rawConn)
-		}
-		if comp, ok := s.listenersArray.Get(entity); ok && comp.Listener() == rawListener {
-			s.World().RemoveEntity(entity)
-		}
-
-		_ = rawListener.Close()
-	}()
 }
 
 func (s *service) AddConnection(entity ecs.EntityID, rawConn net.Conn) {
