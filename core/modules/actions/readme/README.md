@@ -8,10 +8,10 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                               6             86             13            467
+Go                               6             83             13            497
 Markdown                         1              0              0              1
 -------------------------------------------------------------------------------
-SUM:                             7             86             13            468
+SUM:                             7             83             13            498
 -------------------------------------------------------------------------------
 ```
 ## Types
@@ -125,14 +125,14 @@ Type: `engine/modules/grid.Coords`
 ### type EntityInteraction
 Type: `core/modules/actions.EntityInteraction`
 
-#### property EntityInteraction Entity
-Type: `engine/modules/ecs.EntityID`
+#### property EntityInteraction UUID
+Type: `engine/modules/uuid.UUID`
 
 ### type BlueprintInteraction
 Type: `core/modules/actions.BlueprintInteraction`
 
-#### property BlueprintInteraction Entity
-Type: `engine/modules/ecs.EntityID`
+#### property BlueprintInteraction UUID
+Type: `engine/modules/uuid.UUID`
 
 ## Variables
 ### var ErrRequiresSpeed
@@ -161,10 +161,10 @@ Type: `func(region core/modules/pathfind.Region) core/modules/actions.RegionAnch
 Type: `func(coords engine/modules/grid.Coords) core/modules/actions.CoordsInteraction`
 
 ### func NewEntityInteraction
-Type: `func(entity engine/modules/ecs.EntityID) core/modules/actions.EntityInteraction`
+Type: `func(uuid engine/modules/uuid.UUID) core/modules/actions.EntityInteraction`
 
 ### func NewBlueprintInteraction
-Type: `func(entity engine/modules/ecs.EntityID) core/modules/actions.BlueprintInteraction`
+Type: `func(uuid engine/modules/uuid.UUID) core/modules/actions.BlueprintInteraction`
 
 
 ## Dependencies
@@ -212,6 +212,7 @@ Type: `func(entity engine/modules/ecs.EntityID) core/modules/actions.BlueprintIn
   - `core/modules/actions.Region`
   - `core/modules/actions.RegionAnchorComponent`
   - `core/modules/actions.Service`
+  - `core/modules/actions.UUID`
 
 `core/modules/definitions`:
   - `core/modules/definitions.Assets`
@@ -243,7 +244,8 @@ Type: `func(entity engine/modules/ecs.EntityID) core/modules/actions.BlueprintIn
   - `core/modules/pathfind.Speed`
 
 `core/modules/player`:
-  - `core/modules/player.ControlsObject`
+  - `core/modules/player.ControlsEntity`
+  - `core/modules/player.ControlsUUID`
   - `core/modules/player.ErrRequiresToBeEnemy`
 
 `core/modules/tile`:
@@ -317,6 +319,15 @@ Type: `func(entity engine/modules/ecs.EntityID) core/modules/actions.BlueprintIn
 
 `engine/modules/typeregistry/pkg`:
   - `engine/modules/typeregistry/pkg.PkgT`
+
+`engine/modules/uuid`:
+  - `engine/modules/uuid.Component`
+  - `engine/modules/uuid.Entity`
+  - `engine/modules/uuid.ErrMissingUUID`
+  - `engine/modules/uuid.Get`
+  - `engine/modules/uuid.ID`
+  - `engine/modules/uuid.SetUUID`
+  - `engine/modules/uuid.UUID`
 
 ### Third Party
 - `github.com/go-gl/mathgl/mgl32`

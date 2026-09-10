@@ -5,8 +5,13 @@ package uuid
 
 import (
 	"engine/modules/ecs"
+	"errors"
 
 	"github.com/google/uuid"
+)
+
+var (
+	ErrMissingUUID error = errors.New("uuid:missing uuid")
 )
 
 // engine interface

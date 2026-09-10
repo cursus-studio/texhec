@@ -8,10 +8,10 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                               4             31              4            229
+Go                               4             35              5            250
 Markdown                         1              0              0              1
 -------------------------------------------------------------------------------
-SUM:                             5             31              4            230
+SUM:                             5             35              5            251
 -------------------------------------------------------------------------------
 ```
 ## Types
@@ -63,6 +63,15 @@ Type: `core/modules/attack.DamageComponent`
 #### property DamageComponent Damage
 Type: `core/modules/attack.Health`
 
+### type AttackEvent
+Type: `core/modules/attack.AttackEvent`
+
+#### property AttackEvent Attacker
+Type: `engine/modules/uuid.UUID`
+
+#### property AttackEvent Target
+Type: `engine/modules/uuid.UUID`
+
 ## Variables
 ### var ErrCannotAttackEnemyOutOfReach
 Type: `error`
@@ -77,6 +86,9 @@ Type: `func(health core/modules/attack.Health) core/modules/attack.HealthCompone
 ### func NewDamage
 Type: `func(damage core/modules/attack.Health) core/modules/attack.DamageComponent`
 
+### func NewAttackEvent
+Type: `func(attacker engine/modules/uuid.UUID, target engine/modules/uuid.UUID) core/modules/attack.AttackEvent`
+
 
 ## Dependencies
 `core/game`:
@@ -88,16 +100,19 @@ Type: `func(damage core/modules/attack.Health) core/modules/attack.DamageCompone
 
 `core/modules/actions`:
   - `core/modules/actions.EnemyEntityStep`
-  - `core/modules/actions.Entity`
   - `core/modules/actions.FriendlyOffensiveEntityStep`
+  - `core/modules/actions.UUID`
 
 `core/modules/attack`:
+  - `core/modules/attack.AttackEvent`
+  - `core/modules/attack.Attacker`
   - `core/modules/attack.Damage`
   - `core/modules/attack.DamageComponent`
   - `core/modules/attack.Entity`
   - `core/modules/attack.ErrCannotAttackEnemyOutOfReach`
   - `core/modules/attack.Health`
   - `core/modules/attack.HealthComponent`
+  - `core/modules/attack.NewAttackEvent`
   - `core/modules/attack.NewDamage`
   - `core/modules/attack.NewHealth`
   - `core/modules/attack.NewTarget`
@@ -139,7 +154,6 @@ Type: `func(damage core/modules/attack.Health) core/modules/attack.DamageCompone
   - `engine/modules/ecs.EntityID`
   - `engine/modules/ecs.GetComponentArray`
   - `engine/modules/ecs.NewDirtySet`
-  - `engine/modules/ecs.NewSetEvent`
   - `engine/modules/ecs.SystemRegister`
 
 `engine/modules/entityregistry`:
@@ -163,6 +177,11 @@ Type: `func(damage core/modules/attack.Health) core/modules/attack.DamageCompone
 
 `engine/modules/typeregistry/pkg`:
   - `engine/modules/typeregistry/pkg.PkgT`
+
+`engine/modules/uuid`:
+  - `engine/modules/uuid.Entity`
+  - `engine/modules/uuid.Get`
+  - `engine/modules/uuid.UUID`
 
 ### Third Party
 - `github.com/ogiusek/events`

@@ -24,7 +24,7 @@ type FindPathFeature struct {
 }
 
 func (f FindPathFeature) Event() any {
-	return pathfind.NewFindPathEvent(f.Entity.State().Entity, f.Coords.State().Coords)
+	return pathfind.NewFindPathEvent(f.Entity.State().UUID, f.Coords.State().Coords)
 }
 
 var Pkg = ioc.NewPkg(func(b ioc.Builder) {

@@ -25,7 +25,7 @@ type AttackFeature struct {
 }
 
 func (f AttackFeature) Event() any {
-	return ecs.NewSetEvent(f.By.State().Entity, attack.NewTarget(f.Target.State().Entity))
+	return attack.NewAttackEvent(f.By.State().UUID, f.Target.State().UUID)
 }
 
 var Pkg = ioc.NewPkg(func(b ioc.Builder) {

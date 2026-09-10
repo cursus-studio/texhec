@@ -37,7 +37,7 @@ func (s *service) Owner() uuid.LinkService[player.OwnerLink] {
 	return s.OwnerLink
 }
 
-func (s *service) ControlsObject(entity ecs.EntityID) error {
+func (s *service) ControlsEntity(entity ecs.EntityID) error {
 	owner, ok := s.Owner().Get(entity)
 	if !ok {
 		return player.ErrRequiresOwner
@@ -46,6 +46,13 @@ func (s *service) ControlsObject(entity ecs.EntityID) error {
 		return player.ErrRequiresControl
 	}
 	return nil
+}
+
+func (s *service) ControlsUUID(uuidVal uuid.UUID) error {
+	if entity, ok := s.UUID().Entity(uuidVal); ok {
+		return s.ControlsEntity(entity)
+	}
+	return uuid.ErrMissingUUID
 }
 
 func (s *service) OnPlayerUpsert(player ecs.EntityID) {

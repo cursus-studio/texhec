@@ -16,11 +16,15 @@ func (s *service) BlueprintInteraction() interactions.InteractionService[actions
 }
 
 func (s *service) OnClickBlueprint(event tile.ClickBlueprintEvent) {
+	uuidComp, ok := s.UUID().Component().Get(event.Entity)
+	if !ok {
+		return
+	}
 	propertiesEntity := s.World().NewEntity()
 	s.CoordsCursor().Set(propertiesEntity, actions.NewCoordsCursor(event.Entity, true))
 	s.Anchor().Set(propertiesEntity, actions.NewAnchor(event.Entity))
 
-	s.BlueprintInteraction().Save(propertiesEntity, actions.NewBlueprintInteraction(event.Entity))
+	s.BlueprintInteraction().Save(propertiesEntity, actions.NewBlueprintInteraction(uuidComp.ID))
 }
 
 func (s *service) OnBlueprintMissingUpsert(entity ecs.EntityID) {
@@ -67,9 +71,14 @@ func (s *service) OnBlueprintStateUpsert(entity ecs.EntityID) {
 	if !ok {
 		return
 	}
+	blueprintEntity, ok := s.UUID().Entity(blueprint.State.UUID)
+	if !ok {
+		return
+	}
 
-	s.CoordsCursor().Set(entity, actions.NewCoordsCursor(blueprint.State.Entity, true))
-	if object, ok := s.EntityInteraction().StatePreview().Get(entity); ok {
-		s.Anchor().Set(entity, actions.NewAnchor(object.State.Entity))
+	s.CoordsCursor().Set(entity, actions.NewCoordsCursor(blueprintEntity, true))
+	if object, ok := s.EntityInteraction().StatePreview().Get(entity); !ok {
+	} else if objectEntity, ok := s.UUID().Entity(object.State.UUID); ok {
+		s.Anchor().Set(entity, actions.NewAnchor(objectEntity))
 	}
 }

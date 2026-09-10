@@ -6,6 +6,7 @@ import (
 	"core/modules/tile"
 	"engine/modules/ecs"
 	"engine/modules/grid"
+	"engine/modules/uuid"
 	"errors"
 
 	"golang.org/x/exp/constraints"
@@ -79,10 +80,10 @@ type Service interface {
 // - look on `HPA*` and `JPS`
 
 type FindPathEvent struct {
-	Entity ecs.EntityID
+	UUID   uuid.UUID
 	Coords grid.Coords
 }
 
-func NewFindPathEvent(entity ecs.EntityID, coords grid.Coords) FindPathEvent {
+func NewFindPathEvent(entity uuid.UUID, coords grid.Coords) FindPathEvent {
 	return FindPathEvent{entity, coords}
 }

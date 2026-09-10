@@ -42,7 +42,7 @@ func AddEvent[EventType any](config Config) {
 // these event are sent from server to client regurally but they aren't sent from client to server
 func AddSimulatedEvent[EventType any](config Config) {
 	config.config.SimulatedEvents = append(config.config.EventTypes, reflect.TypeFor[EventType]())
-	config.config.ListenToSimulatedEvents = append(config.config.ListenToEvents, func(b events.Builder, f func(any)) {
+	config.config.ListenToSimulatedEvents = append(config.config.ListenToSimulatedEvents, func(b events.Builder, f func(any)) {
 		events.Listen(b, func(e EventType) { f(e) })
 	})
 }

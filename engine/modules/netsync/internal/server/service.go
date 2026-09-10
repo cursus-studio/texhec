@@ -154,41 +154,6 @@ func (s *Service) ListenTransparentEvent(entity ecs.EntityID, dto clienttypes.Tr
 
 // private methods
 
-// func (t *Service) loadConnections() {
-// 	for _, entity := range t.dirtySet.Get() {
-// 		if ok := t.listeners.Get(entity); ok {
-// 			continue
-// 		}
-// 		t.listeners.Add(entity)
-// 		if _, ok := t.NetSync().Client().Get(entity); !ok {
-// 			continue
-// 		}
-//
-// 		comp, ok := t.Connection().Component().Get(entity)
-// 		if !ok {
-// 			continue
-// 		}
-// 		messages := comp.Conn().Messages()
-// 		go func(entity ecs.EntityID) {
-// 			for {
-// 				message, ok := <-messages
-// 				if !ok {
-// 					break
-// 				}
-// 				t.mutex.Lock()
-// 				t.messagesSentFromClient = append(t.messagesSentFromClient, clientMessage{
-// 					Client:  entity,
-// 					Message: message,
-// 				})
-// 				t.mutex.Unlock()
-// 			}
-// 			t.mutex.Lock()
-// 			t.toRemove = append(t.toRemove, entity)
-// 			t.mutex.Unlock()
-// 		}(entity)
-// 	}
-// }
-
 func (s *Service) sendVisible(client ecs.EntityID, eventUUID *uuid.UUID, changes record.UUIDRecording) {
 	connComp, ok := s.Connection().Component().Get(client)
 	if !ok {

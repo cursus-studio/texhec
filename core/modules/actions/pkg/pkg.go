@@ -7,6 +7,7 @@ import (
 	"core/modules/player"
 	interactionspkg "engine/modules/interactions/pkg"
 	typeregistrypkg "engine/modules/typeregistry/pkg"
+	"engine/modules/uuid"
 
 	"github.com/ogiusek/ioc/v2"
 )
@@ -27,16 +28,20 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 		interactionspkg.StepPkg[actions.FriendlyEntityStep](func(c ioc.Dic) func(state actions.EntityInteraction) error {
 			world := ioc.Get[game.GameWorld](c)
 			return func(state actions.EntityInteraction) error {
-				return world.Player().ControlsObject(state.Entity)
+				return world.Player().ControlsUUID(state.UUID)
 			}
 		}),
 		interactionspkg.StepPkg[actions.FriendlyMobileEntityStep](func(c ioc.Dic) func(state actions.EntityInteraction) error {
 			world := ioc.Get[game.GameWorld](c)
 			return func(state actions.EntityInteraction) error {
-				if err := world.Player().ControlsObject(state.Entity); err != nil {
+				entity, ok := world.UUID().Entity(state.UUID)
+				if !ok {
+					return uuid.ErrMissingUUID
+				}
+				if err := world.Player().ControlsEntity(entity); err != nil {
 					return err
 				}
-				if _, ok := world.Pathfind().Speed().Get(state.Entity); !ok {
+				if _, ok := world.Pathfind().Speed().Get(entity); !ok {
 					return actions.ErrRequiresSpeed
 				}
 				return nil
@@ -45,10 +50,14 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 		interactionspkg.StepPkg[actions.FriendlyBuilderEntityStep](func(c ioc.Dic) func(state actions.EntityInteraction) error {
 			world := ioc.Get[game.GameWorld](c)
 			return func(state actions.EntityInteraction) error {
-				if err := world.Player().ControlsObject(state.Entity); err != nil {
+				entity, ok := world.UUID().Entity(state.UUID)
+				if !ok {
+					return uuid.ErrMissingUUID
+				}
+				if err := world.Player().ControlsEntity(entity); err != nil {
 					return err
 				}
-				linkEntity, _ := world.Tile().Blueprint().Get(state.Entity)
+				linkEntity, _ := world.Tile().Blueprint().Get(entity)
 				if _, ok := world.Deploy().Component().Get(linkEntity); !ok {
 					return actions.ErrRequiresDeploy
 				}
@@ -58,10 +67,14 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 		interactionspkg.StepPkg[actions.FriendlyOffensiveEntityStep](func(c ioc.Dic) func(state actions.EntityInteraction) error {
 			world := ioc.Get[game.GameWorld](c)
 			return func(state actions.EntityInteraction) error {
-				if err := world.Player().ControlsObject(state.Entity); err != nil {
+				entity, ok := world.UUID().Entity(state.UUID)
+				if !ok {
+					return uuid.ErrMissingUUID
+				}
+				if err := world.Player().ControlsEntity(entity); err != nil {
 					return err
 				}
-				if _, ok := world.Attack().Reach().Component().Get(state.Entity); !ok {
+				if _, ok := world.Attack().Reach().Component().Get(entity); !ok {
 					return actions.ErrRequiresAttack
 				}
 				return nil
@@ -70,7 +83,7 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 		interactionspkg.StepPkg[actions.EnemyEntityStep](func(c ioc.Dic) func(state actions.EntityInteraction) error {
 			world := ioc.Get[game.GameWorld](c)
 			return func(state actions.EntityInteraction) error {
-				if err := world.Player().ControlsObject(state.Entity); err != nil {
+				if err := world.Player().ControlsUUID(state.UUID); err != nil {
 					return nil
 				}
 				return player.ErrRequiresToBeEnemy

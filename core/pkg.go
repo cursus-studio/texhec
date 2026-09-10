@@ -2,6 +2,7 @@ package main
 
 import (
 	"core/game"
+	"core/modules/attack"
 	"core/modules/definitions"
 	"core/modules/deploy"
 	"core/modules/economy"
@@ -128,6 +129,7 @@ func getDic() ioc.Dic {
 				record.AddToConfig[economy.WalletComponent](config.RecordConfig())
 
 				netsyncpkg.AddEvent[deploy.DeployEvent](config)
+				netsyncpkg.AddEvent[attack.AttackEvent](config)
 				netsyncpkg.AddEvent[pathfind.FindPathEvent](config)
 			})
 			ioc.Wrap(b, func(c ioc.Dic, config colliderpkg.Config) {

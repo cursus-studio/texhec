@@ -209,26 +209,26 @@ goos: linux
 goarch: amd64
 pkg: engine/modules/ecs/test
 cpu: Intel(R) Core(TM) i5-8350U CPU @ 1.70GHz
-BenchmarkDirtySetDirty-8               	165129849	         7.835 ns/op
-BenchmarkDirtySetDirtyInversed-8       	174412747	         6.861 ns/op
-BenchmarkDirtySetGet-8                 	601250739	         2.045 ns/op
-BenchmarkDirtySetDirtyAndGet-8         	173398975	         7.030 ns/op
-BenchmarkDirtySetDirtyAnd1Get-8        	149764879	         8.698 ns/op
-Benchmark4SavesWith7Systems-8          	26502996	        42.84 ns/op
-Benchmark16SavesWith7Systems-8         	 6960744	       173.0 ns/op
-Benchmark256SavesWith7Systems-8        	  407770	      2661 ns/op
-Benchmark4096SavesWith7Systems-8       	   28305	     42301 ns/op
-Benchmark16384SavesWith7Systems-8      	    7105	    168759 ns/op
-Benchmark65536SavesWith7Systems-8      	    1782	    686145 ns/op
-Benchmark262144SavesWith7Systems-8     	     438	   2690931 ns/op
-BenchmarkGetComponent-8                	84988351	        14.37 ns/op
-BenchmarkCreateComponents-8            	42856870	        27.55 ns/op
-BenchmarkUpdateComponents-8            	100000000	        10.49 ns/op
-BenchmarkRemoveComponent-8             	80926964	        14.60 ns/op
-BenchmarkRemoveEntityWithComponent-8   	36323707	        33.56 ns/op
-BenchmarkRemoveEntity-8                	68558644	        17.65 ns/op
+BenchmarkDirtySetDirty-8               	160513174	         8.075 ns/op
+BenchmarkDirtySetDirtyInversed-8       	167146785	         7.220 ns/op
+BenchmarkDirtySetGet-8                 	611955620	         1.959 ns/op
+BenchmarkDirtySetDirtyAndGet-8         	176902047	         6.762 ns/op
+BenchmarkDirtySetDirtyAnd1Get-8        	138310168	         8.165 ns/op
+Benchmark4SavesWith7Systems-8          	27729162	        41.88 ns/op
+Benchmark16SavesWith7Systems-8         	 6969740	       173.1 ns/op
+Benchmark256SavesWith7Systems-8        	  424767	      2647 ns/op
+Benchmark4096SavesWith7Systems-8       	   28411	     42168 ns/op
+Benchmark16384SavesWith7Systems-8      	    7152	    170510 ns/op
+Benchmark65536SavesWith7Systems-8      	    1773	    680793 ns/op
+Benchmark262144SavesWith7Systems-8     	     444	   2695479 ns/op
+BenchmarkGetComponent-8                	82155733	        14.46 ns/op
+BenchmarkCreateComponents-8            	41404602	        30.42 ns/op
+BenchmarkUpdateComponents-8            	100000000	        10.66 ns/op
+BenchmarkRemoveComponent-8             	79541179	        14.87 ns/op
+BenchmarkRemoveEntityWithComponent-8   	36219610	        34.56 ns/op
+BenchmarkRemoveEntity-8                	69246945	        18.02 ns/op
 PASS
-ok  	engine/modules/ecs/test	37.050s
+ok  	engine/modules/ecs/test	37.589s
 ```
 ## Lines of code
 ```
@@ -236,10 +236,10 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                              13            229             47            960
+Go                              13            225             46            944
 Markdown                         1             44              0            157
 -------------------------------------------------------------------------------
-SUM:                            14            273             47           1117
+SUM:                            14            269             46           1101
 -------------------------------------------------------------------------------
 ```
 ## Types
@@ -403,19 +403,7 @@ Type: `func(engine/modules/ecs/internal/ecstypes.EntityID, engine/modules/ecs/in
 #### method ComponentArray SetEmpty
 Type: `func(Component)`
 
-### type SetEvent
-Type: `engine/modules/ecs.SetEvent`
-
-#### property SetEvent Entity
-Type: `engine/modules/ecs.EntityID`
-
-#### property SetEvent Component
-Type: `engine/modules/ecs.Component`
-
 ## Functions
-### func NewSetEvent
-Type: `func(entity engine/modules/ecs.EntityID, comp engine/modules/ecs.Component) engine/modules/ecs.SetEvent`
-
 ### func NewSystemRegister
 Type: `func(l func() error) engine/modules/ecs.SystemRegister`
 
@@ -446,12 +434,8 @@ component array getter
   - `engine/modules/datastructures.SparseSet`
 
 `engine/modules/ecs`:
-  - `engine/modules/ecs.Component`
-  - `engine/modules/ecs.Entity`
   - `engine/modules/ecs.NewWorld`
-  - `engine/modules/ecs.SetEvent`
   - `engine/modules/ecs.World`
 
 ### Third Party
-- `github.com/ogiusek/events`
 - `github.com/ogiusek/ioc/v2`

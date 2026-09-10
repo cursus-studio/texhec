@@ -31,5 +31,6 @@ type Service interface {
 	Owner() uuid.LinkService[OwnerLink]
 
 	// returns nil if object is controled
-	ControlsObject(ecs.EntityID) error
+	ControlsEntity(ecs.EntityID) error
+	ControlsUUID(uuid.UUID) error
 }

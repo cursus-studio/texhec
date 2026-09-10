@@ -8,10 +8,10 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                               3             20              3             97
+Go                               3             21              3            104
 Markdown                         2              0              0              3
 -------------------------------------------------------------------------------
-SUM:                             5             20              3            100
+SUM:                             5             21              3            107
 -------------------------------------------------------------------------------
 ```
 ## TODO
@@ -25,9 +25,12 @@ Type: `core/modules/player.Service`
 #### method Service ActingPlayer
 Type: `func() engine/modules/ecs.ComponentArray[core/modules/player.ActingPlayerComponent]`
 
-#### method Service ControlsObject
+#### method Service ControlsEntity
 Type: `func(engine/modules/ecs.EntityID) error`
 returns nil if object is controled
+
+#### method Service ControlsUUID
+Type: `func(engine/modules/uuid.UUID) error`
 
 #### method Service Owner
 Type: `func() engine/modules/uuid.LinkService[core/modules/player.OwnerLink]`
@@ -93,10 +96,13 @@ Type: `func() core/modules/player.ActingPlayerComponent`
 
 `engine/modules/uuid`:
   - `engine/modules/uuid.Component`
+  - `engine/modules/uuid.Entity`
+  - `engine/modules/uuid.ErrMissingUUID`
   - `engine/modules/uuid.Get`
   - `engine/modules/uuid.LinkService`
   - `engine/modules/uuid.New`
   - `engine/modules/uuid.NewUUID`
+  - `engine/modules/uuid.UUID`
 
 `engine/modules/uuid/pkg`:
   - `engine/modules/uuid/pkg.LinkPkgT`

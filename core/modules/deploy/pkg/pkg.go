@@ -27,8 +27,8 @@ type DeployFeature struct {
 
 func (f DeployFeature) Event() any {
 	return deploy.NewDeployEvent(
-		f.By.State().Entity,
-		f.Blueprint.State().Entity,
+		f.By.State().UUID,
+		f.Blueprint.State().UUID,
 		f.Coords.State().Coords,
 	)
 }
@@ -38,7 +38,7 @@ type DestroyFeature struct {
 }
 
 func (f DestroyFeature) Event() any {
-	return deploy.NewDestroyEvent(f.Entity.State().Entity)
+	return deploy.NewDestroyEvent(f.Entity.State().UUID)
 }
 
 var Pkg = ioc.NewPkg(func(b ioc.Builder) {

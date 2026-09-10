@@ -11,6 +11,7 @@ import (
 	"engine/modules/ecs"
 	"engine/modules/grid"
 	"engine/modules/loop"
+	"fmt"
 
 	"github.com/ogiusek/events"
 	"github.com/ogiusek/ioc/v2"
@@ -86,9 +87,18 @@ func (s *service) Deploy(
 }
 
 func (s *service) DeployEvent(e deploy.DeployEvent) {
+	s.Logger().Info(fmt.Errorf("deploy"))
 	entity := s.World().NewEntity()
 	s.boughtComponent.Set(entity, NewBought(e))
 }
+func (s *service) DestroyEvent(e deploy.DestroyEvent) {
+	entity, ok := s.UUID().Entity(e.UUID)
+	if !ok {
+		return
+	}
+	s.World().RemoveEntity(entity)
+}
+
 func (s *service) OnTick(loop.TickEvent) {
 	entities := s.boughtComponent.GetEntities()
 	for _, entity := range entities {
@@ -96,20 +106,28 @@ func (s *service) OnTick(loop.TickEvent) {
 		if !ok {
 			continue
 		}
+		byEntity, ok := s.UUID().Entity(event.By)
+		if !ok {
+			continue
+		}
+		blueprintEntity, ok := s.UUID().Entity(event.Blueprint)
+		if !ok {
+			continue
+		}
 		s.World().RemoveEntity(entity)
 
 		// by
-		byPos, ok := s.Tile().Pos().Get(event.By)
+		byPos, ok := s.Tile().Pos().Get(byEntity)
 		if !ok {
 			s.Logger().Log(obstruction.ErrPositionIsOccupied)
 			continue
 		}
-		bySize, _ := s.Tile().Size().Get(event.By)
-		reachComp, _ := s.GameWorld.Deploy().Reach().Component().Get(event.By)
+		bySize, _ := s.Tile().Size().Get(byEntity)
+		reachComp, _ := s.GameWorld.Deploy().Reach().Component().Get(byEntity)
 
 		// target
 		pos := tile.NewPos(event.Coords.Coords())
-		size, _ := s.Tile().Size().Get(event.Blueprint)
+		size, _ := s.Tile().Size().Get(blueprintEntity)
 
 		// check can place
 		{ // reach
@@ -121,7 +139,7 @@ func (s *service) OnTick(loop.TickEvent) {
 			}
 		}
 		{ // obstruction
-			blueprintObstruction, _ := s.Obstruction().Component().Get(event.Blueprint)
+			blueprintObstruction, _ := s.Obstruction().Component().Get(blueprintEntity)
 
 			aabb := obstruction.NewAABB(pos, size)
 			collisions := s.Obstruction().Collisions(aabb, blueprintObstruction.Obstruction)
@@ -132,14 +150,14 @@ func (s *service) OnTick(loop.TickEvent) {
 			}
 		}
 
-		owner, ok := s.Player().Owner().Get(event.By)
+		owner, ok := s.Player().Owner().Get(byEntity)
 		if !ok {
 			s.Logger().Log(player.ErrRequiresOwner)
 			continue
 		}
 
 		// pay
-		if cost, ok := s.Economy().Cost().Get(event.Blueprint); ok {
+		if cost, ok := s.Economy().Cost().Get(blueprintEntity); ok {
 			wallet, ok := s.Economy().Wallet().Get(owner)
 			if !ok || cost.Cost > wallet.Money {
 				s.Logger().Log(economy.ErrToExpensive)
@@ -148,11 +166,11 @@ func (s *service) OnTick(loop.TickEvent) {
 			s.Economy().Wallet().Set(owner, wallet.Pay(cost))
 		}
 
-		blueprintUUID, ok := s.UUID().Component().Get(event.Blueprint)
+		blueprintUUID, ok := s.UUID().Component().Get(blueprintEntity)
 		if !ok {
 			s.Logger().Fatal(tile.ErrBlueprintIsMissingUUID)
 		}
-		ownerUUID, ok := s.UUID().Component().Get(event.By)
+		ownerUUID, ok := s.UUID().Component().Get(byEntity)
 		if !ok {
 			s.Logger().Fatal(player.ErrRequiresOwner)
 		}
@@ -164,8 +182,4 @@ func (s *service) OnTick(loop.TickEvent) {
 		s.Tile().Blueprint().SetUUID(deployed, blueprintUUID.ID)
 		s.Tile().Pos().Set(deployed, tile.NewPos(event.Coords.Coords()))
 	}
-}
-
-func (s *service) DestroyEvent(e deploy.DestroyEvent) {
-	s.World().RemoveEntity(e.Entity)
 }
