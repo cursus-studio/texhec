@@ -3,8 +3,10 @@ package main
 import (
 	"core/game"
 	"core/modules/definitions"
+	"core/modules/deploy"
 	"core/modules/economy"
 	"core/modules/obstruction"
+	"core/modules/pathfind"
 	"core/modules/player"
 	"core/modules/tile"
 	corepkg "core/pkg"
@@ -124,6 +126,9 @@ func getDic() ioc.Dic {
 				record.AddToConfig[player.PlayerComponent](config.RecordConfig())
 				record.AddToConfig[player.ActingPlayerComponent](config.RecordConfig())
 				record.AddToConfig[economy.WalletComponent](config.RecordConfig())
+
+				netsyncpkg.AddEvent[deploy.DeployEvent](config)
+				netsyncpkg.AddEvent[pathfind.FindPathEvent](config)
 			})
 			ioc.Wrap(b, func(c ioc.Dic, config colliderpkg.Config) {
 				tileSize := ioc.Get[gridpkg.Config](c).GetTileSize()
