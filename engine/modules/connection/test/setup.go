@@ -10,6 +10,7 @@ import (
 	"fmt"
 	"math"
 	"net"
+	"runtime"
 	"sync"
 	"time"
 
@@ -57,13 +58,11 @@ func (s *Setup) Connect() (net.Conn, error)  { return net.Dial(s.Network, s.Addr
 func (s *Setup) Host() (net.Listener, error) { return net.Listen(s.Network, s.Addr) }
 
 func (s *Setup) Poll() {
-	time.Sleep(time.Millisecond * 1) // wait for message to be delivered
-	events.Emit(s.Events(), loop.FrameEvent{})
-}
-
-func (s *Setup) PollUntil(await chan any) {
-	<-await
-	events.Emit(s.Events(), loop.FrameEvent{})
+	for range 3 {
+		runtime.Gosched()
+		time.Sleep(time.Millisecond)
+		events.Emit(s.Events(), loop.FrameEvent{})
+	}
 }
 
 func (s *Setup) Send(conn net.Conn, message Message) error {

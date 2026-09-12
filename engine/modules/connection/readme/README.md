@@ -6,7 +6,7 @@ defines connection and stores it in component
 ```
 $ go test ./... -bench=.
 PASS
-ok  	engine/modules/connection/test	0.021s
+ok  	engine/modules/connection/test	0.031s
 ```
 ## Lines of code
 ```
@@ -14,9 +14,9 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                               8            108             16            498
+Go                               8            103             16            497
 -------------------------------------------------------------------------------
-SUM:                             8            108             16            498
+SUM:                             8            103             16            497
 -------------------------------------------------------------------------------
 ```
 ## Types
