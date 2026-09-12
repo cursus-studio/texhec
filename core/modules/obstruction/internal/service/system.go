@@ -77,7 +77,7 @@ entityLoop:
 				continue
 			}
 
-			data.Component.SetTile(data.Index, data.Component.GetTile(data.Index)^obstructionComp.Obstruction)
+			data.Component.SetTile(data.Index, data.Component.GetTile(data.Index)|obstructionComp.Obstruction)
 			s.Obstruction().Grid().Chunk().Set(data.Entity, data.Component)
 		}
 	}

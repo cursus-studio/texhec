@@ -6,7 +6,7 @@ defines how obstruction map is stored and accessed
 ```
 $ go test ./... -bench=.
 PASS
-ok  	core/modules/obstruction/test	0.013s
+ok  	core/modules/obstruction/test	0.012s
 ```
 ## Lines of code
 ```
