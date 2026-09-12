@@ -2,15 +2,21 @@
 ## Architecture
 defines connection and stores it in component
 
+## Benchmarks
+```
+$ go test ./... -bench=.
+PASS
+ok  	engine/modules/connection/test	0.017s
+```
 ## Lines of code
 ```
 github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                               8            101             19            488
+Go                               8            105             22            491
 -------------------------------------------------------------------------------
-SUM:                             8            101             19            488
+SUM:                             8            105             22            491
 -------------------------------------------------------------------------------
 ```
 ## Types

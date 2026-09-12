@@ -54,6 +54,11 @@ func (s *Setup) Poll() {
 	events.Emit(s.Events(), loop.FrameEvent{}) // poll them
 }
 
+func (s *Setup) PollUntil(await chan any) {
+	<-await
+	events.Emit(s.Events(), loop.FrameEvent{}) // poll them
+}
+
 func (s *Setup) Send(conn net.Conn, message Message) error {
 	bytes, err := s.Codec().Encode(message)
 	if err != nil {

@@ -2,6 +2,7 @@ package test
 
 import (
 	"net"
+	"sync"
 	"testing"
 )
 
@@ -13,11 +14,12 @@ func TestClient(t *testing.T) {
 	// host
 	listener, err := s.Host()
 	if err != nil {
-		t.Errorf("\"%v\" is occupied and cannot be tested", s.Addr)
-		return
+		t.Fatalf("\"%v\" is occupied and cannot be tested", s.Addr)
 	}
 
+	var connMutex sync.Mutex
 	var connections []net.Conn
+	messageSent := make(chan any, 1)
 
 	go func() {
 		for {
@@ -25,51 +27,58 @@ func TestClient(t *testing.T) {
 			if err != nil {
 				return
 			}
+			connMutex.Lock()
+			connections = append(connections, conn)
+			connMutex.Unlock()
+
 			if err := s.Send(conn, s.Message); err != nil {
 				t.Errorf("unexpected error sending message: %v", err)
 			}
-			connections = append(connections, conn)
+
+			// Signal that message is sent and ready to be polled
+			messageSent <- struct{}{}
 		}
 	}()
 
-	if connections := len(s.Connection().Component().GetEntities()); connections != 0 {
-		t.Errorf("Expected 0 connection not %v", connections)
-		return
+	if count := len(s.Connection().Component().GetEntities()); count != 0 {
+		t.Fatalf("Expected 0 connections, got %v", count)
 	}
 
 	// connect
 	if err := s.Connection().Connect(s.World().NewEntity(), s.Addr); err != nil {
-		t.Errorf("Unexpected error when hosting: \"%v\"", err)
-		return
+		t.Fatalf("Unexpected error when connecting: \"%v\"", err)
 	}
 
-	if connections := len(s.Connection().Component().GetEntities()); connections != 1 {
-		t.Errorf("Expected 1 connection not %v", connections)
-		return
+	if count := len(s.Connection().Component().GetEntities()); count != 1 {
+		t.Fatalf("Expected 1 connection, got %v", count)
 	}
 
-	// communication
-	s.Poll()
+	// Wait for the server to finish sending before processing frame event
+	s.PollUntil(messageSent)
+
 	connection, _ := s.Connection().Component().Get(s.Connection().Component().GetEntities()[0])
 	messages := connection.Conn().Messages()
 	if len(messages) != 1 {
-		t.Errorf("expected \"%v\" but got \"%v\"", s.Message, nil)
-		return
+		t.Fatalf("expected 1 message but got %v", len(messages))
 	} else if messages[0] != s.Message {
-		t.Errorf("expected \"%v\" but got \"%v\"", s.Message, messages[0])
-		return
+		t.Fatalf("expected \"%v\" but got \"%v\"", s.Message, messages[0])
 	}
 
 	// close
 	_ = listener.Close()
+
+	connMutex.Lock()
 	for _, conn := range connections {
 		_ = conn.Close()
 	}
+	connMutex.Unlock()
 
-	s.Poll()
+	// Signal teardown frame event
+	closedChan := make(chan any, 1)
+	closedChan <- struct{}{}
+	s.PollUntil(closedChan)
 
-	if connections := len(s.Connection().Component().GetEntities()); connections != 0 {
-		t.Errorf("Expected 0 connection not %v", connections)
-		return
+	if count := len(s.Connection().Component().GetEntities()); count != 0 {
+		t.Fatalf("Expected 0 connections, got %v", count)
 	}
 }
