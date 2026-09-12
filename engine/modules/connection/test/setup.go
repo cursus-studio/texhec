@@ -42,7 +42,14 @@ func NewSetup() Setup {
 	)
 	s.Message.Content = "example message"
 	s.Network = "tcp"
-	s.Addr = "localhost:9999"
+
+	ln, err := net.Listen(s.Network, "127.0.0.1:0")
+	if err != nil {
+		panic(err)
+	}
+	s.Addr = ln.Addr().String()
+	_ = ln.Close()
+
 	return s
 }
 
@@ -50,13 +57,13 @@ func (s *Setup) Connect() (net.Conn, error)  { return net.Dial(s.Network, s.Addr
 func (s *Setup) Host() (net.Listener, error) { return net.Listen(s.Network, s.Addr) }
 
 func (s *Setup) Poll() {
-	time.Sleep(time.Millisecond * 1)           // wait for message to be delivered
-	events.Emit(s.Events(), loop.FrameEvent{}) // poll them
+	time.Sleep(time.Millisecond * 1) // wait for message to be delivered
+	events.Emit(s.Events(), loop.FrameEvent{})
 }
 
 func (s *Setup) PollUntil(await chan any) {
 	<-await
-	events.Emit(s.Events(), loop.FrameEvent{}) // poll them
+	events.Emit(s.Events(), loop.FrameEvent{})
 }
 
 func (s *Setup) Send(conn net.Conn, message Message) error {

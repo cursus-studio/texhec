@@ -10,49 +10,53 @@ func TestHost(t *testing.T) {
 	s := NewSetup()
 
 	if _, err := s.Connect(); err == nil {
-		t.Fatalf("\"%v\" is occupied and cannot be tested", s.Addr)
+		t.Errorf("\"%v\" is occupied and cannot be tested", s.Addr)
+		return
 	}
 
 	if listeners := len(s.Connection().Listener().GetEntities()); listeners != 0 {
-		t.Fatalf("Expected 0 listener, got %v", listeners)
+		t.Errorf("Expected 0 listener not %v", listeners)
+		return
 	}
 
 	// host
 	if err := s.Connection().Host(s.World().NewEntity(), s.Addr); err != nil {
-		t.Fatalf("Unexpected error when hosting: \"%v\"", err)
+		t.Errorf("Unexpected error when hosting: \"%v\"", err)
+		return
 	}
 
 	if listeners := len(s.Connection().Listener().GetEntities()); listeners != 1 {
-		t.Fatalf("Expected 1 listener, got %v", listeners)
+		t.Errorf("Expected 1 listener not %v", listeners)
+		return
 	}
 
 	// connect
 	conn, err := s.Connect()
 	if err != nil {
-		t.Fatalf("Unexpected error when connecting: \"%v\"", err)
+		t.Errorf("Unexpected error when connecting: \"%v\"", err)
+		return
 	}
 
-	// Signal connection is established before polling
-	connectedSignal := make(chan any, 1)
-	connectedSignal <- struct{}{}
-	s.PollUntil(connectedSignal)
+	s.Poll()
 
 	if connections := len(s.Connection().Component().GetEntities()); connections != 1 {
-		t.Fatalf("Expected 1 connection, got %v", connections)
+		t.Errorf("Expected 1 connection not %v", connections)
+		return
 	}
 
-	// close client connection
+	// can add here communication tests
+
+	// close
 	if err := conn.Close(); err != nil {
-		t.Fatalf("Unexpected error closing connection: \"%v\"", err)
+		t.Errorf("Unexpected error \"%v\"", err)
+		return
 	}
 
-	// Signal disconnect event before polling cleanup
-	closedSignal := make(chan any, 1)
-	closedSignal <- struct{}{}
-	s.PollUntil(closedSignal)
+	s.Poll()
 
 	if connections := len(s.Connection().Component().GetEntities()); connections != 0 {
-		t.Fatalf("Expected 0 connection, got %v", connections)
+		t.Errorf("Expected 0 connection not %v", connections)
+		return
 	}
 
 	listener, _ := s.Connection().Listener().Get(s.Connection().Listener().GetEntities()[0])

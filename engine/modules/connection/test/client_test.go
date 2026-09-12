@@ -35,7 +35,6 @@ func TestClient(t *testing.T) {
 				t.Errorf("unexpected error sending message: %v", err)
 			}
 
-			// Signal that message is sent and ready to be polled
 			messageSent <- struct{}{}
 		}
 	}()
@@ -44,7 +43,6 @@ func TestClient(t *testing.T) {
 		t.Fatalf("Expected 0 connections, got %v", count)
 	}
 
-	// connect
 	if err := s.Connection().Connect(s.World().NewEntity(), s.Addr); err != nil {
 		t.Fatalf("Unexpected error when connecting: \"%v\"", err)
 	}
@@ -53,7 +51,6 @@ func TestClient(t *testing.T) {
 		t.Fatalf("Expected 1 connection, got %v", count)
 	}
 
-	// Wait for the server to finish sending before processing frame event
 	s.PollUntil(messageSent)
 
 	connection, _ := s.Connection().Component().Get(s.Connection().Component().GetEntities()[0])
@@ -64,7 +61,6 @@ func TestClient(t *testing.T) {
 		t.Fatalf("expected \"%v\" but got \"%v\"", s.Message, messages[0])
 	}
 
-	// close
 	_ = listener.Close()
 
 	connMutex.Lock()
@@ -73,10 +69,7 @@ func TestClient(t *testing.T) {
 	}
 	connMutex.Unlock()
 
-	// Signal teardown frame event
-	closedChan := make(chan any, 1)
-	closedChan <- struct{}{}
-	s.PollUntil(closedChan)
+	s.Poll()
 
 	if count := len(s.Connection().Component().GetEntities()); count != 0 {
 		t.Fatalf("Expected 0 connections, got %v", count)
