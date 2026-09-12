@@ -4,6 +4,7 @@ import (
 	"engine"
 	"engine/modules/ecs"
 	"engine/modules/loop"
+	"engine/modules/netsync"
 	"engine/modules/netsync/internal/clienttypes"
 	"engine/modules/netsync/internal/config"
 	"engine/modules/netsync/internal/servertypes"
@@ -30,8 +31,20 @@ func NewService(c ioc.Dic, config config.Config) *Service {
 	s.Config = config
 	s.recordedEventUUID = nil
 	s.recordingID = 0
+	s.Connection().Component().OnUpsert(s.OnConnectionUpsert)
 
 	return s
+}
+
+func (s *Service) OnConnectionUpsert(entity ecs.EntityID) {
+	parent, ok := s.Hierarchy().Parent(entity)
+	if !ok {
+		return
+	}
+	if _, ok := s.NetSync().Clients().Get(parent); !ok {
+		return
+	}
+	s.NetSync().Client().Set(entity, netsync.ClientComponent{})
 }
 
 func (s *Service) AddBeforeListeners() {
@@ -51,23 +64,21 @@ func (s *Service) AddBeforeListeners() {
 	}
 
 	events.Listen(s.EventsBuilder(), func(loop.FrameEvent) {
-		for _, clients := range s.NetSync().Client().GetEntities() {
-			for _, client := range s.Hierarchy().Children(clients).GetIndices() {
-				conn, ok := s.Connection().Component().Get(client)
+		for _, client := range s.NetSync().Client().GetEntities() {
+			conn, ok := s.Connection().Component().Get(client)
+			if !ok {
+				s.Logger().Warn(fmt.Errorf("not connected to server"))
+				continue
+			}
+			messages := conn.Conn().Messages()
+			for _, msg := range messages {
+				messageType := reflect.TypeOf(msg)
+				listener, ok := listeners[messageType]
 				if !ok {
-					s.Logger().Warn(fmt.Errorf("not connected to server"))
+					s.Logger().Log(fmt.Errorf("invalid listener called there is no %v type", messageType.String()))
 					continue
 				}
-				messages := conn.Conn().Messages()
-				for _, msg := range messages {
-					messageType := reflect.TypeOf(msg)
-					listener, ok := listeners[messageType]
-					if !ok {
-						s.Logger().Log(fmt.Errorf("invalid listener called there is no %v type", messageType.String()))
-						continue
-					}
-					listener(client, msg)
-				}
+				listener(client, msg)
 			}
 		}
 	})

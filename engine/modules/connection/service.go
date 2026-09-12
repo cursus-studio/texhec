@@ -17,11 +17,6 @@ type Conn interface {
 	Send(message any) error
 }
 
-// type Listener interface {
-// 	AddedListeners() []ecs.EntityID
-// 	Poll()
-// }
-
 // components
 
 type ListenerComponent struct {

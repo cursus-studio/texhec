@@ -34,6 +34,8 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 		typeregistrypkg.PkgT[attack.HealthComponent],
 		typeregistrypkg.PkgT[attack.DamageComponent],
 
+		typeregistrypkg.PkgT[attack.AttackEvent],
+
 		reachpkg.PkgT[attack.TargetComponent],
 		interactionspkg.FeaturePkg[AttackFeature](
 		// interactionspkg.NewCopyRelation[actions.AnchorComponent](

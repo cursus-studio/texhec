@@ -3,11 +3,9 @@ package internal
 import (
 	"core/modules/pathfind"
 	"core/modules/tile"
-	"fmt"
 )
 
 func (s *service) FindPath(e pathfind.FindPathEvent) {
-	s.Logger().Info(fmt.Errorf("find path"))
 	entity, ok := s.UUID().Entity(e.UUID)
 	if !ok {
 		return

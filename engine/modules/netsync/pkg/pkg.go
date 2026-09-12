@@ -32,10 +32,6 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 		return service.NewService(c)
 	})
 
-	ioc.Register(b, func(c ioc.Dic) *server.Service {
-		return server.NewService(c, *ioc.Get[Config](c).config)
-	})
-	ioc.Register(b, func(c ioc.Dic) *client.Service {
-		return client.NewService(c, *ioc.Get[Config](c).config)
-	})
+	ioc.Register(b, func(c ioc.Dic) *server.Service { return server.NewService(c, *ioc.Get[Config](c).config) })
+	ioc.Register(b, func(c ioc.Dic) *client.Service { return client.NewService(c, *ioc.Get[Config](c).config) })
 })

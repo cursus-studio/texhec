@@ -6,7 +6,6 @@ import (
 	"core/modules/pathfind"
 	"core/modules/tile"
 	"engine/modules/loop"
-	"fmt"
 
 	"github.com/ogiusek/events"
 )
@@ -19,7 +18,6 @@ func (s *service) Register() error {
 }
 
 func (s *service) OnAttack(event attack.AttackEvent) {
-	s.Logger().Info(fmt.Errorf("attack"))
 	attacker, ok := s.UUID().Entity(event.Attacker)
 	if !ok {
 		return

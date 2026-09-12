@@ -8,10 +8,10 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                              11            112             57            672
+Go                              11            115             58            683
 Markdown                         1              0              0              1
 -------------------------------------------------------------------------------
-SUM:                            12            112             57            673
+SUM:                            12            115             58            684
 -------------------------------------------------------------------------------
 ```
 ## TODO
@@ -23,6 +23,9 @@ Type: `engine/modules/netsync.Service`
 
 #### method Service Client
 Type: `func() engine/modules/ecs.ComponentArray[engine/modules/netsync.ClientComponent]`
+
+#### method Service Clients
+Type: `func() engine/modules/ecs.ComponentArray[engine/modules/netsync.ClientsComponent]`
 
 #### method Service Server
 Type: `func() engine/modules/ecs.ComponentArray[engine/modules/netsync.ServerComponent]`
@@ -43,6 +46,9 @@ Type: `func(engine/modules/ecs.EntityID)`
 ### type ServerComponent
 Type: `engine/modules/netsync.ServerComponent`
 entity with this component and with connection component will be one with which we'll synchronize
+
+### type ClientsComponent
+Type: `engine/modules/netsync.ClientsComponent`
 
 ### type ClientComponent
 Type: `engine/modules/netsync.ClientComponent`
@@ -86,6 +92,8 @@ entity with this component and connection will get notifications about changes
   - `engine/modules/netsync.AuthorizedEvent`
   - `engine/modules/netsync.Client`
   - `engine/modules/netsync.ClientComponent`
+  - `engine/modules/netsync.Clients`
+  - `engine/modules/netsync.ClientsComponent`
   - `engine/modules/netsync.Server`
   - `engine/modules/netsync.ServerComponent`
   - `engine/modules/netsync.Service`

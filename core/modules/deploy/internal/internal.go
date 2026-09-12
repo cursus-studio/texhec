@@ -11,7 +11,6 @@ import (
 	"engine/modules/ecs"
 	"engine/modules/grid"
 	"engine/modules/loop"
-	"fmt"
 
 	"github.com/ogiusek/events"
 	"github.com/ogiusek/ioc/v2"
@@ -87,7 +86,6 @@ func (s *service) Deploy(
 }
 
 func (s *service) DeployEvent(e deploy.DeployEvent) {
-	s.Logger().Info(fmt.Errorf("deploy"))
 	entity := s.World().NewEntity()
 	s.boughtComponent.Set(entity, NewBought(e))
 }

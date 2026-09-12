@@ -128,9 +128,9 @@ func getDic() ioc.Dic {
 				record.AddToConfig[player.ActingPlayerComponent](config.RecordConfig())
 				record.AddToConfig[economy.WalletComponent](config.RecordConfig())
 
-				netsyncpkg.AddEvent[deploy.DeployEvent](config)
-				netsyncpkg.AddEvent[attack.AttackEvent](config)
-				netsyncpkg.AddEvent[pathfind.FindPathEvent](config)
+				netsyncpkg.AddTransparentEvent[deploy.DeployEvent](config)
+				netsyncpkg.AddTransparentEvent[attack.AttackEvent](config)
+				netsyncpkg.AddTransparentEvent[pathfind.FindPathEvent](config)
 			})
 			ioc.Wrap(b, func(c ioc.Dic, config colliderpkg.Config) {
 				tileSize := ioc.Get[gridpkg.Config](c).GetTileSize()

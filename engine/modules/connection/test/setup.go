@@ -50,7 +50,7 @@ func (s *Setup) Connect() (net.Conn, error)  { return net.Dial(s.Network, s.Addr
 func (s *Setup) Host() (net.Listener, error) { return net.Listen(s.Network, s.Addr) }
 
 func (s *Setup) Poll() {
-	time.Sleep(time.Millisecond * 10)          // wait for message to be delivered
+	time.Sleep(time.Millisecond * 1)           // wait for message to be delivered
 	events.Emit(s.Events(), loop.FrameEvent{}) // poll them
 }
 

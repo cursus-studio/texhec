@@ -15,12 +15,14 @@ type service struct {
 	ClientService      ioc.Lazy[*client.Service] `inject:""`
 	ServerService      ioc.Lazy[*server.Service] `inject:""`
 	server             ecs.ComponentArray[netsync.ServerComponent]
+	clients            ecs.ComponentArray[netsync.ClientsComponent]
 	client             ecs.ComponentArray[netsync.ClientComponent]
 }
 
 func NewService(c ioc.Dic) netsync.Service {
 	s := ioc.GetServices[*service](c)
 	s.server = ecs.GetComponentArray[netsync.ServerComponent](s.World())
+	s.clients = ecs.GetComponentArray[netsync.ClientsComponent](s.World())
 	s.client = ecs.GetComponentArray[netsync.ClientComponent](s.World())
 	return s
 }
@@ -69,5 +71,6 @@ func (s *service) Stop() ecs.SystemRegister {
 	})
 }
 
-func (s *service) Server() ecs.ComponentArray[netsync.ServerComponent] { return s.server }
-func (s *service) Client() ecs.ComponentArray[netsync.ClientComponent] { return s.client }
+func (s *service) Server() ecs.ComponentArray[netsync.ServerComponent]   { return s.server }
+func (s *service) Clients() ecs.ComponentArray[netsync.ClientsComponent] { return s.clients }
+func (s *service) Client() ecs.ComponentArray[netsync.ClientComponent]   { return s.client }
