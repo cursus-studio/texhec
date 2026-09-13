@@ -8,9 +8,9 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                               3             36             14            104
+Go                               3             41             14            119
 -------------------------------------------------------------------------------
-SUM:                             3             36             14            104
+SUM:                             3             41             14            119
 -------------------------------------------------------------------------------
 ```
 ## Types
@@ -19,6 +19,9 @@ Type: `engine/modules/loop.Service`
 
 #### method Service Configure
 Type: `func(engine/modules/loop.ConfigureEvent)`
+
+#### method Service LastTickUnixNano
+Type: `func() int64`
 
 #### method Service Run
 Type: `func(initialConfiguration engine/modules/loop.ConfigureEvent)`
@@ -30,6 +33,9 @@ Type: `func() engine/modules/loop.Stats`
 
 #### method Service Stop
 Type: `func()`
+
+#### method Service SyncToUnixNano
+Type: `func(int64)`
 
 ### type Stats
 Type: `engine/modules/loop.Stats`

@@ -191,7 +191,8 @@ func (s *Service) sendVisible(client ecs.EntityID, eventUUID *uuid.UUID, changes
 			s.Logger().Warn(err)
 		} else {
 			err := connComp.Conn().Send(servertypes.SendStateDTO{
-				State: sentChanges,
+				TickUnixNano: s.Loop().LastTickUnixNano(),
+				State:        sentChanges,
 			})
 			s.Logger().Warn(err)
 		}

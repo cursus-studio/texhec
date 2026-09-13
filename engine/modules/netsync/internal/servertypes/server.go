@@ -8,8 +8,9 @@ import (
 // server messages
 
 type SendStateDTO struct {
-	State record.UUIDRecording
-	Error error
+	TickUnixNano int64
+	State        record.UUIDRecording
+	Error        error
 }
 
 type SendChangeDTO struct {

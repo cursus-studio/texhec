@@ -41,5 +41,8 @@ type Service interface {
 	Stop()                    // emits stop event
 	Configure(ConfigureEvent) // emits confugure event
 
+	SyncToUnixNano(int64)
+	LastTickUnixNano() int64
+
 	Stats() Stats
 }

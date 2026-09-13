@@ -11,6 +11,7 @@ import (
 	"engine/modules/entityregistry"
 	"engine/modules/grid"
 	interactionspkg "engine/modules/interactions/pkg"
+	typeregistrypkg "engine/modules/typeregistry/pkg"
 	"errors"
 	"fmt"
 	"strconv"
@@ -43,6 +44,9 @@ func (f DestroyFeature) Event() any {
 
 var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 	pkgs := []ioc.Pkg{
+		typeregistrypkg.PkgT[deploy.DeployEvent],
+		typeregistrypkg.PkgT[deploy.DestroyEvent],
+
 		reachpkg.PkgT[deploy.Component],
 		interactionspkg.FeaturePkg[DeployFeature](
 			interactionspkg.NewCopyRelation[actions.CanDeployComponent](

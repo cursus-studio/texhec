@@ -260,6 +260,7 @@ func (s *Service) ListenSendState(dto servertypes.SendStateDTO) {
 	}
 	s.predictions = nil
 	s.Record().UUID().Apply(s.RecordConfig, dto.State)
+	s.Loop().SyncToUnixNano(dto.TickUnixNano)
 }
 
 func (s *Service) ListenTransparentEvent(dto servertypes.TransparentEventDTO) {
