@@ -5,8 +5,6 @@ import (
 )
 
 func TestHost(t *testing.T) {
-	mutex.Lock()
-	defer mutex.Unlock()
 	s := NewSetup()
 
 	if _, err := s.Connect(); err == nil {

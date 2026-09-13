@@ -11,7 +11,6 @@ import (
 	"math"
 	"net"
 	"runtime"
-	"sync"
 	"time"
 
 	"github.com/ogiusek/events"
@@ -21,8 +20,6 @@ import (
 type Message struct {
 	Content string
 }
-
-var mutex sync.Mutex
 
 type Setup struct {
 	engine.EngineWorld `inject:""`
@@ -50,6 +47,7 @@ func NewSetup() Setup {
 	}
 	s.Addr = ln.Addr().String()
 	_ = ln.Close()
+	<-time.After(time.Millisecond)
 
 	return s
 }
@@ -58,9 +56,11 @@ func (s *Setup) Connect() (net.Conn, error)  { return net.Dial(s.Network, s.Addr
 func (s *Setup) Host() (net.Listener, error) { return net.Listen(s.Network, s.Addr) }
 
 func (s *Setup) Poll() {
-	for range 3 {
+	// in test we poll 2 times because during normal gameplay frame offset between messages sent is acceptable
+	// but in test this wouldn't be acceptable and we need to handle it
+	for range 2 {
+		<-time.After(time.Millisecond)
 		runtime.Gosched()
-		time.Sleep(time.Millisecond)
 		events.Emit(s.Events(), loop.FrameEvent{})
 	}
 }

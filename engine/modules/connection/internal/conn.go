@@ -8,7 +8,6 @@ import (
 	"math"
 	"net"
 	"os"
-	"time"
 )
 
 type ConnBuffer struct {
@@ -28,7 +27,7 @@ func (conn *ConnBuffer) Read(dst []byte) (n int, err error) {
 			return n, nil
 		}
 	}
-	_ = conn.SetReadDeadline(time.Now().Add(time.Microsecond))
+	_ = conn.SetReadDeadline(getDeadline())
 	netN, err := conn.Conn.Read(dst[n:])
 	n += netN
 	return n, err
