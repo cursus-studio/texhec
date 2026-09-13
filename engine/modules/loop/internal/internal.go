@@ -37,15 +37,8 @@ func NewService(c ioc.Dic) loop.Service {
 	events.Listen(s.EventsBuilder(), func(loop.StopEvent) {
 		s.Running = false
 	})
-	events.Listen(s.EventsBuilder(), func(e loop.ConfigureEvent) {
-		s.TickDuration = time.Second / time.Duration(e.TPS)
-		s.FrameDuration = time.Second / time.Duration(e.FPS)
-		prev := s.Ticker
-		s.Ticker = time.NewTicker(s.FrameDuration)
-		if prev != nil {
-			prev.Stop()
-		}
-	})
+
+	events.Listen(s.EventsBuilder(), s.Configure)
 
 	return s
 }
@@ -76,8 +69,20 @@ func (s *service) Run(e loop.ConfigureEvent) {
 	}
 }
 
-func (s *service) Stop()                           { events.Emit(s.Events(), loop.StopEvent{}) }
-func (s *service) Configure(e loop.ConfigureEvent) { events.Emit(s.Events(), e) }
+func (s *service) Stop() { events.Emit(s.Events(), loop.StopEvent{}) }
+func (s *service) Configure(e loop.ConfigureEvent) {
+	s.TickDuration = time.Second / time.Duration(e.TPS)
+	s.FrameDuration = time.Second / time.Duration(e.FPS)
+
+	now := s.Clock().Now()
+	s.TickProgress = now.Sub(now.Truncate(s.TickDuration))
+
+	prev := s.Ticker
+	s.Ticker = time.NewTicker(s.FrameDuration)
+	if prev != nil {
+		prev.Stop()
+	}
+}
 
 func (s *service) Stats() loop.Stats { return s }
 
