@@ -9,13 +9,19 @@ github.com/AlDanial/cloc
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
 Go                              11            115             58            686
-Markdown                         1              0              0              1
+Markdown                         1              2              0              5
 -------------------------------------------------------------------------------
-SUM:                            12            115             58            687
+SUM:                            12            117             58            691
 -------------------------------------------------------------------------------
 ```
 ## TODO
-Create more features to allow more specific features to allow more specific calls
+This module needs clean up for transparent events and ticks.
+Currently we hope event won't land on tick instead of handling it properly.
+Transparent events aren't tracked to reverse back in state.
+Client also hopes he doesn't receive event at a bad time because if event from server lands in a bad time
+transparent events are going to be messed.
+
+
 
 ## Types
 ### type Service
