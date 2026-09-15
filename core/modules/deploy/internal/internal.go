@@ -10,9 +10,7 @@ import (
 	"core/modules/tile"
 	"engine/modules/ecs"
 	"engine/modules/grid"
-	"engine/modules/inputs"
 	"engine/modules/loop"
-	"engine/modules/seed"
 
 	"github.com/ogiusek/events"
 	"github.com/ogiusek/ioc/v2"
@@ -58,10 +56,6 @@ func (s *service) Deploy(
 	owner ecs.EntityID,
 	coords grid.Coords,
 ) (ecs.EntityID, error) {
-	worldEntity, ok := s.Seed().WorldSeed()
-	if !ok {
-		return 0, seed.ErrWorldCanHaveOneSeed
-	}
 	// check can place:
 
 	// - is position occuped
@@ -73,13 +67,20 @@ func (s *service) Deploy(
 		return 0, obstruction.ErrPositionIsOccupied
 	}
 
-	// place
-	deployed := s.Prototype().Clone(blueprint)
-	s.Hierarchy().SetParent(deployed, worldEntity)
+	blueprintUUID, ok := s.UUID().Component().Get(blueprint)
+	if !ok {
+		s.Logger().Fatal(tile.ErrBlueprintIsMissingUUID)
+	}
+	ownerUUID, ok := s.UUID().Component().Get(owner)
+	if !ok {
+		s.Logger().Fatal(player.ErrRequiresOwner)
+	}
 
-	s.Player().Owner().Set(deployed, player.NewOwner(owner))
+	// place
+	deployed := s.World().NewEntity()
+	s.Player().Owner().SetUUID(deployed, ownerUUID.ID)
 	s.Obstruction().Deployed().Set(deployed, obstruction.NewDeployed())
-	s.Inputs().LeftClick().Set(deployed, inputs.NewLeftClick(tile.NewClickEntityEvent()))
+	s.Tile().Blueprint().SetUUID(deployed, blueprintUUID.ID)
 	s.Tile().Pos().Set(deployed, pos)
 	return deployed, nil
 }
@@ -88,32 +89,43 @@ func (s *service) DeployEvent(e deploy.DeployEvent) {
 	entity := s.World().NewEntity()
 	s.boughtComponent.Set(entity, NewBought(e))
 }
-func (s *service) OnTick(loop.TickEvent) {
-	worldEntity, ok := s.Seed().WorldSeed()
+func (s *service) DestroyEvent(e deploy.DestroyEvent) {
+	entity, ok := s.UUID().Entity(e.UUID)
 	if !ok {
 		return
 	}
+	s.World().RemoveEntity(entity)
+}
 
+func (s *service) OnTick(loop.TickEvent) {
 	entities := s.boughtComponent.GetEntities()
 	for _, entity := range entities {
 		event, ok := s.boughtComponent.Get(entity)
 		if !ok {
 			continue
 		}
+		byEntity, ok := s.UUID().Entity(event.By)
+		if !ok {
+			continue
+		}
+		blueprintEntity, ok := s.UUID().Entity(event.Blueprint)
+		if !ok {
+			continue
+		}
 		s.World().RemoveEntity(entity)
 
 		// by
-		byPos, ok := s.Tile().Pos().Get(event.By)
+		byPos, ok := s.Tile().Pos().Get(byEntity)
 		if !ok {
 			s.Logger().Log(obstruction.ErrPositionIsOccupied)
 			continue
 		}
-		bySize, _ := s.Tile().Size().Get(event.By)
-		reachComp, _ := s.GameWorld.Deploy().Reach().Component().Get(event.By)
+		bySize, _ := s.Tile().Size().Get(byEntity)
+		reachComp, _ := s.GameWorld.Deploy().Reach().Component().Get(byEntity)
 
 		// target
 		pos := tile.NewPos(event.Coords.Coords())
-		size, _ := s.Tile().Size().Get(event.Blueprint)
+		size, _ := s.Tile().Size().Get(blueprintEntity)
 
 		// check can place
 		{ // reach
@@ -125,7 +137,7 @@ func (s *service) OnTick(loop.TickEvent) {
 			}
 		}
 		{ // obstruction
-			blueprintObstruction, _ := s.Obstruction().Component().Get(event.Blueprint)
+			blueprintObstruction, _ := s.Obstruction().Component().Get(blueprintEntity)
 
 			aabb := obstruction.NewAABB(pos, size)
 			collisions := s.Obstruction().Collisions(aabb, blueprintObstruction.Obstruction)
@@ -136,31 +148,36 @@ func (s *service) OnTick(loop.TickEvent) {
 			}
 		}
 
-		owner, ok := s.Player().Owner().Get(event.By)
+		owner, ok := s.Player().Owner().Get(byEntity)
 		if !ok {
 			s.Logger().Log(player.ErrRequiresOwner)
 			continue
 		}
 
 		// pay
-		if cost, ok := s.Economy().Cost().Get(event.Blueprint); ok {
-			wallet, ok := s.Economy().Wallet().Get(owner.Owner)
+		if cost, ok := s.Economy().Cost().Get(blueprintEntity); ok {
+			wallet, ok := s.Economy().Wallet().Get(owner)
 			if !ok || cost.Cost > wallet.Money {
 				s.Logger().Log(economy.ErrToExpensive)
 				continue
 			}
-			s.Economy().Wallet().Set(owner.Owner, wallet.Pay(cost))
+			s.Economy().Wallet().Set(owner, wallet.Pay(cost))
+		}
+
+		blueprintUUID, ok := s.UUID().Component().Get(blueprintEntity)
+		if !ok {
+			s.Logger().Fatal(tile.ErrBlueprintIsMissingUUID)
+		}
+		ownerUUID, ok := s.UUID().Component().Get(byEntity)
+		if !ok {
+			s.Logger().Fatal(player.ErrRequiresOwner)
 		}
 
 		// place
-		deployed := s.Prototype().Clone(event.Blueprint)
-		s.Hierarchy().SetParent(deployed, worldEntity)
-		s.Player().Owner().Set(deployed, owner)
+		deployed := s.World().NewEntity()
+		s.Player().Owner().SetUUID(deployed, ownerUUID.ID)
 		s.Obstruction().Deployed().Set(deployed, obstruction.NewDeployed())
+		s.Tile().Blueprint().SetUUID(deployed, blueprintUUID.ID)
 		s.Tile().Pos().Set(deployed, tile.NewPos(event.Coords.Coords()))
 	}
-}
-
-func (s *service) DestroyEvent(e deploy.DestroyEvent) {
-	s.World().RemoveEntity(e.Entity)
 }

@@ -15,14 +15,16 @@ type service struct {
 	ClientService      ioc.Lazy[*client.Service] `inject:""`
 	ServerService      ioc.Lazy[*server.Service] `inject:""`
 	server             ecs.ComponentArray[netsync.ServerComponent]
+	clients            ecs.ComponentArray[netsync.ClientsComponent]
 	client             ecs.ComponentArray[netsync.ClientComponent]
 }
 
 func NewService(c ioc.Dic) netsync.Service {
-	t := ioc.GetServices[*service](c)
-	t.server = ecs.GetComponentArray[netsync.ServerComponent](t.World())
-	t.client = ecs.GetComponentArray[netsync.ClientComponent](t.World())
-	return t
+	s := ioc.GetServices[*service](c)
+	s.server = ecs.GetComponentArray[netsync.ServerComponent](s.World())
+	s.clients = ecs.GetComponentArray[netsync.ClientsComponent](s.World())
+	s.client = ecs.GetComponentArray[netsync.ClientComponent](s.World())
+	return s
 }
 
 func (s *service) Start() ecs.SystemRegister {
@@ -37,6 +39,7 @@ func (s *service) Start() ecs.SystemRegister {
 			listen(s.EventsBuilder(), s.ClientService().OnTransparentEvent)
 		}
 
+		s.ServerService().AddBeforeListeners()
 		for _, listen := range s.ServerService().ListenToEvents {
 			listen(s.EventsBuilder(), s.ServerService().BeforeEvent)
 		}
@@ -68,5 +71,6 @@ func (s *service) Stop() ecs.SystemRegister {
 	})
 }
 
-func (s *service) Server() ecs.ComponentArray[netsync.ServerComponent] { return s.server }
-func (s *service) Client() ecs.ComponentArray[netsync.ClientComponent] { return s.client }
+func (s *service) Server() ecs.ComponentArray[netsync.ServerComponent]   { return s.server }
+func (s *service) Clients() ecs.ComponentArray[netsync.ClientsComponent] { return s.clients }
+func (s *service) Client() ecs.ComponentArray[netsync.ClientComponent]   { return s.client }

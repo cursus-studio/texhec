@@ -25,7 +25,7 @@ type AttackFeature struct {
 }
 
 func (f AttackFeature) Event() any {
-	return ecs.NewSetEvent(f.By.State().Entity, attack.NewTarget(f.Target.State().Entity))
+	return attack.NewAttackEvent(f.By.State().UUID, f.Target.State().UUID)
 }
 
 var Pkg = ioc.NewPkg(func(b ioc.Builder) {
@@ -33,6 +33,8 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 		typeregistrypkg.PkgT[attack.TargetComponent],
 		typeregistrypkg.PkgT[attack.HealthComponent],
 		typeregistrypkg.PkgT[attack.DamageComponent],
+
+		typeregistrypkg.PkgT[attack.AttackEvent],
 
 		reachpkg.PkgT[attack.TargetComponent],
 		interactionspkg.FeaturePkg[AttackFeature](

@@ -136,7 +136,7 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 				}
 				//
 				hostEntity := s.World().NewEntity()
-				s.NetSync().Client().Set(hostEntity, netsync.ClientComponent{})
+				s.NetSync().Clients().Set(hostEntity, netsync.ClientsComponent{})
 				if err := s.Connection().Host(hostEntity, ":8080"); err != nil {
 					s.Logger().Warn(err)
 					return

@@ -2,23 +2,47 @@ package internal
 
 import (
 	"encoding/binary"
+	"engine/modules/ecs"
+	"errors"
 	"fmt"
 	"math"
 	"net"
-	"sync"
+	"os"
 )
+
+type ConnBuffer struct {
+	net.Conn
+	buffer []byte
+}
+
+func (conn *ConnBuffer) Buffer(buffer []byte) {
+	conn.buffer = append(conn.buffer, buffer...)
+}
+
+func (conn *ConnBuffer) Read(dst []byte) (n int, err error) {
+	if len(conn.buffer) > 0 {
+		n = copy(dst, conn.buffer)
+		conn.buffer = conn.buffer[n:]
+		if n == len(dst) {
+			return n, nil
+		}
+	}
+	_ = conn.SetReadDeadline(getDeadline())
+	netN, err := conn.Conn.Read(dst[n:])
+	n += netN
+	return n, err
+}
+
+//
 
 type conn struct {
 	*service
-	conn     net.Conn
+	conn     ConnBuffer
 	messages []any
-	msgMutex sync.Mutex
 }
 
-func (conn *conn) Close() error { return conn.conn.Close() }
+func (conn *conn) Close() { _ = conn.conn.Close() }
 func (conn *conn) Messages() []any {
-	conn.msgMutex.Lock()
-	defer conn.msgMutex.Unlock()
 	messages := conn.messages
 	conn.messages = nil
 	return messages
@@ -44,4 +68,53 @@ func (conn *conn) Send(message any) error {
 	}
 
 	return nil
+}
+
+//
+
+func (s *service) CloseConn(entity ecs.EntityID) {
+	connComp, ok := s.Connection().Component().Get(entity)
+	if !ok {
+		return
+	}
+	conn := connComp.Conn().(*conn)
+	conn.Close()
+
+	s.World().RemoveEntity(entity)
+}
+
+func (s *service) PollMessages(entity ecs.EntityID) {
+	connComp, ok := s.Connection().Component().Get(entity)
+	if !ok {
+		return
+	}
+	conn := connComp.Conn().(*conn)
+
+	messageLengthInBytes := make([]byte, 4)
+	if n, err := conn.conn.Read(messageLengthInBytes); n < int(len(messageLengthInBytes)) && errors.Is(err, os.ErrDeadlineExceeded) {
+		conn.conn.Buffer(messageLengthInBytes[:n])
+		return
+	} else if err != nil {
+		s.CloseConn(entity)
+		return
+	}
+
+	messageLength := binary.BigEndian.Uint32(messageLengthInBytes)
+	messageBytes := make([]byte, messageLength)
+	if n, err := conn.conn.Read(messageBytes); n < int(len(messageLengthInBytes)) && errors.Is(err, os.ErrDeadlineExceeded) {
+		conn.conn.Buffer(messageLengthInBytes)
+		conn.conn.Buffer(messageBytes[:n])
+		return
+	} else if err != nil {
+		s.CloseConn(entity)
+		return
+	}
+
+	message, err := s.Codec().Decode(messageBytes)
+	if err != nil {
+		s.Logger().Log(err)
+		return
+	}
+	// f.logger.Info(fmt.Sprintf("received '***' type '%v'", reflect.TypeOf(message).String()))
+	conn.messages = append(conn.messages, message)
 }

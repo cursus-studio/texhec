@@ -5,6 +5,7 @@ import (
 	"core/modules/reach"
 	"engine/modules/ecs"
 	"engine/modules/grid"
+	"engine/modules/uuid"
 )
 
 type Component struct {
@@ -21,16 +22,16 @@ func NewDeploy(deployable ...ecs.EntityID) Component {
 
 type DeployEvent struct {
 	By,
-	Blueprint ecs.EntityID
+	Blueprint uuid.UUID
 	Coords grid.Coords
 }
 type DestroyEvent struct {
-	Entity ecs.EntityID
+	UUID uuid.UUID
 }
 
 func NewDeployEvent(
 	by,
-	blueprint ecs.EntityID,
+	blueprint uuid.UUID,
 	coords grid.Coords,
 ) DeployEvent {
 	return DeployEvent{
@@ -39,8 +40,8 @@ func NewDeployEvent(
 		coords,
 	}
 }
-func NewDestroyEvent(entity ecs.EntityID) DestroyEvent {
-	return DestroyEvent{entity}
+func NewDestroyEvent(uuid uuid.UUID) DestroyEvent {
+	return DestroyEvent{uuid}
 }
 
 //

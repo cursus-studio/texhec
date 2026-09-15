@@ -168,6 +168,12 @@ Install packages for:
 - `golang`
 - `docker`
 
+### Hooks
+Enable commit hooks if you want to modify codebase
+```
+git config core.hooksPath .git-hooks
+```
+
 ### Run
 ```
 go -C core run .

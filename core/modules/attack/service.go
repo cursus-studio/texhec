@@ -4,6 +4,7 @@ import (
 	"core/modules/reach"
 	"engine/modules/ecs"
 	"engine/modules/transition"
+	"engine/modules/uuid"
 	"errors"
 )
 
@@ -36,6 +37,16 @@ func NewDamage(damage Health) DamageComponent {
 func (HealthComponent) Smooth() {}
 func (c1 HealthComponent) Lerp(c2 HealthComponent, mix32 float32) HealthComponent {
 	return HealthComponent{transition.LerpInt(c1.Health, c2.Health, mix32)}
+}
+
+//
+
+type AttackEvent struct {
+	Attacker, Target uuid.UUID
+}
+
+func NewAttackEvent(attacker, target uuid.UUID) AttackEvent {
+	return AttackEvent{attacker, target}
 }
 
 //

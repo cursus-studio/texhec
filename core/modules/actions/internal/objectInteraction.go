@@ -26,25 +26,27 @@ func (s *service) OnClickObject(event tile.ClickEntityEvent) {
 			return
 		}
 	}
-
 	region, ok := s.Pathfind().EntityRegion(event.Entity)
 	if !ok {
 		return
 	}
-
-	link, ok := s.Metadata().Link().Get(event.Entity)
+	linkEntity, ok := s.Tile().Blueprint().Get(event.Entity)
 	if !ok {
 		s.Logger().Warn(fmt.Errorf("cannot click entity which doesn't have original entity"))
 		return
 	}
+	entityUUID, ok := s.UUID().Component().Get(event.Entity)
+	if !ok {
+		return
+	}
 
 	propertiesEntity := s.World().NewEntity()
-	s.CanDeploy().Set(propertiesEntity, actions.NewCanDeploy(link.Entity))
-	s.CoordsCursor().Set(propertiesEntity, actions.NewCoordsCursor(link.Entity, false))
+	s.CanDeploy().Set(propertiesEntity, actions.NewCanDeploy(linkEntity))
+	s.CoordsCursor().Set(propertiesEntity, actions.NewCoordsCursor(linkEntity, false))
 	s.Anchor().Set(propertiesEntity, actions.NewAnchor(event.Entity))
 	s.RegionAnchor().Set(propertiesEntity, actions.NewRegionAnchor(region))
 
-	s.EntityInteraction().Save(propertiesEntity, actions.NewEntityInteraction(event.Entity))
+	s.EntityInteraction().Save(propertiesEntity, actions.NewEntityInteraction(entityUUID.ID))
 }
 
 func (s *service) OnObjectMissingUpsert(entity ecs.EntityID) {
@@ -76,8 +78,10 @@ func (s *service) OnObjectStateUpsert(entity ecs.EntityID) {
 	if !ok {
 		return
 	}
-
-	targetObject := stateComp.State.Entity
+	targetObject, ok := s.UUID().Entity(stateComp.State.UUID)
+	if !ok {
+		return
+	}
 	s.Hierarchy().SetParent(entity, targetObject)
 	s.Groups().InheritGroups(entity)
 	s.Transform().Inherit().Set(entity, transform.NewInherit(transform.RelativePos|transform.RelativeSizeXY))

@@ -19,6 +19,8 @@ type service struct {
 	LastFrameTime time.Time
 	TickProgress  time.Duration
 
+	lastTickUnixNano int64
+
 	Ticker *time.Ticker
 }
 
@@ -37,15 +39,12 @@ func NewService(c ioc.Dic) loop.Service {
 	events.Listen(s.EventsBuilder(), func(loop.StopEvent) {
 		s.Running = false
 	})
-	events.Listen(s.EventsBuilder(), func(e loop.ConfigureEvent) {
-		s.TickDuration = time.Second / time.Duration(e.TPS)
-		s.FrameDuration = time.Second / time.Duration(e.FPS)
-		prev := s.Ticker
-		s.Ticker = time.NewTicker(s.FrameDuration)
-		if prev != nil {
-			prev.Stop()
-		}
+
+	events.Listen(s.EventsBuilder(), func(loop.TickEvent) {
+		s.lastTickUnixNano = time.Unix(0, s.lastTickUnixNano).Add(s.TickDuration).UnixNano()
 	})
+
+	events.Listen(s.EventsBuilder(), s.Configure)
 
 	return s
 }
@@ -76,8 +75,31 @@ func (s *service) Run(e loop.ConfigureEvent) {
 	}
 }
 
-func (s *service) Stop()                           { events.Emit(s.Events(), loop.StopEvent{}) }
-func (s *service) Configure(e loop.ConfigureEvent) { events.Emit(s.Events(), e) }
+func (s *service) Stop() { events.Emit(s.Events(), loop.StopEvent{}) }
+func (s *service) Configure(e loop.ConfigureEvent) {
+	s.TickDuration = time.Second / time.Duration(e.TPS)
+	s.FrameDuration = time.Second / time.Duration(e.FPS)
+
+	now := s.Clock().Now()
+	s.TickProgress = now.Sub(now.Truncate(s.TickDuration))
+
+	tickTime := now.Add(-s.TickProgress)
+	s.lastTickUnixNano = tickTime.UnixNano()
+
+	prev := s.Ticker
+	s.Ticker = time.NewTicker(s.FrameDuration)
+	if prev != nil {
+		prev.Stop()
+	}
+}
+
+func (s *service) SyncToUnixNano(lastTickUnix int64) {
+	s.lastTickUnixNano = time.Unix(0, s.lastTickUnixNano).Add(-s.TickDuration).UnixNano()
+	for s.lastTickUnixNano-lastTickUnix != 0 {
+		events.Emit(s.Events(), loop.TickEvent{Delta: s.TickDuration})
+	}
+}
+func (s *service) LastTickUnixNano() int64 { return s.lastTickUnixNano }
 
 func (s *service) Stats() loop.Stats { return s }
 

@@ -10,12 +10,11 @@ import (
 
 // singular connection interface
 type Conn interface {
-	// send has block behavior
-	Send(message any) error
-
+	Close()
 	// returns messages from last call
 	Messages() []any
-	Close() error
+	// send has block behavior
+	Send(message any) error
 }
 
 // components
