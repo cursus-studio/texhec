@@ -137,6 +137,7 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 				}
 				//
 				hostEntity := s.World().NewEntity()
+				s.Hierarchy().SetParent(hostEntity, worldEntity)
 				s.NetSync().Clients().Set(hostEntity, netsync.ClientsComponent{})
 				s.Player().PlayersConnection().Set(hostEntity, player.NewPlayersConnection())
 				if err := s.Connection().Host(hostEntity, ":8080"); err != nil {

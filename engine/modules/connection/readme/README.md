@@ -6,7 +6,7 @@ defines connection and stores it in component
 ```
 $ go test ./... -bench=.
 PASS
-ok  	engine/modules/connection/test	0.037s
+ok  	engine/modules/connection/test	0.034s
 ```
 ## Lines of code
 ```

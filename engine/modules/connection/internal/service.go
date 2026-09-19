@@ -34,16 +34,16 @@ func NewService(c ioc.Dic) connection.Service {
 	s.connectionArray = ecs.GetComponentArray[connection.ConnectionComponent](s.World())
 
 	s.listenersArray.AddDirtySet(s.listenersDirtySet)
-	s.listenersArray.OnUpsert(s.BeforeListenerGet)
+	s.listenersArray.OnMod(s.OnListenerMod)
 
 	s.connectionArray.AddDirtySet(s.connectionDirtySet)
-	s.connectionArray.OnUpsert(s.BeforeConnectionGet)
+	s.connectionArray.OnMod(s.OnConnectionMod)
 
 	return s
 }
 
-func (s *service) BeforeListenerGet(ecs.EntityID) {
-	if entities := s.connectionDirtySet.Get(); len(entities) == 0 {
+func (s *service) OnListenerMod(ecs.EntityID) {
+	if entities := s.listenersDirtySet.Get(); len(entities) == 0 {
 		return
 	}
 	present := datastructures.NewSet[net.Listener]()
@@ -69,7 +69,7 @@ func (s *service) BeforeListenerGet(ecs.EntityID) {
 	}
 }
 
-func (s *service) BeforeConnectionGet(ecs.EntityID) {
+func (s *service) OnConnectionMod(ecs.EntityID) {
 	if entities := s.connectionDirtySet.Get(); len(entities) == 0 {
 		return
 	}
