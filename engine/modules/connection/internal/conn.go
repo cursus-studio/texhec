@@ -2,13 +2,34 @@ package internal
 
 import (
 	"encoding/binary"
+	"engine/modules/connection"
 	"engine/modules/ecs"
 	"errors"
 	"fmt"
 	"math"
 	"net"
 	"os"
+	"reflect"
+
+	"github.com/ogiusek/events"
 )
+
+func setMsgCtx(msg any, ctx connection.MsgCtx) (any, bool) {
+	msgValuePointer := reflect.New(reflect.TypeOf(msg))
+	msgValuePointer.Elem().Set(reflect.ValueOf(msg))
+	msgSetter, ok := msgValuePointer.Interface().(connection.MsgCtxSetter)
+	if !ok {
+		return nil, false
+	}
+	msgSetter.SetCtx(ctx)
+	msgAny := msgValuePointer.Elem().Interface()
+	return msgAny, ok
+}
+
+func implementsMsgCtxSetter(msg any) bool {
+	t := reflect.PointerTo(reflect.TypeOf(msg))
+	return t.Implements(reflect.TypeFor[connection.MsgCtxSetter]())
+}
 
 type ConnBuffer struct {
 	net.Conn
@@ -37,18 +58,16 @@ func (conn *ConnBuffer) Read(dst []byte) (n int, err error) {
 
 type conn struct {
 	*service
-	conn     ConnBuffer
-	messages []any
+	conn ConnBuffer
 }
 
 func (conn *conn) Close() { _ = conn.conn.Close() }
-func (conn *conn) Messages() []any {
-	messages := conn.messages
-	conn.messages = nil
-	return messages
-}
 
 func (conn *conn) Send(message any) error {
+	if !implementsMsgCtxSetter(message) {
+		return fmt.Errorf("message doesn't inherit connection.MsgCtx")
+	}
+
 	bytes, err := conn.Codec().Encode(message)
 	if err != nil {
 		return err
@@ -110,11 +129,16 @@ func (s *service) PollMessages(entity ecs.EntityID) {
 		return
 	}
 
-	message, err := s.Codec().Decode(messageBytes)
+	msg, err := s.Codec().Decode(messageBytes)
 	if err != nil {
 		s.Logger().Log(err)
 		return
 	}
+	msg, ok = setMsgCtx(msg, connection.NewMsgCtx(entity))
+	if !ok {
+		s.Logger().Warn(fmt.Errorf("received message doesn't implement engine.connection.msgCtxSetter"))
+		return
+	}
 	// f.logger.Info(fmt.Sprintf("received '***' type '%v'", reflect.TypeOf(message).String()))
-	conn.messages = append(conn.messages, message)
+	events.EmitAny(s.Events(), msg)
 }

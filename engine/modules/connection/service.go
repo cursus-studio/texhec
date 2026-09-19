@@ -8,11 +8,27 @@ import (
 
 // types
 
+type MsgCtx struct {
+	ConnEntity ecs.EntityID
+}
+
+func NewMsgCtx(connEntity ecs.EntityID) MsgCtx {
+	return MsgCtx{connEntity}
+}
+
+func (ptr *MsgCtx) SetCtx(tgtMsg MsgCtx) { *ptr = tgtMsg }
+
+type MsgCtxSetter interface {
+	SetCtx(tgtMsg MsgCtx)
+}
+
+//
+
 // singular connection interface
 type Conn interface {
 	Close()
-	// returns messages from last call
-	Messages() []any
+	// messages received are emited as event
+
 	// send has block behavior
 	Send(message any) error
 }

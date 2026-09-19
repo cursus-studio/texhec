@@ -3,6 +3,7 @@ package test
 import (
 	"encoding/binary"
 	"engine"
+	"engine/modules/connection"
 	"engine/modules/ecs"
 	"engine/modules/loop"
 	typeregistrypkg "engine/modules/typeregistry/pkg"
@@ -18,11 +19,14 @@ import (
 )
 
 type Message struct {
+	connection.MsgCtx
 	Content string
 }
 
 type Setup struct {
 	engine.EngineWorld `inject:""`
+
+	receivedMessages *[]Message
 
 	Message Message
 	Network string
@@ -30,14 +34,24 @@ type Setup struct {
 }
 
 func NewSetup() Setup {
+	messages := []Message{}
 	c := ioc.NewContainer(
 		enginepkg.Pkg,
 		typeregistrypkg.PkgT[Message],
+		func(b ioc.Builder) {
+			ioc.Wrap(b, func(c ioc.Dic, builder events.Builder) {
+				events.Listen(builder, func(msg Message) {
+					messages = append(messages, msg)
+				})
+			})
+		},
 	)
 	s := ioc.GetServices[Setup](c)
 	_ = ecs.RegisterSystems(
 		s.Connection(),
 	)
+
+	s.receivedMessages = &messages
 	s.Message.Content = "example message"
 	s.Network = "tcp"
 

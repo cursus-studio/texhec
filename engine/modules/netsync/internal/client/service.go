@@ -9,8 +9,6 @@ import (
 	"engine/modules/netsync/internal/config"
 	"engine/modules/netsync/internal/servertypes"
 	"engine/modules/record"
-	"fmt"
-	"reflect"
 
 	"github.com/ogiusek/events"
 	"github.com/ogiusek/ioc/v2"
@@ -57,17 +55,10 @@ func NewService(c ioc.Dic, config config.Config) *Service {
 	s.NetSync().Server().AddDirtySet(s.dirtySet)
 	s.Connection().Component().AddDirtySet(s.dirtySet)
 
-	listeners := map[reflect.Type]func(any){
-		reflect.TypeFor[servertypes.SendStateDTO](): func(a any) {
-			s.ListenSendState(a.(servertypes.SendStateDTO))
-		},
-		reflect.TypeFor[servertypes.SendChangeDTO](): func(a any) {
-			s.ListenSendChange(a.(servertypes.SendChangeDTO))
-		},
-		reflect.TypeFor[servertypes.TransparentEventDTO](): func(a any) {
-			s.ListenTransparentEvent(a.(servertypes.TransparentEventDTO))
-		},
-	}
+	events.Listen(s.EventsBuilder(), s.ListenSendState)
+	events.Listen(s.EventsBuilder(), s.ListenSendChange)
+	events.Listen(s.EventsBuilder(), s.ListenTransparentEvent)
+
 	events.Listen(s.EventsBuilder(), func(loop.FrameEvent) {
 		for _, entity := range s.dirtySet.Get() {
 			if _, ok := s.NetSync().Server().Get(entity); !ok {
@@ -79,28 +70,6 @@ func NewService(c ioc.Dic, config config.Config) *Service {
 			}
 			err := conn.Conn().Send(clienttypes.FetchStateDTO{})
 			s.Logger().Warn(err)
-		}
-		conn := s.getConnection()
-		if conn == nil {
-			return
-		}
-
-		for _, server := range s.NetSync().Server().GetEntities() {
-			conn, ok := s.Connection().Component().Get(server)
-			if !ok {
-				s.Logger().Warn(fmt.Errorf("not connected to server"))
-				continue
-			}
-			for _, msg := range conn.Conn().Messages() {
-				messageType := reflect.TypeOf(msg)
-				listener, ok := listeners[messageType]
-				if !ok {
-					s.Logger().Log(fmt.Errorf("invalid listener of type '%v' called", messageType.String()))
-					conn.Conn().Close()
-					return
-				}
-				listener(msg)
-			}
 		}
 	})
 

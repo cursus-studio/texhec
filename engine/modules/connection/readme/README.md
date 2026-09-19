@@ -6,7 +6,7 @@ defines connection and stores it in component
 ```
 $ go test ./... -bench=.
 PASS
-ok  	engine/modules/connection/test	0.036s
+ok  	engine/modules/connection/test	0.033s
 ```
 ## Lines of code
 ```
@@ -14,9 +14,9 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                               8            105             26            482
+Go                               8            117             27            522
 -------------------------------------------------------------------------------
-SUM:                             8            105             26            482
+SUM:                             8            117             27            522
 -------------------------------------------------------------------------------
 ```
 ## Types
@@ -41,6 +41,12 @@ Type: `func() error`
 #### method Service TransferConnection
 Type: `func(fromEntity engine/modules/ecs.EntityID, toEntity engine/modules/ecs.EntityID) error`
 
+### type MsgCtxSetter
+Type: `engine/modules/connection.MsgCtxSetter`
+
+#### method MsgCtxSetter SetCtx
+Type: `func(tgtMsg engine/modules/connection.MsgCtx)`
+
 ### type Conn
 Type: `engine/modules/connection.Conn`
 singular connection interface
@@ -48,13 +54,18 @@ singular connection interface
 #### method Conn Close
 Type: `func()`
 
-#### method Conn Messages
-Type: `func() []any`
-returns messages from last call
-
 #### method Conn Send
 Type: `func(message any) error`
 send has block behavior
+
+### type MsgCtx
+Type: `engine/modules/connection.MsgCtx`
+
+#### property MsgCtx ConnEntity
+Type: `engine/modules/ecs.EntityID`
+
+#### method MsgCtx SetCtx
+Type: `func(tgtMsg engine/modules/connection.MsgCtx)`
 
 ### type ListenerComponent
 Type: `engine/modules/connection.ListenerComponent`
@@ -69,6 +80,9 @@ Type: `engine/modules/connection.ConnectionComponent`
 Type: `func() engine/modules/connection.Conn`
 
 ## Functions
+### func NewMsgCtx
+Type: `func(connEntity engine/modules/ecs.EntityID) engine/modules/connection.MsgCtx`
+
 ### func NewListener
 Type: `func(listener net.Listener) engine/modules/connection.ListenerComponent`
 
@@ -94,9 +108,13 @@ Type: `func(conn engine/modules/connection.Conn) engine/modules/connection.Conne
   - `engine/modules/connection.ConnectionComponent`
   - `engine/modules/connection.Listener`
   - `engine/modules/connection.ListenerComponent`
+  - `engine/modules/connection.MsgCtx`
+  - `engine/modules/connection.MsgCtxSetter`
   - `engine/modules/connection.NewConnection`
   - `engine/modules/connection.NewListener`
+  - `engine/modules/connection.NewMsgCtx`
   - `engine/modules/connection.Service`
+  - `engine/modules/connection.SetCtx`
 
 `engine/modules/datastructures`:
   - `engine/modules/datastructures.NewSet`

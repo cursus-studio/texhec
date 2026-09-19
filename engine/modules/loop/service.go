@@ -34,6 +34,22 @@ type Stats interface {
 	FrameBudgetLeft() time.Duration
 }
 
+//
+
+type EmitOnTickComponent struct {
+	Event any
+}
+
+type EmitOnTickEvent struct {
+	Event any
+}
+
+func NewEmitOnTickEvent(event any) EmitOnTickEvent {
+	return EmitOnTickEvent{event}
+}
+
+//
+
 type Service interface {
 	// Starts the game loop if it isn't started.
 	// Waits until game loop stops.
@@ -46,4 +62,6 @@ type Service interface {
 	LastTickUnixNano() int64
 
 	Stats() Stats
+
+	EmitOnTick(event any)
 }

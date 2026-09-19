@@ -36,6 +36,7 @@ func TestClient(t *testing.T) {
 	if connections := len(s.Connection().Component().GetEntities()); connections != 1 {
 		t.Fatalf("Expected 1 connection not %v", connections)
 	}
+	s.Message.ConnEntity = s.Connection().Component().GetEntities()[0]
 
 	if err := s.Send(connFromServer, s.Message); err != nil {
 		t.Fatalf("unexpected error sending message: %v", err)
@@ -44,12 +45,10 @@ func TestClient(t *testing.T) {
 	// ensure message is sent
 	s.Poll()
 
-	connection, _ := s.Connection().Component().Get(s.Connection().Component().GetEntities()[0])
-	messages := connection.Conn().Messages()
-	if len(messages) != 1 {
-		t.Fatalf("expected \"%v\" but received no messgaes", s.Message)
-	} else if messages[0] != s.Message {
-		t.Fatalf("expected \"%v\" but got \"%v\"", s.Message, messages[0])
+	if len(*s.receivedMessages) != 1 {
+		t.Fatalf("expected \"%v\" but received no messages", s.Message)
+	} else if (*s.receivedMessages)[0] != s.Message {
+		t.Fatalf("expected \"%v\" but got \"%v\"", s.Message, (*s.receivedMessages)[0])
 	}
 
 	_ = listener.Close()

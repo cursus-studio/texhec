@@ -10,12 +10,12 @@ import (
 	"engine/modules/netsync/internal/servertypes"
 	"engine/modules/record"
 	"engine/modules/uuid"
-	"fmt"
-	"reflect"
 
 	"github.com/ogiusek/events"
 	"github.com/ogiusek/ioc/v2"
 )
+
+type FetchStateEvent clienttypes.FetchStateDTO
 
 type Service struct {
 	engine.EngineWorld `inject:""`
@@ -49,39 +49,11 @@ func (s *Service) OnConnectionUpsert(entity ecs.EntityID) {
 
 func (s *Service) AddBeforeListeners() {
 	// listen to server messages
-	listeners := map[reflect.Type]func(ecs.EntityID, any){
-		reflect.TypeFor[clienttypes.FetchStateDTO](): func(entity ecs.EntityID, a any) {
-			s.onTick = append(s.onTick, func() {
-				s.ListenFetchState(entity, a.(clienttypes.FetchStateDTO))
-			})
-		},
-		reflect.TypeFor[clienttypes.EmitEventDTO](): func(entity ecs.EntityID, a any) {
-			s.ListenEmitEvent(entity, a.(clienttypes.EmitEventDTO))
-		},
-		reflect.TypeFor[clienttypes.TransparentEventDTO](): func(entity ecs.EntityID, a any) {
-			s.ListenTransparentEvent(entity, a.(clienttypes.TransparentEventDTO))
-		},
-	}
+	events.Listen(s.EventsBuilder(), s.ListenFetchState)
+	events.Listen(s.EventsBuilder(), s.ListenFetchStateEvent)
+	events.Listen(s.EventsBuilder(), s.ListenEmitEvent)
+	events.Listen(s.EventsBuilder(), s.ListenTransparentEvent)
 
-	events.Listen(s.EventsBuilder(), func(loop.FrameEvent) {
-		for _, client := range s.NetSync().Client().GetEntities() {
-			conn, ok := s.Connection().Component().Get(client)
-			if !ok {
-				s.Logger().Warn(fmt.Errorf("not connected to server"))
-				continue
-			}
-			messages := conn.Conn().Messages()
-			for _, msg := range messages {
-				messageType := reflect.TypeOf(msg)
-				listener, ok := listeners[messageType]
-				if !ok {
-					s.Logger().Log(fmt.Errorf("invalid listener called there is no %v type", messageType.String()))
-					continue
-				}
-				listener(client, msg)
-			}
-		}
-	})
 	events.Listen(s.EventsBuilder(), func(loop.TickEvent) {
 		for _, listener := range s.onTick {
 			listener()
@@ -129,17 +101,21 @@ func (s *Service) OnTransparentEvent(event any) {
 	}
 }
 
-func (s *Service) ListenFetchState(entity ecs.EntityID, dto clienttypes.FetchStateDTO) {
-	state := s.Record().UUID().GetState(s.RecordConfig)
-	s.sendVisible(entity, nil, state)
+func (s *Service) ListenFetchState(dto clienttypes.FetchStateDTO) {
+	events.Emit(s.Events(), loop.NewEmitOnTickEvent(FetchStateEvent(dto)))
 }
 
-func (s *Service) ListenEmitEvent(entity ecs.EntityID, dto clienttypes.EmitEventDTO) {
-	conn, ok := s.Connection().Component().Get(entity)
+func (s *Service) ListenFetchStateEvent(dto FetchStateEvent) {
+	state := s.Record().UUID().GetState(s.RecordConfig)
+	s.sendVisible(dto.ConnEntity, nil, state)
+}
+
+func (s *Service) ListenEmitEvent(dto clienttypes.EmitEventDTO) {
+	conn, ok := s.Connection().Component().Get(dto.ConnEntity)
 	if !ok {
 		return
 	}
-	event, err := s.Auth(entity, dto.Event)
+	event, err := s.Auth(dto.ConnEntity, dto.Event)
 	if err != nil {
 		err := conn.Conn().Send(servertypes.SendChangeDTO{Error: err})
 		s.Logger().Log(err)
@@ -149,12 +125,12 @@ func (s *Service) ListenEmitEvent(entity ecs.EntityID, dto clienttypes.EmitEvent
 	events.EmitAny(s.Events(), event)
 }
 
-func (s *Service) ListenTransparentEvent(entity ecs.EntityID, dto clienttypes.TransparentEventDTO) {
-	conn, ok := s.Connection().Component().Get(entity)
+func (s *Service) ListenTransparentEvent(dto clienttypes.TransparentEventDTO) {
+	conn, ok := s.Connection().Component().Get(dto.ConnEntity)
 	if !ok {
 		return
 	}
-	event, err := s.Auth(entity, dto.Event)
+	event, err := s.Auth(dto.ConnEntity, dto.Event)
 	if err != nil {
 		err := conn.Conn().Send(servertypes.TransparentEventDTO{Error: err})
 		s.Logger().Log(err)

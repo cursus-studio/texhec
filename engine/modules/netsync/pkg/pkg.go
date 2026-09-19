@@ -22,6 +22,8 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 		typeregistrypkg.PkgT[servertypes.SendStateDTO],
 		typeregistrypkg.PkgT[servertypes.SendChangeDTO],
 		typeregistrypkg.PkgT[servertypes.TransparentEventDTO],
+
+		typeregistrypkg.PkgT[server.FetchStateEvent],
 	}
 	for _, pkg := range pkgs {
 		pkg(b)
