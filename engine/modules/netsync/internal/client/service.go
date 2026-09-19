@@ -28,7 +28,7 @@ type recordedPrediction struct {
 // - apply predicted event (starts and ends prediction)
 type Service struct {
 	engine.EngineWorld `inject:""`
-	config.Config
+	Config             config.InjectedConfig `inject:""`
 
 	recordNextEvent    bool
 	predictions        []savedPrediction
@@ -40,9 +40,8 @@ type Service struct {
 	dirtySet ecs.DirtySet
 }
 
-func NewService(c ioc.Dic, config config.Config) *Service {
+func NewService(c ioc.Dic) *Service {
 	s := ioc.GetServices[*Service](c)
-	s.Config = config
 	s.recordNextEvent = true
 	s.predictions = make([]savedPrediction, 0)
 	s.recordedPrediction = nil
@@ -58,6 +57,7 @@ func NewService(c ioc.Dic, config config.Config) *Service {
 	events.Listen(s.EventsBuilder(), s.ListenSendState)
 	events.Listen(s.EventsBuilder(), s.ListenSendChange)
 	events.Listen(s.EventsBuilder(), s.ListenTransparentEvent)
+	events.Listen(s.EventsBuilder(), s.ListenVerifyEventHappen)
 
 	events.Listen(s.EventsBuilder(), func(loop.FrameEvent) {
 		for _, entity := range s.dirtySet.Get() {
@@ -90,7 +90,7 @@ func (s *Service) BeforeEventRecord(event any) {
 		return
 	}
 
-	if len(s.predictions) > s.MaxPredictions {
+	if len(s.predictions) > s.Config().MaxPredictions {
 		s.Logger().Log(ErrExceededPredictions)
 		s.undoPredictions()
 		// reconciliate
@@ -100,7 +100,7 @@ func (s *Service) BeforeEventRecord(event any) {
 		return
 	}
 
-	s.recordingID = s.Record().UUID().StartBackwardsRecording(s.RecordConfig)
+	s.recordingID = s.Record().UUID().StartBackwardsRecording(s.Config().RecordConfig)
 	s.recordedPrediction = &recordedPrediction{
 		PredictedEvent: clienttypes.PredictedEvent{
 			ID:    s.UUID().NewUUID(),
@@ -164,6 +164,9 @@ func (s *Service) OnTransparentEvent(event any) {
 	s.Logger().Log(err)
 }
 
+func (s *Service) OnVerifyEventHappen(event any) {
+}
+
 func (s *Service) ListenSendChange(dto servertypes.SendChangeDTO) {
 	conn := s.getConnection()
 	if conn == nil {
@@ -185,7 +188,7 @@ func (s *Service) ListenSendChange(dto servertypes.SendChangeDTO) {
 	// check is event predicted. if is then remove first event from queue
 	// if isn't then undo predictions, emit server event(as not recordable), emit all predicted events again
 	if len(s.predictions) == 0 {
-		s.Record().UUID().Apply(s.RecordConfig, dto.Changes)
+		s.Record().UUID().Apply(s.Config().RecordConfig, dto.Changes)
 		return
 	}
 	if s.predictions[0].PredictedEvent.ID == dto.EventID {
@@ -204,7 +207,7 @@ func (s *Service) ListenSendChange(dto servertypes.SendChangeDTO) {
 		// }
 	}
 	predictedEvents := s.undoPredictions()
-	s.Record().UUID().Apply(s.RecordConfig, dto.Changes)
+	s.Record().UUID().Apply(s.Config().RecordConfig, dto.Changes)
 	// reApplied events are events without applied event
 	reEmitedEvents := make([]clienttypes.PredictedEvent, 0, len(predictedEvents))
 	for _, predictedEvent := range predictedEvents {
@@ -228,7 +231,7 @@ func (s *Service) ListenSendState(dto servertypes.SendStateDTO) {
 		return
 	}
 	s.predictions = nil
-	s.Record().UUID().Apply(s.RecordConfig, dto.State)
+	s.Record().UUID().Apply(s.Config().RecordConfig, dto.State)
 	s.Loop().SyncToUnixNano(dto.TickUnixNano)
 }
 
@@ -245,6 +248,9 @@ func (s *Service) ListenTransparentEvent(dto servertypes.TransparentEventDTO) {
 	events.EmitAny(s.Events(), dto.Event)
 }
 
+func (s *Service) ListenVerifyEventHappen(dto servertypes.VerifyEventHappenDTO) {
+}
+
 // private methods
 
 func (s *Service) undoPredictions() []clienttypes.PredictedEvent {
@@ -256,7 +262,7 @@ func (s *Service) undoPredictions() []clienttypes.PredictedEvent {
 		// snapshots = append([]record.UUIDRecording{prediction.Snapshot}, snapshots...)
 		snapshots = append(snapshots, prediction.Snapshot)
 	}
-	s.Record().UUID().Apply(s.RecordConfig, snapshots...)
+	s.Record().UUID().Apply(s.Config().RecordConfig, snapshots...)
 	s.predictions = nil
 	return unDoneEvents
 }

@@ -142,7 +142,7 @@ func (s *service) AddListener(entity ecs.EntityID, rawListener net.Listener) {
 	s.listenersArray.Set(entity, comp)
 }
 
-func (s *service) AddConnection(entity ecs.EntityID, rawConn net.Conn) {
+func (s *service) AddConnection(entity ecs.EntityID, rawConn net.Conn) connection.ConnectionComponent {
 	conn := &conn{
 		service: s,
 		conn:    ConnBuffer{Conn: rawConn},
@@ -150,4 +150,5 @@ func (s *service) AddConnection(entity ecs.EntityID, rawConn net.Conn) {
 
 	comp := connection.NewConnection(conn)
 	s.connectionArray.Set(entity, comp)
+	return comp
 }

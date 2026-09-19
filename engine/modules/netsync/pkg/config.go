@@ -57,6 +57,15 @@ func AddTransparentEvent[EventType any](config Config) {
 	config.config.AllowedClientEvents[eventType] = struct{}{}
 }
 
+// these are events sent to client like ticks, client verifies that these occured between other events
+func AddVerifyEventHappen[EventType any](config Config) {
+	eventType := reflect.TypeFor[EventType]()
+	config.config.VerifyHappenEvents = append(config.config.VerifyHappenEvents, eventType)
+	config.config.ListenToVerifyHappenEvents = append(config.config.ListenToVerifyHappenEvents, func(b events.Builder, f func(any)) {
+		events.Listen(b, func(e EventType) { f(e) })
+	})
+}
+
 func AddEventAuthorization[EventType any](config Config, handler func(EventType) error) {
 	eventType := reflect.TypeFor[EventType]()
 	config.config.AuthorizeEvent[eventType] = func(a any) error {

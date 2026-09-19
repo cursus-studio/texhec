@@ -17,6 +17,7 @@ import (
 	gridpkg "engine/modules/grid/pkg"
 	"engine/modules/logger"
 	loggerpkg "engine/modules/logger/pkg"
+	"engine/modules/loop"
 	netsyncpkg "engine/modules/netsync/pkg"
 	"engine/modules/record"
 	"engine/modules/seed"
@@ -125,12 +126,14 @@ func getDic() ioc.Dic {
 				record.AddToConfig[tile.PosComponent](config.RecordConfig())
 				// - players: name, wallet
 				record.AddToConfig[player.PlayerComponent](config.RecordConfig())
-				record.AddToConfig[player.ActingPlayerComponent](config.RecordConfig())
+				record.AddToConfig[player.PlayerUUIDComponent](config.RecordConfig())
 				record.AddToConfig[economy.WalletComponent](config.RecordConfig())
 
 				netsyncpkg.AddTransparentEvent[deploy.DeployEvent](config)
 				netsyncpkg.AddTransparentEvent[attack.AttackEvent](config)
 				netsyncpkg.AddTransparentEvent[pathfind.FindPathEvent](config)
+
+				netsyncpkg.AddVerifyEventHappen[loop.TickEvent](config)
 			})
 			ioc.Wrap(b, func(c ioc.Dic, config colliderpkg.Config) {
 				tileSize := ioc.Get[gridpkg.Config](c).GetTileSize()

@@ -8,9 +8,9 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                               3             51             17            157
+Go                               3             52             20            175
 -------------------------------------------------------------------------------
-SUM:                             3             51             17            157
+SUM:                             3             52             20            175
 -------------------------------------------------------------------------------
 ```
 ## Types
@@ -19,6 +19,9 @@ Type: `engine/modules/loop.Service`
 
 #### method Service Configure
 Type: `func(engine/modules/loop.ConfigureEvent)`
+
+#### method Service EmitOnFrame
+Type: `func(event any)`
 
 #### method Service EmitOnTick
 Type: `func(event any)`
@@ -79,6 +82,18 @@ Type: `engine/modules/loop.FrameEvent`
 #### property FrameEvent Delta
 Type: `time.Duration`
 
+### type EmitOnFrameComponent
+Type: `engine/modules/loop.EmitOnFrameComponent`
+
+#### property EmitOnFrameComponent Event
+Type: `any`
+
+### type EmitOnFrameEvent
+Type: `engine/modules/loop.EmitOnFrameEvent`
+
+#### property EmitOnFrameEvent Event
+Type: `any`
+
 ### type EmitOnTickComponent
 Type: `engine/modules/loop.EmitOnTickComponent`
 
@@ -98,6 +113,9 @@ Type: `func() engine/modules/loop.StopEvent`
 ### func NewConfigureEvent
 Type: `func(fps int, tps int) engine/modules/loop.ConfigureEvent`
 
+### func NewEmitOnFrameEvent
+Type: `func(event any) engine/modules/loop.EmitOnFrameEvent`
+
 ### func NewEmitOnTickEvent
 Type: `func(event any) engine/modules/loop.EmitOnTickEvent`
 
@@ -116,6 +134,8 @@ Type: `func(event any) engine/modules/loop.EmitOnTickEvent`
 
 `engine/modules/loop`:
   - `engine/modules/loop.ConfigureEvent`
+  - `engine/modules/loop.EmitOnFrameComponent`
+  - `engine/modules/loop.EmitOnFrameEvent`
   - `engine/modules/loop.EmitOnTickComponent`
   - `engine/modules/loop.EmitOnTickEvent`
   - `engine/modules/loop.Event`

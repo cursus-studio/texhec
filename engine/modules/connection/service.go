@@ -3,6 +3,7 @@ package connection
 
 import (
 	"engine/modules/ecs"
+	"engine/modules/uuid"
 	"net"
 )
 
@@ -60,6 +61,19 @@ func NewConnection(conn Conn) ConnectionComponent {
 func (comp *ConnectionComponent) Conn() Conn {
 	return comp.conn
 }
+
+//
+
+type SetConnUUIDDTO struct {
+	MsgCtx
+	UUID uuid.UUID
+}
+
+func NewSetConnUUIDDTO(uuid uuid.UUID) SetConnUUIDDTO {
+	return SetConnUUIDDTO{UUID: uuid}
+}
+
+//
 
 type Service interface {
 	ecs.SystemRegister

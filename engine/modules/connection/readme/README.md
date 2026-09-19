@@ -6,7 +6,7 @@ defines connection and stores it in component
 ```
 $ go test ./... -bench=.
 PASS
-ok  	engine/modules/connection/test	0.033s
+ok  	engine/modules/connection/test	0.037s
 ```
 ## Lines of code
 ```
@@ -14,9 +14,9 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                               8            117             27            522
+Go                               8            122             29            540
 -------------------------------------------------------------------------------
-SUM:                             8            117             27            522
+SUM:                             8            122             29            540
 -------------------------------------------------------------------------------
 ```
 ## Types
@@ -79,6 +79,15 @@ Type: `engine/modules/connection.ConnectionComponent`
 #### method ConnectionComponent Conn
 Type: `func() engine/modules/connection.Conn`
 
+### type SetConnUUIDDTO
+Type: `engine/modules/connection.SetConnUUIDDTO`
+
+#### property SetConnUUIDDTO MsgCtx
+Type: `engine/modules/connection.MsgCtx`
+
+#### property SetConnUUIDDTO UUID
+Type: `engine/modules/uuid.UUID`
+
 ## Functions
 ### func NewMsgCtx
 Type: `func(connEntity engine/modules/ecs.EntityID) engine/modules/connection.MsgCtx`
@@ -88,6 +97,9 @@ Type: `func(listener net.Listener) engine/modules/connection.ListenerComponent`
 
 ### func NewConnection
 Type: `func(conn engine/modules/connection.Conn) engine/modules/connection.ConnectionComponent`
+
+### func NewSetConnUUIDDTO
+Type: `func(uuid engine/modules/uuid.UUID) engine/modules/connection.SetConnUUIDDTO`
 
 
 ## Dependencies
@@ -99,12 +111,14 @@ Type: `func(conn engine/modules/connection.Conn) engine/modules/connection.Conne
   - `engine.EventsBuilder`
   - `engine.Hierarchy`
   - `engine.Logger`
+  - `engine.UUID`
   - `engine.World`
 
 `engine/modules/connection`:
   - `engine/modules/connection.Close`
   - `engine/modules/connection.Component`
   - `engine/modules/connection.Conn`
+  - `engine/modules/connection.ConnEntity`
   - `engine/modules/connection.ConnectionComponent`
   - `engine/modules/connection.Listener`
   - `engine/modules/connection.ListenerComponent`
@@ -113,8 +127,12 @@ Type: `func(conn engine/modules/connection.Conn) engine/modules/connection.Conne
   - `engine/modules/connection.NewConnection`
   - `engine/modules/connection.NewListener`
   - `engine/modules/connection.NewMsgCtx`
+  - `engine/modules/connection.NewSetConnUUIDDTO`
+  - `engine/modules/connection.Send`
   - `engine/modules/connection.Service`
+  - `engine/modules/connection.SetConnUUIDDTO`
   - `engine/modules/connection.SetCtx`
+  - `engine/modules/connection.UUID`
 
 `engine/modules/datastructures`:
   - `engine/modules/datastructures.NewSet`
@@ -134,6 +152,13 @@ Type: `func(conn engine/modules/connection.Conn) engine/modules/connection.Conne
 
 `engine/modules/typeregistry/pkg`:
   - `engine/modules/typeregistry/pkg.PkgT`
+
+`engine/modules/uuid`:
+  - `engine/modules/uuid.Component`
+  - `engine/modules/uuid.ID`
+  - `engine/modules/uuid.New`
+  - `engine/modules/uuid.NewUUID`
+  - `engine/modules/uuid.UUID`
 
 `engine/pkg`:
   - `engine/pkg.Pkg`

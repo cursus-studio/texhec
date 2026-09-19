@@ -4,6 +4,7 @@ import (
 	"encoding/binary"
 	"engine/modules/connection"
 	"engine/modules/ecs"
+	"engine/modules/uuid"
 	"errors"
 	"fmt"
 	"math"
@@ -141,4 +142,8 @@ func (s *service) PollMessages(entity ecs.EntityID) {
 	}
 	// f.logger.Info(fmt.Sprintf("received '***' type '%v'", reflect.TypeOf(message).String()))
 	events.EmitAny(s.Events(), msg)
+}
+
+func (s *service) OnSetUUID(setUUID connection.SetConnUUIDDTO) {
+	s.UUID().Component().Set(setUUID.ConnEntity, uuid.New(setUUID.UUID))
 }

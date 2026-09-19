@@ -13,6 +13,7 @@ import (
 
 type service struct {
 	engine.EngineWorld `inject:""`
+	emitOnFrameArray   ecs.ComponentArray[loop.EmitOnFrameComponent]
 	emitOnTickArray    ecs.ComponentArray[loop.EmitOnTickComponent]
 	Running            bool
 
@@ -29,6 +30,7 @@ type service struct {
 
 func NewService(c ioc.Dic) loop.Service {
 	s := ioc.GetServices[*service](c)
+	s.emitOnFrameArray = ecs.GetComponentArray[loop.EmitOnFrameComponent](s.World())
 	s.emitOnTickArray = ecs.GetComponentArray[loop.EmitOnTickComponent](s.World())
 	s.Running = false
 
@@ -46,6 +48,21 @@ func NewService(c ioc.Dic) loop.Service {
 
 	events.Listen(s.EventsBuilder(), func(loop.TickEvent) {
 		s.lastTickUnixNano = time.Unix(0, s.lastTickUnixNano).Add(s.TickDuration).UnixNano()
+	})
+
+	//
+
+	// emit proper event on tick/frame
+	events.Listen(s.EventsBuilder(), func(loop.FrameEvent) {
+		arr := slices.Clone(s.emitOnFrameArray.GetEntities())
+		for _, entity := range arr {
+			if comp, ok := s.emitOnFrameArray.Get(entity); ok {
+				events.EmitAny(s.Events(), comp.Event)
+			}
+			s.World().RemoveEntity(entity)
+		}
+	})
+	events.Listen(s.EventsBuilder(), func(loop.TickEvent) {
 		arr := slices.Clone(s.emitOnTickArray.GetEntities())
 		for _, entity := range arr {
 			if comp, ok := s.emitOnTickArray.Get(entity); ok {
@@ -54,10 +71,10 @@ func NewService(c ioc.Dic) loop.Service {
 			s.World().RemoveEntity(entity)
 		}
 	})
+	events.Listen(s.EventsBuilder(), func(event loop.EmitOnFrameEvent) { s.EmitOnFrame(event.Event) })
+	events.Listen(s.EventsBuilder(), func(event loop.EmitOnTickEvent) { s.EmitOnTick(event.Event) })
 
-	events.Listen(s.EventsBuilder(), func(event loop.EmitOnTickEvent) {
-		s.EmitOnTick(event.Event)
-	})
+	//
 
 	events.Listen(s.EventsBuilder(), s.Configure)
 
@@ -126,6 +143,10 @@ func (s *service) FrameBudgetLeft() time.Duration {
 	return max(0, s.LastFrameTime.Add(s.FrameDuration).Sub(s.Clock().Now()))
 }
 
+func (s *service) EmitOnFrame(event any) {
+	entity := s.World().NewEntity()
+	s.emitOnFrameArray.Set(entity, loop.EmitOnFrameComponent{Event: event})
+}
 func (s *service) EmitOnTick(event any) {
 	entity := s.World().NewEntity()
 	s.emitOnTickArray.Set(entity, loop.EmitOnTickComponent{Event: event})

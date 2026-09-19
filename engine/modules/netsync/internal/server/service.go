@@ -19,16 +19,15 @@ type FetchStateEvent clienttypes.FetchStateDTO
 
 type Service struct {
 	engine.EngineWorld `inject:""`
-	config.Config
+	Config             config.InjectedConfig `inject:""`
 
 	recordedEventUUID *uuid.UUID
 	recordingID       record.UUIDRecordingID
 	onTick            []func()
 }
 
-func NewService(c ioc.Dic, config config.Config) *Service {
+func NewService(c ioc.Dic) *Service {
 	s := ioc.GetServices[*Service](c)
-	s.Config = config
 	s.recordedEventUUID = nil
 	s.recordingID = 0
 	s.Connection().Component().OnUpsert(s.OnConnectionUpsert)
@@ -73,7 +72,7 @@ func (s *Service) BeforeEvent(event any) {
 		uuid := s.UUID().NewUUID()
 		s.recordedEventUUID = &uuid
 	}
-	s.recordingID = s.Record().UUID().StartRecording(s.RecordConfig)
+	s.recordingID = s.Record().UUID().StartRecording(s.Config().RecordConfig)
 }
 
 func (s *Service) AfterEvent(event any) {
@@ -101,12 +100,26 @@ func (s *Service) OnTransparentEvent(event any) {
 	}
 }
 
+func (s *Service) OnVerifyEventHappen(event any) {
+	if len(s.NetSync().Client().GetEntities()) == 0 {
+		return
+	}
+
+	for _, client := range s.NetSync().Client().GetEntities() {
+		connComp, ok := s.Connection().Component().Get(client)
+		if !ok {
+			return
+		}
+		s.Logger().Log(connComp.Conn().Send(servertypes.VerifyEventHappenDTO{Event: event}))
+	}
+}
+
 func (s *Service) ListenFetchState(dto clienttypes.FetchStateDTO) {
 	events.Emit(s.Events(), loop.NewEmitOnTickEvent(FetchStateEvent(dto)))
 }
 
 func (s *Service) ListenFetchStateEvent(dto FetchStateEvent) {
-	state := s.Record().UUID().GetState(s.RecordConfig)
+	state := s.Record().UUID().GetState(s.Config().RecordConfig)
 	s.sendVisible(dto.ConnEntity, nil, state)
 }
 
@@ -115,7 +128,7 @@ func (s *Service) ListenEmitEvent(dto clienttypes.EmitEventDTO) {
 	if !ok {
 		return
 	}
-	event, err := s.Auth(dto.ConnEntity, dto.Event)
+	event, err := s.Config().Auth(dto.ConnEntity, dto.Event)
 	if err != nil {
 		err := conn.Conn().Send(servertypes.SendChangeDTO{Error: err})
 		s.Logger().Log(err)
@@ -130,7 +143,7 @@ func (s *Service) ListenTransparentEvent(dto clienttypes.TransparentEventDTO) {
 	if !ok {
 		return
 	}
-	event, err := s.Auth(dto.ConnEntity, dto.Event)
+	event, err := s.Config().Auth(dto.ConnEntity, dto.Event)
 	if err != nil {
 		err := conn.Conn().Send(servertypes.TransparentEventDTO{Error: err})
 		s.Logger().Log(err)

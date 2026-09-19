@@ -7,7 +7,10 @@ import (
 	"reflect"
 
 	"github.com/ogiusek/events"
+	"github.com/ogiusek/ioc/v2"
 )
+
+type InjectedConfig ioc.Lazy[*Config]
 
 type Config struct {
 	EventTypes     []reflect.Type
@@ -18,6 +21,9 @@ type Config struct {
 
 	TransparentEvents         []reflect.Type
 	ListenToTransparentEvents []func(events.Builder, func(any))
+
+	VerifyHappenEvents         []reflect.Type
+	ListenToVerifyHappenEvents []func(events.Builder, func(any))
 
 	RecordConfig record.Config
 

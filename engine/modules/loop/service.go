@@ -36,14 +36,14 @@ type Stats interface {
 
 //
 
-type EmitOnTickComponent struct {
-	Event any
-}
+type EmitOnFrameComponent struct{ Event any }
+type EmitOnFrameEvent struct{ Event any }
+type EmitOnTickComponent struct{ Event any }
+type EmitOnTickEvent struct{ Event any }
 
-type EmitOnTickEvent struct {
-	Event any
+func NewEmitOnFrameEvent(event any) EmitOnFrameEvent {
+	return EmitOnFrameEvent{event}
 }
-
 func NewEmitOnTickEvent(event any) EmitOnTickEvent {
 	return EmitOnTickEvent{event}
 }
@@ -63,5 +63,6 @@ type Service interface {
 
 	Stats() Stats
 
+	EmitOnFrame(event any)
 	EmitOnTick(event any)
 }

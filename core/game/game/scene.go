@@ -3,6 +3,7 @@ package gamescene
 import (
 	"core/game"
 	"core/modules/definitions"
+	"core/modules/player"
 	"core/modules/settings"
 	"core/modules/tile"
 	"core/modules/ui"
@@ -137,6 +138,7 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 				//
 				hostEntity := s.World().NewEntity()
 				s.NetSync().Clients().Set(hostEntity, netsync.ClientsComponent{})
+				s.Player().PlayersConnection().Set(hostEntity, player.NewPlayersConnection())
 				if err := s.Connection().Host(hostEntity, ":8080"); err != nil {
 					s.Logger().Warn(err)
 					return

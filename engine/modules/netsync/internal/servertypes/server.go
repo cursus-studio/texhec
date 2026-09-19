@@ -27,3 +27,12 @@ type TransparentEventDTO struct {
 	Event any
 	Error error
 }
+
+type VerifyEventHappenDTO struct {
+	connection.MsgCtx
+	Event any
+}
+
+// Add here tick dto to notify about events order
+// - use VerityEventHappenDTO and create a queue for it
+// - extract prediction machine

@@ -1,8 +1,10 @@
 package internal
 
 import (
+	"engine/modules/connection"
 	"engine/modules/ecs"
 	"engine/modules/loop"
+	"engine/modules/uuid"
 	"errors"
 	"net"
 	"slices"
@@ -39,7 +41,10 @@ func (s *service) PollListeners(entity ecs.EntityID) {
 		if err == nil {
 			clientEntity := s.World().NewEntity()
 			s.Hierarchy().SetParent(clientEntity, entity)
-			s.AddConnection(clientEntity, rawConn)
+			conn := s.AddConnection(clientEntity, rawConn)
+			uuid := uuid.New(s.UUID().NewUUID())
+			s.UUID().Component().Set(clientEntity, uuid)
+			_ = conn.Conn().Send(connection.NewSetConnUUIDDTO(uuid.ID))
 			continue
 		}
 		var netErr net.Error

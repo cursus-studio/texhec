@@ -13,7 +13,9 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 	pkgs := []ioc.Pkg{
 		uuidpkg.LinkPkgT[player.OwnerLink],
 		typeregistrypkg.PkgT[player.PlayerComponent],
+		typeregistrypkg.PkgT[player.PlayerUUIDComponent],
 		typeregistrypkg.PkgT[player.ActingPlayerComponent],
+		typeregistrypkg.PkgT[player.AssignActingPlayerDTO],
 	}
 	for _, pkg := range pkgs {
 		pkg(b)
