@@ -17,6 +17,7 @@ import (
 	"strconv"
 	"unsafe"
 
+	"github.com/ogiusek/events"
 	"github.com/ogiusek/ioc/v2"
 )
 
@@ -26,26 +27,15 @@ type DeployFeature struct {
 	Coords    actions.CoordsStep
 }
 
-func (f DeployFeature) Event() any {
-	return deploy.NewDeployEvent(
-		f.By.State().UUID,
-		f.Blueprint.State().UUID,
-		f.Coords.State().Coords,
-	)
-}
-
 type DestroyFeature struct {
 	Entity actions.FriendlyEntityStep
-}
-
-func (f DestroyFeature) Event() any {
-	return deploy.NewDestroyEvent(f.Entity.State().UUID)
 }
 
 var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 	pkgs := []ioc.Pkg{
 		typeregistrypkg.PkgT[deploy.DeployEvent],
 		typeregistrypkg.PkgT[deploy.DestroyEvent],
+		typeregistrypkg.PkgT[internal.BoughtComponent],
 
 		reachpkg.PkgT[deploy.Component],
 		interactionspkg.FeaturePkg[DeployFeature](
@@ -61,6 +51,21 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 	for _, pkg := range pkgs {
 		pkg(b)
 	}
+	ioc.Wrap(b, func(c ioc.Dic, b events.Builder) {
+		world := ioc.Get[game.GameWorld](c)
+		events.Listen(b, func(f DeployFeature) {
+			events.Emit(world.Events(), deploy.NewDeployEvent(
+				f.By.State().UUID,
+				f.Blueprint.State().UUID,
+				f.Coords.State().Coords,
+			))
+		})
+		events.Listen(b, func(f DestroyFeature) {
+			events.Emit(world.Events(), deploy.NewDestroyEvent(
+				f.Entity.State().UUID,
+			))
+		})
+	})
 	ioc.Register(b, func(c ioc.Dic) deploy.Service {
 		return internal.NewService(c)
 	})

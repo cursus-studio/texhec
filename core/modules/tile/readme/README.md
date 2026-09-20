@@ -103,11 +103,11 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                               8            183             95           1004
+Go                               8            183             95           1007
 GLSL                             3             31              2            112
 Markdown                         3             10              0             85
 -------------------------------------------------------------------------------
-SUM:                            14            224             97           1201
+SUM:                            14            224             97           1204
 -------------------------------------------------------------------------------
 ```
 ## TODO
@@ -464,6 +464,7 @@ Type: `func(deployed engine/modules/ecs.EntityID) core/modules/tile.ClickBluepri
   - `engine/modules/inputs.LeftClick`
   - `engine/modules/inputs.NewLeftClick`
   - `engine/modules/inputs.Stack`
+  - `engine/modules/inputs.StackComponent`
 
 `engine/modules/relation`:
   - `engine/modules/relation.Get`
@@ -505,7 +506,6 @@ Type: `func(deployed engine/modules/ecs.EntityID) core/modules/tile.ClickBluepri
   - `engine/modules/uuid.Get`
   - `engine/modules/uuid.LinkService`
   - `engine/modules/uuid.New`
-  - `engine/modules/uuid.NewUUID`
   - `engine/modules/uuid.UUID`
 
 `engine/modules/uuid/pkg`:

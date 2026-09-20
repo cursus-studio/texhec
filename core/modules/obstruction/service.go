@@ -6,6 +6,7 @@ import (
 	"engine/modules/datastructures"
 	"engine/modules/ecs"
 	"engine/modules/grid"
+	"engine/modules/uuid"
 	"errors"
 )
 
@@ -52,10 +53,12 @@ func NewAABB(coords tile.PosComponent, size tile.SizeComponent) AABB {
 }
 
 // adding and removing deployed component modifies obstruction component
-type DeployedComponent struct{}
+type DeployedComponent struct {
+	UUID uuid.UUID
+}
 
-func NewDeployed() DeployedComponent {
-	return DeployedComponent{}
+func NewDeployed(uuid uuid.UUID) DeployedComponent {
+	return DeployedComponent{uuid}
 }
 
 //

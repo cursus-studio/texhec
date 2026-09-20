@@ -21,22 +21,19 @@ func NewDeploy(deployable ...ecs.EntityID) Component {
 //
 
 type DeployEvent struct {
-	By,
-	Blueprint uuid.UUID
-	Coords grid.Coords
+	By, Blueprint uuid.UUID
+	Coords        grid.Coords
 }
 type DestroyEvent struct {
 	UUID uuid.UUID
 }
 
 func NewDeployEvent(
-	by,
-	blueprint uuid.UUID,
+	by, blueprint uuid.UUID,
 	coords grid.Coords,
 ) DeployEvent {
 	return DeployEvent{
-		by,
-		blueprint,
+		by, blueprint,
 		coords,
 	}
 }

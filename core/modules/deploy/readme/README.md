@@ -8,9 +8,9 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                               3             47             14            270
+Go                               3             45             14            274
 -------------------------------------------------------------------------------
-SUM:                             3             47             14            270
+SUM:                             3             45             14            274
 -------------------------------------------------------------------------------
 ```
 ## Types
@@ -174,6 +174,8 @@ Type: `func(uuid engine/modules/uuid.UUID) core/modules/deploy.DestroyEvent`
   - `engine/modules/uuid.Entity`
   - `engine/modules/uuid.Get`
   - `engine/modules/uuid.ID`
+  - `engine/modules/uuid.NewUUID`
+  - `engine/modules/uuid.NewUUIDFromAny`
   - `engine/modules/uuid.SetUUID`
   - `engine/modules/uuid.UUID`
 

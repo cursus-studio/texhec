@@ -103,9 +103,12 @@ func (s *system) OnLinkUpsert(entity ecs.EntityID) {
 
 // this is for deployed objects
 func (s *system) OnObstructionUpsert(entity ecs.EntityID) {
-	if _, ok := s.UUID().Component().Get(entity); !ok {
-		s.UUID().Component().Set(entity, uuid.New(s.UUID().NewUUID()))
+	deployed, ok := s.Obstruction().Deployed().Get(entity)
+	if !ok {
+		return
 	}
+	s.UUID().Component().Set(entity, uuid.New(deployed.UUID))
+	s.Inputs().Stack().Set(entity, inputs.StackComponent{})
 	s.Collider().Component().Set(entity, collider.NewCollider(s.Definitions().Assets().SquareCollider))
 	s.Inputs().LeftClick().Set(entity, inputs.NewLeftClick(tile.NewClickEntityEvent()))
 }

@@ -62,13 +62,13 @@ type AnyFeatureService interface {
 	// sets step interaction to missing or emits event
 	Progress()
 }
-type FeatureService[Feature interactions.Feature] interface {
+type FeatureService[Feature any] interface {
 	AnyFeatureService
 }
 
 //
 
-type featureService[Feature interactions.Feature] struct {
+type featureService[Feature any] struct {
 	C                  ioc.Dic
 	engine.EngineWorld `inject:""`
 	Interactions       Service `inject:""`
@@ -77,7 +77,7 @@ type featureService[Feature interactions.Feature] struct {
 	steps              []AnyStepService
 }
 
-func NewFeatureService[Feature interactions.Feature](c ioc.Dic, relations []RawRelation) FeatureService[Feature] {
+func NewFeatureService[Feature any](c ioc.Dic, relations []RawRelation) FeatureService[Feature] {
 	s := ioc.GetServices[*featureService[Feature]](c)
 	s.C = c
 
@@ -154,5 +154,5 @@ func (s *featureService[Feature]) Progress() {
 		step.FillValue(interactionEntities[i], value.Field(i))
 	}
 	s.Interactions.ResetFeatureEntity()
-	events.EmitAny(s.Events(), feature.Event())
+	events.EmitAny(s.Events(), feature)
 }

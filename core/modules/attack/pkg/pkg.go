@@ -16,16 +16,13 @@ import (
 	"fmt"
 	"strconv"
 
+	"github.com/ogiusek/events"
 	"github.com/ogiusek/ioc/v2"
 )
 
 type AttackFeature struct {
 	By     actions.FriendlyOffensiveEntityStep
 	Target actions.EnemyEntityStep
-}
-
-func (f AttackFeature) Event() any {
-	return attack.NewAttackEvent(f.By.State().UUID, f.Target.State().UUID)
 }
 
 var Pkg = ioc.NewPkg(func(b ioc.Builder) {
@@ -45,6 +42,12 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 	for _, pkg := range pkgs {
 		pkg(b)
 	}
+	ioc.Wrap(b, func(c ioc.Dic, b events.Builder) {
+		world := ioc.Get[game.GameWorld](c)
+		events.Listen(b, func(f AttackFeature) {
+			events.Emit(world.Events(), attack.NewAttackEvent(f.By.State().UUID, f.Target.State().UUID))
+		})
+	})
 	ioc.Register(b, func(c ioc.Dic) attack.Service {
 		return internal.NewService(c)
 	})

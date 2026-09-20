@@ -15,6 +15,7 @@ import (
 	"strconv"
 	"unsafe"
 
+	"github.com/ogiusek/events"
 	"github.com/ogiusek/ioc/v2"
 )
 
@@ -57,6 +58,12 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 	for _, pkg := range pkgs {
 		pkg(b)
 	}
+	ioc.Wrap(b, func(c ioc.Dic, b events.Builder) {
+		world := ioc.Get[game.GameWorld](c)
+		events.Listen(b, func(f FindPathFeature) {
+			events.Emit(world.Events(), pathfind.NewFindPathEvent(f.Entity.State().UUID, f.Coords.State().Coords))
+		})
+	})
 	ioc.Register(b, func(c ioc.Dic) pathfind.Service {
 		return internal.NewService(c)
 	})

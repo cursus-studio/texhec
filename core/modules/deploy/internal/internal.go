@@ -79,7 +79,7 @@ func (s *service) Deploy(
 	// place
 	deployed := s.World().NewEntity()
 	s.Player().Owner().SetUUID(deployed, ownerUUID.ID)
-	s.Obstruction().Deployed().Set(deployed, obstruction.NewDeployed())
+	s.Obstruction().Deployed().Set(deployed, obstruction.NewDeployed(s.UUID().NewUUID()))
 	s.Tile().Blueprint().SetUUID(deployed, blueprintUUID.ID)
 	s.Tile().Pos().Set(deployed, pos)
 	return deployed, nil
@@ -176,7 +176,7 @@ func (s *service) OnTick(loop.TickEvent) {
 		// place
 		deployed := s.World().NewEntity()
 		s.Player().Owner().SetUUID(deployed, ownerUUID.ID)
-		s.Obstruction().Deployed().Set(deployed, obstruction.NewDeployed())
+		s.Obstruction().Deployed().Set(deployed, obstruction.NewDeployed(s.UUID().NewUUIDFromAny(event)))
 		s.Tile().Blueprint().SetUUID(deployed, blueprintUUID.ID)
 		s.Tile().Pos().Set(deployed, tile.NewPos(event.Coords.Coords()))
 	}

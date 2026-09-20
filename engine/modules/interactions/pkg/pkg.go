@@ -20,7 +20,7 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 
 //
 
-func FeaturePkg[Feature interactions.Feature](
+func FeaturePkg[Feature any](
 	relations ...internal.RawRelation,
 ) ioc.Pkg {
 	return ioc.NewPkg(func(b ioc.Builder) {

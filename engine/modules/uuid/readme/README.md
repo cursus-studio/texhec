@@ -10,9 +10,9 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                               5             39              7            172
+Go                               4             38              7            178
 -------------------------------------------------------------------------------
-SUM:                             5             39              7            172
+SUM:                             4             38              7            178
 -------------------------------------------------------------------------------
 ```
 ## Types
@@ -27,6 +27,9 @@ Type: `func(engine/modules/uuid.UUID) (engine/modules/ecs.EntityID, bool)`
 
 #### method Service NewUUID
 Type: `func() engine/modules/uuid.UUID`
+
+#### method Service NewUUIDFromAny
+Type: `func(any) engine/modules/uuid.UUID`
 
 #### method Service NewUUIDFromString
 Type: `func(string) engine/modules/uuid.UUID`
@@ -51,6 +54,9 @@ Type: `engine/modules/uuid.Factory`
 
 #### method Factory NewUUID
 Type: `func() engine/modules/uuid.UUID`
+
+#### method Factory NewUUIDFromAny
+Type: `func(any) engine/modules/uuid.UUID`
 
 #### method Factory NewUUIDFromString
 Type: `func(string) engine/modules/uuid.UUID`
@@ -100,6 +106,7 @@ Type: `func[Wrapped any](entity engine/modules/ecs.EntityID) engine/modules/uuid
 ## Dependencies
 `engine`:
   - `engine.EngineWorld`
+  - `engine.Logger`
   - `engine.UUID`
   - `engine.World`
 
@@ -124,7 +131,6 @@ Type: `func[Wrapped any](entity engine/modules/ecs.EntityID) engine/modules/uuid
 `engine/modules/uuid`:
   - `engine/modules/uuid.Component`
   - `engine/modules/uuid.Entity`
-  - `engine/modules/uuid.Factory`
   - `engine/modules/uuid.ID`
   - `engine/modules/uuid.LinkCacheComponent`
   - `engine/modules/uuid.LinkService`

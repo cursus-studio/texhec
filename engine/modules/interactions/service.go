@@ -43,9 +43,6 @@ func NewStep[State any](state State) Step[State] {
 func (step stepT[State]) State() State { return step.Value }
 
 // feature
-type Feature interface {
-	Event() any
-}
 type AvailableFeaturesComponent struct {
 	Features []FeatureKey
 	Selected bool
