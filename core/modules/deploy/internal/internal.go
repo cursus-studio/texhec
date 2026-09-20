@@ -168,7 +168,7 @@ func (s *service) OnTick(loop.TickEvent) {
 		if !ok {
 			s.Logger().Fatal(tile.ErrBlueprintIsMissingUUID)
 		}
-		ownerUUID, ok := s.UUID().Component().Get(byEntity)
+		ownerUUID, ok := s.UUID().Component().Get(owner)
 		if !ok {
 			s.Logger().Fatal(player.ErrRequiresOwner)
 		}
