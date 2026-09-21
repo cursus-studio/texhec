@@ -1,21 +1,45 @@
-#!/bin/sh
-set -e
+#!/usr/bin/env python3
+import os
+import sys
+import platform
+import subprocess
+from pathlib import Path
 
-# build container
-docker build -t ci-runner cicd
+def main():
+    repo_root = Path.cwd().resolve()
+    cache_dir = repo_root / ".cache"
+    cache_dir.mkdir(parents=True, exist_ok=True)
 
-# prepare cache
-HOST_CACHE="$(pwd)/.cache"
-mkdir -p "$HOST_CACHE"
-chmod -R 777 "$HOST_CACHE"
+    is_windows = platform.system() == "Windows" or sys.platform == "win32"
 
-# run cicd command
-docker run --rm \
-  -u "$(id -u):$(id -g)" \
-  -e GOCACHE=/cache/go-cache \
-  -e GOPATH=/cache/go-path \
-  -e GOLANGCI_LINT_CACHE=/cache/golangci-lint \
-  -v "$HOST_CACHE:/cache" \
-  -v "$(pwd):/app" \
-  -w /app \
-  ci-runner go run cicd fix
+    env = os.environ.copy()
+    if is_windows:
+        env["MSYS_NO_PATHCONV"] = "1"
+
+    print("Building docker container...")
+    build_cmd = ["docker", "build", "-t", "ci-runner", "cicd"]
+    result = subprocess.run(build_cmd, env=env)
+    if result.returncode != 0:
+        sys.exit(result.returncode)
+
+    docker_cmd = [
+        "docker", "run", "--rm",
+        "-e", "GOCACHE=/cache/go-cache",
+        "-e", "GOPATH=/cache/go-path",
+        "-e", "GOLANGCI_LINT_CACHE=/cache/golangci-lint",
+        "-v", f"{cache_dir}:/cache",
+        "-v", f"{repo_root}:/app",
+        "-w", "/app",
+    ]
+
+    if not is_windows and hasattr(os, "getuid"):
+        docker_cmd.extend(["-u", f"{os.getuid()}:{os.getgid()}"])
+
+    docker_cmd.extend(["ci-runner", "go", "run", "cicd", "fix"])
+
+    print("Running CI/CD fix...")
+    result = subprocess.run(docker_cmd, env=env)
+    sys.exit(result.returncode)
+
+if __name__ == "__main__":
+    main()
