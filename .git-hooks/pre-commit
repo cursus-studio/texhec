@@ -15,6 +15,7 @@ def main():
     env = os.environ.copy()
     if is_windows:
         env["MSYS_NO_PATHCONV"] = "1"
+        env["DOCKER_BUILDKIT"] = "1"
 
     print("Building docker container...")
     build_cmd = ["docker", "build", "-t", "ci-runner", "cicd"]
@@ -27,15 +28,27 @@ def main():
         "-e", "GOCACHE=/cache/go-cache",
         "-e", "GOPATH=/cache/go-path",
         "-e", "GOLANGCI_LINT_CACHE=/cache/golangci-lint",
-        "-v", f"{cache_dir}:/cache",
-        "-v", f"{repo_root}:/app",
-        "-w", "/app",
     ]
 
-    if not is_windows and hasattr(os, "getuid"):
-        docker_cmd.extend(["-u", f"{os.getuid()}:{os.getgid()}"])
+    if is_windows:
+        # Windows: use bind propagation and normalize paths
+        docker_cmd.extend([
+            "-v", f"{cache_dir}:/cache:Z",
+            "-v", f"{repo_root}:/app:Z",
+        ])
+    else:
+        # Unix: use standard mounting with user permissions
+        docker_cmd.extend([
+            "-v", f"{cache_dir}:/cache",
+            "-v", f"{repo_root}:/app",
+        ])
+        if hasattr(os, "getuid"):
+            docker_cmd.extend(["-u", f"{os.getuid()}:{os.getgid()}"])
 
-    docker_cmd.extend(["ci-runner", "go", "run", "cicd", "fix"])
+    docker_cmd.extend([
+        "-w", "/app",
+        "ci-runner", "go", "run", "cicd", "fix"
+    ])
 
     print("Running CI/CD fix...")
     result = subprocess.run(docker_cmd, env=env)

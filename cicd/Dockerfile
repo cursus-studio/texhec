@@ -59,4 +59,6 @@ RUN curl -sSL "https://github.com/Orama-Interactive/Pixelorama/releases/download
 RUN useradd -m -s /bin/bash gouser
 USER gouser
 RUN git config --global --add safe.directory "*"
+RUN git config --global core.autocrlf true
+RUN git config --global core.safecrlf false
 WORKDIR /go/src/app
