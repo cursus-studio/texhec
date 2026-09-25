@@ -8,10 +8,10 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                               3             34              5            213
+Go                               4             45              7            257
 Markdown                         2              0              0              3
 -------------------------------------------------------------------------------
-SUM:                             5             34              5            216
+SUM:                             6             45              7            260
 -------------------------------------------------------------------------------
 ```
 ## TODO
@@ -49,6 +49,13 @@ Type: `func() engine/modules/ecs.ComponentArray[core/modules/player.PlayerUUIDCo
 
 #### method Service PlayersConnection
 Type: `func() engine/modules/ecs.ComponentArray[core/modules/player.PlayersConnectionComponent]`
+
+### type PlayerContext
+Type: `core/modules/player.PlayerContext`
+event context
+
+#### property PlayerContext PlayerUUID
+Type: `engine/modules/uuid.UUID`
 
 ### type PlayerComponent
 Type: `core/modules/player.PlayerComponent`
@@ -130,6 +137,7 @@ Type: `func(player engine/modules/uuid.UUID) core/modules/player.PlayerConnectio
 `core/game`:
   - `core/game.Economy`
   - `core/game.GameWorld`
+  - `core/game.Player`
 
 `core/modules/economy`:
   - `core/modules/economy.NewWallet`
@@ -137,6 +145,7 @@ Type: `func(player engine/modules/uuid.UUID) core/modules/player.PlayerConnectio
 
 `core/modules/player`:
   - `core/modules/player.ActingConnectionComponent`
+  - `core/modules/player.ActingPlayer`
   - `core/modules/player.ActingPlayerComponent`
   - `core/modules/player.AssignActingPlayerDTO`
   - `core/modules/player.ErrRequiresControl`
@@ -148,6 +157,7 @@ Type: `func(player engine/modules/uuid.UUID) core/modules/player.PlayerConnectio
   - `core/modules/player.OwnerLink`
   - `core/modules/player.PlayerComponent`
   - `core/modules/player.PlayerConnectionComponent`
+  - `core/modules/player.PlayerContext`
   - `core/modules/player.PlayerUUID`
   - `core/modules/player.PlayerUUIDComponent`
   - `core/modules/player.PlayersConnectionComponent`
@@ -165,6 +175,10 @@ Type: `func(player engine/modules/uuid.UUID) core/modules/player.PlayerConnectio
   - `engine/modules/ecs.ComponentArray`
   - `engine/modules/ecs.EntityID`
   - `engine/modules/ecs.GetComponentArray`
+
+`engine/modules/interactions`:
+  - `engine/modules/interactions.ContextSetter`
+  - `engine/modules/interactions.Feature`
 
 `engine/modules/loop`:
   - `engine/modules/loop.NewEmitOnFrameEvent`

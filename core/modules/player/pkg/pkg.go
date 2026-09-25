@@ -3,6 +3,7 @@ package playerpkg
 import (
 	"core/modules/player"
 	"core/modules/player/internal"
+	"engine/modules/interactions"
 	typeregistrypkg "engine/modules/typeregistry/pkg"
 	uuidpkg "engine/modules/uuid/pkg"
 
@@ -22,5 +23,9 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 	}
 	ioc.Register(b, func(c ioc.Dic) player.Service {
 		return internal.NewService(c)
+	})
+
+	ioc.Register(b, func(c ioc.Dic) interactions.ContextSetter {
+		return internal.NewContextSetter(c)
 	})
 })

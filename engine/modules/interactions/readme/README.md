@@ -13,10 +13,10 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                               8            132             62            676
+Go                               8            137             65            702
 Markdown                         2              1              0              6
 -------------------------------------------------------------------------------
-SUM:                            10            133             62            682
+SUM:                            10            138             65            708
 -------------------------------------------------------------------------------
 ```
 ## TODO
@@ -357,6 +357,9 @@ Type: `func() uintptr`
 #### method InteractionKey String
 Type: `func() string`
 
+### type Feature
+Type: `engine/modules/interactions.Feature`
+
 ### type InteractionService
 Type: `engine/modules/interactions.InteractionService[State any]`
 
@@ -377,6 +380,14 @@ step
 #### method Step State
 Type: `func() State`
 
+### type ContextSetter
+Type: `engine/modules/interactions.ContextSetter`
+this sets feature event context before emitting it
+it has to be registered in a game
+
+#### method ContextSetter SetContext
+Type: `func(engine/modules/interactions.Feature) engine/modules/interactions.Feature`
+
 ### type StatePreviewComponent
 Type: `engine/modules/interactions.StatePreviewComponent[State any]`
 interaction
@@ -389,7 +400,6 @@ Type: `engine/modules/interactions.MissingPreviewComponent[State any]`
 
 ### type AvailableFeaturesComponent
 Type: `engine/modules/interactions.AvailableFeaturesComponent`
-feature
 
 #### property AvailableFeaturesComponent Features
 Type: `[]engine/modules/interactions.FeatureKey`
@@ -439,6 +449,10 @@ Type: `func() engine/modules/interactions.SelectFeatureEvent`
   - `engine.Prototype`
   - `engine.World`
 
+`engine/modules/datastructures`:
+  - `engine/modules/datastructures.NewSparseArray`
+  - `engine/modules/datastructures.SparseArray`
+
 `engine/modules/ecs`:
   - `engine/modules/ecs.ComponentArray`
   - `engine/modules/ecs.EntityID`
@@ -450,6 +464,7 @@ Type: `func() engine/modules/interactions.SelectFeatureEvent`
 
 `engine/modules/interactions`:
   - `engine/modules/interactions.AvailableFeaturesComponent`
+  - `engine/modules/interactions.ContextSetter`
   - `engine/modules/interactions.FeatureKey`
   - `engine/modules/interactions.Features`
   - `engine/modules/interactions.InteractionKey`
@@ -463,6 +478,7 @@ Type: `func() engine/modules/interactions.SelectFeatureEvent`
   - `engine/modules/interactions.SelectFeatureEvent`
   - `engine/modules/interactions.Selected`
   - `engine/modules/interactions.Service`
+  - `engine/modules/interactions.SetContext`
   - `engine/modules/interactions.StatePreviewComponent`
   - `engine/modules/interactions.Step`
   - `engine/modules/interactions.StepKey`

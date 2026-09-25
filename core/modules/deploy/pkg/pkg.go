@@ -5,6 +5,7 @@ import (
 	"core/modules/actions"
 	"core/modules/deploy"
 	"core/modules/deploy/internal"
+	"core/modules/player"
 	"core/modules/reach"
 	reachpkg "core/modules/reach/pkg"
 	"engine/modules/ecs"
@@ -22,12 +23,14 @@ import (
 )
 
 type DeployFeature struct {
+	player.PlayerContext
 	By        actions.FriendlyBuilderEntityStep
 	Blueprint actions.BlueprintStep
 	Coords    actions.CoordsStep
 }
 
 type DestroyFeature struct {
+	player.PlayerContext
 	Entity actions.FriendlyEntityStep
 }
 

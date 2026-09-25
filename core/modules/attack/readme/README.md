@@ -8,10 +8,10 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                               4             35              5            253
+Go                               4             35              5            255
 Markdown                         1              0              0              1
 -------------------------------------------------------------------------------
-SUM:                             5             35              5            254
+SUM:                             5             35              5            256
 -------------------------------------------------------------------------------
 ```
 ## Types
@@ -131,6 +131,9 @@ Type: `func(attacker engine/modules/uuid.UUID, target engine/modules/uuid.UUID) 
   - `core/modules/pathfind.NewTarget`
   - `core/modules/pathfind.Speed`
   - `core/modules/pathfind.Target`
+
+`core/modules/player`:
+  - `core/modules/player.PlayerContext`
 
 `core/modules/reach`:
   - `core/modules/reach.Component`

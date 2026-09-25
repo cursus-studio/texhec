@@ -5,6 +5,7 @@ import (
 	"core/modules/actions"
 	"core/modules/pathfind"
 	"core/modules/pathfind/internal"
+	"core/modules/player"
 	"engine/modules/ecs"
 	"engine/modules/entityregistry"
 	gridpkg "engine/modules/grid/pkg"
@@ -20,6 +21,7 @@ import (
 )
 
 type FindPathFeature struct {
+	player.PlayerContext
 	Entity actions.FriendlyMobileEntityStep
 	Coords actions.CoordsStep
 }

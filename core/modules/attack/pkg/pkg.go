@@ -5,6 +5,7 @@ import (
 	"core/modules/actions"
 	"core/modules/attack"
 	"core/modules/attack/internal"
+	"core/modules/player"
 	"core/modules/reach"
 	reachpkg "core/modules/reach/pkg"
 	"engine/modules/ecs"
@@ -21,6 +22,7 @@ import (
 )
 
 type AttackFeature struct {
+	player.PlayerContext
 	By     actions.FriendlyOffensiveEntityStep
 	Target actions.EnemyEntityStep
 }

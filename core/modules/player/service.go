@@ -13,6 +13,13 @@ var (
 	ErrRequiresToBeEnemy error = errors.New("player:requires to be enemy")
 )
 
+//
+
+// event context
+type PlayerContext struct {
+	PlayerUUID uuid.UUID
+}
+
 // marks that player is performing a move
 type PlayerComponent struct {
 	Name string
