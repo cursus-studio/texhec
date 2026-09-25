@@ -5,44 +5,41 @@ import (
 	"core/modules/actions"
 	"core/modules/deploy"
 	"core/modules/deploy/internal"
+	"core/modules/player"
 	"core/modules/reach"
 	reachpkg "core/modules/reach/pkg"
 	"engine/modules/ecs"
 	"engine/modules/entityregistry"
 	"engine/modules/grid"
 	interactionspkg "engine/modules/interactions/pkg"
+	typeregistrypkg "engine/modules/typeregistry/pkg"
 	"errors"
 	"fmt"
 	"strconv"
 	"unsafe"
 
+	"github.com/ogiusek/events"
 	"github.com/ogiusek/ioc/v2"
 )
 
 type DeployFeature struct {
+	player.PlayerContext
 	By        actions.FriendlyBuilderEntityStep
 	Blueprint actions.BlueprintStep
 	Coords    actions.CoordsStep
 }
 
-func (f DeployFeature) Event() any {
-	return deploy.NewDeployEvent(
-		f.By.State().Entity,
-		f.Blueprint.State().Entity,
-		f.Coords.State().Coords,
-	)
-}
-
 type DestroyFeature struct {
+	player.PlayerContext
 	Entity actions.FriendlyEntityStep
-}
-
-func (f DestroyFeature) Event() any {
-	return deploy.NewDestroyEvent(f.Entity.State().Entity)
 }
 
 var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 	pkgs := []ioc.Pkg{
+		typeregistrypkg.PkgT[deploy.DeployEvent],
+		typeregistrypkg.PkgT[deploy.DestroyEvent],
+		typeregistrypkg.PkgT[internal.BoughtComponent],
+
 		reachpkg.PkgT[deploy.Component],
 		interactionspkg.FeaturePkg[DeployFeature](
 			interactionspkg.NewCopyRelation[actions.CanDeployComponent](
@@ -57,6 +54,21 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 	for _, pkg := range pkgs {
 		pkg(b)
 	}
+	ioc.Wrap(b, func(c ioc.Dic, b events.Builder) {
+		world := ioc.Get[game.GameWorld](c)
+		events.Listen(b, func(f DeployFeature) {
+			events.Emit(world.Events(), deploy.NewDeployEvent(
+				f.By.State().UUID,
+				f.Blueprint.State().UUID,
+				f.Coords.State().Coords,
+			))
+		})
+		events.Listen(b, func(f DestroyFeature) {
+			events.Emit(world.Events(), deploy.NewDestroyEvent(
+				f.Entity.State().UUID,
+			))
+		})
+	})
 	ioc.Register(b, func(c ioc.Dic) deploy.Service {
 		return internal.NewService(c)
 	})

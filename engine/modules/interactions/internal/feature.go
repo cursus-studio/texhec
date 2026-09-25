@@ -2,9 +2,11 @@ package internal
 
 import (
 	"engine"
+	"engine/modules/datastructures"
 	"engine/modules/ecs"
 	"engine/modules/interactions"
 	"reflect"
+	"slices"
 
 	"github.com/ogiusek/events"
 	"github.com/ogiusek/ioc/v2"
@@ -62,86 +64,97 @@ type AnyFeatureService interface {
 	// sets step interaction to missing or emits event
 	Progress()
 }
-type FeatureService[Feature interactions.Feature] interface {
+type FeatureService[Feature any] interface {
 	AnyFeatureService
 }
 
 //
 
-type featureService[Feature interactions.Feature] struct {
+type featureService[Feature any] struct {
 	C                  ioc.Dic
 	engine.EngineWorld `inject:""`
-	Interactions       Service `inject:""`
+	Interactions       Service                    `inject:""`
+	ContextSetter      interactions.ContextSetter `inject:""`
+
 	rawRelations       []RawRelation
-	relationByTgtField [][]Relation
-	steps              []AnyStepService
+	relationByTgtField datastructures.SparseArray[int, []Relation]
+	steps              datastructures.SparseArray[int, AnyStepService]
 }
 
-func NewFeatureService[Feature interactions.Feature](c ioc.Dic, relations []RawRelation) FeatureService[Feature] {
+func NewFeatureService[Feature any](c ioc.Dic, relations []RawRelation) FeatureService[Feature] {
 	s := ioc.GetServices[*featureService[Feature]](c)
 	s.C = c
 
 	s.rawRelations = relations
+	s.relationByTgtField = datastructures.NewSparseArray[int, []Relation]()
+	s.steps = datastructures.NewSparseArray[int, AnyStepService]()
 
 	return s
 }
 
 func (s *featureService[Feature]) Key() interactions.FeatureKey { return reflect.TypeFor[Feature]() }
 func (s *featureService[Feature]) Steps() []AnyStepService {
-	return s.steps
+	return s.steps.GetValues()
 }
 
 func (s *featureService[Feature]) Init() {
 	event := reflect.TypeFor[Feature]()
 	fieldsCount := event.NumField()
-	s.steps = make([]AnyStepService, 0, fieldsCount)
 	for i := range fieldsCount {
 		fieldType := event.Field(i).Type
 		step, ok := s.Interactions.StepByKey(fieldType)
 		if !ok {
-			panic("feature cannot use not registered step")
+			continue
 		}
 
-		s.steps = append(s.steps, step)
+		s.steps.Set(i, step)
 	}
 
-	s.relationByTgtField = make([][]Relation, len(s.steps))
 	for _, rawRelation := range s.rawRelations {
 		relation, ok := NewRelation[Feature](s.C, rawRelation)
 		if !ok {
 			panic("compiled code passed invalid relation")
 		}
-		relations := s.relationByTgtField[relation.Tgt]
+		relations, _ := s.relationByTgtField.Get(relation.Tgt)
 		relations = append(relations, relation)
-		s.relationByTgtField[relation.Tgt] = relations
+		s.relationByTgtField.Set(relation.Tgt, relations)
 	}
 }
 
 func (s *featureService[Feature]) Progress() {
 	featureEntity := s.Interactions.FeatureEntity()
-	interactionEntities := s.Hierarchy().Children(featureEntity).GetIndices()
-	for i, step := range s.steps {
-		if len(interactionEntities) <= i {
+	interactionEntities := slices.Clone(s.Hierarchy().Children(featureEntity).GetIndices())
+	interactions := datastructures.NewSparseArray[int, ecs.EntityID]()
+	for _, i := range s.steps.GetIndices() {
+		step, ok := s.steps.Get(i)
+		if !ok {
+			continue
+		}
+		if len(interactionEntities) == 0 {
 			interactionEntity := s.World().NewEntity()
 			propertiesEntity := s.World().NewEntity()
 			s.Hierarchy().SetParent(interactionEntity, featureEntity)
-			relations := s.relationByTgtField[i]
+			relations, _ := s.relationByTgtField.Get(i)
 			for _, relation := range relations {
-				relation.Set(interactionEntities[relation.Src], propertiesEntity)
+				interactionEntity, _ := interactions.Get(relation.Src)
+				relation.Set(interactionEntity, propertiesEntity)
 			}
 			step.Interaction().MarkMissing(propertiesEntity, interactionEntity)
 			return
 		}
-		interactionEntity := interactionEntities[i]
+		interactions.Set(i, interactionEntities[0])
+		interactionEntities = interactionEntities[1:]
+		interactionEntity, _ := interactions.Get(i)
 		err := step.EntityRule(interactionEntity)
 		if err == nil {
 			continue
 		}
 		if err != ErrInteractionIsMissing {
 			propertiesEntity := s.World().NewEntity()
-			relations := s.relationByTgtField[i]
+			relations, _ := s.relationByTgtField.Get(i)
 			for _, relation := range relations {
-				relation.Set(interactionEntities[relation.Src], propertiesEntity)
+				interactionEntity, _ := interactions.Get(relation.Src)
+				relation.Set(interactionEntity, propertiesEntity)
 			}
 			step.Interaction().MarkMissing(propertiesEntity, interactionEntity)
 			s.Logger().Warn(err)
@@ -150,9 +163,11 @@ func (s *featureService[Feature]) Progress() {
 	}
 	var feature Feature
 	value := reflect.ValueOf(&feature).Elem()
-	for i, step := range s.steps {
-		step.FillValue(interactionEntities[i], value.Field(i))
+	for _, i := range s.steps.GetIndices() {
+		step, _ := s.steps.Get(i)
+		interactionEntity, _ := interactions.Get(i)
+		step.FillValue(interactionEntity, value.Field(i))
 	}
 	s.Interactions.ResetFeatureEntity()
-	events.EmitAny(s.Events(), feature.Event())
+	events.EmitAny(s.Events(), s.ContextSetter.SetContext(feature))
 }

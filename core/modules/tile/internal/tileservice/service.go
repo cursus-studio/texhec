@@ -8,14 +8,16 @@ import (
 	"engine/modules/grid"
 	"engine/modules/relation"
 	"engine/modules/transform"
+	"engine/modules/uuid"
 
 	"github.com/ogiusek/ioc/v2"
 )
 
 type service struct {
 	game.GameWorld   `inject:""`
-	TileGridService  grid.ServiceT[tile.ID]    `inject:""`
-	TileTypeRelation relation.Service[tile.ID] `inject:""`
+	TileGridService  grid.ServiceT[tile.ID]               `inject:""`
+	TileTypeRelation relation.Service[tile.ID]            `inject:""`
+	BlueprintLink    uuid.LinkService[tile.BlueprintLink] `inject:""`
 
 	ecs.SystemRegister
 	renderer ecs.SystemRegister
@@ -26,6 +28,8 @@ type service struct {
 	size  ecs.ComponentArray[tile.SizeComponent]
 	rot   ecs.ComponentArray[tile.RotComponent]
 	layer ecs.ComponentArray[tile.LayerComponent]
+
+	name ecs.ComponentArray[tile.NameComponent]
 }
 
 func NewService(c ioc.Dic, system, renderer ecs.SystemRegister) tile.Service {
@@ -39,6 +43,8 @@ func NewService(c ioc.Dic, system, renderer ecs.SystemRegister) tile.Service {
 	s.size = ecs.GetComponentArray[tile.SizeComponent](s.World())
 	s.rot = ecs.GetComponentArray[tile.RotComponent](s.World())
 	s.layer = ecs.GetComponentArray[tile.LayerComponent](s.World())
+
+	s.name = ecs.GetComponentArray[tile.NameComponent](s.World())
 
 	s.size.SetEmpty(tile.NewSize(1, 1))
 	s.layer.SetEmpty(tile.NewLayer(definitions.TileLayer))
@@ -60,6 +66,9 @@ func (s *service) Pos() ecs.ComponentArray[tile.PosComponent]     { return s.pos
 func (s *service) Size() ecs.ComponentArray[tile.SizeComponent]   { return s.size }
 func (s *service) Rot() ecs.ComponentArray[tile.RotComponent]     { return s.rot }
 func (s *service) Layer() ecs.ComponentArray[tile.LayerComponent] { return s.layer }
+
+func (s *service) Name() ecs.ComponentArray[tile.NameComponent]    { return s.name }
+func (s *service) Blueprint() uuid.LinkService[tile.BlueprintLink] { return s.BlueprintLink }
 
 // NewBiomeAsset in other file
 

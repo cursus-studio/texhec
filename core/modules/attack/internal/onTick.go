@@ -11,9 +11,22 @@ import (
 )
 
 func (s *service) Register() error {
+	events.Listen(s.EventsBuilder(), s.OnAttack)
 	events.Listen(s.EventsBuilder(), s.OnTick)
 	events.Listen(s.EventsBuilder(), s.OnFrame)
 	return nil
+}
+
+func (s *service) OnAttack(event attack.AttackEvent) {
+	attacker, ok := s.UUID().Entity(event.Attacker)
+	if !ok {
+		return
+	}
+	target, ok := s.UUID().Entity(event.Target)
+	if !ok {
+		return
+	}
+	s.target.Set(attacker, attack.NewTarget(target))
 }
 
 func (s *service) OnTick(event loop.TickEvent) {

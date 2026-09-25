@@ -7,7 +7,7 @@ to do not be visible for a camera despite being in its view
 ```
 $ go test ./... -bench=.
 PASS
-ok  	engine/modules/groups/test	0.006s
+ok  	engine/modules/groups/test	0.013s
 ```
 ## Lines of code
 ```

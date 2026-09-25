@@ -8,10 +8,10 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                               7            108             34            760
+Go                               7            108             34            774
 Markdown                         1              1              0              5
 -------------------------------------------------------------------------------
-SUM:                             8            109             34            765
+SUM:                             8            109             34            779
 -------------------------------------------------------------------------------
 ```
 ## TODO
@@ -86,8 +86,8 @@ this variable contains region index and is used for region connectivity
 ### type FindPathEvent
 Type: `core/modules/pathfind.FindPathEvent`
 
-#### property FindPathEvent Entity
-Type: `engine/modules/ecs.EntityID`
+#### property FindPathEvent UUID
+Type: `engine/modules/uuid.UUID`
 
 #### property FindPathEvent Coords
 Type: `engine/modules/grid.Coords`
@@ -110,7 +110,7 @@ Type: `func[Number golang.org/x/exp/constraints.Integer](invSpeed Number) core/m
 Type: `func(x engine/modules/grid.Coord, y engine/modules/grid.Coord) core/modules/pathfind.StepComponent`
 
 ### func NewFindPathEvent
-Type: `func(entity engine/modules/ecs.EntityID, coords engine/modules/grid.Coords) core/modules/pathfind.FindPathEvent`
+Type: `func(entity engine/modules/uuid.UUID, coords engine/modules/grid.Coords) core/modules/pathfind.FindPathEvent`
 
 
 ## Dependencies
@@ -124,9 +124,9 @@ Type: `func(entity engine/modules/ecs.EntityID, coords engine/modules/grid.Coord
   - `core/modules/actions.Coords`
   - `core/modules/actions.CoordsCursorComponent`
   - `core/modules/actions.CoordsStep`
-  - `core/modules/actions.Entity`
   - `core/modules/actions.FriendlyMobileEntityStep`
   - `core/modules/actions.RegionAnchorComponent`
+  - `core/modules/actions.UUID`
 
 `core/modules/obstruction`:
   - `core/modules/obstruction.Collisions`
@@ -139,7 +139,6 @@ Type: `func(entity engine/modules/ecs.EntityID, coords engine/modules/grid.Coord
 `core/modules/pathfind`:
   - `core/modules/pathfind.CanStep`
   - `core/modules/pathfind.Coords`
-  - `core/modules/pathfind.Entity`
   - `core/modules/pathfind.ErrInvalidPath`
   - `core/modules/pathfind.FindPathEvent`
   - `core/modules/pathfind.InvSpeed`
@@ -155,6 +154,10 @@ Type: `func(entity engine/modules/ecs.EntityID, coords engine/modules/grid.Coord
   - `core/modules/pathfind.StepComponent`
   - `core/modules/pathfind.Target`
   - `core/modules/pathfind.TargetComponent`
+  - `core/modules/pathfind.UUID`
+
+`core/modules/player`:
+  - `core/modules/player.PlayerContext`
 
 `core/modules/tile`:
   - `core/modules/tile.Aligned`
@@ -238,6 +241,10 @@ Type: `func(entity engine/modules/ecs.EntityID, coords engine/modules/grid.Coord
 
 `engine/modules/typeregistry/pkg`:
   - `engine/modules/typeregistry/pkg.PkgT`
+
+`engine/modules/uuid`:
+  - `engine/modules/uuid.Entity`
+  - `engine/modules/uuid.UUID`
 
 ### Third Party
 - `github.com/go-gl/mathgl/mgl32`

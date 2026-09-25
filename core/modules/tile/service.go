@@ -5,6 +5,7 @@ import (
 	"engine/modules/grid"
 	"engine/modules/transform"
 	"engine/modules/transition"
+	"engine/modules/uuid"
 	"errors"
 	"image"
 	"math"
@@ -18,6 +19,7 @@ var (
 	ErrInvalidPosition                  error = errors.New("tile:position not found on the grid")
 	ErrInvalidStep                      error = errors.New("tile:invalid step")
 	ErrPositionAndSpeedIsRequiredToStep error = errors.New("tile:to step you need to have speed and position")
+	ErrBlueprintIsMissingUUID           error = errors.New("blueprint is missing UUID")
 )
 
 type ID uint8
@@ -65,6 +67,13 @@ type LayerComponent struct {
 func NewLayer[Number constraints.Integer | constraints.Float](z Number) LayerComponent {
 	return LayerComponent{Coord(z)}
 }
+
+//
+
+type NameComponent struct{ Name string }
+type BlueprintLink struct{}
+
+func NewName(name string) NameComponent { return NameComponent{name} }
 
 //
 
@@ -154,6 +163,9 @@ type Service interface {
 	Size() ecs.ComponentArray[SizeComponent]
 	Rot() ecs.ComponentArray[RotComponent]
 	Layer() ecs.ComponentArray[LayerComponent]
+
+	Name() ecs.ComponentArray[NameComponent]
+	Blueprint() uuid.LinkService[BlueprintLink]
 
 	// src images should be:
 	// - 1111

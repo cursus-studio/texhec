@@ -2,8 +2,13 @@ package main
 
 import (
 	"core/game"
+	"core/modules/attack"
 	"core/modules/definitions"
+	"core/modules/deploy"
+	"core/modules/economy"
 	"core/modules/obstruction"
+	"core/modules/pathfind"
+	"core/modules/player"
 	"core/modules/tile"
 	corepkg "core/pkg"
 	colliderpkg "engine/modules/collider/pkg"
@@ -12,11 +17,13 @@ import (
 	gridpkg "engine/modules/grid/pkg"
 	"engine/modules/logger"
 	loggerpkg "engine/modules/logger/pkg"
+	"engine/modules/loop"
 	netsyncpkg "engine/modules/netsync/pkg"
 	"engine/modules/record"
 	"engine/modules/seed"
 	"engine/modules/text"
 	textpkg "engine/modules/text/pkg"
+	"engine/modules/uuid"
 	"engine/modules/window"
 	"errors"
 	"fmt"
@@ -113,7 +120,20 @@ func getDic() ioc.Dic {
 				record.AddToConfig[grid.ChunkComponent[tile.ID]](config.RecordConfig())
 				record.AddToConfig[grid.ChunkComponent[obstruction.Obstruction]](config.RecordConfig())
 				// - objects: coords, blueprint, owner, deployed mark
+				record.AddToConfig[uuid.LinkUUIDComponent[player.OwnerLink]](config.RecordConfig())
+				record.AddToConfig[obstruction.DeployedComponent](config.RecordConfig())
+				record.AddToConfig[uuid.LinkUUIDComponent[tile.BlueprintLink]](config.RecordConfig())
+				record.AddToConfig[tile.PosComponent](config.RecordConfig())
 				// - players: name, wallet
+				record.AddToConfig[player.PlayerComponent](config.RecordConfig())
+				record.AddToConfig[player.PlayerUUIDComponent](config.RecordConfig())
+				record.AddToConfig[economy.WalletComponent](config.RecordConfig())
+
+				netsyncpkg.AddTransparentEvent[deploy.DeployEvent](config)
+				netsyncpkg.AddTransparentEvent[attack.AttackEvent](config)
+				netsyncpkg.AddTransparentEvent[pathfind.FindPathEvent](config)
+
+				netsyncpkg.AddVerifyEventHappen[loop.TickEvent](config)
 			})
 			ioc.Wrap(b, func(c ioc.Dic, config colliderpkg.Config) {
 				tileSize := ioc.Get[gridpkg.Config](c).GetTileSize()

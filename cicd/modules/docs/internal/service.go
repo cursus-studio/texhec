@@ -3,11 +3,13 @@ package internal
 import (
 	"cicd/modules/docs"
 	"cicd/world"
+	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
 	"regexp"
 	"strings"
+	"syscall"
 
 	"github.com/ogiusek/ioc/v2"
 )
@@ -63,7 +65,9 @@ func (s *service) saveDocs(readmePath, doc string) error {
 	}
 	// #nosec G302
 	if err := os.Chmod(readmePath, 0666); err != nil {
-		return err
+		if !errors.Is(err, os.ErrPermission) && !errors.Is(err, syscall.EPERM) {
+			return err
+		}
 	}
 	return nil
 }

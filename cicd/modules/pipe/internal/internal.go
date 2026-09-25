@@ -145,10 +145,20 @@ func NewService(c ioc.Dic) pipe.Service {
 				if output, err := cmd.CombinedOutput(); err != nil {
 					return fmt.Errorf("%s", string(output))
 				}
+				for _, file := range []string{"go.mod", "go.sum"} {
+					if err := normalizeLF(filepath.Join(proj, file)); err != nil {
+						return err
+					}
+				}
 				if err := s.Git().Stage(
 					fmt.Sprintf("%v/go.mod", proj),
 					fmt.Sprintf("%v/go.sum", proj),
 				); err != nil {
+					return err
+				}
+			}
+			for _, file := range []string{"go.work", "go.work.sum"} {
+				if err := normalizeLF(file); err != nil {
 					return err
 				}
 			}

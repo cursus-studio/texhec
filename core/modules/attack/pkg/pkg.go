@@ -5,6 +5,7 @@ import (
 	"core/modules/actions"
 	"core/modules/attack"
 	"core/modules/attack/internal"
+	"core/modules/player"
 	"core/modules/reach"
 	reachpkg "core/modules/reach/pkg"
 	"engine/modules/ecs"
@@ -16,16 +17,14 @@ import (
 	"fmt"
 	"strconv"
 
+	"github.com/ogiusek/events"
 	"github.com/ogiusek/ioc/v2"
 )
 
 type AttackFeature struct {
+	player.PlayerContext
 	By     actions.FriendlyOffensiveEntityStep
 	Target actions.EnemyEntityStep
-}
-
-func (f AttackFeature) Event() any {
-	return ecs.NewSetEvent(f.By.State().Entity, attack.NewTarget(f.Target.State().Entity))
 }
 
 var Pkg = ioc.NewPkg(func(b ioc.Builder) {
@@ -33,6 +32,8 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 		typeregistrypkg.PkgT[attack.TargetComponent],
 		typeregistrypkg.PkgT[attack.HealthComponent],
 		typeregistrypkg.PkgT[attack.DamageComponent],
+
+		typeregistrypkg.PkgT[attack.AttackEvent],
 
 		reachpkg.PkgT[attack.TargetComponent],
 		interactionspkg.FeaturePkg[AttackFeature](
@@ -43,6 +44,12 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 	for _, pkg := range pkgs {
 		pkg(b)
 	}
+	ioc.Wrap(b, func(c ioc.Dic, b events.Builder) {
+		world := ioc.Get[game.GameWorld](c)
+		events.Listen(b, func(f AttackFeature) {
+			events.Emit(world.Events(), attack.NewAttackEvent(f.By.State().UUID, f.Target.State().UUID))
+		})
+	})
 	ioc.Register(b, func(c ioc.Dic) attack.Service {
 		return internal.NewService(c)
 	})

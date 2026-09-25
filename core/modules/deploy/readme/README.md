@@ -8,9 +8,9 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                               3             46             14            249
+Go                               3             45             14            277
 -------------------------------------------------------------------------------
-SUM:                             3             46             14            249
+SUM:                             3             45             14            277
 -------------------------------------------------------------------------------
 ```
 ## Types
@@ -47,10 +47,10 @@ Type: `[]engine/modules/ecs.EntityID`
 Type: `core/modules/deploy.DeployEvent`
 
 #### property DeployEvent By
-Type: `engine/modules/ecs.EntityID`
+Type: `engine/modules/uuid.UUID`
 
 #### property DeployEvent Blueprint
-Type: `engine/modules/ecs.EntityID`
+Type: `engine/modules/uuid.UUID`
 
 #### property DeployEvent Coords
 Type: `engine/modules/grid.Coords`
@@ -58,18 +58,18 @@ Type: `engine/modules/grid.Coords`
 ### type DestroyEvent
 Type: `core/modules/deploy.DestroyEvent`
 
-#### property DestroyEvent Entity
-Type: `engine/modules/ecs.EntityID`
+#### property DestroyEvent UUID
+Type: `engine/modules/uuid.UUID`
 
 ## Functions
 ### func NewDeploy
 Type: `func(deployable ...engine/modules/ecs.EntityID) core/modules/deploy.Component`
 
 ### func NewDeployEvent
-Type: `func(by engine/modules/ecs.EntityID, blueprint engine/modules/ecs.EntityID, coords engine/modules/grid.Coords) core/modules/deploy.DeployEvent`
+Type: `func(by engine/modules/uuid.UUID, blueprint engine/modules/uuid.UUID, coords engine/modules/grid.Coords) core/modules/deploy.DeployEvent`
 
 ### func NewDestroyEvent
-Type: `func(entity engine/modules/ecs.EntityID) core/modules/deploy.DestroyEvent`
+Type: `func(uuid engine/modules/uuid.UUID) core/modules/deploy.DestroyEvent`
 
 
 ## Dependencies
@@ -89,9 +89,9 @@ Type: `func(entity engine/modules/ecs.EntityID) core/modules/deploy.DestroyEvent
   - `core/modules/actions.Coords`
   - `core/modules/actions.CoordsCursorComponent`
   - `core/modules/actions.CoordsStep`
-  - `core/modules/actions.Entity`
   - `core/modules/actions.FriendlyBuilderEntityStep`
   - `core/modules/actions.FriendlyEntityStep`
+  - `core/modules/actions.UUID`
 
 `core/modules/deploy`:
   - `core/modules/deploy.Blueprint`
@@ -100,11 +100,11 @@ Type: `func(entity engine/modules/ecs.EntityID) core/modules/deploy.DestroyEvent
   - `core/modules/deploy.Coords`
   - `core/modules/deploy.DeployEvent`
   - `core/modules/deploy.DestroyEvent`
-  - `core/modules/deploy.Entity`
   - `core/modules/deploy.NewDeployEvent`
   - `core/modules/deploy.NewDestroyEvent`
   - `core/modules/deploy.Reach`
   - `core/modules/deploy.Service`
+  - `core/modules/deploy.UUID`
 
 `core/modules/economy`:
   - `core/modules/economy.Cost`
@@ -124,8 +124,8 @@ Type: `func(entity engine/modules/ecs.EntityID) core/modules/deploy.DestroyEvent
 
 `core/modules/player`:
   - `core/modules/player.ErrRequiresOwner`
-  - `core/modules/player.NewOwner`
   - `core/modules/player.Owner`
+  - `core/modules/player.PlayerContext`
 
 `core/modules/reach`:
   - `core/modules/reach.Component`
@@ -139,8 +139,9 @@ Type: `func(entity engine/modules/ecs.EntityID) core/modules/deploy.DestroyEvent
   - `core/modules/reach/pkg.PkgT`
 
 `core/modules/tile`:
+  - `core/modules/tile.Blueprint`
   - `core/modules/tile.Coord`
-  - `core/modules/tile.NewClickEntityEvent`
+  - `core/modules/tile.ErrBlueprintIsMissingUUID`
   - `core/modules/tile.NewPos`
   - `core/modules/tile.Pos`
   - `core/modules/tile.Size`
@@ -159,10 +160,6 @@ Type: `func(entity engine/modules/ecs.EntityID) core/modules/deploy.DestroyEvent
   - `engine/modules/grid.Coord`
   - `engine/modules/grid.Coords`
 
-`engine/modules/inputs`:
-  - `engine/modules/inputs.LeftClick`
-  - `engine/modules/inputs.NewLeftClick`
-
 `engine/modules/interactions/pkg`:
   - `engine/modules/interactions/pkg.FeaturePkg`
   - `engine/modules/interactions/pkg.NewCopyRelation`
@@ -170,9 +167,18 @@ Type: `func(entity engine/modules/ecs.EntityID) core/modules/deploy.DestroyEvent
 `engine/modules/loop`:
   - `engine/modules/loop.TickEvent`
 
-`engine/modules/seed`:
-  - `engine/modules/seed.ErrWorldCanHaveOneSeed`
-  - `engine/modules/seed.WorldSeed`
+`engine/modules/typeregistry/pkg`:
+  - `engine/modules/typeregistry/pkg.PkgT`
+
+`engine/modules/uuid`:
+  - `engine/modules/uuid.Component`
+  - `engine/modules/uuid.Entity`
+  - `engine/modules/uuid.Get`
+  - `engine/modules/uuid.ID`
+  - `engine/modules/uuid.NewUUID`
+  - `engine/modules/uuid.NewUUIDFromAny`
+  - `engine/modules/uuid.SetUUID`
+  - `engine/modules/uuid.UUID`
 
 ### Third Party
 - `github.com/ogiusek/events`

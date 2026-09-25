@@ -209,26 +209,26 @@ goos: linux
 goarch: amd64
 pkg: engine/modules/ecs/test
 cpu: Intel(R) Core(TM) i5-8350U CPU @ 1.70GHz
-BenchmarkDirtySetDirty-8               	137151241	         8.231 ns/op
-BenchmarkDirtySetDirtyInversed-8       	144657516	         7.394 ns/op
-BenchmarkDirtySetGet-8                 	590244398	         2.090 ns/op
-BenchmarkDirtySetDirtyAndGet-8         	169425655	         7.102 ns/op
-BenchmarkDirtySetDirtyAnd1Get-8        	127674126	         8.851 ns/op
-Benchmark4SavesWith7Systems-8          	26503406	        42.23 ns/op
-Benchmark16SavesWith7Systems-8         	 6938511	       165.1 ns/op
-Benchmark256SavesWith7Systems-8        	  488564	      2509 ns/op
-Benchmark4096SavesWith7Systems-8       	   29869	     40203 ns/op
-Benchmark16384SavesWith7Systems-8      	    7695	    159021 ns/op
-Benchmark65536SavesWith7Systems-8      	    1840	    643265 ns/op
-Benchmark262144SavesWith7Systems-8     	     460	   2573859 ns/op
-BenchmarkGetComponent-8                	81757089	        14.96 ns/op
-BenchmarkCreateComponents-8            	39956193	        31.43 ns/op
-BenchmarkUpdateComponents-8            	100000000	        11.46 ns/op
-BenchmarkRemoveComponent-8             	77082870	        15.48 ns/op
-BenchmarkRemoveEntityWithComponent-8   	35099274	        35.41 ns/op
-BenchmarkRemoveEntity-8                	65063078	        18.66 ns/op
+BenchmarkDirtySetDirty-8               	160513174	         8.075 ns/op
+BenchmarkDirtySetDirtyInversed-8       	167146785	         7.220 ns/op
+BenchmarkDirtySetGet-8                 	611955620	         1.959 ns/op
+BenchmarkDirtySetDirtyAndGet-8         	176902047	         6.762 ns/op
+BenchmarkDirtySetDirtyAnd1Get-8        	138310168	         8.165 ns/op
+Benchmark4SavesWith7Systems-8          	27729162	        41.88 ns/op
+Benchmark16SavesWith7Systems-8         	 6969740	       173.1 ns/op
+Benchmark256SavesWith7Systems-8        	  424767	      2647 ns/op
+Benchmark4096SavesWith7Systems-8       	   28411	     42168 ns/op
+Benchmark16384SavesWith7Systems-8      	    7152	    170510 ns/op
+Benchmark65536SavesWith7Systems-8      	    1773	    680793 ns/op
+Benchmark262144SavesWith7Systems-8     	     444	   2695479 ns/op
+BenchmarkGetComponent-8                	82155733	        14.46 ns/op
+BenchmarkCreateComponents-8            	41404602	        30.42 ns/op
+BenchmarkUpdateComponents-8            	100000000	        10.66 ns/op
+BenchmarkRemoveComponent-8             	79541179	        14.87 ns/op
+BenchmarkRemoveEntityWithComponent-8   	36219610	        34.56 ns/op
+BenchmarkRemoveEntity-8                	69246945	        18.02 ns/op
 PASS
-ok  	engine/modules/ecs/test	37.578s
+ok  	engine/modules/ecs/test	37.589s
 ```
 ## Lines of code
 ```
@@ -236,10 +236,10 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                              13            218             43            920
+Go                              13            225             46            944
 Markdown                         1             44              0            157
 -------------------------------------------------------------------------------
-SUM:                            14            262             43           1077
+SUM:                            14            269             46           1101
 -------------------------------------------------------------------------------
 ```
 ## Types
@@ -319,6 +319,12 @@ Type: `func(engine/modules/ecs/internal/ecstypes.DirtySet)`
 #### method AnyComponentArray BeforeGet
 Type: `func(engine/modules/ecs/internal/ecstypes.BeforeGet)`
 
+#### method AnyComponentArray CommitBulk
+Type: `func()`
+
+#### method AnyComponentArray ComponentType
+Type: `func() reflect.Type`
+
 #### method AnyComponentArray GetAny
 Type: `func(entity engine/modules/ecs/internal/ecstypes.EntityID) (engine/modules/ecs/internal/ecstypes.Component, bool)`
 
@@ -333,6 +339,9 @@ Type: `func(engine/modules/ecs/internal/ecstypes.OnMod)`
 
 #### method AnyComponentArray OnUpsert
 Type: `func(engine/modules/ecs/internal/ecstypes.OnMod)`
+
+#### method AnyComponentArray PrepareBulk
+Type: `func()`
 
 #### method AnyComponentArray Remove
 Type: `func(engine/modules/ecs/internal/ecstypes.EntityID)`
@@ -351,6 +360,12 @@ Type: `func(engine/modules/ecs/internal/ecstypes.DirtySet)`
 
 #### method ComponentArray BeforeGet
 Type: `func(engine/modules/ecs/internal/ecstypes.BeforeGet)`
+
+#### method ComponentArray CommitBulk
+Type: `func()`
+
+#### method ComponentArray ComponentType
+Type: `func() reflect.Type`
 
 #### method ComponentArray Get
 Type: `func(entity engine/modules/ecs/internal/ecstypes.EntityID) (Component, bool)`
@@ -373,6 +388,9 @@ Type: `func(engine/modules/ecs/internal/ecstypes.OnMod)`
 #### method ComponentArray OnUpsert
 Type: `func(engine/modules/ecs/internal/ecstypes.OnMod)`
 
+#### method ComponentArray PrepareBulk
+Type: `func()`
+
 #### method ComponentArray Remove
 Type: `func(engine/modules/ecs/internal/ecstypes.EntityID)`
 
@@ -385,19 +403,7 @@ Type: `func(engine/modules/ecs/internal/ecstypes.EntityID, engine/modules/ecs/in
 #### method ComponentArray SetEmpty
 Type: `func(Component)`
 
-### type SetEvent
-Type: `engine/modules/ecs.SetEvent`
-
-#### property SetEvent Entity
-Type: `engine/modules/ecs.EntityID`
-
-#### property SetEvent Component
-Type: `engine/modules/ecs.Component`
-
 ## Functions
-### func NewSetEvent
-Type: `func(entity engine/modules/ecs.EntityID, comp engine/modules/ecs.Component) engine/modules/ecs.SetEvent`
-
 ### func NewSystemRegister
 Type: `func(l func() error) engine/modules/ecs.SystemRegister`
 
@@ -428,12 +434,8 @@ component array getter
   - `engine/modules/datastructures.SparseSet`
 
 `engine/modules/ecs`:
-  - `engine/modules/ecs.Component`
-  - `engine/modules/ecs.Entity`
   - `engine/modules/ecs.NewWorld`
-  - `engine/modules/ecs.SetEvent`
   - `engine/modules/ecs.World`
 
 ### Third Party
-- `github.com/ogiusek/events`
 - `github.com/ogiusek/ioc/v2`

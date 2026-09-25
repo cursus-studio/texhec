@@ -49,6 +49,11 @@ type CoordInteraction struct {
 	Coords grid.Coords
 }
 
+// context stores data from simulation
+type PlayerContext struct {
+	Player ecs.EntityID
+}
+
 type AnchorRuleComponent struct{ Coords grid.Coords }
 type RangeRuleComponent struct{ Range int }
 type CursorRuleComponent struct{ Cursor ecs.EntityID }
@@ -63,22 +68,27 @@ type Coord interactions.Step[CoordInteraction]
 // features: these are emited as events.
 // Here struct tags have component:"field names"
 type MoveFeature struct {
+	PlayerContext
 	FriendlyUnit
 	Coord
 }
 type StopFeature struct {
+	PlayerContext
 	FriendlyUnit
 }
 type BuildFeature struct {
+	PlayerContext
 	FriendlyUnit
 	BlueprintUnit
 	Coord
 }
 type AttackFeature struct {
+	PlayerContext
 	FriendlyUnit
 	EnemyUnit
 }
 type HealFeature struct {
+	PlayerContext
 	Healer FriendlyUnit
 	Healed FriendlyUnit
 }

@@ -4,6 +4,7 @@ import (
 	"engine/modules/netsync"
 	"engine/modules/netsync/internal/client"
 	"engine/modules/netsync/internal/clienttypes"
+	"engine/modules/netsync/internal/config"
 	"engine/modules/netsync/internal/server"
 	"engine/modules/netsync/internal/servertypes"
 	"engine/modules/netsync/internal/service"
@@ -22,20 +23,22 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 		typeregistrypkg.PkgT[servertypes.SendStateDTO],
 		typeregistrypkg.PkgT[servertypes.SendChangeDTO],
 		typeregistrypkg.PkgT[servertypes.TransparentEventDTO],
+		typeregistrypkg.PkgT[servertypes.VerifyEventHappenDTO],
+
+		typeregistrypkg.PkgT[server.FetchStateEvent],
 	}
 	for _, pkg := range pkgs {
 		pkg(b)
 	}
 	ioc.Register(b, func(c ioc.Dic) Config { return newConfig() })
+	ioc.Register(b, func(c ioc.Dic) config.InjectedConfig {
+		return func() *config.Config { return ioc.Get[Config](c).config }
+	})
 
 	ioc.Register(b, func(c ioc.Dic) netsync.Service {
 		return service.NewService(c)
 	})
 
-	ioc.Register(b, func(c ioc.Dic) *server.Service {
-		return server.NewService(c, *ioc.Get[Config](c).config)
-	})
-	ioc.Register(b, func(c ioc.Dic) *client.Service {
-		return client.NewService(c, *ioc.Get[Config](c).config)
-	})
+	ioc.Register(b, func(c ioc.Dic) *server.Service { return server.NewService(c) })
+	ioc.Register(b, func(c ioc.Dic) *client.Service { return client.NewService(c) })
 })

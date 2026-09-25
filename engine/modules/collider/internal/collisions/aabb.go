@@ -8,10 +8,10 @@ import (
 	"github.com/go-gl/mathgl/mgl32"
 )
 
-func TransformAABB(t transform.Service, entity ecs.EntityID) collider.AABB {
-	pos, _ := t.AbsolutePos().Get(entity)
-	rot, _ := t.AbsoluteRotation().Get(entity)
-	size, _ := t.AbsoluteSize().Get(entity)
+func TransformAABB(s transform.Service, entity ecs.EntityID) collider.AABB {
+	pos, _ := s.AbsolutePos().Get(entity)
+	rot, _ := s.AbsoluteRotation().Get(entity)
+	size, _ := s.AbsoluteSize().Get(entity)
 	halfSize := size.Size.Mul(0.5)
 
 	corners := [8]mgl32.Vec3{

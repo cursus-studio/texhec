@@ -81,14 +81,14 @@ func NewService(
 
 }
 
-func (t *service) BeforeGet() {
-	entities := t.DirtySet.Get()
+func (s *service) BeforeGet() {
+	entities := s.DirtySet.Get()
 	if len(entities) == 0 {
 		return
 	}
 	children := []ecs.EntityID{}
 	entities = slices.DeleteFunc(entities, func(entity ecs.EntityID) bool {
-		return !t.World().EntityExists(entity)
+		return !s.World().EntityExists(entity)
 	})
 
 	saves := []save{}
@@ -96,11 +96,11 @@ func (t *service) BeforeGet() {
 	for len(entities) != 0 || len(children) != 0 {
 		if len(entities) == 0 {
 			for _, save := range saves {
-				t.AbsolutePosArray.Set(save.entity, save.pos)
-				t.AbsoluteRotationArray.Set(save.entity, save.rot)
-				t.AbsoluteSizeArray.Set(save.entity, save.size)
+				s.AbsolutePosArray.Set(save.entity, save.pos)
+				s.AbsoluteRotationArray.Set(save.entity, save.rot)
+				s.AbsoluteSizeArray.Set(save.entity, save.size)
 			}
-			t.DirtySet.Clear()
+			s.DirtySet.Clear()
 
 			entities = children
 			children = nil
@@ -109,7 +109,7 @@ func (t *service) BeforeGet() {
 		entity := entities[0]
 		entities = entities[1:]
 
-		pos, rot, size := t.CalculateAbsolute(entity)
+		pos, rot, size := s.CalculateAbsolute(entity)
 		save := save{
 			entity: entity,
 			pos:    pos, rot: rot, size: size,
@@ -117,9 +117,9 @@ func (t *service) BeforeGet() {
 
 		saves = append(saves, save)
 
-		for _, child := range t.Hierarchy().Children(entity).GetIndices() {
+		for _, child := range s.Hierarchy().Children(entity).GetIndices() {
 			comparedMask := transform.RelativePos | transform.RelativeRotation | transform.RelativeSizeXYZ
-			mask, _ := t.InheritMaskArray.Get(child)
+			mask, _ := s.InheritMaskArray.Get(child)
 			if mask.RelativeMask&comparedMask == 0 {
 				continue
 			}
@@ -128,60 +128,60 @@ func (t *service) BeforeGet() {
 	}
 
 	for _, save := range saves {
-		t.AbsolutePosArray.Set(save.entity, save.pos)
-		t.AbsoluteRotationArray.Set(save.entity, save.rot)
-		t.AbsoluteSizeArray.Set(save.entity, save.size)
+		s.AbsolutePosArray.Set(save.entity, save.pos)
+		s.AbsoluteRotationArray.Set(save.entity, save.rot)
+		s.AbsoluteSizeArray.Set(save.entity, save.size)
 	}
-	t.DirtySet.Clear()
+	s.DirtySet.Clear()
 }
 
-func (t *service) AbsolutePos() ecs.ComponentArray[transform.AbsolutePosComponent] {
-	return t.AbsolutePosWrapper
+func (s *service) AbsolutePos() ecs.ComponentArray[transform.AbsolutePosComponent] {
+	return s.AbsolutePosWrapper
 }
-func (t *service) AbsoluteRotation() ecs.ComponentArray[transform.AbsoluteRotationComponent] {
-	return t.AbsoluteRotationWrapper
+func (s *service) AbsoluteRotation() ecs.ComponentArray[transform.AbsoluteRotationComponent] {
+	return s.AbsoluteRotationWrapper
 }
-func (t *service) AbsoluteSize() ecs.ComponentArray[transform.AbsoluteSizeComponent] {
-	return t.AbsoluteSizeWrapper
+func (s *service) AbsoluteSize() ecs.ComponentArray[transform.AbsoluteSizeComponent] {
+	return s.AbsoluteSizeWrapper
 }
-func (t *service) Pos() ecs.ComponentArray[transform.PosComponent] {
-	return t.PosArray
+func (s *service) Pos() ecs.ComponentArray[transform.PosComponent] {
+	return s.PosArray
 }
-func (t *service) Rotation() ecs.ComponentArray[transform.RotationComponent] {
-	return t.RotationArray
+func (s *service) Rotation() ecs.ComponentArray[transform.RotationComponent] {
+	return s.RotationArray
 }
-func (t *service) Size() ecs.ComponentArray[transform.SizeComponent] {
-	return t.SizeArray
+func (s *service) Size() ecs.ComponentArray[transform.SizeComponent] {
+	return s.SizeArray
 }
-func (t *service) MaxSize() ecs.ComponentArray[transform.MaxSizeComponent] {
-	return t.MaxSizeArray
+func (s *service) MaxSize() ecs.ComponentArray[transform.MaxSizeComponent] {
+	return s.MaxSizeArray
 }
-func (t *service) MinSize() ecs.ComponentArray[transform.MinSizeComponent] {
-	return t.MinSizeArray
+func (s *service) MinSize() ecs.ComponentArray[transform.MinSizeComponent] {
+	return s.MinSizeArray
 }
-func (t *service) AspectRatio() ecs.ComponentArray[transform.AspectRatioComponent] {
-	return t.AspectRatioArray
+func (s *service) AspectRatio() ecs.ComponentArray[transform.AspectRatioComponent] {
+	return s.AspectRatioArray
 }
-func (t *service) PivotPoint() ecs.ComponentArray[transform.PivotPointComponent] {
-	return t.PivotPointArray
+func (s *service) PivotPoint() ecs.ComponentArray[transform.PivotPointComponent] {
+	return s.PivotPointArray
 }
-func (t *service) ParentPivotPoint() ecs.ComponentArray[transform.ParentPivotPointComponent] {
-	return t.ParentPivotPointArray
+func (s *service) ParentPivotPoint() ecs.ComponentArray[transform.ParentPivotPointComponent] {
+	return s.ParentPivotPointArray
 }
-func (t *service) Inherit() ecs.ComponentArray[transform.InheritComponent] {
-	return t.InheritMaskArray
+func (s *service) Inherit() ecs.ComponentArray[transform.InheritComponent] {
+	return s.InheritMaskArray
 }
 
-func (t *service) Mat4(entity ecs.EntityID) mgl32.Mat4 {
-	pos, ok := t.AbsolutePosArray.Get(entity)
+func (s *service) Mat4(entity ecs.EntityID) mgl32.Mat4 {
+	pos, ok := s.AbsolutePosArray.Get(entity)
 	if !ok {
 		pos.Pos = mgl32.Vec3{0, 0, 0}
 	}
-	rot, ok := t.AbsoluteRotationArray.Get(entity)
+	rot, ok := s.AbsoluteRotationArray.Get(entity)
 	if !ok {
 		rot.Rotation = mgl32.QuatIdent()
 	}
-	size, ok := t.AbsoluteSizeArray.Get(entity)
+	size, ok := s.AbsoluteSizeArray.Get(entity)
 	if !ok {
 		size.Size = mgl32.Vec3{1, 1, 1}
 	}
@@ -192,8 +192,8 @@ func (t *service) Mat4(entity ecs.EntityID) mgl32.Mat4 {
 	return translation.Mul4(rotation).Mul4(scale)
 }
 
-func (t *service) AddDirtySet(set ecs.DirtySet) {
-	t.AbsolutePosArray.AddDirtySet(set)
-	t.AbsoluteRotationArray.AddDirtySet(set)
-	t.AbsoluteSizeArray.AddDirtySet(set)
+func (s *service) AddDirtySet(set ecs.DirtySet) {
+	s.AbsolutePosArray.AddDirtySet(set)
+	s.AbsoluteRotationArray.AddDirtySet(set)
+	s.AbsoluteSizeArray.AddDirtySet(set)
 }

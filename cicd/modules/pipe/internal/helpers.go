@@ -1,6 +1,7 @@
 package internal
 
 import (
+	"bytes"
 	"fmt"
 	"image"
 	"image/color/palette"
@@ -66,6 +67,26 @@ func SpritesheetToGIF(sheetPath, outputPath string, frameCount int) error {
 
 	if err := gif.EncodeAll(outFile, outGIF); err != nil {
 		return fmt.Errorf("failed to encode GIF: %w", err)
+	}
+
+	return nil
+}
+
+func normalizeLF(path string) error {
+	cleanPath := filepath.Clean(path)
+
+	data, err := os.ReadFile(cleanPath)
+	if err != nil {
+		if os.IsNotExist(err) {
+			return nil
+		}
+		return err
+	}
+
+	if bytes.Contains(data, []byte("\r\n")) {
+		normalized := bytes.ReplaceAll(data, []byte("\r\n"), []byte("\n"))
+		// #nosec G703 G306
+		return os.WriteFile(cleanPath, normalized, 0666)
 	}
 
 	return nil

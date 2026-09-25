@@ -24,7 +24,6 @@ import (
 	"engine/modules/layout"
 	"engine/modules/logger"
 	"engine/modules/loop"
-	"engine/modules/metadata"
 	"engine/modules/netsync"
 	"engine/modules/noise"
 	"engine/modules/prototype"
@@ -71,7 +70,6 @@ type EngineWorld struct {
 	Layout         ioc.Lazy[layout.Service]         `inject:""`
 	Logger         ioc.Lazy[logger.Service]         `inject:""`
 	Loop           ioc.Lazy[loop.Service]           `inject:""`
-	Metadata       ioc.Lazy[metadata.Service]       `inject:""`
 	NetSync        ioc.Lazy[netsync.Service]        `inject:""`
 	Noise          ioc.Lazy[noise.Service]          `inject:""`
 	Prototype      ioc.Lazy[prototype.Service]      `inject:""`

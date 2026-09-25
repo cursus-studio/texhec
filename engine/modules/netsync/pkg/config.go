@@ -42,7 +42,7 @@ func AddEvent[EventType any](config Config) {
 // these event are sent from server to client regurally but they aren't sent from client to server
 func AddSimulatedEvent[EventType any](config Config) {
 	config.config.SimulatedEvents = append(config.config.EventTypes, reflect.TypeFor[EventType]())
-	config.config.ListenToSimulatedEvents = append(config.config.ListenToEvents, func(b events.Builder, f func(any)) {
+	config.config.ListenToSimulatedEvents = append(config.config.ListenToSimulatedEvents, func(b events.Builder, f func(any)) {
 		events.Listen(b, func(e EventType) { f(e) })
 	})
 }
@@ -55,6 +55,15 @@ func AddTransparentEvent[EventType any](config Config) {
 		events.Listen(b, func(e EventType) { f(e) })
 	})
 	config.config.AllowedClientEvents[eventType] = struct{}{}
+}
+
+// these are events sent to client like ticks, client verifies that these occured between other events
+func AddVerifyEventHappen[EventType any](config Config) {
+	eventType := reflect.TypeFor[EventType]()
+	config.config.VerifyHappenEvents = append(config.config.VerifyHappenEvents, eventType)
+	config.config.ListenToVerifyHappenEvents = append(config.config.ListenToVerifyHappenEvents, func(b events.Builder, f func(any)) {
+		events.Listen(b, func(e EventType) { f(e) })
+	})
 }
 
 func AddEventAuthorization[EventType any](config Config, handler func(EventType) error) {
