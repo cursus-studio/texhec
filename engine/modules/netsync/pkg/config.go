@@ -1,6 +1,7 @@
 package netsyncpkg
 
 import (
+	"engine/modules/ecs"
 	"engine/modules/netsync/internal/config"
 	"engine/modules/record"
 	"reflect"
@@ -66,7 +67,11 @@ func AddVerifyEventHappen[EventType any](config Config) {
 	})
 }
 
-func AddEventAuthorization[EventType any](config Config, handler func(EventType) error) {
+func AddGenericEventAuthorization(config Config, handler func(client ecs.EntityID, event any) error) {
+	config.config.GenericAuthorizeEvent = append(config.config.GenericAuthorizeEvent, handler)
+}
+
+func AddEventAuthorization[EventType any](config Config, handler func(event EventType) error) {
 	eventType := reflect.TypeFor[EventType]()
 	config.config.AuthorizeEvent[eventType] = func(a any) error {
 		return handler(a.(EventType))

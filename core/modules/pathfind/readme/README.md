@@ -8,10 +8,10 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                               7            108             34            774
+Go                               7            107             34            778
 Markdown                         1              1              0              5
 -------------------------------------------------------------------------------
-SUM:                             8            109             34            779
+SUM:                             8            108             34            783
 -------------------------------------------------------------------------------
 ```
 ## TODO
@@ -86,6 +86,9 @@ this variable contains region index and is used for region connectivity
 ### type FindPathEvent
 Type: `core/modules/pathfind.FindPathEvent`
 
+#### property FindPathEvent PlayerContext
+Type: `core/modules/player.PlayerContext`
+
 #### property FindPathEvent UUID
 Type: `engine/modules/uuid.UUID`
 
@@ -110,7 +113,7 @@ Type: `func[Number golang.org/x/exp/constraints.Integer](invSpeed Number) core/m
 Type: `func(x engine/modules/grid.Coord, y engine/modules/grid.Coord) core/modules/pathfind.StepComponent`
 
 ### func NewFindPathEvent
-Type: `func(entity engine/modules/uuid.UUID, coords engine/modules/grid.Coords) core/modules/pathfind.FindPathEvent`
+Type: `func(ctx core/modules/player.PlayerContext, entity engine/modules/uuid.UUID, coords engine/modules/grid.Coords) core/modules/pathfind.FindPathEvent`
 
 
 ## Dependencies
@@ -118,6 +121,7 @@ Type: `func(entity engine/modules/uuid.UUID, coords engine/modules/grid.Coords) 
   - `core/game.GameWorld`
   - `core/game.Obstruction`
   - `core/game.Pathfind`
+  - `core/game.Player`
   - `core/game.Tile`
 
 `core/modules/actions`:
@@ -157,7 +161,10 @@ Type: `func(entity engine/modules/uuid.UUID, coords engine/modules/grid.Coords) 
   - `core/modules/pathfind.UUID`
 
 `core/modules/player`:
+  - `core/modules/player.GetContext`
   - `core/modules/player.PlayerContext`
+  - `core/modules/player.PlayerControlsUUID`
+  - `core/modules/player.PlayerUUID`
 
 `core/modules/tile`:
   - `core/modules/tile.Aligned`
@@ -231,6 +238,10 @@ Type: `func(entity engine/modules/uuid.UUID, coords engine/modules/grid.Coords) 
 
 `engine/modules/loop`:
   - `engine/modules/loop.TickEvent`
+
+`engine/modules/netsync/pkg`:
+  - `engine/modules/netsync/pkg.AddEventAuthorization`
+  - `engine/modules/netsync/pkg.Config`
 
 `engine/modules/relation`:
   - `engine/modules/relation.Get`

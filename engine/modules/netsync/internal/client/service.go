@@ -172,7 +172,7 @@ func (s *Service) ListenSendChange(dto servertypes.SendChangeDTO) {
 	if conn == nil {
 		return
 	}
-	if dto.Error != nil {
+	if dto.Error.Error() != nil {
 		predictedEvents := s.undoPredictions()
 		// reApplied events are events without applied event
 		reEmitedEvents := make([]clienttypes.PredictedEvent, 0, len(predictedEvents))
@@ -182,7 +182,9 @@ func (s *Service) ListenSendChange(dto servertypes.SendChangeDTO) {
 			}
 		}
 		s.applyPredictedEvents(reEmitedEvents)
-		s.Logger().Log(dto.Error)
+		if dto.Error.Error() != nil {
+			s.Logger().Log(dto.Error.Error())
+		}
 		return
 	}
 	// check is event predicted. if is then remove first event from queue
@@ -224,9 +226,9 @@ func (s *Service) ListenSendState(dto servertypes.SendStateDTO) {
 	if conn == nil {
 		return
 	}
-	if dto.Error != nil {
+	if dto.Error.Error() != nil {
 		s.predictions = nil
-		s.Logger().Log(dto.Error)
+		s.Logger().Log(dto.Error.Error())
 		conn.Close()
 		return
 	}
@@ -240,8 +242,8 @@ func (s *Service) ListenTransparentEvent(dto servertypes.TransparentEventDTO) {
 		s.sentTransparentEvent = false
 		return
 	}
-	if dto.Error != nil {
-		s.Logger().Log(dto.Error)
+	if dto.Error.Error() != nil {
+		s.Logger().Log(dto.Error.Error())
 		return
 	}
 	s.receivedTransparentEvent = true

@@ -1,6 +1,7 @@
 package attack
 
 import (
+	"core/modules/player"
 	"core/modules/reach"
 	"engine/modules/ecs"
 	"engine/modules/transition"
@@ -42,11 +43,12 @@ func (c1 HealthComponent) Lerp(c2 HealthComponent, mix32 float32) HealthComponen
 //
 
 type AttackEvent struct {
+	player.PlayerContext
 	Attacker, Target uuid.UUID
 }
 
-func NewAttackEvent(attacker, target uuid.UUID) AttackEvent {
-	return AttackEvent{attacker, target}
+func NewAttackEvent(ctx player.PlayerContext, attacker, target uuid.UUID) AttackEvent {
+	return AttackEvent{ctx, attacker, target}
 }
 
 //

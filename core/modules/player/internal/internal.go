@@ -64,6 +64,8 @@ func (s *service) Owner() uuid.LinkService[player.OwnerLink] {
 	return s.OwnerLink
 }
 
+//
+
 func (s *service) ControlsEntity(entity ecs.EntityID) error {
 	owner, ok := s.Owner().Get(entity)
 	if !ok {
@@ -74,13 +76,32 @@ func (s *service) ControlsEntity(entity ecs.EntityID) error {
 	}
 	return nil
 }
-
 func (s *service) ControlsUUID(uuidVal uuid.UUID) error {
 	if entity, ok := s.UUID().Entity(uuidVal); ok {
 		return s.ControlsEntity(entity)
 	}
 	return uuid.ErrMissingUUID
 }
+
+func (s *service) PlayerControlsEntity(playerUUID uuid.UUID, entity ecs.EntityID) error {
+	owner, ok := s.Owner().Get(entity)
+	if !ok {
+		return player.ErrRequiresOwner
+	}
+	ownerUUID, ok := s.UUID().Component().Get(owner)
+	if !ok || ownerUUID.ID != playerUUID {
+		return player.ErrRequiresOwner
+	}
+	return nil
+}
+func (s *service) PlayerControlsUUID(playerUUID, uuidVal uuid.UUID) error {
+	if entity, ok := s.UUID().Entity(uuidVal); ok {
+		return s.PlayerControlsEntity(playerUUID, entity)
+	}
+	return uuid.ErrMissingUUID
+}
+
+//
 
 func (s *service) OnPlayerUpsert(playerEntity ecs.EntityID) {
 	worldGenerationEntity, ok := s.Seed().WorldSeed()
@@ -89,7 +110,9 @@ func (s *service) OnPlayerUpsert(playerEntity ecs.EntityID) {
 	}
 	s.Hierarchy().SetParent(playerEntity, worldGenerationEntity)
 	playerUUID := s.UUID().NewUUID()
-	s.PlayerUUID().Set(playerEntity, player.NewPlayerUUID(playerUUID))
+	if _, ok := s.PlayerUUID().Get(playerEntity); !ok {
+		s.PlayerUUID().Set(playerEntity, player.NewPlayerUUID(playerUUID))
+	}
 	if _, ok := s.Economy().Wallet().Get(playerEntity); !ok {
 		s.Economy().Wallet().Set(playerEntity, economy.NewWallet(0))
 	}
@@ -103,20 +126,21 @@ func (s *service) OnPlayerUUIDUpsert(playerEntity ecs.EntityID) {
 	s.UUID().Component().Set(playerEntity, uuid.New(playerUUID.UUID))
 }
 
-func (s *service) OnConnectionUpsert(entity ecs.EntityID) {
-	conn, ok := s.Connection().Component().Get(entity)
+func (s *service) OnConnectionUpsert(connEntity ecs.EntityID) {
+	conn, ok := s.Connection().Component().Get(connEntity)
 	if !ok {
 		return
 	}
-	parent, ok := s.Hierarchy().Parent(entity)
+	parent, ok := s.Hierarchy().Parent(connEntity)
 	if !ok {
 		return
 	}
 	if _, ok := s.PlayersConnection().Get(parent); !ok {
 		return
 	}
+	var playerEntity ecs.EntityID
 	var playerUUID uuid.UUID
-	for _, playerEntity := range s.player.GetEntities() {
+	for _, playerEntity = range s.player.GetEntities() {
 		if _, ok := s.actingPlayer.Get(playerEntity); ok {
 			continue
 		}
@@ -134,7 +158,8 @@ func (s *service) OnConnectionUpsert(entity ecs.EntityID) {
 	if playerUUID == zeroUUID {
 		return
 	}
-	s.PlayerConnection().Set(entity, player.NewPlayerConnection(playerUUID))
+	s.PlayerConnection().Set(connEntity, player.NewPlayerConnection(playerUUID))
+	s.ActingConnection().Set(playerEntity, player.NewActiongConnection(connEntity))
 	if err := conn.Conn().Send(player.NewAssignActingPlayerDTO(playerUUID)); err != nil {
 		s.Logger().Warn(err)
 	}
@@ -149,4 +174,17 @@ func (s *service) OnAssignActingPlayerDTO(dto player.AssignActingPlayerDTO) {
 		return
 	}
 	events.Emit(s.Events(), loop.NewEmitOnFrameEvent(dto))
+}
+
+func (s *service) GetContext() player.PlayerContext {
+	entities := s.ActingPlayer().GetEntities()
+	if len(entities) != 1 {
+		return player.PlayerContext{}
+	}
+	entity := entities[0]
+	uuid, ok := s.UUID().Component().Get(entity)
+	if !ok {
+		return player.PlayerContext{}
+	}
+	return player.PlayerContext{PlayerUUID: uuid.ID}
 }

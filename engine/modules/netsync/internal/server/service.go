@@ -130,7 +130,7 @@ func (s *Service) ListenEmitEvent(dto clienttypes.EmitEventDTO) {
 	}
 	event, err := s.Config().Auth(dto.ConnEntity, dto.Event)
 	if err != nil {
-		err := conn.Conn().Send(servertypes.SendChangeDTO{Error: err})
+		err := conn.Conn().Send(servertypes.SendChangeDTO{Error: servertypes.NewError(err)})
 		s.Logger().Log(err)
 		return
 	}
@@ -145,7 +145,7 @@ func (s *Service) ListenTransparentEvent(dto clienttypes.TransparentEventDTO) {
 	}
 	event, err := s.Config().Auth(dto.ConnEntity, dto.Event)
 	if err != nil {
-		err := conn.Conn().Send(servertypes.TransparentEventDTO{Error: err})
+		err := conn.Conn().Send(servertypes.TransparentEventDTO{Error: servertypes.NewError(err)})
 		s.Logger().Log(err)
 		return
 	}

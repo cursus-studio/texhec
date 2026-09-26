@@ -8,10 +8,10 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                               4             45              7            257
+Go                               3             43             14            279
 Markdown                         2              0              0              3
 -------------------------------------------------------------------------------
-SUM:                             6             45              7            260
+SUM:                             5             43             14            282
 -------------------------------------------------------------------------------
 ```
 ## TODO
@@ -35,27 +35,48 @@ returns nil if object is controled
 #### method Service ControlsUUID
 Type: `func(engine/modules/uuid.UUID) error`
 
+#### method Service GetContext
+Type: `func() core/modules/player.PlayerContext`
+
 #### method Service Owner
 Type: `func() engine/modules/uuid.LinkService[core/modules/player.OwnerLink]`
+points to player entity
 
 #### method Service Player
 Type: `func() engine/modules/ecs.ComponentArray[core/modules/player.PlayerComponent]`
+attached to player
 
 #### method Service PlayerConnection
 Type: `func() engine/modules/ecs.ComponentArray[core/modules/player.PlayerConnectionComponent]`
+
+#### method Service PlayerControlsEntity
+Type: `func(player engine/modules/uuid.UUID, object engine/modules/ecs.EntityID) error`
+
+#### method Service PlayerControlsUUID
+Type: `func(player engine/modules/uuid.UUID, object engine/modules/uuid.UUID) error`
 
 #### method Service PlayerUUID
 Type: `func() engine/modules/ecs.ComponentArray[core/modules/player.PlayerUUIDComponent]`
 
 #### method Service PlayersConnection
 Type: `func() engine/modules/ecs.ComponentArray[core/modules/player.PlayersConnectionComponent]`
+attached to host and connection
+
+### type PlayerContextGetter
+Type: `core/modules/player.PlayerContextGetter`
+event context
+
+#### method PlayerContextGetter Context
+Type: `func() core/modules/player.PlayerContext`
 
 ### type PlayerContext
 Type: `core/modules/player.PlayerContext`
-event context
 
 #### property PlayerContext PlayerUUID
 Type: `engine/modules/uuid.UUID`
+
+#### method PlayerContext Context
+Type: `func() core/modules/player.PlayerContext`
 
 ### type PlayerComponent
 Type: `core/modules/player.PlayerComponent`
@@ -77,7 +98,7 @@ Type: `core/modules/player.ActingPlayerComponent`
 Type: `core/modules/player.ActingConnectionComponent`
 
 #### property ActingConnectionComponent Connection
-Type: `engine/modules/uuid.UUID`
+Type: `engine/modules/ecs.EntityID`
 
 ### type OwnerLink
 Type: `core/modules/player.OwnerLink`
@@ -121,7 +142,7 @@ Type: `func(uuid engine/modules/uuid.UUID) core/modules/player.PlayerUUIDCompone
 Type: `func() core/modules/player.ActingPlayerComponent`
 
 ### func NewActiongConnection
-Type: `func(uuid engine/modules/uuid.UUID) core/modules/player.ActingConnectionComponent`
+Type: `func(entity engine/modules/ecs.EntityID) core/modules/player.ActingConnectionComponent`
 
 ### func NewAssignActingPlayerDTO
 Type: `func(playerUUID engine/modules/uuid.UUID) core/modules/player.AssignActingPlayerDTO`
@@ -144,13 +165,16 @@ Type: `func(player engine/modules/uuid.UUID) core/modules/player.PlayerConnectio
   - `core/modules/economy.Wallet`
 
 `core/modules/player`:
+  - `core/modules/player.ActingConnection`
   - `core/modules/player.ActingConnectionComponent`
-  - `core/modules/player.ActingPlayer`
   - `core/modules/player.ActingPlayerComponent`
   - `core/modules/player.AssignActingPlayerDTO`
+  - `core/modules/player.Connection`
+  - `core/modules/player.Context`
   - `core/modules/player.ErrRequiresControl`
   - `core/modules/player.ErrRequiresOwner`
   - `core/modules/player.NewActingPlayer`
+  - `core/modules/player.NewActiongConnection`
   - `core/modules/player.NewAssignActingPlayerDTO`
   - `core/modules/player.NewPlayerConnection`
   - `core/modules/player.NewPlayerUUID`
@@ -158,6 +182,7 @@ Type: `func(player engine/modules/uuid.UUID) core/modules/player.PlayerConnectio
   - `core/modules/player.PlayerComponent`
   - `core/modules/player.PlayerConnectionComponent`
   - `core/modules/player.PlayerContext`
+  - `core/modules/player.PlayerContextGetter`
   - `core/modules/player.PlayerUUID`
   - `core/modules/player.PlayerUUIDComponent`
   - `core/modules/player.PlayersConnectionComponent`
@@ -176,12 +201,12 @@ Type: `func(player engine/modules/uuid.UUID) core/modules/player.PlayerConnectio
   - `engine/modules/ecs.EntityID`
   - `engine/modules/ecs.GetComponentArray`
 
-`engine/modules/interactions`:
-  - `engine/modules/interactions.ContextSetter`
-  - `engine/modules/interactions.Feature`
-
 `engine/modules/loop`:
   - `engine/modules/loop.NewEmitOnFrameEvent`
+
+`engine/modules/netsync/pkg`:
+  - `engine/modules/netsync/pkg.AddGenericEventAuthorization`
+  - `engine/modules/netsync/pkg.Config`
 
 `engine/modules/typeregistry/pkg`:
   - `engine/modules/typeregistry/pkg.PkgT`

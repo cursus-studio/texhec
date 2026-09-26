@@ -8,10 +8,10 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                               4             35              5            255
+Go                               4             35              5            262
 Markdown                         1              0              0              1
 -------------------------------------------------------------------------------
-SUM:                             5             35              5            256
+SUM:                             5             35              5            263
 -------------------------------------------------------------------------------
 ```
 ## Types
@@ -66,6 +66,9 @@ Type: `core/modules/attack.Health`
 ### type AttackEvent
 Type: `core/modules/attack.AttackEvent`
 
+#### property AttackEvent PlayerContext
+Type: `core/modules/player.PlayerContext`
+
 #### property AttackEvent Attacker
 Type: `engine/modules/uuid.UUID`
 
@@ -87,7 +90,7 @@ Type: `func(health core/modules/attack.Health) core/modules/attack.HealthCompone
 Type: `func(damage core/modules/attack.Health) core/modules/attack.DamageComponent`
 
 ### func NewAttackEvent
-Type: `func(attacker engine/modules/uuid.UUID, target engine/modules/uuid.UUID) core/modules/attack.AttackEvent`
+Type: `func(ctx core/modules/player.PlayerContext, attacker engine/modules/uuid.UUID, target engine/modules/uuid.UUID) core/modules/attack.AttackEvent`
 
 
 ## Dependencies
@@ -96,6 +99,7 @@ Type: `func(attacker engine/modules/uuid.UUID, target engine/modules/uuid.UUID) 
   - `core/game.GameWorld`
   - `core/game.Obstruction`
   - `core/game.Pathfind`
+  - `core/game.Player`
   - `core/game.Tile`
 
 `core/modules/actions`:
@@ -133,7 +137,10 @@ Type: `func(attacker engine/modules/uuid.UUID, target engine/modules/uuid.UUID) 
   - `core/modules/pathfind.Target`
 
 `core/modules/player`:
+  - `core/modules/player.GetContext`
   - `core/modules/player.PlayerContext`
+  - `core/modules/player.PlayerControlsUUID`
+  - `core/modules/player.PlayerUUID`
 
 `core/modules/reach`:
   - `core/modules/reach.Component`
@@ -174,6 +181,10 @@ Type: `func(attacker engine/modules/uuid.UUID, target engine/modules/uuid.UUID) 
   - `engine/modules/loop.Delta`
   - `engine/modules/loop.FrameEvent`
   - `engine/modules/loop.TickEvent`
+
+`engine/modules/netsync/pkg`:
+  - `engine/modules/netsync/pkg.AddEventAuthorization`
+  - `engine/modules/netsync/pkg.Config`
 
 `engine/modules/transition`:
   - `engine/modules/transition.LerpInt`

@@ -45,13 +45,6 @@ func NewStep[State any](state State) Step[State] {
 func (step stepT[State]) State() State { return step.Value }
 
 // feature
-
-// this sets feature event context before emitting it
-// it has to be registered in a game
-type ContextSetter interface {
-	SetContext(Feature) Feature
-}
-
 type AvailableFeaturesComponent struct {
 	Features []FeatureKey
 	Selected bool

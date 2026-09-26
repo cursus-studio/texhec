@@ -73,8 +73,7 @@ type FeatureService[Feature any] interface {
 type featureService[Feature any] struct {
 	C                  ioc.Dic
 	engine.EngineWorld `inject:""`
-	Interactions       Service                    `inject:""`
-	ContextSetter      interactions.ContextSetter `inject:""`
+	Interactions       Service `inject:""`
 
 	rawRelations       []RawRelation
 	relationByTgtField datastructures.SparseArray[int, []Relation]
@@ -169,5 +168,5 @@ func (s *featureService[Feature]) Progress() {
 		step.FillValue(interactionEntity, value.Field(i))
 	}
 	s.Interactions.ResetFeatureEntity()
-	events.EmitAny(s.Events(), s.ContextSetter.SetContext(feature))
+	events.EmitAny(s.Events(), feature)
 }

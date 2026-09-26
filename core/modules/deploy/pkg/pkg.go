@@ -5,13 +5,13 @@ import (
 	"core/modules/actions"
 	"core/modules/deploy"
 	"core/modules/deploy/internal"
-	"core/modules/player"
 	"core/modules/reach"
 	reachpkg "core/modules/reach/pkg"
 	"engine/modules/ecs"
 	"engine/modules/entityregistry"
 	"engine/modules/grid"
 	interactionspkg "engine/modules/interactions/pkg"
+	netsyncpkg "engine/modules/netsync/pkg"
 	typeregistrypkg "engine/modules/typeregistry/pkg"
 	"errors"
 	"fmt"
@@ -23,14 +23,12 @@ import (
 )
 
 type DeployFeature struct {
-	player.PlayerContext
 	By        actions.FriendlyBuilderEntityStep
 	Blueprint actions.BlueprintStep
 	Coords    actions.CoordsStep
 }
 
 type DestroyFeature struct {
-	player.PlayerContext
 	Entity actions.FriendlyEntityStep
 }
 
@@ -58,6 +56,7 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 		world := ioc.Get[game.GameWorld](c)
 		events.Listen(b, func(f DeployFeature) {
 			events.Emit(world.Events(), deploy.NewDeployEvent(
+				world.Player().GetContext(),
 				f.By.State().UUID,
 				f.Blueprint.State().UUID,
 				f.Coords.State().Coords,
@@ -65,12 +64,22 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 		})
 		events.Listen(b, func(f DestroyFeature) {
 			events.Emit(world.Events(), deploy.NewDestroyEvent(
+				world.Player().GetContext(),
 				f.Entity.State().UUID,
 			))
 		})
 	})
 	ioc.Register(b, func(c ioc.Dic) deploy.Service {
 		return internal.NewService(c)
+	})
+	ioc.Wrap(b, func(c ioc.Dic, config netsyncpkg.Config) {
+		world := ioc.GetServices[game.GameWorld](c)
+		netsyncpkg.AddEventAuthorization(config, func(event deploy.DeployEvent) error {
+			return world.Player().PlayerControlsUUID(event.PlayerUUID, event.By)
+		})
+		netsyncpkg.AddEventAuthorization(config, func(event deploy.DestroyEvent) error {
+			return world.Player().PlayerControlsUUID(event.PlayerUUID, event.UUID)
+		})
 	})
 
 	ioc.Wrap(b, func(c ioc.Dic, b entityregistry.Service) {

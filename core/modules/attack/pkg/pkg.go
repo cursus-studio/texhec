@@ -5,13 +5,13 @@ import (
 	"core/modules/actions"
 	"core/modules/attack"
 	"core/modules/attack/internal"
-	"core/modules/player"
 	"core/modules/reach"
 	reachpkg "core/modules/reach/pkg"
 	"engine/modules/ecs"
 	"engine/modules/entityregistry"
 	"engine/modules/grid"
 	interactionspkg "engine/modules/interactions/pkg"
+	netsyncpkg "engine/modules/netsync/pkg"
 	typeregistrypkg "engine/modules/typeregistry/pkg"
 	"errors"
 	"fmt"
@@ -22,7 +22,6 @@ import (
 )
 
 type AttackFeature struct {
-	player.PlayerContext
 	By     actions.FriendlyOffensiveEntityStep
 	Target actions.EnemyEntityStep
 }
@@ -47,11 +46,17 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 	ioc.Wrap(b, func(c ioc.Dic, b events.Builder) {
 		world := ioc.Get[game.GameWorld](c)
 		events.Listen(b, func(f AttackFeature) {
-			events.Emit(world.Events(), attack.NewAttackEvent(f.By.State().UUID, f.Target.State().UUID))
+			events.Emit(world.Events(), attack.NewAttackEvent(world.Player().GetContext(), f.By.State().UUID, f.Target.State().UUID))
 		})
 	})
 	ioc.Register(b, func(c ioc.Dic) attack.Service {
 		return internal.NewService(c)
+	})
+	ioc.Wrap(b, func(c ioc.Dic, config netsyncpkg.Config) {
+		world := ioc.GetServices[game.GameWorld](c)
+		netsyncpkg.AddEventAuthorization(config, func(event attack.AttackEvent) error {
+			return world.Player().PlayerControlsUUID(event.PlayerUUID, event.Attacker)
+		})
 	})
 
 	ioc.Wrap(b, func(c ioc.Dic, b entityregistry.Service) {

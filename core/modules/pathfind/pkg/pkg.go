@@ -5,11 +5,11 @@ import (
 	"core/modules/actions"
 	"core/modules/pathfind"
 	"core/modules/pathfind/internal"
-	"core/modules/player"
 	"engine/modules/ecs"
 	"engine/modules/entityregistry"
 	gridpkg "engine/modules/grid/pkg"
 	interactionspkg "engine/modules/interactions/pkg"
+	netsyncpkg "engine/modules/netsync/pkg"
 	relationpkg "engine/modules/relation/pkg"
 	typeregistrypkg "engine/modules/typeregistry/pkg"
 	"fmt"
@@ -21,13 +21,8 @@ import (
 )
 
 type FindPathFeature struct {
-	player.PlayerContext
 	Entity actions.FriendlyMobileEntityStep
 	Coords actions.CoordsStep
-}
-
-func (f FindPathFeature) Event() any {
-	return pathfind.NewFindPathEvent(f.Entity.State().UUID, f.Coords.State().Coords)
 }
 
 var Pkg = ioc.NewPkg(func(b ioc.Builder) {
@@ -63,11 +58,17 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 	ioc.Wrap(b, func(c ioc.Dic, b events.Builder) {
 		world := ioc.Get[game.GameWorld](c)
 		events.Listen(b, func(f FindPathFeature) {
-			events.Emit(world.Events(), pathfind.NewFindPathEvent(f.Entity.State().UUID, f.Coords.State().Coords))
+			events.Emit(world.Events(), pathfind.NewFindPathEvent(world.Player().GetContext(), f.Entity.State().UUID, f.Coords.State().Coords))
 		})
 	})
 	ioc.Register(b, func(c ioc.Dic) pathfind.Service {
 		return internal.NewService(c)
+	})
+	ioc.Wrap(b, func(c ioc.Dic, config netsyncpkg.Config) {
+		world := ioc.GetServices[game.GameWorld](c)
+		netsyncpkg.AddEventAuthorization(config, func(event pathfind.FindPathEvent) error {
+			return world.Player().PlayerControlsUUID(event.PlayerUUID, event.UUID)
+		})
 	})
 
 	ioc.Wrap(b, func(c ioc.Dic, b entityregistry.Service) {

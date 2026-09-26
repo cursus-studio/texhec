@@ -16,9 +16,14 @@ var (
 //
 
 // event context
+type PlayerContextGetter interface {
+	Context() PlayerContext
+}
 type PlayerContext struct {
 	PlayerUUID uuid.UUID
 }
+
+func (ctx PlayerContext) Context() PlayerContext { return ctx }
 
 // marks that player is performing a move
 type PlayerComponent struct {
@@ -28,13 +33,13 @@ type PlayerUUIDComponent struct {
 	UUID uuid.UUID
 }
 type ActingPlayerComponent struct{}
-type ActingConnectionComponent struct{ Connection uuid.UUID }
+type ActingConnectionComponent struct{ Connection ecs.EntityID }
 
 func NewPlayer(name string) PlayerComponent            { return PlayerComponent{name} }
 func NewPlayerUUID(uuid uuid.UUID) PlayerUUIDComponent { return PlayerUUIDComponent{uuid} }
 func NewActingPlayer() ActingPlayerComponent           { return ActingPlayerComponent{} }
-func NewActiongConnection(uuid uuid.UUID) ActingConnectionComponent {
-	return ActingConnectionComponent{uuid}
+func NewActiongConnection(entity ecs.EntityID) ActingConnectionComponent {
+	return ActingConnectionComponent{entity}
 }
 
 type OwnerLink struct{}
@@ -65,17 +70,25 @@ func NewPlayerConnection(player uuid.UUID) PlayerConnectionComponent {
 //
 
 type Service interface {
+	// attached to player
 	Player() ecs.ComponentArray[PlayerComponent]
 	PlayerUUID() ecs.ComponentArray[PlayerUUIDComponent]
 	ActingPlayer() ecs.ComponentArray[ActingPlayerComponent]
 	ActingConnection() ecs.ComponentArray[ActingConnectionComponent]
 
+	// attached to host and connection
 	PlayersConnection() ecs.ComponentArray[PlayersConnectionComponent]
 	PlayerConnection() ecs.ComponentArray[PlayerConnectionComponent]
 
+	// points to player entity
 	Owner() uuid.LinkService[OwnerLink]
 
 	// returns nil if object is controled
 	ControlsEntity(ecs.EntityID) error
 	ControlsUUID(uuid.UUID) error
+
+	PlayerControlsEntity(player uuid.UUID, object ecs.EntityID) error
+	PlayerControlsUUID(player, object uuid.UUID) error
+
+	GetContext() PlayerContext
 }

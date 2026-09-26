@@ -3,6 +3,7 @@ package pathfind
 
 import (
 	"core/modules/obstruction"
+	"core/modules/player"
 	"core/modules/tile"
 	"engine/modules/ecs"
 	"engine/modules/grid"
@@ -80,10 +81,11 @@ type Service interface {
 // - look on `HPA*` and `JPS`
 
 type FindPathEvent struct {
+	player.PlayerContext
 	UUID   uuid.UUID
 	Coords grid.Coords
 }
 
-func NewFindPathEvent(entity uuid.UUID, coords grid.Coords) FindPathEvent {
-	return FindPathEvent{entity, coords}
+func NewFindPathEvent(ctx player.PlayerContext, entity uuid.UUID, coords grid.Coords) FindPathEvent {
+	return FindPathEvent{ctx, entity, coords}
 }

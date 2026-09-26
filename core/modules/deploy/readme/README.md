@@ -8,9 +8,9 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                               3             45             14            277
+Go                               3             45             14            291
 -------------------------------------------------------------------------------
-SUM:                             3             45             14            277
+SUM:                             3             45             14            291
 -------------------------------------------------------------------------------
 ```
 ## Types
@@ -46,6 +46,9 @@ Type: `[]engine/modules/ecs.EntityID`
 ### type DeployEvent
 Type: `core/modules/deploy.DeployEvent`
 
+#### property DeployEvent PlayerContext
+Type: `core/modules/player.PlayerContext`
+
 #### property DeployEvent By
 Type: `engine/modules/uuid.UUID`
 
@@ -58,6 +61,9 @@ Type: `engine/modules/grid.Coords`
 ### type DestroyEvent
 Type: `core/modules/deploy.DestroyEvent`
 
+#### property DestroyEvent PlayerContext
+Type: `core/modules/player.PlayerContext`
+
 #### property DestroyEvent UUID
 Type: `engine/modules/uuid.UUID`
 
@@ -66,10 +72,10 @@ Type: `engine/modules/uuid.UUID`
 Type: `func(deployable ...engine/modules/ecs.EntityID) core/modules/deploy.Component`
 
 ### func NewDeployEvent
-Type: `func(by engine/modules/uuid.UUID, blueprint engine/modules/uuid.UUID, coords engine/modules/grid.Coords) core/modules/deploy.DeployEvent`
+Type: `func(ctx core/modules/player.PlayerContext, by engine/modules/uuid.UUID, blueprint engine/modules/uuid.UUID, coords engine/modules/grid.Coords) core/modules/deploy.DeployEvent`
 
 ### func NewDestroyEvent
-Type: `func(uuid engine/modules/uuid.UUID) core/modules/deploy.DestroyEvent`
+Type: `func(ctx core/modules/player.PlayerContext, uuid engine/modules/uuid.UUID) core/modules/deploy.DestroyEvent`
 
 
 ## Dependencies
@@ -124,8 +130,11 @@ Type: `func(uuid engine/modules/uuid.UUID) core/modules/deploy.DestroyEvent`
 
 `core/modules/player`:
   - `core/modules/player.ErrRequiresOwner`
+  - `core/modules/player.GetContext`
   - `core/modules/player.Owner`
   - `core/modules/player.PlayerContext`
+  - `core/modules/player.PlayerControlsUUID`
+  - `core/modules/player.PlayerUUID`
 
 `core/modules/reach`:
   - `core/modules/reach.Component`
@@ -166,6 +175,10 @@ Type: `func(uuid engine/modules/uuid.UUID) core/modules/deploy.DestroyEvent`
 
 `engine/modules/loop`:
   - `engine/modules/loop.TickEvent`
+
+`engine/modules/netsync/pkg`:
+  - `engine/modules/netsync/pkg.AddEventAuthorization`
+  - `engine/modules/netsync/pkg.Config`
 
 `engine/modules/typeregistry/pkg`:
   - `engine/modules/typeregistry/pkg.PkgT`

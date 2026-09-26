@@ -1,9 +1,11 @@
 package playerpkg
 
 import (
+	"core/game"
 	"core/modules/player"
 	"core/modules/player/internal"
-	"engine/modules/interactions"
+	"engine/modules/ecs"
+	netsyncpkg "engine/modules/netsync/pkg"
 	typeregistrypkg "engine/modules/typeregistry/pkg"
 	uuidpkg "engine/modules/uuid/pkg"
 
@@ -13,6 +15,7 @@ import (
 var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 	pkgs := []ioc.Pkg{
 		uuidpkg.LinkPkgT[player.OwnerLink],
+		typeregistrypkg.PkgT[player.PlayerContext],
 		typeregistrypkg.PkgT[player.PlayerComponent],
 		typeregistrypkg.PkgT[player.PlayerUUIDComponent],
 		typeregistrypkg.PkgT[player.ActingPlayerComponent],
@@ -24,8 +27,26 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 	ioc.Register(b, func(c ioc.Dic) player.Service {
 		return internal.NewService(c)
 	})
+	ioc.Wrap(b, func(c ioc.Dic, config netsyncpkg.Config) {
+		world := ioc.Get[game.GameWorld](c)
+		netsyncpkg.AddGenericEventAuthorization(config, func(client ecs.EntityID, event any) error {
+			context, ok := event.(player.PlayerContextGetter)
+			if !ok {
+				return nil
+			}
+			ctx := context.Context()
 
-	ioc.Register(b, func(c ioc.Dic) interactions.ContextSetter {
-		return internal.NewContextSetter(c)
+			// require existing player
+			playerEntity, ok := world.UUID().Entity(ctx.PlayerUUID)
+			if !ok {
+				return player.ErrRequiresControl
+			}
+			// require player to be controled by client
+			conn, ok := world.Player().ActingConnection().Get(playerEntity)
+			if !ok || conn.Connection != client {
+				return player.ErrRequiresControl
+			}
+			return nil
+		})
 	})
 })
