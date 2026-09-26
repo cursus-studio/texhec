@@ -54,7 +54,7 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 	})
 	ioc.Wrap(b, func(c ioc.Dic, config netsyncpkg.Config) {
 		world := ioc.GetServices[game.GameWorld](c)
-		netsyncpkg.AddEventAuthorization(config, func(event attack.AttackEvent) error {
+		netsyncpkg.AddEventValidation(config, func(event attack.AttackEvent) error {
 			return world.Player().PlayerControlsUUID(event.PlayerUUID, event.Attacker)
 		})
 	})

@@ -31,9 +31,9 @@ type Config struct {
 	MaxPredictions int
 
 	// auth
-	AllowedClientEvents   map[reflect.Type]struct{}
-	GenericAuthorizeEvent []func(ecs.EntityID, any) error
-	AuthorizeEvent        map[reflect.Type]func(any) error
+	AllowedClientEvents  map[reflect.Type]struct{}
+	GenericValidateEvent []func(ecs.EntityID, any) error
+	ValidateEvent        map[reflect.Type]func(any) error
 }
 
 func (config *Config) Auth(client ecs.EntityID, event any) (any, error) {
@@ -46,18 +46,18 @@ func (config *Config) Auth(client ecs.EntityID, event any) (any, error) {
 	eventPointerValue.Elem().Set(eventValue)
 
 	eventPointer := eventPointerValue.Interface()
-	if authorizedEvent, ok := eventPointer.(netsync.AuthorizedEvent); ok {
-		authorizedEvent.SetConnection(client)
+	if validatedEvent, ok := eventPointer.(netsync.ValidatedEvent); ok {
+		validatedEvent.SetConnection(client)
 	}
 
-	for _, validation := range config.GenericAuthorizeEvent {
+	for _, validation := range config.GenericValidateEvent {
 		if err := validation(client, event); err != nil {
 			return nil, err
 		}
 	}
 
 	event = eventPointerValue.Elem().Interface()
-	if handler, ok := config.AuthorizeEvent[eventType]; ok {
+	if handler, ok := config.ValidateEvent[eventType]; ok {
 		if err := handler(event); err != nil {
 			return nil, err
 		}

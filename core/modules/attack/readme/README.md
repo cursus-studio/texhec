@@ -183,7 +183,7 @@ Type: `func(ctx core/modules/player.PlayerContext, attacker engine/modules/uuid.
   - `engine/modules/loop.TickEvent`
 
 `engine/modules/netsync/pkg`:
-  - `engine/modules/netsync/pkg.AddEventAuthorization`
+  - `engine/modules/netsync/pkg.AddEventValidation`
   - `engine/modules/netsync/pkg.Config`
 
 `engine/modules/transition`:

@@ -42,11 +42,11 @@ Type: `func() engine/modules/ecs.SystemRegister`
 #### method Service Stop
 Type: `func() engine/modules/ecs.SystemRegister`
 
-### type AuthorizedEvent
-Type: `engine/modules/netsync.AuthorizedEvent`
+### type ValidatedEvent
+Type: `engine/modules/netsync.ValidatedEvent`
 event pointer should implement it
 
-#### method AuthorizedEvent SetConnection
+#### method ValidatedEvent SetConnection
 Type: `func(engine/modules/ecs.EntityID)`
 
 ### type ServerComponent
@@ -100,7 +100,6 @@ entity with this component and connection will get notifications about changes
   - `engine/modules/loop.TickEvent`
 
 `engine/modules/netsync`:
-  - `engine/modules/netsync.AuthorizedEvent`
   - `engine/modules/netsync.Client`
   - `engine/modules/netsync.ClientComponent`
   - `engine/modules/netsync.Clients`
@@ -109,6 +108,7 @@ entity with this component and connection will get notifications about changes
   - `engine/modules/netsync.ServerComponent`
   - `engine/modules/netsync.Service`
   - `engine/modules/netsync.SetConnection`
+  - `engine/modules/netsync.ValidatedEvent`
 
 `engine/modules/record`:
   - `engine/modules/record.Apply`

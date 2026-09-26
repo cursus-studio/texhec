@@ -29,7 +29,7 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 	})
 	ioc.Wrap(b, func(c ioc.Dic, config netsyncpkg.Config) {
 		world := ioc.Get[game.GameWorld](c)
-		netsyncpkg.AddGenericEventAuthorization(config, func(client ecs.EntityID, event any) error {
+		netsyncpkg.AddGenericEventValidation(config, func(client ecs.EntityID, event any) error {
 			context, ok := event.(player.PlayerContextGetter)
 			if !ok {
 				return nil

@@ -205,7 +205,7 @@ Type: `func(player engine/modules/uuid.UUID) core/modules/player.PlayerConnectio
   - `engine/modules/loop.NewEmitOnFrameEvent`
 
 `engine/modules/netsync/pkg`:
-  - `engine/modules/netsync/pkg.AddGenericEventAuthorization`
+  - `engine/modules/netsync/pkg.AddGenericEventValidation`
   - `engine/modules/netsync/pkg.Config`
 
 `engine/modules/typeregistry/pkg`:

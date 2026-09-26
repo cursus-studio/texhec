@@ -17,7 +17,7 @@ func newConfig() Config {
 	return Config{
 		config: &config.Config{
 			RecordConfig:        record.NewConfig(),
-			AuthorizeEvent:      make(map[reflect.Type]func(any) error),
+			ValidateEvent:       make(map[reflect.Type]func(any) error),
 			AllowedClientEvents: make(map[reflect.Type]struct{}),
 			MaxPredictions:      0,
 		},
@@ -48,7 +48,7 @@ func AddSimulatedEvent[EventType any](config Config) {
 	})
 }
 
-// these are freely exchanged between server and client instead of sending authorized state
+// these are freely exchanged between server and client instead of sending state
 func AddTransparentEvent[EventType any](config Config) {
 	eventType := reflect.TypeFor[EventType]()
 	config.config.TransparentEvents = append(config.config.TransparentEvents, eventType)
@@ -67,13 +67,13 @@ func AddVerifyEventHappen[EventType any](config Config) {
 	})
 }
 
-func AddGenericEventAuthorization(config Config, handler func(client ecs.EntityID, event any) error) {
-	config.config.GenericAuthorizeEvent = append(config.config.GenericAuthorizeEvent, handler)
+func AddGenericEventValidation(config Config, handler func(client ecs.EntityID, event any) error) {
+	config.config.GenericValidateEvent = append(config.config.GenericValidateEvent, handler)
 }
 
-func AddEventAuthorization[EventType any](config Config, handler func(event EventType) error) {
+func AddEventValidation[EventType any](config Config, handler func(event EventType) error) {
 	eventType := reflect.TypeFor[EventType]()
-	config.config.AuthorizeEvent[eventType] = func(a any) error {
+	config.config.ValidateEvent[eventType] = func(a any) error {
 		return handler(a.(EventType))
 	}
 }

@@ -39,6 +39,6 @@ type ClientComponent struct {
 // - if we have to many predicted events than we remove them all
 
 // event pointer should implement it
-type AuthorizedEvent interface {
+type ValidatedEvent interface {
 	SetConnection(ecs.EntityID)
 }
