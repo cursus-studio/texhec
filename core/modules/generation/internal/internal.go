@@ -2,7 +2,6 @@ package internal
 
 import (
 	"core/game"
-	"core/modules/economy"
 	"core/modules/generation"
 	"core/modules/player"
 	"core/modules/tile"
@@ -10,7 +9,6 @@ import (
 	"engine/modules/datastructures"
 	"engine/modules/ecs"
 	"engine/modules/grid"
-	"engine/modules/metadata"
 	"engine/modules/noise"
 	"fmt"
 	"slices"
@@ -77,14 +75,12 @@ func (s *service) Chances() (*Config, []tile.ID) {
 
 func (s *service) GetPlayer(worldGenerationEntity ecs.EntityID, name string) ecs.EntityID {
 	for _, child := range s.Hierarchy().Children(worldGenerationEntity).GetIndices() {
-		if comp, ok := s.Metadata().Name().Get(child); ok && comp.Name == name {
+		if comp, ok := s.Player().Player().Get(child); ok && comp.Name == name {
 			return child
 		}
 	}
 	playerEntity := s.World().NewEntity()
-	s.Hierarchy().SetParent(playerEntity, worldGenerationEntity)
-	s.Metadata().Name().Set(playerEntity, metadata.NewName(name))
-	s.Economy().Wallet().Set(playerEntity, economy.NewWallet(0))
+	s.Player().Player().Set(playerEntity, player.NewPlayer(name))
 	return playerEntity
 }
 

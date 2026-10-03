@@ -32,20 +32,20 @@ type service struct {
 func NewService(c ioc.Dic,
 	chunkSize float32,
 ) collider.Service {
-	t := ioc.GetServices[*service](c)
+	s := ioc.GetServices[*service](c)
 
-	t.collider = ecs.GetComponentArray[collider.Component](t.World())
+	s.collider = ecs.GetComponentArray[collider.Component](s.World())
 
-	t.collidersDirtySet = ecs.NewDirtySet()
-	t.Transform().AddDirtySet(t.collidersDirtySet)
-	t.collider.AddDirtySet(t.collidersDirtySet)
+	s.collidersDirtySet = ecs.NewDirtySet()
+	s.Transform().AddDirtySet(s.collidersDirtySet)
+	s.collider.AddDirtySet(s.collidersDirtySet)
 
-	t.chunkSize = chunkSize
-	t.chunks = make(map[mgl32.Vec2]datastructures.Set[ecs.EntityID])
-	t.entitiesPositions = make(map[ecs.EntityID][]mgl32.Vec2)
-	t.rayFallTroughPolicies = make([]collider.FallTroughPolicy, 0)
+	s.chunkSize = chunkSize
+	s.chunks = make(map[mgl32.Vec2]datastructures.Set[ecs.EntityID])
+	s.entitiesPositions = make(map[ecs.EntityID][]mgl32.Vec2)
+	s.rayFallTroughPolicies = make([]collider.FallTroughPolicy, 0)
 
-	return t
+	return s
 }
 
 func floorF32ToInt(num float32) int {
@@ -53,18 +53,18 @@ func floorF32ToInt(num float32) int {
 	return int(num)
 }
 
-func (c *service) getPositions(aabb collider.AABB) []mgl32.Vec2 {
+func (s *service) getPositions(aabb collider.AABB) []mgl32.Vec2 {
 	minPos, maxPos := aabb.Min.Vec2(), aabb.Max.Vec2()
-	minGridX := floorF32ToInt(minPos.X() / c.chunkSize)
-	minGridY := floorF32ToInt(minPos.Y() / c.chunkSize)
-	maxGridX := floorF32ToInt(maxPos.X() / c.chunkSize)
-	maxGridY := floorF32ToInt(maxPos.Y() / c.chunkSize)
+	minGridX := floorF32ToInt(minPos.X() / s.chunkSize)
+	minGridY := floorF32ToInt(minPos.Y() / s.chunkSize)
+	maxGridX := floorF32ToInt(maxPos.X() / s.chunkSize)
+	maxGridY := floorF32ToInt(maxPos.Y() / s.chunkSize)
 
 	var positions []mgl32.Vec2
 	for x := minGridX; x <= maxGridX; x++ {
 		for y := minGridY; y <= maxGridY; y++ {
-			tileX := float32(x) * c.chunkSize
-			tileY := float32(y) * c.chunkSize
+			tileX := float32(x) * s.chunkSize
+			tileY := float32(y) * s.chunkSize
 			tileCenter := mgl32.Vec2{tileX, tileY}
 
 			positions = append(positions, tileCenter)
@@ -74,47 +74,47 @@ func (c *service) getPositions(aabb collider.AABB) []mgl32.Vec2 {
 	return positions
 }
 
-func (t *service) ChunkSize() float32                                      { return t.chunkSize }
-func (t *service) Chunks() map[mgl32.Vec2]datastructures.Set[ecs.EntityID] { return t.chunks }
+func (s *service) ChunkSize() float32                                      { return s.chunkSize }
+func (s *service) Chunks() map[mgl32.Vec2]datastructures.Set[ecs.EntityID] { return s.chunks }
 
 // tracking
 
-func (t *service) ApplyChanges() {
-	entities := t.collidersDirtySet.Get()
-	t.Remove(entities...)
+func (s *service) ApplyChanges() {
+	entities := s.collidersDirtySet.Get()
+	s.Remove(entities...)
 	for _, entity := range entities {
-		if _, ok := t.collider.Get(entity); !ok {
+		if _, ok := s.collider.Get(entity); !ok {
 			continue
 		}
-		aabb := TransformAABB(t.Transform(), entity)
-		positions := t.getPositions(aabb)
-		t.entitiesPositions[entity] = positions
+		aabb := TransformAABB(s.Transform(), entity)
+		positions := s.getPositions(aabb)
+		s.entitiesPositions[entity] = positions
 		for _, position := range positions {
-			arr, ok := t.chunks[position]
+			arr, ok := s.chunks[position]
 			if !ok {
 				arr = datastructures.NewSet[ecs.EntityID]()
 			}
 			arr.Add(entity)
-			t.chunks[position] = arr
+			s.chunks[position] = arr
 		}
 	}
 }
 
-func (t *service) Remove(entities ...ecs.EntityID) {
+func (s *service) Remove(entities ...ecs.EntityID) {
 	for _, entity := range entities {
-		positions, ok := t.entitiesPositions[entity]
+		positions, ok := s.entitiesPositions[entity]
 		if !ok {
 			continue
 		}
-		delete(t.entitiesPositions, entity)
+		delete(s.entitiesPositions, entity)
 		for _, position := range positions {
-			arr, ok := t.chunks[position]
+			arr, ok := s.chunks[position]
 			if !ok {
 				continue
 			}
 			arr.RemoveElements(entity)
 			if len(arr.Get()) == 0 {
-				delete(t.chunks, position)
+				delete(s.chunks, position)
 				continue
 			}
 		}
@@ -123,11 +123,11 @@ func (t *service) Remove(entities ...ecs.EntityID) {
 
 //
 
-func (t *service) Component() ecs.ComponentArray[collider.Component] { return t.collider }
+func (s *service) Component() ecs.ComponentArray[collider.Component] { return s.collider }
 
-func (t *service) CollidesWithRay(entity ecs.EntityID, ray collider.Ray) *collider.ObjectRayCollision {
-	t.ApplyChanges()
-	entityGroups, ok := t.Groups().Component().Get(entity)
+func (s *service) CollidesWithRay(entity ecs.EntityID, ray collider.Ray) *collider.ObjectRayCollision {
+	s.ApplyChanges()
+	entityGroups, ok := s.Groups().Component().Get(entity)
 	if !ok {
 		entityGroups = groups.DefaultGroups()
 	}
@@ -135,25 +135,25 @@ func (t *service) CollidesWithRay(entity ecs.EntityID, ray collider.Ray) *collid
 		return nil
 	}
 
-	aabb := TransformAABB(t.Transform(), entity)
+	aabb := TransformAABB(s.Transform(), entity)
 	if ok, _ := RayAABBIntersect(ray, aabb); !ok {
 		return nil
 	}
 
-	colliderComponent, ok := t.collider.Get(entity)
+	colliderComponent, ok := s.collider.Get(entity)
 	if !ok {
 		return nil
 	}
-	colliderAsset, err := assets.GetAsset[collider.ColliderAsset](t.Assets(), colliderComponent.ID)
+	colliderAsset, err := assets.GetAsset[collider.ColliderAsset](s.Assets(), colliderComponent.ID)
 	if err != nil {
 		// invalid internal state
-		t.Logger().Log(err)
+		s.Logger().Log(err)
 		return nil
 	}
 
 	//
 
-	ray.Apply(t.Transform().Mat4(entity).Inv())
+	ray.Apply(s.Transform().Mat4(entity).Inv())
 
 	aabbs := colliderAsset.AABBs()
 	ranges := colliderAsset.Ranges()
@@ -206,7 +206,7 @@ func (t *service) CollidesWithRay(entity ecs.EntityID, ray collider.Ray) *collid
 
 	collision := collider.NewObjectRayCollision(entity, *closestHit)
 
-	for _, rayFallTroughPolicy := range t.rayFallTroughPolicies {
+	for _, rayFallTroughPolicy := range s.rayFallTroughPolicies {
 		if fallThrough := rayFallTroughPolicy.FallThrough(collision); fallThrough {
 			return nil
 		}
@@ -214,15 +214,15 @@ func (t *service) CollidesWithRay(entity ecs.EntityID, ray collider.Ray) *collid
 	return &collision
 }
 
-func (t *service) CollidesWithObject(entityA ecs.EntityID, entityB ecs.EntityID) *collider.ObjectObjectCollision {
-	t.ApplyChanges()
-	t.Logger().Log(errors.New("501"))
+func (s *service) CollidesWithObject(entityA ecs.EntityID, entityB ecs.EntityID) *collider.ObjectObjectCollision {
+	s.ApplyChanges()
+	s.Logger().Log(errors.New("501"))
 	return nil
 }
 
-func (t *service) Raycast(ray collider.Ray) *collider.ObjectRayCollision {
-	t.ApplyChanges()
-	chunkSize := t.ChunkSize()
+func (s *service) Raycast(ray collider.Ray) *collider.ObjectRayCollision {
+	s.ApplyChanges()
+	chunkSize := s.ChunkSize()
 	gridX := floorF32ToInt(ray.Pos[0] / chunkSize)
 	gridY := floorF32ToInt(ray.Pos[1] / chunkSize)
 	chunkCoord := mgl32.Vec2{
@@ -230,7 +230,7 @@ func (t *service) Raycast(ray collider.Ray) *collider.ObjectRayCollision {
 		float32(gridY) * chunkSize,
 	}
 
-	chunk, ok := t.Chunks()[chunkCoord]
+	chunk, ok := s.Chunks()[chunkCoord]
 	if !ok {
 		return nil
 	}
@@ -239,7 +239,7 @@ func (t *service) Raycast(ray collider.Ray) *collider.ObjectRayCollision {
 	var closestEntity ecs.EntityID
 
 	for _, entity := range chunk.Get() {
-		collision := t.CollidesWithRay(entity, ray)
+		collision := s.CollidesWithRay(entity, ray)
 		if collision == nil {
 			continue
 		}
@@ -262,9 +262,9 @@ func (t *service) Raycast(ray collider.Ray) *collider.ObjectRayCollision {
 	return &collision
 }
 
-func (t *service) RaycastAll(ray collider.Ray) []collider.ObjectRayCollision {
-	t.ApplyChanges()
-	chunkSize := t.ChunkSize()
+func (s *service) RaycastAll(ray collider.Ray) []collider.ObjectRayCollision {
+	s.ApplyChanges()
+	chunkSize := s.ChunkSize()
 	gridX := floorF32ToInt(ray.Pos[0] / chunkSize)
 	gridY := floorF32ToInt(ray.Pos[1] / chunkSize)
 	chunkCoord := mgl32.Vec2{
@@ -272,7 +272,7 @@ func (t *service) RaycastAll(ray collider.Ray) []collider.ObjectRayCollision {
 		float32(gridY) * chunkSize,
 	}
 
-	chunk, ok := t.Chunks()[chunkCoord]
+	chunk, ok := s.Chunks()[chunkCoord]
 	if !ok {
 		return nil
 	}
@@ -280,7 +280,7 @@ func (t *service) RaycastAll(ray collider.Ray) []collider.ObjectRayCollision {
 	collisions := []collider.ObjectRayCollision{}
 
 	for _, entity := range chunk.Get() {
-		collision := t.CollidesWithRay(entity, ray)
+		collision := s.CollidesWithRay(entity, ray)
 		if collision == nil {
 			continue
 		}
@@ -301,11 +301,11 @@ func (t *service) RaycastAll(ray collider.Ray) []collider.ObjectRayCollision {
 	return collisions
 }
 
-func (t *service) NarrowCollisions(entity ecs.EntityID) []ecs.EntityID {
-	t.ApplyChanges()
-	t.Logger().Log(errors.New("501"))
+func (s *service) NarrowCollisions(entity ecs.EntityID) []ecs.EntityID {
+	s.ApplyChanges()
+	s.Logger().Log(errors.New("501"))
 	return nil
 }
-func (t *service) AddRayFallThroughPolicy(rayFallTroughPolicy collider.FallTroughPolicy) {
-	t.rayFallTroughPolicies = append(t.rayFallTroughPolicies, rayFallTroughPolicy)
+func (s *service) AddRayFallThroughPolicy(rayFallTroughPolicy collider.FallTroughPolicy) {
+	s.rayFallTroughPolicies = append(s.rayFallTroughPolicies, rayFallTroughPolicy)
 }

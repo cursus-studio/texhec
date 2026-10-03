@@ -17,11 +17,11 @@ type service struct {
 }
 
 func NewService(c ioc.Dic) groups.Service {
-	t := ioc.GetServices[*service](c)
+	s := ioc.GetServices[*service](c)
 
-	t.groupsArray = ecs.GetComponentArray[groups.GroupsComponent](t.World())
-	t.Init()
-	return t
+	s.groupsArray = ecs.GetComponentArray[groups.GroupsComponent](s.World())
+	s.Init()
+	return s
 }
 
 func (s *service) Component() ecs.ComponentArray[groups.GroupsComponent] {

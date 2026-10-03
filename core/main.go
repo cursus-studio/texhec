@@ -88,8 +88,8 @@ func main() {
 	})
 
 	errs := ecs.RegisterSystems(
-		world.NetSync().Start(),
 		world.Smooth().Start(),
+		world.NetSync().Start(),
 		// update {
 		world.Connection(),
 
@@ -119,8 +119,8 @@ func main() {
 		world.Batcher(),
 		// } (update)
 
-		world.Smooth().Stop(),
 		world.NetSync().Stop(),
+		world.Smooth().Stop(),
 
 		// render
 		world.Render(),

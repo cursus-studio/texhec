@@ -1,9 +1,11 @@
 package attack
 
 import (
+	"core/modules/player"
 	"core/modules/reach"
 	"engine/modules/ecs"
 	"engine/modules/transition"
+	"engine/modules/uuid"
 	"errors"
 )
 
@@ -36,6 +38,17 @@ func NewDamage(damage Health) DamageComponent {
 func (HealthComponent) Smooth() {}
 func (c1 HealthComponent) Lerp(c2 HealthComponent, mix32 float32) HealthComponent {
 	return HealthComponent{transition.LerpInt(c1.Health, c2.Health, mix32)}
+}
+
+//
+
+type AttackEvent struct {
+	player.PlayerContext
+	Attacker, Target uuid.UUID
+}
+
+func NewAttackEvent(ctx player.PlayerContext, attacker, target uuid.UUID) AttackEvent {
+	return AttackEvent{ctx, attacker, target}
 }
 
 //

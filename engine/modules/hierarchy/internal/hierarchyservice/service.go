@@ -22,28 +22,28 @@ type service struct {
 }
 
 func NewService(c ioc.Dic) hierarchy.Service {
-	t := ioc.GetServices[*service](c)
+	s := ioc.GetServices[*service](c)
 
-	t.hierarchyArray = ecs.GetComponentArray[hierarchy.Component](t.World())
-	t.parentArray = ecs.GetComponentArray[parentComponent](t.World())
-	t.parents = datastructures.NewSparseArray[ecs.EntityID, ecs.EntityID]()
-	t.children = datastructures.NewSparseArray[ecs.EntityID, datastructures.SparseSet[ecs.EntityID]]()
-	t.flatChildren = datastructures.NewSparseArray[ecs.EntityID, datastructures.SparseSet[ecs.EntityID]]()
+	s.hierarchyArray = ecs.GetComponentArray[hierarchy.Component](s.World())
+	s.parentArray = ecs.GetComponentArray[parentComponent](s.World())
+	s.parents = datastructures.NewSparseArray[ecs.EntityID, ecs.EntityID]()
+	s.children = datastructures.NewSparseArray[ecs.EntityID, datastructures.SparseSet[ecs.EntityID]]()
+	s.flatChildren = datastructures.NewSparseArray[ecs.EntityID, datastructures.SparseSet[ecs.EntityID]]()
 
-	t.hierarchyArray.OnUpsert(t.handleHierarchyChange)
-	t.hierarchyArray.OnRemove(t.handleHierarchyChange)
-	t.parentArray.OnRemove(t.handleParentRemoval)
+	s.hierarchyArray.OnUpsert(s.handleHierarchyChange)
+	s.hierarchyArray.OnRemove(s.handleHierarchyChange)
+	s.parentArray.OnRemove(s.handleParentRemoval)
 
-	return t
+	return s
 }
 
-func (t *service) Component() ecs.ComponentArray[hierarchy.Component] {
-	return t.hierarchyArray
+func (s *service) Component() ecs.ComponentArray[hierarchy.Component] {
+	return s.hierarchyArray
 }
 
-func (t *service) IsChildOf(child ecs.EntityID, wantedParent ecs.EntityID) bool {
+func (s *service) IsChildOf(child ecs.EntityID, wantedParent ecs.EntityID) bool {
 	for {
-		parent, ok := t.Parent(child)
+		parent, ok := s.Parent(child)
 		if !ok {
 			return false
 		}
@@ -54,19 +54,19 @@ func (t *service) IsChildOf(child ecs.EntityID, wantedParent ecs.EntityID) bool 
 	}
 }
 
-func (t *service) SetParent(child ecs.EntityID, parent ecs.EntityID) {
-	t.hierarchyArray.Set(child, hierarchy.NewParent(parent))
+func (s *service) SetParent(child ecs.EntityID, parent ecs.EntityID) {
+	s.hierarchyArray.Set(child, hierarchy.NewParent(parent))
 }
 
-func (t *service) Parent(child ecs.EntityID) (ecs.EntityID, bool) {
-	comp, ok := t.hierarchyArray.Get(child)
+func (s *service) Parent(child ecs.EntityID) (ecs.EntityID, bool) {
+	comp, ok := s.hierarchyArray.Get(child)
 	return comp.Parent, ok
 }
 
 //
 
-func (t *service) GetParents(child ecs.EntityID) datastructures.SparseSetReader[ecs.EntityID] {
-	orderedParents := t.GetOrderedParents(child)
+func (s *service) GetParents(child ecs.EntityID) datastructures.SparseSetReader[ecs.EntityID] {
+	orderedParents := s.GetOrderedParents(child)
 
 	parents := datastructures.NewSparseSetWithPaging[ecs.EntityID]()
 	for _, parent := range orderedParents {
@@ -75,10 +75,10 @@ func (t *service) GetParents(child ecs.EntityID) datastructures.SparseSetReader[
 	return parents
 }
 
-func (t *service) GetOrderedParents(child ecs.EntityID) []ecs.EntityID {
+func (s *service) GetOrderedParents(child ecs.EntityID) []ecs.EntityID {
 	parents := []ecs.EntityID{child}
 	for {
-		parent, ok := t.hierarchyArray.Get(child)
+		parent, ok := s.hierarchyArray.Get(child)
 		if !ok {
 			return parents[1:]
 		}
@@ -90,10 +90,10 @@ func (t *service) GetOrderedParents(child ecs.EntityID) []ecs.EntityID {
 	}
 }
 
-func (t *service) GetOrderedPreviousParents(child ecs.EntityID) []ecs.EntityID {
+func (s *service) GetOrderedPreviousParents(child ecs.EntityID) []ecs.EntityID {
 	parents := []ecs.EntityID{child}
 	for {
-		parent, ok := t.parents.Get(child)
+		parent, ok := s.parents.Get(child)
 		if !ok {
 			return parents[1:]
 		}
@@ -107,34 +107,34 @@ func (t *service) GetOrderedPreviousParents(child ecs.EntityID) []ecs.EntityID {
 
 //
 
-func (t *service) SetChildren(parent ecs.EntityID, children ...ecs.EntityID) {
-	previousChildren := t.Children(parent).GetIndices()
+func (s *service) SetChildren(parent ecs.EntityID, children ...ecs.EntityID) {
+	previousChildren := s.Children(parent).GetIndices()
 	for _, child := range previousChildren {
-		t.hierarchyArray.Remove(child)
+		s.hierarchyArray.Remove(child)
 	}
 
 	for i := range len(children) {
-		t.SetParent(children[i], parent)
+		s.SetParent(children[i], parent)
 	}
 }
 
 //
 
-func (t *service) Children(parent ecs.EntityID) datastructures.SparseSetReader[ecs.EntityID] {
-	children, ok := t.children.Get(parent)
+func (s *service) Children(parent ecs.EntityID) datastructures.SparseSetReader[ecs.EntityID] {
+	children, ok := s.children.Get(parent)
 	if !ok {
 		return datastructures.NewSparseSetWithPaging[ecs.EntityID]()
 	}
 	return children
 }
 
-func (t *service) GetFlatChildren(parent ecs.EntityID) datastructures.SparseSetReader[ecs.EntityID] {
-	if flatChildren, ok := t.flatChildren.Get(parent); ok {
+func (s *service) GetFlatChildren(parent ecs.EntityID) datastructures.SparseSetReader[ecs.EntityID] {
+	if flatChildren, ok := s.flatChildren.Get(parent); ok {
 		return flatChildren
 	}
 	flatChildren := datastructures.NewSparseSetWithPaging[ecs.EntityID]()
 
-	children, ok := t.children.Get(parent)
+	children, ok := s.children.Get(parent)
 	if !ok {
 		return flatChildren
 	}
@@ -149,7 +149,7 @@ func (t *service) GetFlatChildren(parent ecs.EntityID) datastructures.SparseSetR
 			if added := flatChildren.Add(child); !added {
 				continue
 			}
-			children, ok := t.children.Get(child)
+			children, ok := s.children.Get(child)
 			if !ok {
 				continue
 			}
@@ -157,38 +157,38 @@ func (t *service) GetFlatChildren(parent ecs.EntityID) datastructures.SparseSetR
 		}
 	}
 
-	t.flatChildren.Set(parent, flatChildren)
+	s.flatChildren.Set(parent, flatChildren)
 	return flatChildren
 }
 
-func (t *service) FlatChildren(parent ecs.EntityID) datastructures.SparseSetReader[ecs.EntityID] {
-	return t.GetFlatChildren(parent)
+func (s *service) FlatChildren(parent ecs.EntityID) datastructures.SparseSetReader[ecs.EntityID] {
+	return s.GetFlatChildren(parent)
 }
 
 //
 
-func (t *service) handleHierarchyChange(child ecs.EntityID) {
-	previousParent, previousParentOk := t.parents.Get(child)
-	hierarchy, nextParentOk := t.hierarchyArray.Get(child)
+func (s *service) handleHierarchyChange(child ecs.EntityID) {
+	previousParent, previousParentOk := s.parents.Get(child)
+	hierarchy, nextParentOk := s.hierarchyArray.Get(child)
 	if previousParentOk == nextParentOk && hierarchy.Parent == previousParent {
 		return
 	}
 
 	if previousParentOk { // remove in parents
-		t.parents.Remove(child)
+		s.parents.Remove(child)
 
-		for _, parent := range t.GetOrderedPreviousParents(child) {
-			t.flatChildren.Remove(parent)
+		for _, parent := range s.GetOrderedPreviousParents(child) {
+			s.flatChildren.Remove(parent)
 		}
 
 		// remove as a child
-		children, ok := t.children.Get(previousParent)
+		children, ok := s.children.Get(previousParent)
 		if !ok { // this shouldn't occur and means invalid internal state
 			goto addCurrentParent
 		}
 		children.Remove(child)
 		if len(children.GetIndices()) == 0 {
-			t.children.Remove(previousParent)
+			s.children.Remove(previousParent)
 		}
 	}
 
@@ -196,39 +196,39 @@ addCurrentParent:
 	nextParent := hierarchy.Parent
 	if nextParentOk { // add in parents
 		// add parent
-		t.parents.Set(child, nextParent)
+		s.parents.Set(child, nextParent)
 
 		// add as parent
-		parentChildren, ok := t.children.Get(nextParent)
+		parentChildren, ok := s.children.Get(nextParent)
 		if !ok {
 			// mark as parent
-			t.parentArray.Set(nextParent, parentComponent{})
+			s.parentArray.Set(nextParent, parentComponent{})
 
 			// add children
 			parentChildren = datastructures.NewSparseSetWithPaging[ecs.EntityID]()
-			t.children.Set(nextParent, parentChildren)
+			s.children.Set(nextParent, parentChildren)
 		}
 		parentChildren.Add(child)
 	}
 }
 
-func (t *service) handleParentRemoval(parent ecs.EntityID) {
-	if _, isParent := t.parentArray.Get(parent); isParent {
+func (s *service) handleParentRemoval(parent ecs.EntityID) {
+	if _, isParent := s.parentArray.Get(parent); isParent {
 		return
 	}
 
-	children := t.GetFlatChildren(parent)
+	children := s.GetFlatChildren(parent)
 
-	for _, parent := range t.GetOrderedParents(parent) {
-		t.flatChildren.Remove(parent)
+	for _, parent := range s.GetOrderedParents(parent) {
+		s.flatChildren.Remove(parent)
 	}
 
-	t.children.Remove(parent)
-	t.flatChildren.Remove(parent)
+	s.children.Remove(parent)
+	s.flatChildren.Remove(parent)
 	for _, child := range children.GetIndices() {
-		t.flatChildren.Remove(child)
-		t.children.Remove(child)
-		t.parents.Remove(child)
-		t.World().RemoveEntity(child)
+		s.flatChildren.Remove(child)
+		s.children.Remove(child)
+		s.parents.Remove(child)
+		s.World().RemoveEntity(child)
 	}
 }

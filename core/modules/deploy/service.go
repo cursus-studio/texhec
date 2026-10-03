@@ -2,9 +2,11 @@
 package deploy
 
 import (
+	"core/modules/player"
 	"core/modules/reach"
 	"engine/modules/ecs"
 	"engine/modules/grid"
+	"engine/modules/uuid"
 )
 
 type Component struct {
@@ -20,27 +22,28 @@ func NewDeploy(deployable ...ecs.EntityID) Component {
 //
 
 type DeployEvent struct {
-	By,
-	Blueprint ecs.EntityID
-	Coords grid.Coords
+	player.PlayerContext
+	By, Blueprint uuid.UUID
+	Coords        grid.Coords
 }
 type DestroyEvent struct {
-	Entity ecs.EntityID
+	player.PlayerContext
+	UUID uuid.UUID
 }
 
 func NewDeployEvent(
-	by,
-	blueprint ecs.EntityID,
+	ctx player.PlayerContext,
+	by, blueprint uuid.UUID,
 	coords grid.Coords,
 ) DeployEvent {
 	return DeployEvent{
-		by,
-		blueprint,
+		ctx,
+		by, blueprint,
 		coords,
 	}
 }
-func NewDestroyEvent(entity ecs.EntityID) DestroyEvent {
-	return DestroyEvent{entity}
+func NewDestroyEvent(ctx player.PlayerContext, uuid uuid.UUID) DestroyEvent {
+	return DestroyEvent{ctx, uuid}
 }
 
 //

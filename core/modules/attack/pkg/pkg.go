@@ -11,11 +11,13 @@ import (
 	"engine/modules/entityregistry"
 	"engine/modules/grid"
 	interactionspkg "engine/modules/interactions/pkg"
+	netsyncpkg "engine/modules/netsync/pkg"
 	typeregistrypkg "engine/modules/typeregistry/pkg"
 	"errors"
 	"fmt"
 	"strconv"
 
+	"github.com/ogiusek/events"
 	"github.com/ogiusek/ioc/v2"
 )
 
@@ -24,15 +26,13 @@ type AttackFeature struct {
 	Target actions.EnemyEntityStep
 }
 
-func (f AttackFeature) Event() any {
-	return ecs.NewSetEvent(f.By.State().Entity, attack.NewTarget(f.Target.State().Entity))
-}
-
 var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 	pkgs := []ioc.Pkg{
 		typeregistrypkg.PkgT[attack.TargetComponent],
 		typeregistrypkg.PkgT[attack.HealthComponent],
 		typeregistrypkg.PkgT[attack.DamageComponent],
+
+		typeregistrypkg.PkgT[attack.AttackEvent],
 
 		reachpkg.PkgT[attack.TargetComponent],
 		interactionspkg.FeaturePkg[AttackFeature](
@@ -43,8 +43,20 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 	for _, pkg := range pkgs {
 		pkg(b)
 	}
+	ioc.Wrap(b, func(c ioc.Dic, b events.Builder) {
+		world := ioc.Get[game.GameWorld](c)
+		events.Listen(b, func(f AttackFeature) {
+			events.Emit(world.Events(), attack.NewAttackEvent(world.Player().GetContext(), f.By.State().UUID, f.Target.State().UUID))
+		})
+	})
 	ioc.Register(b, func(c ioc.Dic) attack.Service {
 		return internal.NewService(c)
+	})
+	ioc.Wrap(b, func(c ioc.Dic, config netsyncpkg.Config) {
+		world := ioc.GetServices[game.GameWorld](c)
+		netsyncpkg.AddEventValidation(config, func(event attack.AttackEvent) error {
+			return world.Player().PlayerControlsUUID(event.PlayerUUID, event.Attacker)
+		})
 	})
 
 	ioc.Wrap(b, func(c ioc.Dic, b entityregistry.Service) {

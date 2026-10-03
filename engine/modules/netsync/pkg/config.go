@@ -1,6 +1,7 @@
 package netsyncpkg
 
 import (
+	"engine/modules/ecs"
 	"engine/modules/netsync/internal/config"
 	"engine/modules/record"
 	"reflect"
@@ -16,7 +17,7 @@ func newConfig() Config {
 	return Config{
 		config: &config.Config{
 			RecordConfig:        record.NewConfig(),
-			AuthorizeEvent:      make(map[reflect.Type]func(any) error),
+			ValidateEvent:       make(map[reflect.Type]func(any) error),
 			AllowedClientEvents: make(map[reflect.Type]struct{}),
 			MaxPredictions:      0,
 		},
@@ -42,12 +43,12 @@ func AddEvent[EventType any](config Config) {
 // these event are sent from server to client regurally but they aren't sent from client to server
 func AddSimulatedEvent[EventType any](config Config) {
 	config.config.SimulatedEvents = append(config.config.EventTypes, reflect.TypeFor[EventType]())
-	config.config.ListenToSimulatedEvents = append(config.config.ListenToEvents, func(b events.Builder, f func(any)) {
+	config.config.ListenToSimulatedEvents = append(config.config.ListenToSimulatedEvents, func(b events.Builder, f func(any)) {
 		events.Listen(b, func(e EventType) { f(e) })
 	})
 }
 
-// these are freely exchanged between server and client instead of sending authorized state
+// these are freely exchanged between server and client instead of sending state
 func AddTransparentEvent[EventType any](config Config) {
 	eventType := reflect.TypeFor[EventType]()
 	config.config.TransparentEvents = append(config.config.TransparentEvents, eventType)
@@ -57,9 +58,22 @@ func AddTransparentEvent[EventType any](config Config) {
 	config.config.AllowedClientEvents[eventType] = struct{}{}
 }
 
-func AddEventAuthorization[EventType any](config Config, handler func(EventType) error) {
+// these are events sent to client like ticks, client verifies that these occured between other events
+func AddVerifyEventHappen[EventType any](config Config) {
 	eventType := reflect.TypeFor[EventType]()
-	config.config.AuthorizeEvent[eventType] = func(a any) error {
+	config.config.VerifyHappenEvents = append(config.config.VerifyHappenEvents, eventType)
+	config.config.ListenToVerifyHappenEvents = append(config.config.ListenToVerifyHappenEvents, func(b events.Builder, f func(any)) {
+		events.Listen(b, func(e EventType) { f(e) })
+	})
+}
+
+func AddGenericEventValidation(config Config, handler func(client ecs.EntityID, event any) error) {
+	config.config.GenericValidateEvent = append(config.config.GenericValidateEvent, handler)
+}
+
+func AddEventValidation[EventType any](config Config, handler func(event EventType) error) {
+	eventType := reflect.TypeFor[EventType]()
+	config.config.ValidateEvent[eventType] = func(a any) error {
 		return handler(a.(EventType))
 	}
 }

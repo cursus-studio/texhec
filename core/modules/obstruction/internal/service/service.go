@@ -8,7 +8,6 @@ import (
 	"engine/modules/datastructures"
 	"engine/modules/ecs"
 	"engine/modules/grid"
-	"engine/modules/inputs"
 	"engine/modules/record"
 
 	"github.com/ogiusek/ioc/v2"
@@ -41,8 +40,6 @@ func NewService(c ioc.Dic) obstruction.Service {
 
 	s.obstruction.SetEmpty(obstruction.NewObstruction(definitions.LowlandObstruction))
 
-	s.Deployed().OnUpsert(s.OnDeployUpsert)
-
 	//
 	s.config = record.NewConfig()
 	s.dirtyEntities = ecs.NewDirtySet()
@@ -54,10 +51,6 @@ func NewService(c ioc.Dic) obstruction.Service {
 	s.obstructions = datastructures.NewSparseSet[obstruction.Obstruction]()
 
 	return s
-}
-
-func (s *service) OnDeployUpsert(entity ecs.EntityID) {
-	s.Inputs().Stack().Set(entity, inputs.StackComponent{})
 }
 
 func (s *service) Grid() grid.ServiceT[obstruction.Obstruction]                { return s.ObstructionGridService }

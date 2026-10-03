@@ -3,19 +3,35 @@ package connection
 
 import (
 	"engine/modules/ecs"
+	"engine/modules/uuid"
 	"net"
 )
 
 // types
 
+type MsgCtx struct {
+	ConnEntity ecs.EntityID
+}
+
+func NewMsgCtx(connEntity ecs.EntityID) MsgCtx {
+	return MsgCtx{connEntity}
+}
+
+func (ptr *MsgCtx) SetCtx(tgtMsg MsgCtx) { *ptr = tgtMsg }
+
+type MsgCtxSetter interface {
+	SetCtx(tgtMsg MsgCtx)
+}
+
+//
+
 // singular connection interface
 type Conn interface {
+	Close()
+	// messages received are emited as event
+
 	// send has block behavior
 	Send(message any) error
-
-	// returns messages from last call
-	Messages() []any
-	Close() error
 }
 
 // components
@@ -45,6 +61,19 @@ func NewConnection(conn Conn) ConnectionComponent {
 func (comp *ConnectionComponent) Conn() Conn {
 	return comp.conn
 }
+
+//
+
+type SetConnUUIDDTO struct {
+	MsgCtx
+	UUID uuid.UUID
+}
+
+func NewSetConnUUIDDTO(uuid uuid.UUID) SetConnUUIDDTO {
+	return SetConnUUIDDTO{UUID: uuid}
+}
+
+//
 
 type Service interface {
 	ecs.SystemRegister

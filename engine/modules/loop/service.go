@@ -34,6 +34,22 @@ type Stats interface {
 	FrameBudgetLeft() time.Duration
 }
 
+//
+
+type EmitOnFrameComponent struct{ Event any }
+type EmitOnFrameEvent struct{ Event any }
+type EmitOnTickComponent struct{ Event any }
+type EmitOnTickEvent struct{ Event any }
+
+func NewEmitOnFrameEvent(event any) EmitOnFrameEvent {
+	return EmitOnFrameEvent{event}
+}
+func NewEmitOnTickEvent(event any) EmitOnTickEvent {
+	return EmitOnTickEvent{event}
+}
+
+//
+
 type Service interface {
 	// Starts the game loop if it isn't started.
 	// Waits until game loop stops.
@@ -41,5 +57,12 @@ type Service interface {
 	Stop()                    // emits stop event
 	Configure(ConfigureEvent) // emits confugure event
 
+	// also re-ticks
+	SyncToUnixNano(int64)
+	LastTickUnixNano() int64
+
 	Stats() Stats
+
+	EmitOnFrame(event any)
+	EmitOnTick(event any)
 }

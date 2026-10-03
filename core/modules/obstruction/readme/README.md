@@ -6,7 +6,7 @@ defines how obstruction map is stored and accessed
 ```
 $ go test ./... -bench=.
 PASS
-ok  	core/modules/obstruction/test	0.007s
+ok  	core/modules/obstruction/test	0.013s
 ```
 ## Lines of code
 ```
@@ -14,9 +14,9 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                               6             56             11            327
+Go                               6             55             11            313
 -------------------------------------------------------------------------------
-SUM:                             6             56             11            327
+SUM:                             6             55             11            313
 -------------------------------------------------------------------------------
 ```
 ## Types
@@ -70,6 +70,9 @@ Type: `[]engine/modules/grid.Coords`
 Type: `core/modules/obstruction.DeployedComponent`
 adding and removing deployed component modifies obstruction component
 
+#### property DeployedComponent UUID
+Type: `engine/modules/uuid.UUID`
+
 ## Variables
 ### var ErrPositionIsOccupied
 Type: `error`
@@ -82,7 +85,7 @@ Type: `func(obstruction core/modules/obstruction.Obstruction) core/modules/obstr
 Type: `func(coords core/modules/tile.PosComponent, size core/modules/tile.SizeComponent) core/modules/obstruction.AABB`
 
 ### func NewDeployed
-Type: `func() core/modules/obstruction.DeployedComponent`
+Type: `func(uuid engine/modules/uuid.UUID) core/modules/obstruction.DeployedComponent`
 
 
 ## Dependencies
@@ -101,7 +104,6 @@ Type: `func() core/modules/obstruction.DeployedComponent`
   - `core/modules/obstruction.Component`
   - `core/modules/obstruction.Deployed`
   - `core/modules/obstruction.DeployedComponent`
-  - `core/modules/obstruction.ErrPositionIsOccupied`
   - `core/modules/obstruction.Grid`
   - `core/modules/obstruction.NewAABB`
   - `core/modules/obstruction.NewObstruction`
@@ -154,10 +156,6 @@ Type: `func() core/modules/obstruction.DeployedComponent`
 `engine/modules/grid/pkg`:
   - `engine/modules/grid/pkg.PkgT`
 
-`engine/modules/inputs`:
-  - `engine/modules/inputs.Stack`
-  - `engine/modules/inputs.StackComponent`
-
 `engine/modules/record`:
   - `engine/modules/record.AddToConfig`
   - `engine/modules/record.ComponentGetter`
@@ -171,6 +169,9 @@ Type: `func() core/modules/obstruction.DeployedComponent`
 
 `engine/modules/typeregistry/pkg`:
   - `engine/modules/typeregistry/pkg.PkgT`
+
+`engine/modules/uuid`:
+  - `engine/modules/uuid.UUID`
 
 ### Third Party
 - `github.com/ogiusek/ioc/v2`
