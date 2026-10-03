@@ -14,7 +14,7 @@ example:
 ```
 $ go test ./... -bench=.
 PASS
-ok  	engine/modules/entityregistry/test	0.008s
+ok  	engine/modules/entityregistry/test	0.015s
 ```
 ## Lines of code
 ```
@@ -22,9 +22,9 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                               5             31             10            164
+Go                               5             31             10            169
 -------------------------------------------------------------------------------
-SUM:                             5             31             10            164
+SUM:                             5             31             10            169
 -------------------------------------------------------------------------------
 ```
 ## Types
@@ -66,8 +66,9 @@ Type: `func[Registry any](s engine/modules/entityregistry.Service) (Registry, er
 
 `engine/modules/uuid`:
   - `engine/modules/uuid.Component`
+  - `engine/modules/uuid.Entity`
   - `engine/modules/uuid.New`
-  - `engine/modules/uuid.NewUUID`
+  - `engine/modules/uuid.NewUUIDFromString`
 
 `engine/pkg`:
   - `engine/pkg.Pkg`

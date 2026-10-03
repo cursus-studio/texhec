@@ -104,10 +104,10 @@ func (s *service) OnTick(tick loop.TickEvent) {
 		if !ok {
 			continue
 		}
-		wallet, _ := s.Economy().Wallet().Get(factoryOwner.Owner)
+		wallet, _ := s.Economy().Wallet().Get(factoryOwner)
 
 		moneyGain := float64(factoryComp.MoneyPerSecond) * tick.Delta.Seconds()
 		wallet.Money += economy.Money(moneyGain)
-		s.Economy().Wallet().Set(factoryOwner.Owner, wallet)
+		s.Economy().Wallet().Set(factoryOwner, wallet)
 	}
 }

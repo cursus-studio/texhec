@@ -3,9 +3,11 @@ package pathfind
 
 import (
 	"core/modules/obstruction"
+	"core/modules/player"
 	"core/modules/tile"
 	"engine/modules/ecs"
 	"engine/modules/grid"
+	"engine/modules/uuid"
 	"errors"
 
 	"golang.org/x/exp/constraints"
@@ -79,10 +81,11 @@ type Service interface {
 // - look on `HPA*` and `JPS`
 
 type FindPathEvent struct {
-	Entity ecs.EntityID
+	player.PlayerContext
+	UUID   uuid.UUID
 	Coords grid.Coords
 }
 
-func NewFindPathEvent(entity ecs.EntityID, coords grid.Coords) FindPathEvent {
-	return FindPathEvent{entity, coords}
+func NewFindPathEvent(ctx player.PlayerContext, entity uuid.UUID, coords grid.Coords) FindPathEvent {
+	return FindPathEvent{ctx, entity, coords}
 }

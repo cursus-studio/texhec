@@ -11,11 +11,14 @@ import (
 	"engine/modules/entityregistry"
 	"engine/modules/grid"
 	interactionspkg "engine/modules/interactions/pkg"
+	netsyncpkg "engine/modules/netsync/pkg"
+	typeregistrypkg "engine/modules/typeregistry/pkg"
 	"errors"
 	"fmt"
 	"strconv"
 	"unsafe"
 
+	"github.com/ogiusek/events"
 	"github.com/ogiusek/ioc/v2"
 )
 
@@ -25,24 +28,16 @@ type DeployFeature struct {
 	Coords    actions.CoordsStep
 }
 
-func (f DeployFeature) Event() any {
-	return deploy.NewDeployEvent(
-		f.By.State().Entity,
-		f.Blueprint.State().Entity,
-		f.Coords.State().Coords,
-	)
-}
-
 type DestroyFeature struct {
 	Entity actions.FriendlyEntityStep
 }
 
-func (f DestroyFeature) Event() any {
-	return deploy.NewDestroyEvent(f.Entity.State().Entity)
-}
-
 var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 	pkgs := []ioc.Pkg{
+		typeregistrypkg.PkgT[deploy.DeployEvent],
+		typeregistrypkg.PkgT[deploy.DestroyEvent],
+		typeregistrypkg.PkgT[internal.BoughtComponent],
+
 		reachpkg.PkgT[deploy.Component],
 		interactionspkg.FeaturePkg[DeployFeature](
 			interactionspkg.NewCopyRelation[actions.CanDeployComponent](
@@ -57,8 +52,34 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 	for _, pkg := range pkgs {
 		pkg(b)
 	}
+	ioc.Wrap(b, func(c ioc.Dic, b events.Builder) {
+		world := ioc.Get[game.GameWorld](c)
+		events.Listen(b, func(f DeployFeature) {
+			events.Emit(world.Events(), deploy.NewDeployEvent(
+				world.Player().GetContext(),
+				f.By.State().UUID,
+				f.Blueprint.State().UUID,
+				f.Coords.State().Coords,
+			))
+		})
+		events.Listen(b, func(f DestroyFeature) {
+			events.Emit(world.Events(), deploy.NewDestroyEvent(
+				world.Player().GetContext(),
+				f.Entity.State().UUID,
+			))
+		})
+	})
 	ioc.Register(b, func(c ioc.Dic) deploy.Service {
 		return internal.NewService(c)
+	})
+	ioc.Wrap(b, func(c ioc.Dic, config netsyncpkg.Config) {
+		world := ioc.GetServices[game.GameWorld](c)
+		netsyncpkg.AddEventValidation(config, func(event deploy.DeployEvent) error {
+			return world.Player().PlayerControlsUUID(event.PlayerUUID, event.By)
+		})
+		netsyncpkg.AddEventValidation(config, func(event deploy.DestroyEvent) error {
+			return world.Player().PlayerControlsUUID(event.PlayerUUID, event.UUID)
+		})
 	})
 
 	ioc.Wrap(b, func(c ioc.Dic, b entityregistry.Service) {

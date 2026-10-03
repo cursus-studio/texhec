@@ -5,6 +5,7 @@ import (
 	"engine/modules/ecs"
 	"engine/modules/grid"
 	"engine/modules/interactions"
+	"engine/modules/uuid"
 	"errors"
 )
 
@@ -46,13 +47,13 @@ func NewRegionAnchor(region pathfind.Region) RegionAnchorComponent {
 //
 
 type CoordsInteraction struct{ Coords grid.Coords }
-type EntityInteraction struct{ Entity ecs.EntityID }
-type BlueprintInteraction struct{ Entity ecs.EntityID }
+type EntityInteraction struct{ UUID uuid.UUID }
+type BlueprintInteraction struct{ UUID uuid.UUID }
 
-func NewCoordsInteraction(coords grid.Coords) CoordsInteraction  { return CoordsInteraction{coords} }
-func NewEntityInteraction(entity ecs.EntityID) EntityInteraction { return EntityInteraction{entity} }
-func NewBlueprintInteraction(entity ecs.EntityID) BlueprintInteraction {
-	return BlueprintInteraction{entity}
+func NewCoordsInteraction(coords grid.Coords) CoordsInteraction { return CoordsInteraction{coords} }
+func NewEntityInteraction(uuid uuid.UUID) EntityInteraction     { return EntityInteraction{uuid} }
+func NewBlueprintInteraction(uuid uuid.UUID) BlueprintInteraction {
+	return BlueprintInteraction{uuid}
 }
 
 //

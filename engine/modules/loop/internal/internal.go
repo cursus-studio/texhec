@@ -2,7 +2,9 @@ package internal
 
 import (
 	"engine"
+	"engine/modules/ecs"
 	"engine/modules/loop"
+	"slices"
 	"time"
 
 	"github.com/ogiusek/events"
@@ -11,6 +13,8 @@ import (
 
 type service struct {
 	engine.EngineWorld `inject:""`
+	emitOnFrameArray   ecs.ComponentArray[loop.EmitOnFrameComponent]
+	emitOnTickArray    ecs.ComponentArray[loop.EmitOnTickComponent]
 	Running            bool
 
 	TickDuration,
@@ -19,11 +23,15 @@ type service struct {
 	LastFrameTime time.Time
 	TickProgress  time.Duration
 
+	lastTickUnixNano int64
+
 	Ticker *time.Ticker
 }
 
 func NewService(c ioc.Dic) loop.Service {
 	s := ioc.GetServices[*service](c)
+	s.emitOnFrameArray = ecs.GetComponentArray[loop.EmitOnFrameComponent](s.World())
+	s.emitOnTickArray = ecs.GetComponentArray[loop.EmitOnTickComponent](s.World())
 	s.Running = false
 
 	// TickDuration is initialized lazily
@@ -37,15 +45,38 @@ func NewService(c ioc.Dic) loop.Service {
 	events.Listen(s.EventsBuilder(), func(loop.StopEvent) {
 		s.Running = false
 	})
-	events.Listen(s.EventsBuilder(), func(e loop.ConfigureEvent) {
-		s.TickDuration = time.Second / time.Duration(e.TPS)
-		s.FrameDuration = time.Second / time.Duration(e.FPS)
-		prev := s.Ticker
-		s.Ticker = time.NewTicker(s.FrameDuration)
-		if prev != nil {
-			prev.Stop()
+
+	events.Listen(s.EventsBuilder(), func(loop.TickEvent) {
+		s.lastTickUnixNano = time.Unix(0, s.lastTickUnixNano).Add(s.TickDuration).UnixNano()
+	})
+
+	//
+
+	// emit proper event on tick/frame
+	events.Listen(s.EventsBuilder(), func(loop.FrameEvent) {
+		arr := slices.Clone(s.emitOnFrameArray.GetEntities())
+		for _, entity := range arr {
+			if comp, ok := s.emitOnFrameArray.Get(entity); ok {
+				events.EmitAny(s.Events(), comp.Event)
+			}
+			s.World().RemoveEntity(entity)
 		}
 	})
+	events.Listen(s.EventsBuilder(), func(loop.TickEvent) {
+		arr := slices.Clone(s.emitOnTickArray.GetEntities())
+		for _, entity := range arr {
+			if comp, ok := s.emitOnTickArray.Get(entity); ok {
+				events.EmitAny(s.Events(), comp.Event)
+			}
+			s.World().RemoveEntity(entity)
+		}
+	})
+	events.Listen(s.EventsBuilder(), func(event loop.EmitOnFrameEvent) { s.EmitOnFrame(event.Event) })
+	events.Listen(s.EventsBuilder(), func(event loop.EmitOnTickEvent) { s.EmitOnTick(event.Event) })
+
+	//
+
+	events.Listen(s.EventsBuilder(), s.Configure)
 
 	return s
 }
@@ -76,8 +107,31 @@ func (s *service) Run(e loop.ConfigureEvent) {
 	}
 }
 
-func (s *service) Stop()                           { events.Emit(s.Events(), loop.StopEvent{}) }
-func (s *service) Configure(e loop.ConfigureEvent) { events.Emit(s.Events(), e) }
+func (s *service) Stop() { events.Emit(s.Events(), loop.StopEvent{}) }
+func (s *service) Configure(e loop.ConfigureEvent) {
+	s.TickDuration = time.Second / time.Duration(e.TPS)
+	s.FrameDuration = time.Second / time.Duration(e.FPS)
+
+	now := s.Clock().Now()
+	s.TickProgress = now.Sub(now.Truncate(s.TickDuration))
+
+	tickTime := now.Add(-s.TickProgress)
+	s.lastTickUnixNano = tickTime.UnixNano()
+
+	prev := s.Ticker
+	s.Ticker = time.NewTicker(s.FrameDuration)
+	if prev != nil {
+		prev.Stop()
+	}
+}
+
+func (s *service) SyncToUnixNano(lastTickUnix int64) {
+	s.lastTickUnixNano = time.Unix(0, s.lastTickUnixNano).Add(-s.TickDuration).UnixNano()
+	for s.lastTickUnixNano-lastTickUnix != 0 {
+		events.Emit(s.Events(), loop.TickEvent{Delta: s.TickDuration})
+	}
+}
+func (s *service) LastTickUnixNano() int64 { return s.lastTickUnixNano }
 
 func (s *service) Stats() loop.Stats { return s }
 
@@ -87,4 +141,13 @@ func (s *service) FrameBudget() time.Duration {
 }
 func (s *service) FrameBudgetLeft() time.Duration {
 	return max(0, s.LastFrameTime.Add(s.FrameDuration).Sub(s.Clock().Now()))
+}
+
+func (s *service) EmitOnFrame(event any) {
+	entity := s.World().NewEntity()
+	s.emitOnFrameArray.Set(entity, loop.EmitOnFrameComponent{Event: event})
+}
+func (s *service) EmitOnTick(event any) {
+	entity := s.World().NewEntity()
+	s.emitOnTickArray.Set(entity, loop.EmitOnTickComponent{Event: event})
 }

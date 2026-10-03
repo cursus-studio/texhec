@@ -16,11 +16,15 @@ func (s *service) BlueprintInteraction() interactions.InteractionService[actions
 }
 
 func (s *service) OnClickBlueprint(event tile.ClickBlueprintEvent) {
+	uuidComp, ok := s.UUID().Component().Get(event.Entity)
+	if !ok {
+		return
+	}
 	propertiesEntity := s.World().NewEntity()
 	s.CoordsCursor().Set(propertiesEntity, actions.NewCoordsCursor(event.Entity, true))
 	s.Anchor().Set(propertiesEntity, actions.NewAnchor(event.Entity))
 
-	s.BlueprintInteraction().Save(propertiesEntity, actions.NewBlueprintInteraction(event.Entity))
+	s.BlueprintInteraction().Save(propertiesEntity, actions.NewBlueprintInteraction(uuidComp.ID))
 }
 
 func (s *service) OnBlueprintMissingUpsert(entity ecs.EntityID) {
@@ -35,17 +39,12 @@ func (s *service) OnBlueprintMissingUpsert(entity ecs.EntityID) {
 		return
 	}
 
-	link, ok := s.Metadata().Link().Get(canDeploy.Entity)
-	if !ok {
-		return
-	}
-
-	deployed, _ := s.Deploy().Component().Get(link.Entity)
+	deployed, _ := s.Deploy().Component().Get(canDeploy.Entity)
 	if len(deployed.Deployable) == 0 {
 		return
 	}
 	for _, deployed := range deployed.Deployable {
-		name, ok := s.Metadata().Name().Get(deployed)
+		name, ok := s.Tile().Name().Get(deployed)
 		if !ok {
 			s.Logger().Log(errors.New("expected entity to have name component"))
 			continue
@@ -72,9 +71,14 @@ func (s *service) OnBlueprintStateUpsert(entity ecs.EntityID) {
 	if !ok {
 		return
 	}
+	blueprintEntity, ok := s.UUID().Entity(blueprint.State.UUID)
+	if !ok {
+		return
+	}
 
-	s.CoordsCursor().Set(entity, actions.NewCoordsCursor(blueprint.State.Entity, true))
-	if object, ok := s.EntityInteraction().StatePreview().Get(entity); ok {
-		s.Anchor().Set(entity, actions.NewAnchor(object.State.Entity))
+	s.CoordsCursor().Set(entity, actions.NewCoordsCursor(blueprintEntity, true))
+	if object, ok := s.EntityInteraction().StatePreview().Get(entity); !ok {
+	} else if objectEntity, ok := s.UUID().Entity(object.State.UUID); ok {
+		s.Anchor().Set(entity, actions.NewAnchor(objectEntity))
 	}
 }

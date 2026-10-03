@@ -8,14 +8,20 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                              11            112             91            660
-Markdown                         1              0              0              1
+Go                              11            131             62            698
+Markdown                         1              2              0              5
 -------------------------------------------------------------------------------
-SUM:                            12            112             91            661
+SUM:                            12            133             62            703
 -------------------------------------------------------------------------------
 ```
 ## TODO
-Create more features to allow more specific features to allow more specific calls
+This module needs clean up for transparent events and ticks.
+Currently we hope event won't land on tick instead of handling it properly.
+Transparent events aren't tracked to reverse back in state.
+Client also hopes he doesn't receive event at a bad time because if event from server lands in a bad time
+transparent events are going to be messed.
+
+
 
 ## Types
 ### type Service
@@ -23,6 +29,9 @@ Type: `engine/modules/netsync.Service`
 
 #### method Service Client
 Type: `func() engine/modules/ecs.ComponentArray[engine/modules/netsync.ClientComponent]`
+
+#### method Service Clients
+Type: `func() engine/modules/ecs.ComponentArray[engine/modules/netsync.ClientsComponent]`
 
 #### method Service Server
 Type: `func() engine/modules/ecs.ComponentArray[engine/modules/netsync.ServerComponent]`
@@ -33,16 +42,19 @@ Type: `func() engine/modules/ecs.SystemRegister`
 #### method Service Stop
 Type: `func() engine/modules/ecs.SystemRegister`
 
-### type AuthorizedEvent
-Type: `engine/modules/netsync.AuthorizedEvent`
+### type ValidatedEvent
+Type: `engine/modules/netsync.ValidatedEvent`
 event pointer should implement it
 
-#### method AuthorizedEvent SetConnection
+#### method ValidatedEvent SetConnection
 Type: `func(engine/modules/ecs.EntityID)`
 
 ### type ServerComponent
 Type: `engine/modules/netsync.ServerComponent`
 entity with this component and with connection component will be one with which we'll synchronize
+
+### type ClientsComponent
+Type: `engine/modules/netsync.ClientsComponent`
 
 ### type ClientComponent
 Type: `engine/modules/netsync.ClientComponent`
@@ -57,6 +69,7 @@ entity with this component and connection will get notifications about changes
   - `engine.EventsBuilder`
   - `engine.Hierarchy`
   - `engine.Logger`
+  - `engine.Loop`
   - `engine.NetSync`
   - `engine.Record`
   - `engine.UUID`
@@ -66,7 +79,8 @@ entity with this component and connection will get notifications about changes
   - `engine/modules/connection.Close`
   - `engine/modules/connection.Component`
   - `engine/modules/connection.Conn`
-  - `engine/modules/connection.Messages`
+  - `engine/modules/connection.ConnEntity`
+  - `engine/modules/connection.MsgCtx`
   - `engine/modules/connection.Send`
 
 `engine/modules/ecs`:
@@ -80,15 +94,21 @@ entity with this component and connection will get notifications about changes
 
 `engine/modules/loop`:
   - `engine/modules/loop.FrameEvent`
+  - `engine/modules/loop.LastTickUnixNano`
+  - `engine/modules/loop.NewEmitOnTickEvent`
+  - `engine/modules/loop.SyncToUnixNano`
+  - `engine/modules/loop.TickEvent`
 
 `engine/modules/netsync`:
-  - `engine/modules/netsync.AuthorizedEvent`
   - `engine/modules/netsync.Client`
   - `engine/modules/netsync.ClientComponent`
+  - `engine/modules/netsync.Clients`
+  - `engine/modules/netsync.ClientsComponent`
   - `engine/modules/netsync.Server`
   - `engine/modules/netsync.ServerComponent`
   - `engine/modules/netsync.Service`
   - `engine/modules/netsync.SetConnection`
+  - `engine/modules/netsync.ValidatedEvent`
 
 `engine/modules/record`:
   - `engine/modules/record.Apply`

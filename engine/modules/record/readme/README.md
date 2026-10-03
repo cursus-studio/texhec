@@ -16,9 +16,9 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                              12            204             44           1013
+Go                              12            204             44           1035
 -------------------------------------------------------------------------------
-SUM:                            12            204             44           1013
+SUM:                            12            204             44           1035
 -------------------------------------------------------------------------------
 ```
 ## Types
@@ -106,8 +106,8 @@ recording cannot be encoded
 
 #### property Recording Entities
 Type: `engine/modules/datastructures.SparseArray[engine/modules/ecs.EntityID, []any]`
-map[componentUUID][componentArrayLayoutID]any component
-map[componentUUID]nil is when entity is removed
+[componentArrayLayoutID]any component
+nil for removed entity
 
 ### type UUIDRecordingID
 Type: `engine/modules/record.UUIDRecordingID`
@@ -115,10 +115,15 @@ Type: `engine/modules/record.UUIDRecordingID`
 ### type UUIDRecording
 Type: `engine/modules/record.UUIDRecording`
 
-#### property UUIDRecording Entities
-Type: `map[engine/modules/uuid.UUID][]any`
+#### property UUIDRecording EntitiesOrder
+Type: `[]engine/modules/uuid.UUID`
 map[componentUUID][componentArrayLayoutID]any component
 map[componentUUID]nil is when entity is removed
+
+#### property UUIDRecording Entities
+Type: `map[engine/modules/uuid.UUID][]any`
+[componentArrayLayoutID]any component
+nil for removed entity
 
 ## Functions
 ### func NewConfig
@@ -132,6 +137,7 @@ Type: `func[Component any](config engine/modules/record.Config) engine/modules/r
 `engine`:
   - `engine.EngineWorld`
   - `engine.UUID`
+  - `engine.WarmUp`
   - `engine.World`
 
 `engine/modules/codec`:
@@ -160,6 +166,7 @@ Type: `func[Component any](config engine/modules/record.Config) engine/modules/r
   - `engine/modules/record.ComponentsOrder`
   - `engine/modules/record.Config`
   - `engine/modules/record.Entities`
+  - `engine/modules/record.EntitiesOrder`
   - `engine/modules/record.EntityKeyedRecorder`
   - `engine/modules/record.InheritZero`
   - `engine/modules/record.NewConfig`

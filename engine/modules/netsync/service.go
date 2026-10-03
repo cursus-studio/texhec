@@ -9,11 +9,16 @@ type Service interface {
 	Start() ecs.SystemRegister
 	Stop() ecs.SystemRegister
 	Server() ecs.ComponentArray[ServerComponent]
+	Clients() ecs.ComponentArray[ClientsComponent]
 	Client() ecs.ComponentArray[ClientComponent]
 }
 
 // entity with this component and with connection component will be one with which we'll synchronize
 type ServerComponent struct{}
+
+//
+
+type ClientsComponent struct{}
 
 // entity with this component and connection will get notifications about changes
 type ClientComponent struct {
@@ -34,6 +39,6 @@ type ClientComponent struct {
 // - if we have to many predicted events than we remove them all
 
 // event pointer should implement it
-type AuthorizedEvent interface {
+type ValidatedEvent interface {
 	SetConnection(ecs.EntityID)
 }

@@ -10,6 +10,8 @@ type FeatureKey = reflect.Type
 type StepKey = reflect.Type
 type InteractionKey = reflect.Type
 
+type Feature = any
+
 // interaction
 type StatePreviewComponent[State any] struct{ State State }
 type MissingPreviewComponent[State any] struct{}
@@ -43,9 +45,6 @@ func NewStep[State any](state State) Step[State] {
 func (step stepT[State]) State() State { return step.Value }
 
 // feature
-type Feature interface {
-	Event() any
-}
 type AvailableFeaturesComponent struct {
 	Features []FeatureKey
 	Selected bool

@@ -121,5 +121,6 @@ type UUIDRecordingID uint16
 type UUIDRecording struct {
 	// map[componentUUID][componentArrayLayoutID]any component
 	// map[componentUUID]nil is when entity is removed
-	Entities map[uuid.UUID][]any
+	EntitiesOrder []uuid.UUID
+	Entities      map[uuid.UUID][]any
 }

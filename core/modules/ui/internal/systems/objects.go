@@ -6,18 +6,26 @@ import (
 	"engine/modules/loop"
 	"engine/modules/render"
 	"engine/modules/transform"
+	"slices"
 
 	"github.com/go-gl/mathgl/mgl32"
 	"github.com/ogiusek/events"
 	"github.com/ogiusek/ioc/v2"
 )
 
+type healthBarComponent struct {
+}
+
 type objectsSystem struct {
 	game.GameWorld `inject:""`
+
+	healthBar ecs.ComponentArray[healthBarComponent]
 }
 
 func NewObjectsSystem(c ioc.Dic) ecs.SystemRegister {
 	s := ioc.GetServices[*objectsSystem](c)
+
+	s.healthBar = ecs.GetComponentArray[healthBarComponent](s.World())
 	return s
 }
 
@@ -50,6 +58,7 @@ func (s *objectsSystem) AddHealthBar(entity ecs.EntityID) {
 
 	healthBar := s.World().NewEntity()
 	s.Hierarchy().SetParent(healthBar, entity)
+	s.healthBar.Set(healthBar, healthBarComponent{})
 	s.Transform().Inherit().Set(healthBar, transform.NewInherit(transform.RelativePos|transform.RelativeSizeX))
 	s.Transform().PivotPoint().Set(healthBar, transform.NewPivotPoint(.5, 0, .5))
 	s.Transform().ParentPivotPoint().Set(healthBar, transform.NewParentPivotPoint(.5, 0, .5))
@@ -63,10 +72,10 @@ func (s *objectsSystem) AddHealthBar(entity ecs.EntityID) {
 
 // resets objects preview objects
 func (s *objectsSystem) OnFrame(loop.FrameEvent) {
+	for _, entity := range slices.Clone(s.healthBar.GetEntities()) {
+		s.World().RemoveEntity(entity)
+	}
 	for _, entity := range s.Tile().Pos().GetEntities() {
-		for _, child := range s.Hierarchy().Children(entity).GetIndices() {
-			s.World().RemoveEntity(child)
-		}
 		s.AddHealthBar(entity)
 	}
 }

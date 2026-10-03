@@ -13,10 +13,10 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                               8            132             62            679
+Go                               8            135             63            698
 Markdown                         2              1              0              6
 -------------------------------------------------------------------------------
-SUM:                            10            133             62            685
+SUM:                            10            136             63            704
 -------------------------------------------------------------------------------
 ```
 ## TODO
@@ -357,6 +357,9 @@ Type: `func() uintptr`
 #### method InteractionKey String
 Type: `func() string`
 
+### type Feature
+Type: `engine/modules/interactions.Feature`
+
 ### type InteractionService
 Type: `engine/modules/interactions.InteractionService[State any]`
 
@@ -377,13 +380,6 @@ step
 #### method Step State
 Type: `func() State`
 
-### type Feature
-Type: `engine/modules/interactions.Feature`
-feature
-
-#### method Feature Event
-Type: `func() any`
-
 ### type StatePreviewComponent
 Type: `engine/modules/interactions.StatePreviewComponent[State any]`
 interaction
@@ -396,6 +392,7 @@ Type: `engine/modules/interactions.MissingPreviewComponent[State any]`
 
 ### type AvailableFeaturesComponent
 Type: `engine/modules/interactions.AvailableFeaturesComponent`
+feature
 
 #### property AvailableFeaturesComponent Features
 Type: `[]engine/modules/interactions.FeatureKey`
@@ -445,6 +442,10 @@ Type: `func() engine/modules/interactions.SelectFeatureEvent`
   - `engine.Prototype`
   - `engine.World`
 
+`engine/modules/datastructures`:
+  - `engine/modules/datastructures.NewSparseArray`
+  - `engine/modules/datastructures.SparseArray`
+
 `engine/modules/ecs`:
   - `engine/modules/ecs.ComponentArray`
   - `engine/modules/ecs.EntityID`
@@ -456,8 +457,6 @@ Type: `func() engine/modules/interactions.SelectFeatureEvent`
 
 `engine/modules/interactions`:
   - `engine/modules/interactions.AvailableFeaturesComponent`
-  - `engine/modules/interactions.Event`
-  - `engine/modules/interactions.Feature`
   - `engine/modules/interactions.FeatureKey`
   - `engine/modules/interactions.Features`
   - `engine/modules/interactions.InteractionKey`

@@ -14,6 +14,7 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 	pkgs := []ioc.Pkg{
 		typeregistrypkg.PkgT[uuid.UUID],
 		typeregistrypkg.PkgT[uuid.Component],
+		typeregistrypkg.PkgT[internal.SeededUUID],
 		relationpkg.MapRelationPkg(
 			func(w ecs.World) ecs.DirtySet {
 				set := ecs.NewDirtySet()
@@ -35,8 +36,20 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 	for _, pkg := range pkgs {
 		pkg(b)
 	}
-	ioc.Register(b, func(c ioc.Dic) uuid.Factory { return internal.NewFactory() })
 	ioc.Register(b, func(c ioc.Dic) uuid.Service {
 		return internal.NewService(c)
 	})
 })
+
+func LinkPkgT[Wrapped any](b ioc.Builder) {
+	pkgs := []ioc.Pkg{
+		typeregistrypkg.PkgT[uuid.LinkUUIDComponent[Wrapped]],
+		typeregistrypkg.PkgT[uuid.LinkCacheComponent[Wrapped]],
+	}
+	for _, pkg := range pkgs {
+		pkg(b)
+	}
+	ioc.Register(b, func(c ioc.Dic) uuid.LinkService[Wrapped] {
+		return internal.NewLinkService[Wrapped](c)
+	})
+}
