@@ -14,6 +14,7 @@ import (
 	"engine/modules/drag"
 	"engine/modules/ecs"
 	"engine/modules/entityregistry"
+	"engine/modules/feature"
 	"engine/modules/focus"
 	"engine/modules/graphics"
 	"engine/modules/grid"
@@ -60,6 +61,7 @@ type EngineWorld struct {
 	Delay          ioc.Lazy[delay.Service]          `inject:""`
 	Drag           ioc.Lazy[drag.Service]           `inject:""`
 	EntityRegistry ioc.Lazy[entityregistry.Service] `inject:""`
+	Feature        ioc.Lazy[feature.Service]        `inject:""`
 	Focus          ioc.Lazy[focus.Service]          `inject:""`
 	Graphics       ioc.Lazy[graphics.Service]       `inject:""`
 	Grid           ioc.Lazy[grid.Service]           `inject:""`
