@@ -2,20 +2,20 @@
 ## Architecture
 This is second attempt to create `feature` architecture, previous was in module called `interactions`.
 
-It splits `feature` into:
-- ### Fields
+This module relies on its own `DSL`:
+- ### `Field`
 `FeatureEvent` structs are composed from fields and each can be either:
-#### Provided
+#### `Provided`
 Field provided by code
-#### Interactions
+#### `Interaction`
 Field provided by interaction with GUI
 
-- ### Rules
+- ### `Rule`
 Rule wires two fields and runs test on them.
 Rule can be anything (for e.g. `OwnsRule`, `CanAttackRule`).
 It is sufficient to run all tests on feature.
 
-- ### Features
+- ### `Feature`
 Features are just an event composed from fields and rules between them.
 There is a component which stores all compatible features with correct interactions.
 There are few rules for it:
@@ -44,7 +44,7 @@ Specialized component for rendering rules for preview field
 ```
 $ go test ./... -bench=.
 PASS
-ok  	engine/modules/feature/test	0.014s
+ok  	engine/modules/feature/test	0.017s
 ```
 ## Lines of code
 ```
