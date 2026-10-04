@@ -3,7 +3,7 @@
 Allows to compose features (events) from multiple steps.
 It is heavily inspired by wizzard pattern.
 
-Feature is event emited after collecting multiple steps.
+Feature is event emitted after collecting multiple steps.
 Step is filtered interaction. For example it isn't only unit click it is friendly unit click.
 Interaction is selecting an single thing like object or coordinates.
 

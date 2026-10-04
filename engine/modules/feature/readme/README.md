@@ -17,9 +17,9 @@ It is sufficient to run all tests on feature.
 
 - ### Features
 Features are just an event composed from fields and rules between them.
-There is a component which stores all compatible features with currect interactions.
+There is a component which stores all compatible features with correct interactions.
 There are few rules for it:
-1. If no feature is selected it stores upmost one interaction and lists all features which first interaction matches
+1. If no feature is selected it stores utmost one interaction and lists all features which first interaction matches
 2. If feature is selected it'll ensure state matches and no interactions which fail tests are selected
 
 ### GUI Components
@@ -29,7 +29,7 @@ All following components will store this state or its consequences.
 It stores:
 - selected feature or feature isn't selected then which features are compatible
 - preview interaction
-- interacitons selected
+- interactions selected
 
 2. `FieldRenderComponent[Field]`
 Specialized component for rendering fields which are:
@@ -44,7 +44,7 @@ Specialized component for rendering rules for preview field
 ```
 $ go test ./... -bench=.
 PASS
-ok  	engine/modules/feature/test	0.015s
+ok  	engine/modules/feature/test	0.014s
 ```
 ## Lines of code
 ```

@@ -11,7 +11,7 @@ import (
 // captures events that are emitted
 // from child with [FocusedComponent]
 // to uppermost parent with [BubblingComponent] with fallthrough(T) == false
-// if none [BubblingComponent] stops further emission then [Event] is emited
+// if none [BubblingComponent] stops further emission then [Event] is emitted
 type BubblingConstraint interface {
 	// stores a list of events which can be passed to capture
 	// this should be a global variable it never should be stored in component

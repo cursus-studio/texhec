@@ -46,7 +46,7 @@ Type: `engine/modules/focus.BubblingConstraint`
 captures events that are emitted
 from child with [FocusedComponent]
 to uppermost parent with [BubblingComponent] with fallthrough(T) == false
-if none [BubblingComponent] stops further emission then [Event] is emited
+if none [BubblingComponent] stops further emission then [Event] is emitted
 
 #### method BubblingConstraint Capture
 Type: `func(any) any`

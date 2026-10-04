@@ -65,7 +65,7 @@ type EnemyUnit interactions.Step[UnitInteraction]
 type FriendlyUnit interactions.Step[UnitInteraction]
 type Coord interactions.Step[CoordInteraction]
 
-// features: these are emited as events.
+// features: these are emitted as events.
 // Here struct tags have component:"field names"
 type MoveFeature struct {
 	PlayerContext

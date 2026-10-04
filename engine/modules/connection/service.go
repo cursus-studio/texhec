@@ -28,7 +28,7 @@ type MsgCtxSetter interface {
 // singular connection interface
 type Conn interface {
 	Close()
-	// messages received are emited as event
+	// messages received are emitted as event
 
 	// send has block behavior
 	Send(message any) error

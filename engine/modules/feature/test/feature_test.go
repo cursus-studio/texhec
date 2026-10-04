@@ -11,11 +11,11 @@ import (
 )
 
 func TestFeatures(t *testing.T) {
-	emited := []AttackFeature{}
+	emitted := []AttackFeature{}
 	world := ioc.GetServices[World](ioc.NewContainer(enginepkg.Pkg, Pkg, func(b ioc.Builder) {
 		ioc.Wrap(b, func(c ioc.Dic, b events.Builder) {
 			events.Listen(b, func(f AttackFeature) {
-				emited = append(emited, f)
+				emitted = append(emitted, f)
 			})
 		})
 	}))
@@ -85,14 +85,14 @@ func TestFeatures(t *testing.T) {
 	world.AssertInteractions(feature.NewInteractions(
 		[]any{attackerfield}, attackedField, []feature.FeatureKey{reflect.TypeFor[AttackFeature]()}, true))
 
-	// expect event to be emited after submission
-	if len(emited) != 0 {
-		t.Fatalf("do not expected emited event")
+	// expect event to be emitted after submission
+	if len(emitted) != 0 {
+		t.Fatalf("do not expected emitted event")
 	}
 	world.World.Feature().SubmitPreviewInteraction(reflect.TypeFor[EntityField]())
 	world.AssertInteractions(feature.NewInteractions(nil, nil, nil, false))
-	expectedEmited := AttackFeature{ProvidedPlayerCTX, attackerfield, attackedField}
-	if len(emited) != 1 || emited[0] != expectedEmited {
-		t.Fatalf("expected [%v] not %v", expectedEmited, emited)
+	expectedEmitted := AttackFeature{ProvidedPlayerCTX, attackerfield, attackedField}
+	if len(emitted) != 1 || emitted[0] != expectedEmitted {
+		t.Fatalf("expected [%v] not %v", expectedEmitted, emitted)
 	}
 }
