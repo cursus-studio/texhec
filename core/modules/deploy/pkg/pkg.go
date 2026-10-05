@@ -9,28 +9,16 @@ import (
 	reachpkg "core/modules/reach/pkg"
 	"engine/modules/ecs"
 	"engine/modules/entityregistry"
+	featurepkg "engine/modules/feature/pkg"
 	"engine/modules/grid"
-	interactionspkg "engine/modules/interactions/pkg"
 	netsyncpkg "engine/modules/netsync/pkg"
 	typeregistrypkg "engine/modules/typeregistry/pkg"
 	"errors"
 	"fmt"
 	"strconv"
-	"unsafe"
 
-	"github.com/ogiusek/events"
 	"github.com/ogiusek/ioc/v2"
 )
-
-type DeployFeature struct {
-	By        actions.FriendlyBuilderEntityStep
-	Blueprint actions.BlueprintStep
-	Coords    actions.CoordsStep
-}
-
-type DestroyFeature struct {
-	Entity actions.FriendlyEntityStep
-}
 
 var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 	pkgs := []ioc.Pkg{
@@ -39,46 +27,33 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 		typeregistrypkg.PkgT[internal.BoughtComponent],
 
 		reachpkg.PkgT[deploy.Component],
-		interactionspkg.FeaturePkg[DeployFeature](
-			interactionspkg.NewCopyRelation[actions.CanDeployComponent](
-				unsafe.Offsetof(DeployFeature{}.By), unsafe.Offsetof(DeployFeature{}.Blueprint)),
-			interactionspkg.NewCopyRelation[actions.CoordsCursorComponent](
-				unsafe.Offsetof(DeployFeature{}.Blueprint), unsafe.Offsetof(DeployFeature{}.Coords)),
-			interactionspkg.NewCopyRelation[actions.AnchorComponent](
-				unsafe.Offsetof(DeployFeature{}.By), unsafe.Offsetof(DeployFeature{}.Coords)),
-		),
-		interactionspkg.FeaturePkg[DestroyFeature](),
 	}
 	for _, pkg := range pkgs {
 		pkg(b)
 	}
-	ioc.Wrap(b, func(c ioc.Dic, b events.Builder) {
-		world := ioc.Get[game.GameWorld](c)
-		events.Listen(b, func(f DeployFeature) {
-			events.Emit(world.Events(), deploy.NewDeployEvent(
-				world.Player().GetContext(),
-				f.By.State().UUID,
-				f.Blueprint.State().UUID,
-				f.Coords.State().Coords,
-			))
-		})
-		events.Listen(b, func(f DestroyFeature) {
-			events.Emit(world.Events(), deploy.NewDestroyEvent(
-				world.Player().GetContext(),
-				f.Entity.State().UUID,
-			))
-		})
-	})
 	ioc.Register(b, func(c ioc.Dic) deploy.Service {
 		return internal.NewService(c)
+	})
+	ioc.Wrap(b, func(c ioc.Dic, config featurepkg.Config) {
+		{
+			f := featurepkg.RegisterFeature[deploy.DeployEvent](config)
+			featurepkg.RegisterRuleToField[actions.OwnRule](config, &f, &f.PlayerContext, &f.By)
+			featurepkg.RegisterNoInputRuleToField[actions.CanBuildRule](config, &f, &f.By)
+			featurepkg.RegisterRuleToField[actions.CanBuildBlueprintRule](config, &f, &f.By, &f.Blueprint)
+			featurepkg.RegisterRuleToField[actions.CanPlaceRule](config, &f, &f.Blueprint, &f.Coords)
+		}
+		{
+			f := featurepkg.RegisterFeature[deploy.DestroyEvent](config)
+			featurepkg.RegisterRuleToField[actions.OwnRule](config, &f, &f.PlayerContext, &f.Entity)
+		}
 	})
 	ioc.Wrap(b, func(c ioc.Dic, config netsyncpkg.Config) {
 		world := ioc.GetServices[game.GameWorld](c)
 		netsyncpkg.AddEventValidation(config, func(event deploy.DeployEvent) error {
-			return world.Player().PlayerControlsUUID(event.PlayerUUID, event.By)
+			return world.Player().Own(event.PlayerContext, event.By)
 		})
 		netsyncpkg.AddEventValidation(config, func(event deploy.DestroyEvent) error {
-			return world.Player().PlayerControlsUUID(event.PlayerUUID, event.UUID)
+			return world.Player().Own(event.PlayerContext, event.Entity)
 		})
 	})
 

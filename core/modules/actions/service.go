@@ -1,83 +1,66 @@
 package actions
 
 import (
-	"core/modules/pathfind"
-	"engine/modules/ecs"
+	"engine/modules/feature"
 	"engine/modules/grid"
-	"engine/modules/interactions"
 	"engine/modules/uuid"
-	"errors"
 )
 
-var (
-	ErrRequiresSpeed  error = errors.New("tile:requires speed")
-	ErrRequiresDeploy error = errors.New("tile:requires deploy")
-	ErrRequiresAttack error = errors.New("tile:requires attack")
-)
+//
+// fields
 
-// components to configure interactions
-type CanDeployComponent struct {
-	Entity ecs.EntityID
-}
-type CoordsCursorComponent struct {
-	PropertiesEntity ecs.EntityID
-	// if true then entity is used as an image else default icon is used
-	CustomImage bool
-}
-type AnchorComponent struct {
-	Entity ecs.EntityID
-}
-type RegionAnchorComponent struct {
-	Region pathfind.Region
-}
-
-func NewCanDeploy(canDeploy ecs.EntityID) CanDeployComponent {
-	return CanDeployComponent{canDeploy}
-}
-func NewCoordsCursor(propertiesEntity ecs.EntityID, customImage bool) CoordsCursorComponent {
-	return CoordsCursorComponent{propertiesEntity, customImage}
-}
-func NewAnchor(entity ecs.EntityID) AnchorComponent {
-	return AnchorComponent{entity}
-}
-func NewRegionAnchor(region pathfind.Region) RegionAnchorComponent {
-	return RegionAnchorComponent{region}
-}
+type PlayerContext uuid.UUID
+type Coords grid.Coords
+type Entity uuid.UUID
+type Blueprint uuid.UUID
 
 //
 
-type CoordsInteraction struct{ Coords grid.Coords }
-type EntityInteraction struct{ UUID uuid.UUID }
-type BlueprintInteraction struct{ UUID uuid.UUID }
-
-func NewCoordsInteraction(coords grid.Coords) CoordsInteraction { return CoordsInteraction{coords} }
-func NewEntityInteraction(uuid uuid.UUID) EntityInteraction     { return EntityInteraction{uuid} }
-func NewBlueprintInteraction(uuid uuid.UUID) BlueprintInteraction {
-	return BlueprintInteraction{uuid}
+type PlayerContextGetter interface {
+	Context() PlayerContext
 }
 
+func (ctx PlayerContext) Context() PlayerContext { return ctx }
+
 //
+// rules
 
-type CoordsStep interactions.Step[CoordsInteraction]
+type OwnRule feature.Rule[PlayerContext, Entity]
+type IsEnemyRule feature.Rule[PlayerContext, Entity]
 
-type EntityStep interactions.Step[EntityInteraction]
-type FriendlyEntityStep interactions.Step[EntityInteraction]
-type FriendlyMobileEntityStep interactions.Step[EntityInteraction]
-type FriendlyBuilderEntityStep interactions.Step[EntityInteraction]
-type FriendlyOffensiveEntityStep interactions.Step[EntityInteraction]
-type EnemyEntityStep interactions.Step[EntityInteraction]
+// build
+type CanBuildRule feature.NoInputRule[Entity]
+type CanBuildBlueprintRule feature.Rule[Entity, Blueprint]
+type CanPlaceRule feature.Rule[Blueprint, Coords]
 
-type BlueprintStep interactions.Step[BlueprintInteraction]
+// move
+type CanMoveRule feature.NoInputRule[Entity]
+type CanMoveToRule feature.Rule[Entity, Coords]
+
+// attack
+type CanAttackRule feature.NoInputRule[Entity]
+type CanBeAttackedRule feature.Rule[Entity, Entity]
 
 //
 
 type Service interface {
-	CanDeploy() ecs.ComponentArray[CanDeployComponent]
-	CoordsCursor() ecs.ComponentArray[CoordsCursorComponent]
-	Anchor() ecs.ComponentArray[AnchorComponent]
-	RegionAnchor() ecs.ComponentArray[RegionAnchorComponent]
+	// fields
+	PlayerContext() feature.FieldService[PlayerContext]
+	Coords() feature.FieldService[Coords]
+	Entity() feature.FieldService[Entity]
+	Blueprint() feature.FieldService[Blueprint]
 
-	CoordsInteraction() interactions.InteractionService[CoordsInteraction]
-	EntityInteraction() interactions.InteractionService[EntityInteraction]
-	BlueprintInteraction() interactions.InteractionService[BlueprintInteraction]
+	// rules
+	Own() feature.RuleService[OwnRule, PlayerContext, Entity]
+	IsEnemy() feature.RuleService[IsEnemyRule, PlayerContext, Entity]
+
+	CanBuild() feature.NoInputRuleService[CanBuildRule, Entity]
+	CanBuildBlueprint() feature.RuleService[CanBuildBlueprintRule, Entity, Blueprint]
+	CanPlace() feature.RuleService[CanPlaceRule, Blueprint, Coords]
+
+	CanMove() feature.NoInputRuleService[CanMoveRule, Entity]
+	CanMoveTo() feature.RuleService[CanMoveToRule, Entity, Coords]
+
+	CanAttack() feature.NoInputRuleService[CanAttackRule, Entity]
+	CanBeAttacked() feature.RuleService[CanBeAttackedRule, Entity, Entity]
 }

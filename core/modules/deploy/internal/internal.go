@@ -2,15 +2,17 @@ package internal
 
 import (
 	"core/game"
+	"core/modules/actions"
 	"core/modules/deploy"
 	"core/modules/economy"
 	"core/modules/obstruction"
-	"core/modules/player"
 	"core/modules/reach"
 	"core/modules/tile"
 	"engine/modules/ecs"
 	"engine/modules/grid"
 	"engine/modules/loop"
+	"engine/modules/uuid"
+	"slices"
 
 	"github.com/ogiusek/events"
 	"github.com/ogiusek/ioc/v2"
@@ -51,6 +53,65 @@ func (s *service) Register() error {
 func (s *service) Component() ecs.ComponentArray[deploy.Component] { return s.component }
 func (s *service) Reach() reach.ServiceT[deploy.Component]         { return s.ReachT }
 
+//
+
+func (s *service) CanBuild(entityUUID actions.Entity) error {
+	entity, ok := s.UUID().Entity(uuid.UUID(entityUUID))
+	if !ok {
+		return s.Actions().CanBuild().Error()
+	}
+	entityBlueprint, ok := s.Tile().Blueprint().Get(entity)
+	if !ok {
+		return s.Actions().CanBuild().Error()
+	}
+	comp, _ := s.Component().Get(entityBlueprint)
+	if len(comp.Deployable) == 0 {
+		return s.Actions().CanBuild().Error()
+	}
+	return nil
+}
+func (s *service) CanBuildBlueprint(entityUUID actions.Entity, blueprint actions.Blueprint) error {
+	blueprintEntity, ok := s.UUID().Entity(uuid.UUID(blueprint))
+	if !ok {
+		return s.Actions().CanBuildBlueprint().Error()
+	}
+	entity, ok := s.UUID().Entity(uuid.UUID(entityUUID))
+	if !ok {
+		return s.Actions().CanBuildBlueprint().Error()
+	}
+	entityBlueprint, ok := s.Tile().Blueprint().Get(entity)
+	if !ok {
+		return s.Actions().CanBuild().Error()
+	}
+	comp, _ := s.Component().Get(entityBlueprint)
+	if !slices.Contains(comp.Deployable, blueprintEntity) {
+		return s.Actions().CanBuildBlueprint().Error()
+	}
+	return nil
+}
+func (s *service) CanPlace(blueprint actions.Blueprint, coordsField actions.Coords) error {
+	blueprintEntity, ok := s.UUID().Entity(uuid.UUID(blueprint))
+	if !ok {
+		return s.Actions().CanPlace().Error()
+	}
+
+	coords := grid.Coords(coordsField)
+	pos := tile.NewPos(coords.Coords())
+	size, _ := s.Tile().Size().Get(blueprintEntity)
+
+	blueprintObstruction, _ := s.Obstruction().Component().Get(blueprintEntity)
+
+	aabb := obstruction.NewAABB(pos, size)
+	collisions := s.Obstruction().Collisions(aabb, blueprintObstruction.Obstruction)
+
+	if len(collisions) != 0 {
+		return s.Actions().CanPlace().Error()
+	}
+	return nil
+}
+
+//
+
 func (s *service) Deploy(
 	blueprint,
 	owner ecs.EntityID,
@@ -73,7 +134,7 @@ func (s *service) Deploy(
 	}
 	ownerUUID, ok := s.UUID().Component().Get(owner)
 	if !ok {
-		s.Logger().Fatal(player.ErrRequiresOwner)
+		s.Logger().Fatal(s.Actions().Own().Error())
 	}
 
 	// place
@@ -90,7 +151,7 @@ func (s *service) DeployEvent(e deploy.DeployEvent) {
 	s.boughtComponent.Set(entity, NewBought(e))
 }
 func (s *service) DestroyEvent(e deploy.DestroyEvent) {
-	entity, ok := s.UUID().Entity(e.UUID)
+	entity, ok := s.UUID().Entity(uuid.UUID(e.Entity))
 	if !ok {
 		return
 	}
@@ -104,11 +165,11 @@ func (s *service) OnTick(loop.TickEvent) {
 		if !ok {
 			continue
 		}
-		byEntity, ok := s.UUID().Entity(event.By)
+		byEntity, ok := s.UUID().Entity(uuid.UUID(event.By))
 		if !ok {
 			continue
 		}
-		blueprintEntity, ok := s.UUID().Entity(event.Blueprint)
+		blueprintEntity, ok := s.UUID().Entity(uuid.UUID(event.Blueprint))
 		if !ok {
 			continue
 		}
@@ -124,7 +185,8 @@ func (s *service) OnTick(loop.TickEvent) {
 		reachComp, _ := s.GameWorld.Deploy().Reach().Component().Get(byEntity)
 
 		// target
-		pos := tile.NewPos(event.Coords.Coords())
+		coords := grid.Coords(event.Coords)
+		pos := tile.NewPos(coords.Coords())
 		size, _ := s.Tile().Size().Get(blueprintEntity)
 
 		// check can place
@@ -150,7 +212,7 @@ func (s *service) OnTick(loop.TickEvent) {
 
 		owner, ok := s.Player().Owner().Get(byEntity)
 		if !ok {
-			s.Logger().Log(player.ErrRequiresOwner)
+			s.Logger().Log(s.Actions().Own().Error())
 			continue
 		}
 
@@ -170,7 +232,7 @@ func (s *service) OnTick(loop.TickEvent) {
 		}
 		ownerUUID, ok := s.UUID().Component().Get(owner)
 		if !ok {
-			s.Logger().Fatal(player.ErrRequiresOwner)
+			s.Logger().Fatal(s.Actions().Own().Error())
 		}
 
 		// place
@@ -178,6 +240,6 @@ func (s *service) OnTick(loop.TickEvent) {
 		s.Player().Owner().SetUUID(deployed, ownerUUID.ID)
 		s.Obstruction().Deployed().Set(deployed, obstruction.NewDeployed(s.UUID().NewUUIDFromAny(event)))
 		s.Tile().Blueprint().SetUUID(deployed, blueprintUUID.ID)
-		s.Tile().Pos().Set(deployed, tile.NewPos(event.Coords.Coords()))
+		s.Tile().Pos().Set(deployed, pos)
 	}
 }

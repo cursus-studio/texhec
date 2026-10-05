@@ -6,6 +6,7 @@ import (
 	"core/modules/pathfind"
 	"core/modules/tile"
 	"engine/modules/loop"
+	"engine/modules/uuid"
 
 	"github.com/ogiusek/events"
 )
@@ -18,11 +19,11 @@ func (s *service) Register() error {
 }
 
 func (s *service) OnAttack(event attack.AttackEvent) {
-	attacker, ok := s.UUID().Entity(event.Attacker)
+	attacker, ok := s.UUID().Entity(uuid.UUID(event.Attacker))
 	if !ok {
 		return
 	}
-	target, ok := s.UUID().Entity(event.Target)
+	target, ok := s.UUID().Entity(uuid.UUID(event.Target))
 	if !ok {
 		return
 	}

@@ -44,7 +44,7 @@ Specialized component for rendering rules for preview field
 ```
 $ go test ./... -bench=.
 PASS
-ok  	engine/modules/feature/test	0.017s
+ok  	engine/modules/feature/test	0.014s
 ```
 ## Lines of code
 ```
@@ -52,10 +52,10 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                              11            171             96           1011
+Go                              12            176             98           1103
 Markdown                         1              6              0             33
 -------------------------------------------------------------------------------
-SUM:                            12            177             96           1044
+SUM:                            13            182             98           1136
 -------------------------------------------------------------------------------
 ```
 ## Types
@@ -72,10 +72,13 @@ Type: `func() engine/modules/feature.InteractionsComponent`
 Type: `func(func(engine/modules/ecs.EntityID))`
 
 #### method Service PreviewInteraction
-Type: `func(field any) error`
+Type: `func(field any)`
 
 #### method Service Register
 Type: `func() error`
+
+#### method Service SubmitInteraction
+Type: `func(field any)`
 
 #### method Service SubmitPreviewInteraction
 Type: `func(fieldType engine/modules/feature.FieldKey)`
@@ -425,6 +428,9 @@ Type: `func() engine/modules/ecs.ComponentArray[engine/modules/feature.FieldRend
 #### method FieldService RenderAny
 Type: `func() engine/modules/ecs.AnyComponentArray`
 
+### type NoInputRule
+Type: `engine/modules/feature.NoInputRule[AppliedTo any]`
+
 ### type Rule
 Type: `engine/modules/feature.Rule[DataIn, AppliedTo any]`
 
@@ -433,6 +439,9 @@ Type: `engine/modules/feature.AnyRuleService`
 
 #### method AnyRuleService AppliesToAny
 Type: `func(dataIn any, appliedTo any) error`
+
+#### method AnyRuleService Error
+Type: `func() error`
 
 #### method AnyRuleService NewAnyRenderComponent
 Type: `func(in any, appliedTo any) any`
@@ -449,6 +458,9 @@ Type: `func(DataIn, AppliedTo) error`
 #### method RuleService AppliesToAny
 Type: `func(dataIn any, appliedTo any) error`
 
+#### method RuleService Error
+Type: `func() error`
+
 #### method RuleService NewAnyRenderComponent
 Type: `func(in any, appliedTo any) any`
 
@@ -456,6 +468,27 @@ Type: `func(in any, appliedTo any) any`
 Type: `func() engine/modules/ecs.ComponentArray[engine/modules/feature.RuleRenderComponent[RuleType, DataIn, AppliedTo]]`
 
 #### method RuleService RenderAny
+Type: `func() engine/modules/ecs.AnyComponentArray`
+
+### type NoInputRuleService
+Type: `engine/modules/feature.NoInputRuleService[RuleType engine/modules/feature.NoInputRule[AppliedTo], AppliedTo any]`
+
+#### method NoInputRuleService Applies
+Type: `func(AppliedTo, AppliedTo) error`
+
+#### method NoInputRuleService AppliesToAny
+Type: `func(dataIn any, appliedTo any) error`
+
+#### method NoInputRuleService Error
+Type: `func() error`
+
+#### method NoInputRuleService NewAnyRenderComponent
+Type: `func(in any, appliedTo any) any`
+
+#### method NoInputRuleService Render
+Type: `func() engine/modules/ecs.ComponentArray[engine/modules/feature.RuleRenderComponent[RuleType, AppliedTo, AppliedTo]]`
+
+#### method NoInputRuleService RenderAny
 Type: `func() engine/modules/ecs.AnyComponentArray`
 
 ### type InteractionsService
@@ -468,7 +501,10 @@ Type: `func() engine/modules/feature.InteractionsComponent`
 Type: `func(func(engine/modules/ecs.EntityID))`
 
 #### method InteractionsService PreviewInteraction
-Type: `func(field any) error`
+Type: `func(field any)`
+
+#### method InteractionsService SubmitInteraction
+Type: `func(field any)`
 
 #### method InteractionsService SubmitPreviewInteraction
 Type: `func(fieldType engine/modules/feature.FieldKey)`
@@ -600,6 +636,7 @@ Type: `func() engine/modules/feature.LockFeatureEvent`
   - `engine/modules/feature.NewFieldRender`
   - `engine/modules/feature.NewInteractions`
   - `engine/modules/feature.NewRuleRender`
+  - `engine/modules/feature.NoInputRule`
   - `engine/modules/feature.PreviewInteraction`
   - `engine/modules/feature.PreviewRulesFail`
   - `engine/modules/feature.PreviewRulesPass`
@@ -623,6 +660,9 @@ Type: `func() engine/modules/feature.LockFeatureEvent`
 
 `engine/modules/loop`:
   - `engine/modules/loop.TickEvent`
+
+`engine/modules/typeregistry/pkg`:
+  - `engine/modules/typeregistry/pkg.PkgT`
 
 ### Third Party
 - `github.com/ogiusek/events`

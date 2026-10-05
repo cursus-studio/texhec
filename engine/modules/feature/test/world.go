@@ -59,7 +59,7 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 				}
 				return ErrNotAnOwner
 			}
-		}),
+		}, errors.New("does not own")),
 		featurepkg.RulePkg[CanAttackRule](func(c ioc.Dic) func(ctx EntityField, entity EntityField) error {
 			return func(ctx EntityField, entity EntityField) error {
 				if ctx.OwnerID != entity.OwnerID {
@@ -67,7 +67,7 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 				}
 				return ErrNotAnEnemy
 			}
-		}),
+		}, errors.New("cannot attack")),
 		featurepkg.RulePkg[EnemyRule](func(c ioc.Dic) func(ctx PlayerCTX, entity EntityField) error {
 			return func(ctx PlayerCTX, entity EntityField) error {
 				if ctx.ID != entity.OwnerID {
@@ -75,7 +75,7 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 				}
 				return ErrNotAnEnemy
 			}
-		}),
+		}, errors.New("is not an enemy")),
 	}
 	for _, pkg := range pkgs {
 		pkg(b)
@@ -123,6 +123,12 @@ func (w World) AssertInteractions(expected feature.InteractionsComponent) {
 		if expected.LockedFeature && len(expected.Features) != 1 {
 			w.T.Fatalf("if feature is locked there should be a single feature")
 		}
+	}
+
+	// do not render a preview if there is no feature selected
+	if len(expected.Interactions) == 0 &&
+		!expected.LockedFeature {
+		expected.PreviewInteraction = nil
 	}
 
 	// verify world state

@@ -55,6 +55,7 @@ type FieldService[FieldType any] interface {
 //
 // rule
 
+type NoInputRule[AppliedTo any] = Rule[AppliedTo, AppliedTo]
 type Rule[DataIn any, AppliedTo any] any
 type RuleRenderComponent[RuleType Rule[DataIn, AppliedTo], DataIn any, AppliedTo any] struct {
 	In        DataIn
@@ -71,14 +72,15 @@ type AnyRuleService interface {
 	NewAnyRenderComponent(in, appliedTo any) any
 
 	AppliesToAny(dataIn, appliedTo any) error
+	Error() error
 }
-
 type RuleService[RuleType Rule[DataIn, AppliedTo], DataIn any, AppliedTo any] interface {
 	AnyRuleService
 	Render() ecs.ComponentArray[RuleRenderComponent[RuleType, DataIn, AppliedTo]]
 
 	Applies(DataIn, AppliedTo) error
 }
+type NoInputRuleService[RuleType NoInputRule[AppliedTo], AppliedTo any] = RuleService[RuleType, AppliedTo, AppliedTo]
 
 //
 // feature
@@ -111,7 +113,8 @@ type InteractionsService interface {
 	Interactions() InteractionsComponent
 	OnInteractionsMod(func(ecs.EntityID))
 
-	PreviewInteraction(field any) error // error is returned when field type isn't registered
+	SubmitInteraction(field any)
+	PreviewInteraction(field any)
 	SubmitPreviewInteraction(fieldType FieldKey)
 }
 

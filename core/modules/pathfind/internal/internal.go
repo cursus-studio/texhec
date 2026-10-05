@@ -2,11 +2,13 @@ package internal
 
 import (
 	"core/game"
+	"core/modules/actions"
 	"core/modules/obstruction"
 	"core/modules/pathfind"
 	"core/modules/tile"
 	"engine/modules/ecs"
 	"engine/modules/grid"
+	"engine/modules/uuid"
 
 	"github.com/ogiusek/events"
 	"github.com/ogiusek/ioc/v2"
@@ -45,6 +47,38 @@ func (s *service) Register() error {
 func (s *service) Target() ecs.ComponentArray[pathfind.TargetComponent] { return s.target }
 func (s *service) Speed() ecs.ComponentArray[pathfind.SpeedComponent]   { return s.speed }
 func (s *service) Step() ecs.ComponentArray[pathfind.StepComponent]     { return s.step }
+
+func (s *service) CanMove(entityUUID actions.Entity) error {
+	entity, ok := s.UUID().Entity(uuid.UUID(entityUUID))
+	if !ok {
+		return s.Actions().CanMove().Error()
+	}
+	if _, ok := s.Speed().Get(entity); !ok {
+		return s.Actions().CanMove().Error()
+	}
+	return nil
+}
+func (s *service) CanMoveTo(entityUUID actions.Entity, rawCoords actions.Coords) error {
+	if err := s.CanMove(entityUUID); err != nil {
+		return s.Actions().CanMoveTo().Error()
+	}
+	entity, ok := s.UUID().Entity(uuid.UUID(entityUUID))
+	if !ok {
+		return s.Actions().CanMoveTo().Error()
+	}
+	blueprint, _ := s.Tile().Blueprint().Get(entity)
+	blueprintObstruction, _ := s.Obstruction().Component().Get(blueprint)
+	coords := grid.Coords(rawCoords)
+	pos := tile.NewPos(coords.Coords())
+	size, _ := s.Tile().Size().Get(entity)
+	aabb := obstruction.NewAABB(pos, size)
+	collisions := s.Obstruction().Collisions(aabb, blueprintObstruction.Obstruction)
+
+	if len(collisions) != 0 {
+		return s.Actions().CanMoveTo().Error()
+	}
+	return nil
+}
 
 func abs[Number constraints.Float | constraints.Integer](n Number) Number { return max(-n, n) }
 

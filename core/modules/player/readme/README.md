@@ -8,10 +8,10 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                               3             43             14            279
+Go                               3             37             12            268
 Markdown                         2              0              0              3
 -------------------------------------------------------------------------------
-SUM:                             5             43             14            282
+SUM:                             5             37             12            271
 -------------------------------------------------------------------------------
 ```
 ## TODO
@@ -28,15 +28,15 @@ Type: `func() engine/modules/ecs.ComponentArray[core/modules/player.ActingConnec
 #### method Service ActingPlayer
 Type: `func() engine/modules/ecs.ComponentArray[core/modules/player.ActingPlayerComponent]`
 
-#### method Service ControlsEntity
-Type: `func(engine/modules/ecs.EntityID) error`
-returns nil if object is controled
-
-#### method Service ControlsUUID
-Type: `func(engine/modules/uuid.UUID) error`
-
 #### method Service GetContext
-Type: `func() core/modules/player.PlayerContext`
+Type: `func() core/modules/actions.PlayerContext`
+
+#### method Service IsEnemy
+Type: `func(player core/modules/actions.PlayerContext, entity core/modules/actions.Entity) error`
+
+#### method Service Own
+Type: `func(player core/modules/actions.PlayerContext, entity core/modules/actions.Entity) error`
+returns nil if object is controled
 
 #### method Service Owner
 Type: `func() engine/modules/uuid.LinkService[core/modules/player.OwnerLink]`
@@ -49,34 +49,12 @@ attached to player
 #### method Service PlayerConnection
 Type: `func() engine/modules/ecs.ComponentArray[core/modules/player.PlayerConnectionComponent]`
 
-#### method Service PlayerControlsEntity
-Type: `func(player engine/modules/uuid.UUID, object engine/modules/ecs.EntityID) error`
-
-#### method Service PlayerControlsUUID
-Type: `func(player engine/modules/uuid.UUID, object engine/modules/uuid.UUID) error`
-
 #### method Service PlayerUUID
 Type: `func() engine/modules/ecs.ComponentArray[core/modules/player.PlayerUUIDComponent]`
 
 #### method Service PlayersConnection
 Type: `func() engine/modules/ecs.ComponentArray[core/modules/player.PlayersConnectionComponent]`
 attached to host and connection
-
-### type PlayerContextGetter
-Type: `core/modules/player.PlayerContextGetter`
-event context
-
-#### method PlayerContextGetter Context
-Type: `func() core/modules/player.PlayerContext`
-
-### type PlayerContext
-Type: `core/modules/player.PlayerContext`
-
-#### property PlayerContext PlayerUUID
-Type: `engine/modules/uuid.UUID`
-
-#### method PlayerContext Context
-Type: `func() core/modules/player.PlayerContext`
 
 ### type PlayerComponent
 Type: `core/modules/player.PlayerComponent`
@@ -121,16 +99,6 @@ Type: `core/modules/player.PlayerConnectionComponent`
 #### property PlayerConnectionComponent Player
 Type: `engine/modules/uuid.UUID`
 
-## Variables
-### var ErrRequiresOwner
-Type: `error`
-
-### var ErrRequiresControl
-Type: `error`
-
-### var ErrRequiresToBeEnemy
-Type: `error`
-
 ## Functions
 ### func NewPlayer
 Type: `func(name string) core/modules/player.PlayerComponent`
@@ -156,9 +124,18 @@ Type: `func(player engine/modules/uuid.UUID) core/modules/player.PlayerConnectio
 
 ## Dependencies
 `core/game`:
+  - `core/game.Actions`
   - `core/game.Economy`
   - `core/game.GameWorld`
   - `core/game.Player`
+
+`core/modules/actions`:
+  - `core/modules/actions.Context`
+  - `core/modules/actions.Entity`
+  - `core/modules/actions.IsEnemy`
+  - `core/modules/actions.Own`
+  - `core/modules/actions.PlayerContext`
+  - `core/modules/actions.PlayerContextGetter`
 
 `core/modules/economy`:
   - `core/modules/economy.NewWallet`
@@ -170,9 +147,7 @@ Type: `func(player engine/modules/uuid.UUID) core/modules/player.PlayerConnectio
   - `core/modules/player.ActingPlayerComponent`
   - `core/modules/player.AssignActingPlayerDTO`
   - `core/modules/player.Connection`
-  - `core/modules/player.Context`
-  - `core/modules/player.ErrRequiresControl`
-  - `core/modules/player.ErrRequiresOwner`
+  - `core/modules/player.GetContext`
   - `core/modules/player.NewActingPlayer`
   - `core/modules/player.NewActiongConnection`
   - `core/modules/player.NewAssignActingPlayerDTO`
@@ -181,8 +156,6 @@ Type: `func(player engine/modules/uuid.UUID) core/modules/player.PlayerConnectio
   - `core/modules/player.OwnerLink`
   - `core/modules/player.PlayerComponent`
   - `core/modules/player.PlayerConnectionComponent`
-  - `core/modules/player.PlayerContext`
-  - `core/modules/player.PlayerContextGetter`
   - `core/modules/player.PlayerUUID`
   - `core/modules/player.PlayerUUIDComponent`
   - `core/modules/player.PlayersConnectionComponent`
@@ -201,6 +174,10 @@ Type: `func(player engine/modules/uuid.UUID) core/modules/player.PlayerConnectio
   - `engine/modules/ecs.EntityID`
   - `engine/modules/ecs.GetComponentArray`
 
+`engine/modules/feature/pkg`:
+  - `engine/modules/feature/pkg.Config`
+  - `engine/modules/feature/pkg.RegisterFieldProvider`
+
 `engine/modules/loop`:
   - `engine/modules/loop.NewEmitOnFrameEvent`
 
@@ -214,7 +191,6 @@ Type: `func(player engine/modules/uuid.UUID) core/modules/player.PlayerConnectio
 `engine/modules/uuid`:
   - `engine/modules/uuid.Component`
   - `engine/modules/uuid.Entity`
-  - `engine/modules/uuid.ErrMissingUUID`
   - `engine/modules/uuid.Get`
   - `engine/modules/uuid.ID`
   - `engine/modules/uuid.LinkService`

@@ -1,29 +1,11 @@
 package player
 
 import (
+	"core/modules/actions"
 	"engine/modules/connection"
 	"engine/modules/ecs"
 	"engine/modules/uuid"
-	"errors"
 )
-
-var (
-	ErrRequiresOwner     error = errors.New("player:requires owner")
-	ErrRequiresControl   error = errors.New("player:requires control over player")
-	ErrRequiresToBeEnemy error = errors.New("player:requires to be enemy")
-)
-
-//
-
-// event context
-type PlayerContextGetter interface {
-	Context() PlayerContext
-}
-type PlayerContext struct {
-	PlayerUUID uuid.UUID
-}
-
-func (ctx PlayerContext) Context() PlayerContext { return ctx }
 
 // marks that player is performing a move
 type PlayerComponent struct {
@@ -84,11 +66,8 @@ type Service interface {
 	Owner() uuid.LinkService[OwnerLink]
 
 	// returns nil if object is controled
-	ControlsEntity(ecs.EntityID) error
-	ControlsUUID(uuid.UUID) error
+	Own(player actions.PlayerContext, entity actions.Entity) error
+	IsEnemy(player actions.PlayerContext, entity actions.Entity) error
 
-	PlayerControlsEntity(player uuid.UUID, object ecs.EntityID) error
-	PlayerControlsUUID(player, object uuid.UUID) error
-
-	GetContext() PlayerContext
+	GetContext() actions.PlayerContext
 }

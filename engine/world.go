@@ -21,7 +21,6 @@ import (
 	"engine/modules/groups"
 	"engine/modules/hierarchy"
 	"engine/modules/inputs"
-	"engine/modules/interactions"
 	"engine/modules/layout"
 	"engine/modules/logger"
 	"engine/modules/loop"
@@ -66,7 +65,6 @@ type EngineWorld struct {
 	Graphics       ioc.Lazy[graphics.Service]       `inject:""`
 	Grid           ioc.Lazy[grid.Service]           `inject:""`
 	Groups         ioc.Lazy[groups.Service]         `inject:""`
-	Interactions   ioc.Lazy[interactions.Service]   `inject:""`
 	Hierarchy      ioc.Lazy[hierarchy.Service]      `inject:""`
 	Inputs         ioc.Lazy[inputs.Service]         `inject:""`
 	Layout         ioc.Lazy[layout.Service]         `inject:""`

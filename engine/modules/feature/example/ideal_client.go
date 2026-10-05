@@ -4,6 +4,7 @@ import (
 	"engine/modules/ecs"
 	"engine/modules/feature"
 	featurepkg "engine/modules/feature/pkg"
+	"errors"
 
 	"github.com/ogiusek/ioc/v2"
 )
@@ -130,7 +131,7 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 			return func(ctx PlayerCTX, entity EntityField) error {
 				return nil // here I should return entity
 			}
-		}),
+		}, errors.New("does not own")),
 		// RulePkg[CanAttackRule](),
 		// RulePkg[ReachesRule](),
 		// RulePkg[CanBuildRule](),

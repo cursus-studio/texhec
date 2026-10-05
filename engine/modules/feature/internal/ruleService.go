@@ -15,15 +15,18 @@ type ruleService[RuleType feature.Rule[DataIn, AppliedTo], DataIn any, AppliedTo
 	Config             Config            `inject:""`
 
 	applies func(DataIn, AppliedTo) error
+	err     error
 	render  ecs.ComponentArray[feature.RuleRenderComponent[RuleType, DataIn, AppliedTo]]
 }
 
 func NewRuleService[RuleType feature.Rule[DataIn, AppliedTo], DataIn any, AppliedTo any](
 	c ioc.Dic,
 	applies func(DataIn, AppliedTo) error,
+	err error,
 ) feature.RuleService[RuleType, DataIn, AppliedTo] {
 	s := ioc.GetServices[*ruleService[RuleType, DataIn, AppliedTo]](c)
 	s.applies = applies
+	s.err = err
 	s.render = ecs.GetComponentArray[feature.RuleRenderComponent[RuleType, DataIn, AppliedTo]](s.World())
 	s.Service().RegisterRuleService(reflect.TypeFor[RuleType](), s)
 	return s
@@ -51,3 +54,5 @@ func (s *ruleService[RuleType, DataIn, AppliedTo]) AppliesToAny(anyDataIn, anyAp
 	appliedTo, _ := anyAppliedTo.(AppliedTo)
 	return s.Applies(dataIn, appliedTo)
 }
+
+func (s *ruleService[RuleType, DataIn, AppliedTo]) Error() error { return s.err }

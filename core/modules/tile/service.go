@@ -136,12 +136,18 @@ type ApplyCoordsEvent interface {
 
 //
 
+type HoverEntityEvent struct{ Entity ecs.EntityID }
 type ClickEntityEvent struct{ Entity ecs.EntityID }
 type ClickBlueprintEvent struct{ Entity ecs.EntityID }
 
+func NewHoverEntityEvent() HoverEntityEvent { return HoverEntityEvent{} }
 func NewClickEntityEvent() ClickEntityEvent { return ClickEntityEvent{} }
 func NewClickBlueprintEvent(deployed ecs.EntityID) ClickBlueprintEvent {
 	return ClickBlueprintEvent{deployed}
+}
+func (e HoverEntityEvent) ApplyEntity(entity ecs.EntityID) any {
+	e.Entity = entity
+	return e
 }
 func (e ClickEntityEvent) ApplyEntity(entity ecs.EntityID) any {
 	e.Entity = entity

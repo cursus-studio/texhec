@@ -2,7 +2,7 @@
 package deploy
 
 import (
-	"core/modules/player"
+	"core/modules/actions"
 	"core/modules/reach"
 	"engine/modules/ecs"
 	"engine/modules/grid"
@@ -22,28 +22,28 @@ func NewDeploy(deployable ...ecs.EntityID) Component {
 //
 
 type DeployEvent struct {
-	player.PlayerContext
-	By, Blueprint uuid.UUID
-	Coords        grid.Coords
+	actions.PlayerContext
+	By        actions.Entity
+	Blueprint actions.Blueprint
+	Coords    actions.Coords
 }
 type DestroyEvent struct {
-	player.PlayerContext
-	UUID uuid.UUID
+	actions.PlayerContext
+	Entity actions.Entity
 }
 
 func NewDeployEvent(
-	ctx player.PlayerContext,
+	ctx actions.PlayerContext,
 	by, blueprint uuid.UUID,
 	coords grid.Coords,
 ) DeployEvent {
 	return DeployEvent{
-		ctx,
-		by, blueprint,
-		coords,
+		ctx, actions.Entity(by), actions.Blueprint(blueprint),
+		actions.Coords(coords),
 	}
 }
-func NewDestroyEvent(ctx player.PlayerContext, uuid uuid.UUID) DestroyEvent {
-	return DestroyEvent{ctx, uuid}
+func NewDestroyEvent(ctx actions.PlayerContext, uuid uuid.UUID) DestroyEvent {
+	return DestroyEvent{ctx, actions.Entity(uuid)}
 }
 
 //
@@ -53,6 +53,10 @@ type Service interface {
 	Reach() reach.ServiceT[Component]
 
 	Component() ecs.ComponentArray[Component]
+
+	CanBuild(actions.Entity) error
+	CanBuildBlueprint(actions.Entity, actions.Blueprint) error
+	CanPlace(actions.Blueprint, actions.Coords) error
 
 	// deploy differs from execute event by who deploys.
 	// execute adds costs and everything where deploy just deploys without any costs (its deployed by system)

@@ -8,10 +8,10 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                               8             96             14            487
+Go                               8             96             14            486
 Markdown                         1              8              0             27
 -------------------------------------------------------------------------------
-SUM:                             9            104             14            514
+SUM:                             9            104             14            513
 -------------------------------------------------------------------------------
 ```
 ## Types
@@ -89,18 +89,19 @@ Type: `core/modules/ui.CursorCameraComponent`
   - `engine/modules/ecs.RegisterSystems`
   - `engine/modules/ecs.SystemRegister`
 
+`engine/modules/feature`:
+  - `engine/modules/feature.Features`
+  - `engine/modules/feature.Interactions`
+  - `engine/modules/feature.LockFeatureEvent`
+  - `engine/modules/feature.NewLockFeatureEvent`
+  - `engine/modules/feature.NewUnlockFeatureEvent`
+  - `engine/modules/feature.OnInteractionsMod`
+
 `engine/modules/inputs`:
   - `engine/modules/inputs.KeepSelected`
   - `engine/modules/inputs.KeepSelectedComponent`
   - `engine/modules/inputs.LeftClick`
   - `engine/modules/inputs.NewLeftClick`
-
-`engine/modules/interactions`:
-  - `engine/modules/interactions.AvailableFeatures`
-  - `engine/modules/interactions.Features`
-  - `engine/modules/interactions.NewDeselectFeatureEvent`
-  - `engine/modules/interactions.NewSelectFeatureEvent`
-  - `engine/modules/interactions.SelectFeatureEvent`
 
 `engine/modules/layout`:
   - `engine/modules/layout.Align`

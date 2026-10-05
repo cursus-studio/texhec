@@ -9,22 +9,16 @@ import (
 	reachpkg "core/modules/reach/pkg"
 	"engine/modules/ecs"
 	"engine/modules/entityregistry"
+	featurepkg "engine/modules/feature/pkg"
 	"engine/modules/grid"
-	interactionspkg "engine/modules/interactions/pkg"
 	netsyncpkg "engine/modules/netsync/pkg"
 	typeregistrypkg "engine/modules/typeregistry/pkg"
 	"errors"
 	"fmt"
 	"strconv"
 
-	"github.com/ogiusek/events"
 	"github.com/ogiusek/ioc/v2"
 )
-
-type AttackFeature struct {
-	By     actions.FriendlyOffensiveEntityStep
-	Target actions.EnemyEntityStep
-}
 
 var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 	pkgs := []ioc.Pkg{
@@ -35,27 +29,23 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 		typeregistrypkg.PkgT[attack.AttackEvent],
 
 		reachpkg.PkgT[attack.TargetComponent],
-		interactionspkg.FeaturePkg[AttackFeature](
-		// interactionspkg.NewCopyRelation[actions.AnchorComponent](
-		// 	unsafe.Offsetof(AttackFeature{}.By), unsafe.Offsetof(AttackFeature{}.Target)),
-		),
 	}
 	for _, pkg := range pkgs {
 		pkg(b)
 	}
-	ioc.Wrap(b, func(c ioc.Dic, b events.Builder) {
-		world := ioc.Get[game.GameWorld](c)
-		events.Listen(b, func(f AttackFeature) {
-			events.Emit(world.Events(), attack.NewAttackEvent(world.Player().GetContext(), f.By.State().UUID, f.Target.State().UUID))
-		})
-	})
 	ioc.Register(b, func(c ioc.Dic) attack.Service {
 		return internal.NewService(c)
+	})
+	ioc.Wrap(b, func(c ioc.Dic, config featurepkg.Config) {
+		f := featurepkg.RegisterFeature[attack.AttackEvent](config)
+		featurepkg.RegisterRuleToField[actions.OwnRule](config, &f, &f.PlayerContext, &f.Attacker)
+		featurepkg.RegisterNoInputRuleToField[actions.CanAttackRule](config, &f, &f.Attacker)
+		featurepkg.RegisterRuleToField[actions.CanBeAttackedRule](config, &f, &f.Attacker, &f.Target)
 	})
 	ioc.Wrap(b, func(c ioc.Dic, config netsyncpkg.Config) {
 		world := ioc.GetServices[game.GameWorld](c)
 		netsyncpkg.AddEventValidation(config, func(event attack.AttackEvent) error {
-			return world.Player().PlayerControlsUUID(event.PlayerUUID, event.Attacker)
+			return world.Player().Own(event.PlayerContext, event.Attacker)
 		})
 	})
 

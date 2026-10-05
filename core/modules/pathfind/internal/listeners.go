@@ -3,10 +3,12 @@ package internal
 import (
 	"core/modules/pathfind"
 	"core/modules/tile"
+	"engine/modules/grid"
+	"engine/modules/uuid"
 )
 
 func (s *service) FindPath(e pathfind.FindPathEvent) {
-	entity, ok := s.UUID().Entity(e.UUID)
+	entity, ok := s.UUID().Entity(uuid.UUID(e.Entity))
 	if !ok {
 		return
 	}
@@ -15,7 +17,8 @@ func (s *service) FindPath(e pathfind.FindPathEvent) {
 		s.Logger().Log(tile.ErrInvalidPosition)
 		return
 	}
-	to := tile.NewPos(e.Coords.Coords())
+	coords := grid.Coords(e.Coords)
+	to := tile.NewPos(coords.Coords())
 	size, _ := s.Tile().Size().Get(entity)
 	obstruction, _ := s.Obstruction().Component().Get(entity)
 	fromCoords, _ := from.Aligned()
@@ -24,5 +27,5 @@ func (s *service) FindPath(e pathfind.FindPathEvent) {
 		s.Logger().Log(pathfind.ErrInvalidPath)
 		return
 	}
-	s.Target().Set(entity, pathfind.NewTarget(e.Coords))
+	s.Target().Set(entity, pathfind.NewTarget(coords))
 }

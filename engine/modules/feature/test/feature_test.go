@@ -30,9 +30,7 @@ func TestFeatures(t *testing.T) {
 
 	// add preview
 	invalidAttackerfield := NewEntityField(EnemyPlayerCTX.ID)
-	if err := world.World.Feature().PreviewInteraction(invalidAttackerfield); err != nil {
-		t.Fatal(err)
-	}
+	world.World.Feature().PreviewInteraction(invalidAttackerfield)
 	world.AssertInteractions(feature.NewInteractions(nil, invalidAttackerfield, nil, false))
 
 	// submit preview
@@ -43,9 +41,7 @@ func TestFeatures(t *testing.T) {
 
 	// add preview second time
 	attackerfield := NewEntityField(ProvidedPlayerCTX.ID)
-	if err := world.World.Feature().PreviewInteraction(attackerfield); err != nil {
-		t.Fatal(err)
-	}
+	world.World.Feature().PreviewInteraction(attackerfield)
 	world.AssertInteractions(feature.NewInteractions(
 		[]any{invalidAttackerfield}, attackerfield,
 		[]feature.FeatureKey{reflect.TypeFor[FocusEnemyFeature]()}, false))
@@ -64,9 +60,7 @@ func TestFeatures(t *testing.T) {
 
 	// add preview for invalid field
 	invalidAttackedField := NewEntityField(ProvidedPlayerCTX.ID)
-	if err := world.World.Feature().PreviewInteraction(invalidAttackedField); err != nil {
-		t.Fatal(err)
-	}
+	world.World.Feature().PreviewInteraction(invalidAttackedField)
 	world.AssertInteractions(feature.NewInteractions(
 		[]any{attackerfield}, invalidAttackedField,
 		[]feature.FeatureKey{reflect.TypeFor[AttackFeature]()}, true))
@@ -79,9 +73,7 @@ func TestFeatures(t *testing.T) {
 
 	// add preview
 	attackedField := NewEntityField(EnemyPlayerCTX.ID)
-	if err := world.World.Feature().PreviewInteraction(attackedField); err != nil {
-		t.Fatal(err)
-	}
+	world.World.Feature().PreviewInteraction(attackedField)
 	world.AssertInteractions(feature.NewInteractions(
 		[]any{attackerfield}, attackedField, []feature.FeatureKey{reflect.TypeFor[AttackFeature]()}, true))
 

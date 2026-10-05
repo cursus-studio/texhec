@@ -8,14 +8,23 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                               3             45             14            291
+Go                               3             51             16            324
 -------------------------------------------------------------------------------
-SUM:                             3             45             14            291
+SUM:                             3             51             16            324
 -------------------------------------------------------------------------------
 ```
 ## Types
 ### type Service
 Type: `core/modules/deploy.Service`
+
+#### method Service CanBuild
+Type: `func(core/modules/actions.Entity) error`
+
+#### method Service CanBuildBlueprint
+Type: `func(core/modules/actions.Entity, core/modules/actions.Blueprint) error`
+
+#### method Service CanPlace
+Type: `func(core/modules/actions.Blueprint, core/modules/actions.Coords) error`
 
 #### method Service Component
 Type: `func() engine/modules/ecs.ComponentArray[core/modules/deploy.Component]`
@@ -47,39 +56,40 @@ Type: `[]engine/modules/ecs.EntityID`
 Type: `core/modules/deploy.DeployEvent`
 
 #### property DeployEvent PlayerContext
-Type: `core/modules/player.PlayerContext`
+Type: `core/modules/actions.PlayerContext`
 
 #### property DeployEvent By
-Type: `engine/modules/uuid.UUID`
+Type: `core/modules/actions.Entity`
 
 #### property DeployEvent Blueprint
-Type: `engine/modules/uuid.UUID`
+Type: `core/modules/actions.Blueprint`
 
 #### property DeployEvent Coords
-Type: `engine/modules/grid.Coords`
+Type: `core/modules/actions.Coords`
 
 ### type DestroyEvent
 Type: `core/modules/deploy.DestroyEvent`
 
 #### property DestroyEvent PlayerContext
-Type: `core/modules/player.PlayerContext`
+Type: `core/modules/actions.PlayerContext`
 
-#### property DestroyEvent UUID
-Type: `engine/modules/uuid.UUID`
+#### property DestroyEvent Entity
+Type: `core/modules/actions.Entity`
 
 ## Functions
 ### func NewDeploy
 Type: `func(deployable ...engine/modules/ecs.EntityID) core/modules/deploy.Component`
 
 ### func NewDeployEvent
-Type: `func(ctx core/modules/player.PlayerContext, by engine/modules/uuid.UUID, blueprint engine/modules/uuid.UUID, coords engine/modules/grid.Coords) core/modules/deploy.DeployEvent`
+Type: `func(ctx core/modules/actions.PlayerContext, by engine/modules/uuid.UUID, blueprint engine/modules/uuid.UUID, coords engine/modules/grid.Coords) core/modules/deploy.DeployEvent`
 
 ### func NewDestroyEvent
-Type: `func(ctx core/modules/player.PlayerContext, uuid engine/modules/uuid.UUID) core/modules/deploy.DestroyEvent`
+Type: `func(ctx core/modules/actions.PlayerContext, uuid engine/modules/uuid.UUID) core/modules/deploy.DestroyEvent`
 
 
 ## Dependencies
 `core/game`:
+  - `core/game.Actions`
   - `core/game.Deploy`
   - `core/game.Economy`
   - `core/game.GameWorld`
@@ -89,15 +99,18 @@ Type: `func(ctx core/modules/player.PlayerContext, uuid engine/modules/uuid.UUID
   - `core/game.Tile`
 
 `core/modules/actions`:
-  - `core/modules/actions.AnchorComponent`
-  - `core/modules/actions.BlueprintStep`
-  - `core/modules/actions.CanDeployComponent`
+  - `core/modules/actions.Blueprint`
+  - `core/modules/actions.CanBuild`
+  - `core/modules/actions.CanBuildBlueprint`
+  - `core/modules/actions.CanBuildBlueprintRule`
+  - `core/modules/actions.CanBuildRule`
+  - `core/modules/actions.CanPlace`
+  - `core/modules/actions.CanPlaceRule`
   - `core/modules/actions.Coords`
-  - `core/modules/actions.CoordsCursorComponent`
-  - `core/modules/actions.CoordsStep`
-  - `core/modules/actions.FriendlyBuilderEntityStep`
-  - `core/modules/actions.FriendlyEntityStep`
-  - `core/modules/actions.UUID`
+  - `core/modules/actions.Entity`
+  - `core/modules/actions.Own`
+  - `core/modules/actions.OwnRule`
+  - `core/modules/actions.PlayerContext`
 
 `core/modules/deploy`:
   - `core/modules/deploy.Blueprint`
@@ -105,12 +118,12 @@ Type: `func(ctx core/modules/player.PlayerContext, uuid engine/modules/uuid.UUID
   - `core/modules/deploy.Component`
   - `core/modules/deploy.Coords`
   - `core/modules/deploy.DeployEvent`
+  - `core/modules/deploy.Deployable`
   - `core/modules/deploy.DestroyEvent`
-  - `core/modules/deploy.NewDeployEvent`
-  - `core/modules/deploy.NewDestroyEvent`
+  - `core/modules/deploy.Entity`
+  - `core/modules/deploy.PlayerContext`
   - `core/modules/deploy.Reach`
   - `core/modules/deploy.Service`
-  - `core/modules/deploy.UUID`
 
 `core/modules/economy`:
   - `core/modules/economy.Cost`
@@ -127,14 +140,6 @@ Type: `func(ctx core/modules/player.PlayerContext, uuid engine/modules/uuid.UUID
   - `core/modules/obstruction.NewAABB`
   - `core/modules/obstruction.NewDeployed`
   - `core/modules/obstruction.Obstruction`
-
-`core/modules/player`:
-  - `core/modules/player.ErrRequiresOwner`
-  - `core/modules/player.GetContext`
-  - `core/modules/player.Owner`
-  - `core/modules/player.PlayerContext`
-  - `core/modules/player.PlayerControlsUUID`
-  - `core/modules/player.PlayerUUID`
 
 `core/modules/reach`:
   - `core/modules/reach.Component`
@@ -165,13 +170,15 @@ Type: `func(ctx core/modules/player.PlayerContext, uuid engine/modules/uuid.UUID
   - `engine/modules/entityregistry.Register`
   - `engine/modules/entityregistry.Service`
 
+`engine/modules/feature/pkg`:
+  - `engine/modules/feature/pkg.Config`
+  - `engine/modules/feature/pkg.RegisterFeature`
+  - `engine/modules/feature/pkg.RegisterNoInputRuleToField`
+  - `engine/modules/feature/pkg.RegisterRuleToField`
+
 `engine/modules/grid`:
   - `engine/modules/grid.Coord`
   - `engine/modules/grid.Coords`
-
-`engine/modules/interactions/pkg`:
-  - `engine/modules/interactions/pkg.FeaturePkg`
-  - `engine/modules/interactions/pkg.NewCopyRelation`
 
 `engine/modules/loop`:
   - `engine/modules/loop.TickEvent`
