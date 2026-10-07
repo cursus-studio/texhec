@@ -20,9 +20,9 @@ type service struct {
 	OwnService     feature.RuleService[actions.OwnRule, actions.PlayerContext, actions.Entity]     `inject:""`
 	IsEnemyService feature.RuleService[actions.IsEnemyRule, actions.PlayerContext, actions.Entity] `inject:""`
 
-	CanBuildService          feature.NoInputRuleService[actions.CanBuildRule, actions.Entity]                      `inject:""`
-	CanBuildBlueprintService feature.RuleService[actions.CanBuildBlueprintRule, actions.Entity, actions.Blueprint] `inject:""`
-	CanPlaceService          feature.RuleService[actions.CanPlaceRule, actions.Blueprint, actions.Coords]          `inject:""`
+	CanDeployService          feature.NoInputRuleService[actions.CanDeployRule, actions.Entity]                      `inject:""`
+	CanDeployBlueprintService feature.RuleService[actions.CanDeployBlueprintRule, actions.Entity, actions.Blueprint] `inject:""`
+	CanDeployAtService        feature.RuleService[actions.CanDeployAtRule, actions.Blueprint, actions.Coords]        `inject:""`
 
 	CanMoveService   feature.NoInputRuleService[actions.CanMoveRule, actions.Entity]            `inject:""`
 	CanMoveToService feature.RuleService[actions.CanMoveToRule, actions.Entity, actions.Coords] `inject:""`
@@ -34,29 +34,26 @@ type service struct {
 func NewService(c ioc.Dic) actions.Service {
 	s := ioc.GetServices[*service](c)
 
-	s.CanBuildBlueprint().Render().OnUpsert(s.OnCanBuildBlueprintUpsert)
+	s.Entity().Render().OnUpsert(s.OnOwnUpsert)
+	s.Own().Render().OnUpsert(s.OnOwnUpsert)
+
+	s.IsEnemy().Render().OnUpsert(s.OnEnemyUpsert)
+	s.CanBeAttacked().Render().OnUpsert(s.OnEnemyUpsert)
+
+	s.CanMoveTo().Render().OnUpsert(s.OnCanMoveToUpsert)
+	s.CanDeployAt().Render().OnUpsert(s.OnCanDeployAtUpsert)
+
+	s.CanDeploy().Render().OnUpsert(s.OnCanDeployUpsert)
+	s.CanAttack().Render().OnUpsert(s.OnCanAttackUpsert)
+
+	s.CanDeployBlueprint().Render().OnUpsert(s.OnCanDeployBlueprintUpsert)
 	events.Listen(s.EventsBuilder(), s.OnBlueprintClick)
 
 	events.Listen(s.EventsBuilder(), s.OnCoordsHover)
 	events.Listen(s.EventsBuilder(), s.OnCoordsClick)
 
-	s.Entity().Render().OnUpsert(s.OnEntityUpsert)
 	events.Listen(s.EventsBuilder(), s.OnEntityClick)
 	events.Listen(s.EventsBuilder(), s.OnEntityHover)
-
-	// s.CoordsInteractionService.MissingPreview().OnUpsert(s.OnCoordsMissingUpsert)
-	// s.CoordsInteractionService.StatePreview().OnUpsert(s.OnCoordsStateUpsert)
-	// events.Listen(s.EventsBuilder(), s.OnTileHover)
-	// events.Listen(s.EventsBuilder(), s.OnTileClick)
-	//
-	// s.ObjectInteractionService.MissingPreview().OnUpsert(s.OnObjectMissingUpsert)
-	// s.ObjectInteractionService.StatePreview().OnUpsert(s.OnObjectStateUpsert)
-	// events.Listen(s.EventsBuilder(), s.OnClickObject)
-	//
-	// s.BlueprintInteractionService.MissingPreview().OnUpsert(s.OnBlueprintMissingUpsert)
-	// s.BlueprintInteractionService.MissingPreview().OnRemove(s.OnBlueprintMissingRemove)
-	// s.BlueprintInteractionService.StatePreview().OnUpsert(s.OnBlueprintStateUpsert)
-	// events.Listen(s.EventsBuilder(), s.OnClickBlueprint)
 
 	return s
 }
@@ -83,14 +80,14 @@ func (s *service) IsEnemy() feature.RuleService[actions.IsEnemyRule, actions.Pla
 	return s.IsEnemyService
 }
 
-func (s *service) CanBuild() feature.NoInputRuleService[actions.CanBuildRule, actions.Entity] {
-	return s.CanBuildService
+func (s *service) CanDeploy() feature.NoInputRuleService[actions.CanDeployRule, actions.Entity] {
+	return s.CanDeployService
 }
-func (s *service) CanBuildBlueprint() feature.RuleService[actions.CanBuildBlueprintRule, actions.Entity, actions.Blueprint] {
-	return s.CanBuildBlueprintService
+func (s *service) CanDeployBlueprint() feature.RuleService[actions.CanDeployBlueprintRule, actions.Entity, actions.Blueprint] {
+	return s.CanDeployBlueprintService
 }
-func (s *service) CanPlace() feature.RuleService[actions.CanPlaceRule, actions.Blueprint, actions.Coords] {
-	return s.CanPlaceService
+func (s *service) CanDeployAt() feature.RuleService[actions.CanDeployAtRule, actions.Blueprint, actions.Coords] {
+	return s.CanDeployAtService
 }
 
 func (s *service) CanMove() feature.NoInputRuleService[actions.CanMoveRule, actions.Entity] {

@@ -59,7 +59,7 @@ func (s *entityFieldService) Register() error {
 type OwnsRule feature.Rule[PlayerCTX, EntityField]            // [PlayerCTX] owns [EntityField]
 type CanAttackRule feature.Rule[EntityField, EntityField]     // [EntityField] canAttack [EntityField]
 type ReachesRule feature.Rule[EntityField, CoordsField]       // [EntityField] reaches [CoordsField]
-type CanBuildRule feature.Rule[EntityField, BlueprintField]   // [EntityField] canBuild [BlueprintField]
+type CanDeployRule feature.Rule[EntityField, BlueprintField]  // [EntityField] canDeploy [BlueprintField]
 type CanMoveToRule feature.Rule[EntityField, CoordsField]     // [EntityField] canMoveTo [CoordsField]
 type CanPlaceOnRule feature.Rule[BlueprintField, CoordsField] // [BlueprintField] canPlaceOn [CoordsField]
 
@@ -134,7 +134,7 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 		}, errors.New("does not own")),
 		// RulePkg[CanAttackRule](),
 		// RulePkg[ReachesRule](),
-		// RulePkg[CanBuildRule](),
+		// RulePkg[CanDeployRule](),
 		// RulePkg[CanMoveToRule](),
 		// RulePkg[CanPlaceOnRule](),
 	}
@@ -172,7 +172,7 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 	ioc.Wrap(b, func(c ioc.Dic, config featurepkg.Config) {
 		f := featurepkg.RegisterFeature[DeployFeature](config)
 		featurepkg.RegisterRuleToField[OwnsRule](config, &f, &f.PlayerCTX, &f.Entity)
-		featurepkg.RegisterRuleToField[CanBuildRule](config, &f, &f.Entity, &f.Deployed)
+		featurepkg.RegisterRuleToField[CanDeployRule](config, &f, &f.Entity, &f.Deployed)
 		featurepkg.RegisterRuleToField[CanPlaceOnRule](config, &f, &f.Deployed, &f.Coords)
 	})
 	ioc.Wrap(b, func(c ioc.Dic, config featurepkg.Config) {

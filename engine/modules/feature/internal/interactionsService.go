@@ -17,12 +17,14 @@ type interactionsService struct {
 	Service ioc.Lazy[Service]  `inject:""`
 	Config  Config             `inject:""`
 
+	render       ecs.ComponentArray[feature.RenderComponent]
 	interactions ecs.ComponentArray[feature.InteractionsComponent]
 }
 
 func NewInteractionsService(c ioc.Dic) feature.InteractionsService {
 	s := ioc.GetServices[*interactionsService](c)
 
+	s.render = ecs.GetComponentArray[feature.RenderComponent](s.World.World())
 	s.interactions = ecs.GetComponentArray[feature.InteractionsComponent](s.World.World())
 
 	events.Listen(s.World.EventsBuilder(), func(event feature.LockFeatureEvent) {

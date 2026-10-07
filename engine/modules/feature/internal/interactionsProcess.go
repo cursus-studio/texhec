@@ -27,7 +27,7 @@ func (s *interactionsService) getFieldFeatures(field any) []feature.FeatureKey {
 			}
 			fields = append(fields, field)
 			for _, rule := range fieldConfig.Rules {
-				ruleService := s.Service().GetRuleService(rule.RuleType)
+				ruleService := s.Service().GetRuleService(rule)
 				dataIn := fields[rule.DataInFieldIndex]
 				if err := ruleService.AppliesToAny(dataIn, field); err != nil {
 					return true
@@ -45,19 +45,18 @@ func (s *interactionsService) RenderState(entity ecs.EntityID) {
 	if !ok {
 		return
 	}
-	for _, child := range slices.Clone(s.World.Hierarchy().Children(entity).GetIndices()) {
-		s.World.World().RemoveEntity(child)
+	for _, entity := range slices.Clone(s.render.GetEntities()) {
+		s.World.World().RemoveEntity(entity)
 	}
 
 	// for Interaction in [feature.InteractionsComponent.Interactions] use:
-	// [feature.FieldRenderComponent] with [feature.Interaction]
+	// [feature.FieldRenderComponent] with [feature.FieldRenderInteraction]
 	for _, interaction := range interactionsComp.Interactions {
 		fieldKey := reflect.TypeOf(interaction)
 		fieldService := s.Service().GetFieldService(fieldKey)
-		comp := fieldService.NewAnyRenderComponent(interaction, feature.Interaction)
+		comp := fieldService.NewAnyRenderComponent(interaction, feature.FieldRenderInteraction)
 
 		interactionEntity := s.World.World().NewEntity()
-		s.World.Hierarchy().SetParent(interactionEntity, entity)
 		fieldService.RenderAny().SetAny(interactionEntity, comp)
 	}
 
@@ -71,12 +70,14 @@ func (s *interactionsService) RenderState(entity ecs.EntityID) {
 	var previewFieldKey feature.FieldKey
 	var previewFieldConfig FeatureFieldConfig
 	allFields := make([]any, 0, featureKey.NumField())
+	allFieldsConfigs := make([]FeatureFieldConfig, 0, featureKey.NumField())
 	{
 		fieldsLeft := slices.Clone(interactionsComp.Interactions)
 		for numField := range featureKey.NumField() {
 			fieldConfig := featureConfig.Fields[numField]
 			if fieldConfig.Provide != nil {
 				allFields = append(allFields, fieldConfig.Provide())
+				allFieldsConfigs = append(allFieldsConfigs, fieldConfig)
 				continue
 			}
 			fieldKey := featureKey.Field(numField).Type
@@ -86,49 +87,75 @@ func (s *interactionsService) RenderState(entity ecs.EntityID) {
 				break
 			}
 			allFields = append(allFields, fieldsLeft[0])
+			allFieldsConfigs = append(allFieldsConfigs, fieldConfig)
 			fieldsLeft = fieldsLeft[1:]
 		}
 	}
 	previewFieldService := s.Service().GetFieldService(previewFieldKey)
 
 	// do not render a preview if there is no feature selected
-	if len(interactionsComp.Interactions) == 0 &&
-		!interactionsComp.LockedFeature {
+	if len(interactionsComp.Interactions) == 0 {
 		interactionsComp.PreviewInteraction = nil
 	}
 
-	// for Rule in [feature.InteractionsComponent.PreviewInteraction] use:
-	// [feature.RuleRenderComponent]
-	rulesPass := true
+	// for Interaction in [feature.InteractionsComponent.Interactions] render:
+	// [feature.RuleRenderComponent] with [feature.RuleRenderCompletePreview]
+	for i, fieldConfig := range allFieldsConfigs {
+		for _, rule := range fieldConfig.Rules {
+			ruleService := s.Service().GetRuleService(rule)
+			dataIn := allFields[rule.DataInFieldIndex]
+			appliedTo := allFields[i]
+
+			renderComp := ruleService.NewAnyRenderComponent(dataIn, appliedTo, feature.RuleRenderCompletePreview)
+
+			previewRuleEntity := s.World.World().NewEntity()
+			ruleService.RenderAny().SetAny(previewRuleEntity, renderComp)
+		}
+	}
+
+	rulesPass := interactionsComp.PreviewInteraction != nil
 	for _, rule := range previewFieldConfig.Rules {
-		ruleService := s.Service().GetRuleService(rule.RuleType)
+		if !rulesPass {
+			break
+		}
+		ruleService := s.Service().GetRuleService(rule)
 		dataIn := allFields[rule.DataInFieldIndex]
 		appliedTo := interactionsComp.PreviewInteraction
-
-		renderComp := ruleService.NewAnyRenderComponent(dataIn, appliedTo)
-
-		previewRuleEntity := s.World.World().NewEntity()
-		s.World.Hierarchy().SetParent(previewRuleEntity, entity)
-		ruleService.RenderAny().SetAny(previewRuleEntity, renderComp)
 
 		rulesPass = rulesPass && ruleService.AppliesToAny(dataIn, appliedTo) == nil
 	}
 
+	// for Rule in [feature.InteractionsComponent.PreviewInteraction] use:
+	// [feature.RuleRenderComponent] with [feature.RuleRenderPreviewRulesFail] and [feature.RuleRenderPreviewRulesPass]
+	for _, rule := range previewFieldConfig.Rules {
+		ruleService := s.Service().GetRuleService(rule)
+		dataIn := allFields[rule.DataInFieldIndex]
+		appliedTo := interactionsComp.PreviewInteraction
+
+		ruleRender := feature.RuleRenderPreviewRulesPass
+		if !rulesPass {
+			ruleRender = feature.RuleRenderPreviewRulesFail
+		}
+		renderComp := ruleService.NewAnyRenderComponent(dataIn, appliedTo, ruleRender)
+
+		previewRuleEntity := s.World.World().NewEntity()
+		ruleService.RenderAny().SetAny(previewRuleEntity, renderComp)
+	}
+
 	// for [feature.InteractionsComponent.PreviewInteraction] use:
-	// [feature.FieldRenderComponent] with ([feature.PreviewRulesPass] or [feature.PreviewRulesFail])
+	// [feature.FieldRenderComponent] with [feature.FieldRenderPreviewRulesPass] and [feature.FieldRenderPreviewRulesFail]
 	var comp any
 	if interactionsComp.PreviewInteraction == nil {
 		comp = previewFieldService.NewAnyRenderComponent(
-			interactionsComp.PreviewInteraction, feature.MissingField)
+			interactionsComp.PreviewInteraction, feature.FieldRenderMissing)
 	} else if rulesPass {
 		comp = previewFieldService.NewAnyRenderComponent(
-			interactionsComp.PreviewInteraction, feature.PreviewRulesPass)
+			interactionsComp.PreviewInteraction, feature.FieldRenderPreviewRulesPass)
 	} else if !rulesPass {
 		comp = previewFieldService.NewAnyRenderComponent(
-			interactionsComp.PreviewInteraction, feature.PreviewRulesFail)
+			interactionsComp.PreviewInteraction, feature.FieldRenderPreviewRulesFail)
 	}
 	previewInteractionEntity := s.World.World().NewEntity()
-	s.World.Hierarchy().SetParent(previewInteractionEntity, entity)
 	previewFieldService.RenderAny().SetAny(previewInteractionEntity, comp)
 }
 
@@ -178,7 +205,7 @@ fieldsLoop:
 			break
 		}
 		for _, rule := range fieldConfig.Rules {
-			ruleService := s.Service().GetRuleService(rule.RuleType)
+			ruleService := s.Service().GetRuleService(rule)
 			dataIn := allFields[rule.DataInFieldIndex]
 			if err := ruleService.AppliesToAny(dataIn, field); err != nil {
 				lastPassingInteractionIndex--
@@ -200,6 +227,9 @@ fieldsLoop:
 		featureValue.Field(numField).Set(reflect.ValueOf(allFields[numField]))
 	}
 	s.World.World().RemoveEntity(entity)
+	for _, entity := range slices.Clone(s.render.GetEntities()) {
+		s.World.World().RemoveEntity(entity)
+	}
 	s.Interactions()
 	events.EmitAny(s.World.Events(), featureValue.Interface())
 }

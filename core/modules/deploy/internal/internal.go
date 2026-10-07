@@ -55,44 +55,44 @@ func (s *service) Reach() reach.ServiceT[deploy.Component]         { return s.Re
 
 //
 
-func (s *service) CanBuild(entityUUID actions.Entity) error {
+func (s *service) CanDeploy(entityUUID actions.Entity) error {
 	entity, ok := s.UUID().Entity(uuid.UUID(entityUUID))
 	if !ok {
-		return s.Actions().CanBuild().Error()
+		return s.Actions().CanDeploy().Error()
 	}
 	entityBlueprint, ok := s.Tile().Blueprint().Get(entity)
 	if !ok {
-		return s.Actions().CanBuild().Error()
+		return s.Actions().CanDeploy().Error()
 	}
 	comp, _ := s.Component().Get(entityBlueprint)
 	if len(comp.Deployable) == 0 {
-		return s.Actions().CanBuild().Error()
+		return s.Actions().CanDeploy().Error()
 	}
 	return nil
 }
-func (s *service) CanBuildBlueprint(entityUUID actions.Entity, blueprint actions.Blueprint) error {
+func (s *service) CanDeployBlueprint(entityUUID actions.Entity, blueprint actions.Blueprint) error {
 	blueprintEntity, ok := s.UUID().Entity(uuid.UUID(blueprint))
 	if !ok {
-		return s.Actions().CanBuildBlueprint().Error()
+		return s.Actions().CanDeployBlueprint().Error()
 	}
 	entity, ok := s.UUID().Entity(uuid.UUID(entityUUID))
 	if !ok {
-		return s.Actions().CanBuildBlueprint().Error()
+		return s.Actions().CanDeployBlueprint().Error()
 	}
 	entityBlueprint, ok := s.Tile().Blueprint().Get(entity)
 	if !ok {
-		return s.Actions().CanBuild().Error()
+		return s.Actions().CanDeploy().Error()
 	}
 	comp, _ := s.Component().Get(entityBlueprint)
 	if !slices.Contains(comp.Deployable, blueprintEntity) {
-		return s.Actions().CanBuildBlueprint().Error()
+		return s.Actions().CanDeployBlueprint().Error()
 	}
 	return nil
 }
-func (s *service) CanPlace(blueprint actions.Blueprint, coordsField actions.Coords) error {
+func (s *service) CanDeployAt(blueprint actions.Blueprint, coordsField actions.Coords) error {
 	blueprintEntity, ok := s.UUID().Entity(uuid.UUID(blueprint))
 	if !ok {
-		return s.Actions().CanPlace().Error()
+		return s.Actions().CanDeployAt().Error()
 	}
 
 	coords := grid.Coords(coordsField)
@@ -105,7 +105,7 @@ func (s *service) CanPlace(blueprint actions.Blueprint, coordsField actions.Coor
 	collisions := s.Obstruction().Collisions(aabb, blueprintObstruction.Obstruction)
 
 	if len(collisions) != 0 {
-		return s.Actions().CanPlace().Error()
+		return s.Actions().CanDeployAt().Error()
 	}
 	return nil
 }

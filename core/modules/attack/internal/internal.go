@@ -68,6 +68,11 @@ func (s *service) CanBeAttacked(attackerUUID, attackedUUID actions.Entity) error
 	if !ok {
 		return s.Actions().CanBeAttacked().Error()
 	}
+	attackerOwner, _ := s.Player().Owner().Get(attacker)
+	attackedOwner, ok := s.Player().Owner().Get(attacked)
+	if !ok || attackerOwner == attackedOwner {
+		return s.Actions().CanBeAttacked().Error()
+	}
 	attackerRegion, _ := s.Pathfind().EntityRegion(attacker)
 	attackedRegion, ok := s.Pathfind().EntityRegion(attacked)
 	if !ok || attackerRegion != attackedRegion {

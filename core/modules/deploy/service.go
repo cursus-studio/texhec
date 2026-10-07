@@ -54,9 +54,9 @@ type Service interface {
 
 	Component() ecs.ComponentArray[Component]
 
-	CanBuild(actions.Entity) error
-	CanBuildBlueprint(actions.Entity, actions.Blueprint) error
-	CanPlace(actions.Blueprint, actions.Coords) error
+	CanDeploy(actions.Entity) error
+	CanDeployBlueprint(actions.Entity, actions.Blueprint) error
+	CanDeployAt(actions.Blueprint, actions.Coords) error
 
 	// deploy differs from execute event by who deploys.
 	// execute adds costs and everything where deploy just deploys without any costs (its deployed by system)

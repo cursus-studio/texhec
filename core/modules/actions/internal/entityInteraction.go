@@ -4,6 +4,12 @@ import (
 	"core/modules/actions"
 	"core/modules/tile"
 	"engine/modules/ecs"
+	"engine/modules/feature"
+	"engine/modules/render"
+	"engine/modules/transform"
+	"engine/modules/uuid"
+
+	"github.com/go-gl/mathgl/mgl32"
 )
 
 func (s *service) OnEntityHover(event tile.HoverEntityEvent) {
@@ -21,116 +27,60 @@ func (s *service) OnEntityClick(event tile.ClickEntityEvent) {
 	s.Feature().SubmitInteraction(actions.Entity(uuid.ID))
 }
 
-func (s *service) OnEntityUpsert(entity ecs.EntityID) {
-	// comp, ok := s.Entity().Render().Get(entity)
-	// if !ok {
-	// 	return
-	// }
-	// if comp.Render == feature.MissingField {
-	// 	return
-	// }
-	// selectedEntity, ok := s.UUID().Entity(uuid.UUID(comp.Value))
-	// if !ok {
-	// 	return
-	// }
-	//
-	// s.Hierarchy().SetParent(entity, selectedEntity)
-	// s.Groups().InheritGroups(entity)
-	//
-	// s.Transform().Inherit().Set(entity, transform.NewInherit(transform.RelativePos|transform.RelativeSizeXY))
-	// s.Transform().Pos().Set(entity, transform.NewPos(0, 0, -1))
-	//
-	// s.Render().Mesh().Set(entity, render.NewMesh(s.Definitions().Assets().SquareMesh))
-	// s.Render().Texture().Set(entity, render.NewTexture(s.Definitions().Hud().Can))
-}
+func (s *service) OnOwnUpsert(entity ecs.EntityID) {
+	comp, ok := s.Own().Render().Get(entity)
+	if ok && (comp.Render == feature.RuleRenderPreviewRulesPass ||
+		comp.Render == feature.RuleRenderCompletePreview) {
+		goto render
+	}
+	if entityComp, ok := s.Entity().Render().Get(entity); ok &&
+		entityComp.Render == feature.FieldRenderInteraction &&
+		!s.Feature().Interactions().LockedFeature {
+		comp.AppliedTo = entityComp.Value
+		goto render
+	}
+	return
+render:
+	selectedEntity, ok := s.UUID().Entity(uuid.UUID(comp.AppliedTo))
+	if !ok {
+		return
+	}
 
-// import (
-// 	"core/modules/actions"
-// 	"core/modules/definitions"
-// 	"core/modules/tile"
-// 	"engine/modules/ecs"
-// 	"engine/modules/groups"
-// 	"engine/modules/interactions"
-// 	"engine/modules/render"
-// 	"engine/modules/transform"
-// 	"fmt"
-//
-// 	"github.com/go-gl/mathgl/mgl32"
-// )
-//
-// func (s *service) EntityInteraction() interactions.InteractionService[actions.Entity] {
-// 	return s.ObjectInteractionService
-// }
-//
-// func (s *service) OnClickObject(event tile.ClickEntityEvent) {
-// 	if missingEntities := s.EntityInteraction().MissingPreview().GetEntities(); len(missingEntities) == 1 {
-// 		missingEntity := missingEntities[0]
-// 		if anchor, ok := s.Anchor().Get(missingEntity); ok && !s.GameWorld.Deploy().Reach().Reaches(anchor.Entity, event.Entity) {
-// 			s.Logger().Warn(fmt.Errorf("cannot click entity out of range"))
-// 			return
-// 		}
-// 	}
-// 	region, ok := s.Pathfind().EntityRegion(event.Entity)
-// 	if !ok {
-// 		return
-// 	}
-// 	linkEntity, ok := s.Tile().Blueprint().Get(event.Entity)
-// 	if !ok {
-// 		s.Logger().Warn(fmt.Errorf("cannot click entity which doesn't have original entity"))
-// 		return
-// 	}
-// 	entityUUID, ok := s.UUID().Component().Get(event.Entity)
-// 	if !ok {
-// 		return
-// 	}
-//
-// 	propertiesEntity := s.World().NewEntity()
-// 	s.CanDeploy().Set(propertiesEntity, actions.NewCanDeploy(linkEntity))
-// 	s.CoordsCursor().Set(propertiesEntity, actions.NewCoordsCursor(linkEntity, false))
-// 	s.Anchor().Set(propertiesEntity, actions.NewAnchor(event.Entity))
-// 	s.RegionAnchor().Set(propertiesEntity, actions.NewRegionAnchor(region))
-//
-// 	s.EntityInteraction().Save(propertiesEntity, actions.NewEntity(entityUUID.ID))
-// }
-//
-// func (s *service) OnObjectMissingUpsert(entity ecs.EntityID) {
-// 	// should find objects on which action can be performed and
-// 	// these object should be highlighted or shown in choose menu
-// 	anchor, ok := s.Anchor().Get(entity)
-// 	if !ok {
-// 		return
-// 	}
-// 	for _, reachCoords := range s.GameWorld.Deploy().Reach().TilesWithinReach(anchor.Entity) {
-// 		ind := s.World().NewEntity()
-// 		s.Hierarchy().SetParent(ind, entity)
-// 		s.Transform().Inherit().Set(ind, transform.NewInherit(transform.Absolute))
-//
-// 		s.Render().Mesh().Set(ind, render.NewMesh(s.Definitions().Assets().SquareMesh))
-// 		s.Render().Texture().Set(ind, render.NewTexture(s.Definitions().Assets().Border))
-// 		s.Groups().Component().Set(ind, groups.EmptyGroups().Enable(definitions.GameGroup))
-//
-// 		s.Tile().Layer().Set(ind, tile.NewLayer(definitions.RangePlaceholderLayer))
-// 		s.Tile().Pos().Set(ind, tile.NewPos(reachCoords.Coords()))
-// 		s.Render().Color().Set(ind, render.NewColor(mgl32.Vec4{0, 0, .5, 1}))
-// 	}
-// }
-//
-// //
-//
-// func (s *service) OnObjectStateUpsert(entity ecs.EntityID) {
-// 	stateComp, ok := s.EntityInteraction().StatePreview().Get(entity)
-// 	if !ok {
-// 		return
-// 	}
-// 	targetObject, ok := s.UUID().Entity(stateComp.State.UUID)
-// 	if !ok {
-// 		return
-// 	}
-// 	s.Hierarchy().SetParent(entity, targetObject)
-// 	s.Groups().InheritGroups(entity)
-// 	s.Transform().Inherit().Set(entity, transform.NewInherit(transform.RelativePos|transform.RelativeSizeXY))
-// 	s.Transform().Pos().Set(entity, transform.NewPos(0, 0, -1))
-//
-// 	s.Render().Mesh().Set(entity, render.NewMesh(s.Definitions().Assets().SquareMesh))
-// 	s.Render().Texture().Set(entity, render.NewTexture(s.Definitions().Hud().Can))
-// }
+	s.Hierarchy().SetParent(entity, selectedEntity)
+	s.Groups().InheritGroups(entity)
+
+	s.Transform().Inherit().Set(entity, transform.NewInherit(transform.RelativePos|transform.RelativeSizeXY))
+	s.Transform().Pos().Set(entity, transform.NewPos(0, 0, -1))
+
+	s.Render().Mesh().Set(entity, render.NewMesh(s.Definitions().Assets().SquareMesh))
+	s.Render().Texture().Set(entity, render.NewTexture(s.Definitions().Hud().Can))
+}
+func (s *service) OnEnemyUpsert(entity ecs.EntityID) {
+	comp, ok := s.IsEnemy().Render().Get(entity)
+	if ok && (comp.Render == feature.RuleRenderPreviewRulesPass ||
+		comp.Render == feature.RuleRenderCompletePreview) {
+		goto render
+	}
+	if canBeAttacked, ok := s.CanBeAttacked().Render().Get(entity); ok && (canBeAttacked.Render == feature.RuleRenderPreviewRulesPass ||
+		canBeAttacked.Render == feature.RuleRenderCompletePreview) {
+		comp.Render = canBeAttacked.Render
+		comp.AppliedTo = canBeAttacked.AppliedTo
+		goto render
+	}
+	return
+render:
+	selectedEntity, ok := s.UUID().Entity(uuid.UUID(comp.AppliedTo))
+	if !ok {
+		return
+	}
+
+	s.Hierarchy().SetParent(entity, selectedEntity)
+	s.Groups().InheritGroups(entity)
+
+	s.Transform().Inherit().Set(entity, transform.NewInherit(transform.RelativePos|transform.RelativeSizeXY))
+	s.Transform().Pos().Set(entity, transform.NewPos(0, 0, -1))
+
+	s.Render().Mesh().Set(entity, render.NewMesh(s.Definitions().Assets().SquareMesh))
+	s.Render().Color().Set(entity, render.NewColor(mgl32.Vec4{1, 0, 0, 1}))
+	s.Render().Texture().Set(entity, render.NewTexture(s.Definitions().Hud().Can))
+}

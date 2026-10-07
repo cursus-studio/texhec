@@ -4,6 +4,7 @@ import (
 	"core/modules/actions"
 	"core/modules/tile"
 	"engine/modules/ecs"
+	"engine/modules/feature"
 	"engine/modules/inputs"
 	"engine/modules/text"
 	"engine/modules/uuid"
@@ -18,29 +19,32 @@ func (s *service) OnBlueprintClick(event tile.ClickBlueprintEvent) {
 	s.Feature().SubmitInteraction(actions.Blueprint(uuidComp.ID))
 }
 
-func (s *service) OnCanBuildBlueprintUpsert(compEntity ecs.EntityID) {
-	comp, ok := s.CanBuildBlueprint().Render().Get(compEntity)
-	if !ok {
-		return
+func (s *service) OnCanDeployBlueprintUpsert(entity ecs.EntityID) {
+	comp, ok := s.CanDeployBlueprint().Render().Get(entity)
+	if ok && (comp.Render == feature.RuleRenderPreviewRulesFail ||
+		comp.Render == feature.RuleRenderPreviewRulesPass) {
+		goto render
 	}
+	return
+render:
 	type Button struct {
 		text  string
 		event any
 	}
 
-	entity, ok := s.UUID().Entity(uuid.UUID(comp.In))
+	canEntityBuild, ok := s.UUID().Entity(uuid.UUID(comp.In))
 	if !ok {
-		s.Logger().Warn(s.CanBuildBlueprint().Error())
+		s.Logger().Warn(s.CanDeployBlueprint().Error())
 		return
 	}
-	entityBlueprint, ok := s.Tile().Blueprint().Get(entity)
+	canEntityBuildBlueprint, ok := s.Tile().Blueprint().Get(canEntityBuild)
 	if !ok {
-		s.Logger().Warn(s.CanBuildBlueprint().Error())
+		s.Logger().Warn(s.CanDeployBlueprint().Error())
 		return
 	}
-	deployed, _ := s.Deploy().Component().Get(entityBlueprint)
+	deployed, _ := s.Deploy().Component().Get(canEntityBuildBlueprint)
 	if len(deployed.Deployable) == 0 {
-		s.Logger().Warn(s.CanBuildBlueprint().Error())
+		s.Logger().Warn(s.CanDeployBlueprint().Error())
 		return
 	}
 
@@ -48,7 +52,7 @@ func (s *service) OnCanBuildBlueprintUpsert(compEntity ecs.EntityID) {
 	for _, deployableEntity := range deployed.Deployable {
 		name, ok := s.Tile().Name().Get(deployableEntity)
 		if !ok {
-			s.Logger().Warn(s.CanBuildBlueprint().Error())
+			s.Logger().Warn(s.CanDeployBlueprint().Error())
 			continue
 		}
 		btns = append(btns, Button{
@@ -66,86 +70,3 @@ func (s *service) OnCanBuildBlueprintUpsert(compEntity ecs.EntityID) {
 		}
 	}
 }
-
-// import (
-// 	"core/modules/actions"
-// 	"core/modules/tile"
-// 	"engine/modules/ecs"
-// 	"engine/modules/inputs"
-// 	"engine/modules/interactions"
-// 	"engine/modules/text"
-// 	"errors"
-// 	"fmt"
-// )
-//
-// func (s *service) BlueprintInteraction() interactions.InteractionService[actions.Blueprint] {
-// 	return s.BlueprintInteractionService
-// }
-//
-// func (s *service) OnClickBlueprint(event tile.ClickBlueprintEvent) {
-// 	uuidComp, ok := s.UUID().Component().Get(event.Entity)
-// 	if !ok {
-// 		return
-// 	}
-// 	propertiesEntity := s.World().NewEntity()
-// 	s.CoordsCursor().Set(propertiesEntity, actions.NewCoordsCursor(event.Entity, true))
-// 	s.Anchor().Set(propertiesEntity, actions.NewAnchor(event.Entity))
-//
-// 	s.BlueprintInteraction().Save(propertiesEntity, actions.NewBlueprint(uuidComp.ID))
-// }
-//
-// func (s *service) OnBlueprintMissingUpsert(entity ecs.EntityID) {
-// 	type Button struct {
-// 		text  string
-// 		event any
-// 	}
-// 	btns := []Button{}
-// 	canDeploy, ok := s.CanDeploy().Get(entity)
-// 	if !ok {
-// 		s.Logger().Warn(fmt.Errorf("cannot select blueprint without CanDeploy component"))
-// 		return
-// 	}
-//
-// 	deployed, _ := s.Deploy().Component().Get(canDeploy.Entity)
-// 	if len(deployed.Deployable) == 0 {
-// 		return
-// 	}
-// 	for _, deployed := range deployed.Deployable {
-// 		name, ok := s.Tile().Name().Get(deployed)
-// 		if !ok {
-// 			s.Logger().Log(errors.New("expected entity to have name component"))
-// 			continue
-// 		}
-// 		btn := Button{fmt.Sprintf("%v", name.Name), tile.NewClickBlueprintEvent(deployed)}
-// 		btns = append(btns, btn)
-// 	}
-//
-// 	for _, p := range s.Ui().ShowMenu() {
-// 		for _, btn := range btns {
-// 			btnEntity := s.Prototype().Clone(s.Definitions().Hud().Btn)
-// 			s.Inputs().LeftClick().Set(btnEntity, inputs.NewLeftClick(btn.event))
-// 			s.Hierarchy().SetParent(btnEntity, p)
-// 			s.Text().Content().Set(btnEntity, text.NewText(btn.text))
-// 		}
-// 	}
-// }
-// func (s *service) OnBlueprintMissingRemove(ecs.EntityID) {
-// 	s.Ui().HideMenu()
-// }
-//
-// func (s *service) OnBlueprintStateUpsert(entity ecs.EntityID) {
-// 	blueprint, ok := s.BlueprintInteraction().StatePreview().Get(entity)
-// 	if !ok {
-// 		return
-// 	}
-// 	blueprintEntity, ok := s.UUID().Entity(blueprint.State.UUID)
-// 	if !ok {
-// 		return
-// 	}
-//
-// 	s.CoordsCursor().Set(entity, actions.NewCoordsCursor(blueprintEntity, true))
-// 	if object, ok := s.EntityInteraction().StatePreview().Get(entity); !ok {
-// 	} else if objectEntity, ok := s.UUID().Entity(object.State.UUID); ok {
-// 		s.Anchor().Set(entity, actions.NewAnchor(objectEntity))
-// 	}
-// }

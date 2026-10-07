@@ -46,6 +46,7 @@ type featureFieldConfig struct {
 type ruleConfig struct {
 	DataInFieldIndex FieldIndex
 	RuleType         feature.RuleKey
+	Service          feature.AnyRuleService
 }
 type featureConfig struct {
 	Fields []FeatureFieldConfig

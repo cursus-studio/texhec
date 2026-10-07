@@ -12,7 +12,7 @@ type Service interface {
 	feature.Service
 
 	RegisterRuleService(feature.RuleKey, feature.AnyRuleService)
-	GetRuleService(feature.RuleKey) feature.AnyRuleService
+	GetRuleService(RuleConfig) feature.AnyRuleService
 	RegisterFieldService(feature.FieldKey, feature.AnyFieldService)
 	GetFieldService(feature.FieldKey) feature.AnyFieldService
 }
@@ -46,8 +46,11 @@ func (s *service) GetFieldService(key feature.FieldKey) feature.AnyFieldService 
 func (s *service) RegisterRuleService(key feature.RuleKey, anyRuleService feature.AnyRuleService) {
 	s.rules[key] = anyRuleService
 }
-func (s *service) GetRuleService(key feature.RuleKey) feature.AnyRuleService {
-	return s.rules[key]
+func (s *service) GetRuleService(config RuleConfig) feature.AnyRuleService {
+	if config.Service == nil {
+		config.Service = s.rules[config.RuleType]
+	}
+	return config.Service
 }
 
 //

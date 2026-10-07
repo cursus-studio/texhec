@@ -17,14 +17,14 @@ SUM:                             3             51             16            324
 ### type Service
 Type: `core/modules/deploy.Service`
 
-#### method Service CanBuild
+#### method Service CanDeploy
 Type: `func(core/modules/actions.Entity) error`
 
-#### method Service CanBuildBlueprint
-Type: `func(core/modules/actions.Entity, core/modules/actions.Blueprint) error`
-
-#### method Service CanPlace
+#### method Service CanDeployAt
 Type: `func(core/modules/actions.Blueprint, core/modules/actions.Coords) error`
+
+#### method Service CanDeployBlueprint
+Type: `func(core/modules/actions.Entity, core/modules/actions.Blueprint) error`
 
 #### method Service Component
 Type: `func() engine/modules/ecs.ComponentArray[core/modules/deploy.Component]`
@@ -100,12 +100,12 @@ Type: `func(ctx core/modules/actions.PlayerContext, uuid engine/modules/uuid.UUI
 
 `core/modules/actions`:
   - `core/modules/actions.Blueprint`
-  - `core/modules/actions.CanBuild`
-  - `core/modules/actions.CanBuildBlueprint`
-  - `core/modules/actions.CanBuildBlueprintRule`
-  - `core/modules/actions.CanBuildRule`
-  - `core/modules/actions.CanPlace`
-  - `core/modules/actions.CanPlaceRule`
+  - `core/modules/actions.CanDeploy`
+  - `core/modules/actions.CanDeployAt`
+  - `core/modules/actions.CanDeployAtRule`
+  - `core/modules/actions.CanDeployBlueprint`
+  - `core/modules/actions.CanDeployBlueprintRule`
+  - `core/modules/actions.CanDeployRule`
   - `core/modules/actions.Coords`
   - `core/modules/actions.Entity`
   - `core/modules/actions.Own`

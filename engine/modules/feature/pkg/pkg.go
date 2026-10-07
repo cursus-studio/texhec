@@ -48,6 +48,7 @@ func RulePkg[RuleType feature.Rule[DataIn, AppliedTo], DataIn any, AppliedTo any
 
 var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 	pkgs := []ioc.Pkg{
+		typeregistrypkg.PkgT[feature.RenderComponent],
 		typeregistrypkg.PkgT[feature.InteractionsComponent],
 	}
 	for _, pkg := range pkgs {

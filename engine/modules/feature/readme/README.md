@@ -44,7 +44,7 @@ Specialized component for rendering rules for preview field
 ```
 $ go test ./... -bench=.
 PASS
-ok  	engine/modules/feature/test	0.014s
+ok  	engine/modules/feature/test	0.015s
 ```
 ## Lines of code
 ```
@@ -52,10 +52,10 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                              12            176             98           1103
+Go                              12            185            103           1175
 Markdown                         1              6              0             33
 -------------------------------------------------------------------------------
-SUM:                            13            182             98           1136
+SUM:                            13            191            103           1208
 -------------------------------------------------------------------------------
 ```
 ## Types
@@ -444,7 +444,7 @@ Type: `func(dataIn any, appliedTo any) error`
 Type: `func() error`
 
 #### method AnyRuleService NewAnyRenderComponent
-Type: `func(in any, appliedTo any) any`
+Type: `func(in any, appliedTo any, render engine/modules/feature.RuleRender) any`
 
 #### method AnyRuleService RenderAny
 Type: `func() engine/modules/ecs.AnyComponentArray`
@@ -462,7 +462,7 @@ Type: `func(dataIn any, appliedTo any) error`
 Type: `func() error`
 
 #### method RuleService NewAnyRenderComponent
-Type: `func(in any, appliedTo any) any`
+Type: `func(in any, appliedTo any, render engine/modules/feature.RuleRender) any`
 
 #### method RuleService Render
 Type: `func() engine/modules/ecs.ComponentArray[engine/modules/feature.RuleRenderComponent[RuleType, DataIn, AppliedTo]]`
@@ -483,7 +483,7 @@ Type: `func(dataIn any, appliedTo any) error`
 Type: `func() error`
 
 #### method NoInputRuleService NewAnyRenderComponent
-Type: `func(in any, appliedTo any) any`
+Type: `func(in any, appliedTo any, render engine/modules/feature.RuleRender) any`
 
 #### method NoInputRuleService Render
 Type: `func() engine/modules/ecs.ComponentArray[engine/modules/feature.RuleRenderComponent[RuleType, AppliedTo, AppliedTo]]`
@@ -524,6 +524,9 @@ Type: `FieldType`
 #### property FieldRenderComponent Render
 Type: `engine/modules/feature.FieldRender`
 
+### type RuleRender
+Type: `engine/modules/feature.RuleRender`
+
 ### type RuleRenderComponent
 Type: `engine/modules/feature.RuleRenderComponent[RuleType engine/modules/feature.Rule[DataIn, AppliedTo], DataIn, AppliedTo any]`
 
@@ -532,6 +535,9 @@ Type: `DataIn`
 
 #### property RuleRenderComponent AppliedTo
 Type: `AppliedTo`
+
+#### property RuleRenderComponent Render
+Type: `engine/modules/feature.RuleRender`
 
 ### type InteractionsComponent
 Type: `engine/modules/feature.InteractionsComponent`
@@ -551,6 +557,9 @@ Type: `bool`
 #### method InteractionsComponent Equal
 Type: `func(other engine/modules/feature.InteractionsComponent) bool`
 
+### type RenderComponent
+Type: `engine/modules/feature.RenderComponent`
+
 ### type LockFeatureEvent
 Type: `engine/modules/feature.LockFeatureEvent`
 
@@ -562,31 +571,46 @@ to unlock use empty value
 ### var ErrInvalidType
 Type: `error`
 
-### var MissingField
+### var FieldRenderInteraction
+Type: `engine/modules/feature.FieldRender`
+is used for each Interaction in [InteractionsComponent.Interactions]
+
+### var FieldRenderMissing
 Type: `engine/modules/feature.FieldRender`
 is used when value is empty and we need to render it
 
-### var PreviewRulesFail
+### var FieldRenderPreviewRulesFail
 Type: `engine/modules/feature.FieldRender`
-is used when [InteractionsComponent].PreviewInteraction rules fail
+is used when [InteractionsComponent.PreviewInteraction] rules fail
 
-### var PreviewRulesPass
+### var FieldRenderPreviewRulesPass
 Type: `engine/modules/feature.FieldRender`
-is used when [InteractionsComponent].PreviewInteraction rules pass
+is used when [InteractionsComponent.PreviewInteraction] rules pass
 
-### var Interaction
-Type: `engine/modules/feature.FieldRender`
-is used for each Interaction in [InteractionsComponent].Interactions
+### var RuleRenderCompletePreview
+Type: `engine/modules/feature.RuleRender`
+is used for rules for [InteractionsComponent.Interactions]
+
+### var RuleRenderPreviewRulesPass
+Type: `engine/modules/feature.RuleRender`
+is used for rules for [InteractionsComponent.PreviewInteraction] if all rules pass
+
+### var RuleRenderPreviewRulesFail
+Type: `engine/modules/feature.RuleRender`
+is used for rules for [InteractionsComponent.PreviewInteraction] if any rules fail
 
 ## Functions
 ### func NewFieldRender
 Type: `func[FieldType any](value FieldType, render engine/modules/feature.FieldRender) engine/modules/feature.FieldRenderComponent[FieldType]`
 
 ### func NewRuleRender
-Type: `func[RuleType engine/modules/feature.Rule[DataIn, AppliedTo], DataIn, AppliedTo any](in DataIn, appliedTo AppliedTo) engine/modules/feature.RuleRenderComponent[RuleType, DataIn, AppliedTo]`
+Type: `func[RuleType engine/modules/feature.Rule[DataIn, AppliedTo], DataIn, AppliedTo any](in DataIn, appliedTo AppliedTo, render engine/modules/feature.RuleRender) engine/modules/feature.RuleRenderComponent[RuleType, DataIn, AppliedTo]`
 
 ### func NewInteractions
 Type: `func(interactions []any, previewInteraction any, features []engine/modules/feature.FeatureKey, lockFeature bool) engine/modules/feature.InteractionsComponent`
+
+### func NewRender
+Type: `func() engine/modules/feature.RenderComponent`
 
 ### func NewLockFeatureEvent
 Type: `func(featureKey engine/modules/feature.FeatureKey) engine/modules/feature.LockFeatureEvent`
@@ -601,7 +625,6 @@ Type: `func() engine/modules/feature.LockFeatureEvent`
   - `engine.Events`
   - `engine.EventsBuilder`
   - `engine.Feature`
-  - `engine.Hierarchy`
   - `engine.Logger`
   - `engine.World`
 
@@ -624,28 +647,34 @@ Type: `func() engine/modules/feature.LockFeatureEvent`
   - `engine/modules/feature.FieldKey`
   - `engine/modules/feature.FieldRender`
   - `engine/modules/feature.FieldRenderComponent`
+  - `engine/modules/feature.FieldRenderInteraction`
+  - `engine/modules/feature.FieldRenderMissing`
+  - `engine/modules/feature.FieldRenderPreviewRulesFail`
+  - `engine/modules/feature.FieldRenderPreviewRulesPass`
   - `engine/modules/feature.FieldService`
-  - `engine/modules/feature.Interaction`
   - `engine/modules/feature.Interactions`
   - `engine/modules/feature.InteractionsComponent`
   - `engine/modules/feature.InteractionsService`
   - `engine/modules/feature.LockFeatureEvent`
   - `engine/modules/feature.LockedFeature`
-  - `engine/modules/feature.MissingField`
   - `engine/modules/feature.NewAnyRenderComponent`
   - `engine/modules/feature.NewFieldRender`
   - `engine/modules/feature.NewInteractions`
+  - `engine/modules/feature.NewRender`
   - `engine/modules/feature.NewRuleRender`
   - `engine/modules/feature.NoInputRule`
   - `engine/modules/feature.PreviewInteraction`
-  - `engine/modules/feature.PreviewRulesFail`
-  - `engine/modules/feature.PreviewRulesPass`
   - `engine/modules/feature.ProvideFieldService`
   - `engine/modules/feature.Render`
   - `engine/modules/feature.RenderAny`
+  - `engine/modules/feature.RenderComponent`
   - `engine/modules/feature.Rule`
   - `engine/modules/feature.RuleKey`
+  - `engine/modules/feature.RuleRender`
+  - `engine/modules/feature.RuleRenderCompletePreview`
   - `engine/modules/feature.RuleRenderComponent`
+  - `engine/modules/feature.RuleRenderPreviewRulesFail`
+  - `engine/modules/feature.RuleRenderPreviewRulesPass`
   - `engine/modules/feature.RuleService`
   - `engine/modules/feature.Service`
 

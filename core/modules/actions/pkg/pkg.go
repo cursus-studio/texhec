@@ -24,14 +24,14 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 			return ioc.Get[game.GameWorld](c).Player().IsEnemy
 		}, errors.New("player:is not an enemy")),
 
-		featurepkg.NoInputRulePkg[actions.CanBuildRule](func(c ioc.Dic) func(actions.Entity) error {
-			return ioc.Get[game.GameWorld](c).Deploy().CanBuild
+		featurepkg.NoInputRulePkg[actions.CanDeployRule](func(c ioc.Dic) func(actions.Entity) error {
+			return ioc.Get[game.GameWorld](c).Deploy().CanDeploy
 		}, errors.New("deploy:cannot build")),
-		featurepkg.RulePkg[actions.CanBuildBlueprintRule](func(c ioc.Dic) func(actions.Entity, actions.Blueprint) error {
-			return ioc.Get[game.GameWorld](c).Deploy().CanBuildBlueprint
+		featurepkg.RulePkg[actions.CanDeployBlueprintRule](func(c ioc.Dic) func(actions.Entity, actions.Blueprint) error {
+			return ioc.Get[game.GameWorld](c).Deploy().CanDeployBlueprint
 		}, errors.New("deploy:cannot build blueprint")),
-		featurepkg.RulePkg[actions.CanPlaceRule](func(c ioc.Dic) func(actions.Blueprint, actions.Coords) error {
-			return ioc.Get[game.GameWorld](c).Deploy().CanPlace
+		featurepkg.RulePkg[actions.CanDeployAtRule](func(c ioc.Dic) func(actions.Blueprint, actions.Coords) error {
+			return ioc.Get[game.GameWorld](c).Deploy().CanDeployAt
 		}, errors.New("deploy:cannot place")),
 
 		featurepkg.NoInputRulePkg[actions.CanMoveRule](func(c ioc.Dic) func(actions.Entity) error {

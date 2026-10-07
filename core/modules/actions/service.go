@@ -29,9 +29,9 @@ type OwnRule feature.Rule[PlayerContext, Entity]
 type IsEnemyRule feature.Rule[PlayerContext, Entity]
 
 // build
-type CanBuildRule feature.NoInputRule[Entity]
-type CanBuildBlueprintRule feature.Rule[Entity, Blueprint]
-type CanPlaceRule feature.Rule[Blueprint, Coords]
+type CanDeployRule feature.NoInputRule[Entity]
+type CanDeployBlueprintRule feature.Rule[Entity, Blueprint]
+type CanDeployAtRule feature.Rule[Blueprint, Coords]
 
 // move
 type CanMoveRule feature.NoInputRule[Entity]
@@ -54,9 +54,9 @@ type Service interface {
 	Own() feature.RuleService[OwnRule, PlayerContext, Entity]
 	IsEnemy() feature.RuleService[IsEnemyRule, PlayerContext, Entity]
 
-	CanBuild() feature.NoInputRuleService[CanBuildRule, Entity]
-	CanBuildBlueprint() feature.RuleService[CanBuildBlueprintRule, Entity, Blueprint]
-	CanPlace() feature.RuleService[CanPlaceRule, Blueprint, Coords]
+	CanDeploy() feature.NoInputRuleService[CanDeployRule, Entity]
+	CanDeployBlueprint() feature.RuleService[CanDeployBlueprintRule, Entity, Blueprint]
+	CanDeployAt() feature.RuleService[CanDeployAtRule, Blueprint, Coords]
 
 	CanMove() feature.NoInputRuleService[CanMoveRule, Entity]
 	CanMoveTo() feature.RuleService[CanMoveToRule, Entity, Coords]

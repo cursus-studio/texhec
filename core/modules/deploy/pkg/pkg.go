@@ -38,9 +38,9 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 		{
 			f := featurepkg.RegisterFeature[deploy.DeployEvent](config)
 			featurepkg.RegisterRuleToField[actions.OwnRule](config, &f, &f.PlayerContext, &f.By)
-			featurepkg.RegisterNoInputRuleToField[actions.CanBuildRule](config, &f, &f.By)
-			featurepkg.RegisterRuleToField[actions.CanBuildBlueprintRule](config, &f, &f.By, &f.Blueprint)
-			featurepkg.RegisterRuleToField[actions.CanPlaceRule](config, &f, &f.Blueprint, &f.Coords)
+			featurepkg.RegisterNoInputRuleToField[actions.CanDeployRule](config, &f, &f.By)
+			featurepkg.RegisterRuleToField[actions.CanDeployBlueprintRule](config, &f, &f.By, &f.Blueprint)
+			featurepkg.RegisterRuleToField[actions.CanDeployAtRule](config, &f, &f.Blueprint, &f.Coords)
 		}
 		{
 			f := featurepkg.RegisterFeature[deploy.DestroyEvent](config)

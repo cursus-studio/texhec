@@ -136,11 +136,11 @@ func (w World) AssertInteractions(expected feature.InteractionsComponent) {
 
 	// populate expected components
 	for _, interaction := range expected.Interactions {
-		comp := feature.NewFieldRender(interaction.(EntityField), feature.Interaction)
+		comp := feature.NewFieldRender(interaction.(EntityField), feature.FieldRenderInteraction)
 		expectedComponents[comp] = struct{}{}
 	}
 	if expected.LockedFeature && expected.PreviewInteraction == nil {
-		comp := feature.NewFieldRender(EntityField{}, feature.MissingField)
+		comp := feature.NewFieldRender(EntityField{}, feature.FieldRenderMissing)
 		expectedComponents[comp] = struct{}{}
 	}
 	if expected.LockedFeature {
@@ -157,21 +157,42 @@ func (w World) AssertInteractions(expected feature.InteractionsComponent) {
 			allFields = append(allFields, interactions[0])
 			interactions = interactions[1:]
 		}
+		for i := range allFields {
+			for _, ruleConfig := range featureConfig.Fields[i].Rules {
+				rule := w.Rules[ruleConfig.RuleType]
+				dataIn := allFields[ruleConfig.DataInFieldIndex]
+				comp := rule.NewAnyRenderComponent(dataIn, allFields[i], feature.RuleRenderCompletePreview)
+				expectedComponents[comp] = struct{}{}
+			}
+		}
 		fieldIndex := len(allFields)
 		fieldConfig := featureConfig.Fields[fieldIndex]
 
-		rulesPass := feature.PreviewRulesPass
+		rulesPass := expected.PreviewInteraction != nil
+		for _, ruleConfig := range fieldConfig.Rules {
+			if !rulesPass {
+				break
+			}
+			rule := w.Rules[ruleConfig.RuleType]
+			dataIn := allFields[ruleConfig.DataInFieldIndex]
+			rulesPass = rulesPass && rule.AppliesToAny(dataIn, expected.PreviewInteraction) == nil
+		}
 		for _, ruleConfig := range fieldConfig.Rules {
 			rule := w.Rules[ruleConfig.RuleType]
 			dataIn := allFields[ruleConfig.DataInFieldIndex]
-			comp := rule.NewAnyRenderComponent(dataIn, expected.PreviewInteraction)
-			expectedComponents[comp] = struct{}{}
-			if err := rule.AppliesToAny(dataIn, expected.PreviewInteraction); err != nil {
-				rulesPass = feature.PreviewRulesFail
+			ruleRender := feature.RuleRenderPreviewRulesPass
+			if !rulesPass {
+				ruleRender = feature.RuleRenderPreviewRulesFail
 			}
+			comp := rule.NewAnyRenderComponent(dataIn, expected.PreviewInteraction, ruleRender)
+			expectedComponents[comp] = struct{}{}
 		}
 		if expected.PreviewInteraction != nil {
-			comp := feature.NewFieldRender(expected.PreviewInteraction.(EntityField), rulesPass)
+			fieldRender := feature.FieldRenderPreviewRulesPass
+			if !rulesPass {
+				fieldRender = feature.FieldRenderPreviewRulesFail
+			}
+			comp := feature.NewFieldRender(expected.PreviewInteraction.(EntityField), fieldRender)
 			expectedComponents[comp] = struct{}{}
 		}
 	}

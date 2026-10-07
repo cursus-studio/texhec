@@ -22,14 +22,14 @@ type FieldRender uint8
 
 const (
 	_ FieldRender = iota
+	// is used for each Interaction in [InteractionsComponent.Interactions]
+	FieldRenderInteraction
 	// is used when value is empty and we need to render it
-	MissingField
-	// is used when [InteractionsComponent].PreviewInteraction rules fail
-	PreviewRulesFail
-	// is used when [InteractionsComponent].PreviewInteraction rules pass
-	PreviewRulesPass
-	// is used for each Interaction in [InteractionsComponent].Interactions
-	Interaction
+	FieldRenderMissing
+	// is used when [InteractionsComponent.PreviewInteraction] rules fail
+	FieldRenderPreviewRulesFail
+	// is used when [InteractionsComponent.PreviewInteraction] rules pass
+	FieldRenderPreviewRulesPass
 )
 
 type ProvideFieldService[FieldType any] func() FieldType
@@ -55,21 +55,34 @@ type FieldService[FieldType any] interface {
 //
 // rule
 
+type RuleRender uint8
+
+const (
+	_ RuleRender = iota
+	// is used for rules for [InteractionsComponent.Interactions]
+	RuleRenderCompletePreview
+	// is used for rules for [InteractionsComponent.PreviewInteraction] if all rules pass
+	RuleRenderPreviewRulesPass
+	// is used for rules for [InteractionsComponent.PreviewInteraction] if any rules fail
+	RuleRenderPreviewRulesFail
+)
+
 type NoInputRule[AppliedTo any] = Rule[AppliedTo, AppliedTo]
 type Rule[DataIn any, AppliedTo any] any
 type RuleRenderComponent[RuleType Rule[DataIn, AppliedTo], DataIn any, AppliedTo any] struct {
 	In        DataIn
 	AppliedTo AppliedTo
+	Render    RuleRender
 }
 
 func NewRuleRender[RuleType Rule[DataIn, AppliedTo], DataIn any, AppliedTo any](
-	in DataIn, appliedTo AppliedTo) RuleRenderComponent[RuleType, DataIn, AppliedTo] {
-	return RuleRenderComponent[RuleType, DataIn, AppliedTo]{in, appliedTo}
+	in DataIn, appliedTo AppliedTo, render RuleRender) RuleRenderComponent[RuleType, DataIn, AppliedTo] {
+	return RuleRenderComponent[RuleType, DataIn, AppliedTo]{in, appliedTo, render}
 }
 
 type AnyRuleService interface {
 	RenderAny() ecs.AnyComponentArray
-	NewAnyRenderComponent(in, appliedTo any) any
+	NewAnyRenderComponent(in, appliedTo any, render RuleRender) any
 
 	AppliesToAny(dataIn, appliedTo any) error
 	Error() error
@@ -91,6 +104,7 @@ type InteractionsComponent struct {
 	Features           []FeatureKey
 	LockedFeature      bool
 }
+type RenderComponent struct{}
 type LockFeatureEvent struct {
 	// to unlock use empty value
 	Feature FeatureKey
@@ -99,6 +113,7 @@ type LockFeatureEvent struct {
 func NewInteractions(interactions []any, previewInteraction any, features []FeatureKey, lockFeature bool) InteractionsComponent {
 	return InteractionsComponent{interactions, previewInteraction, features, lockFeature}
 }
+func NewRender() RenderComponent                                 { return RenderComponent{} }
 func NewLockFeatureEvent(featureKey FeatureKey) LockFeatureEvent { return LockFeatureEvent{featureKey} }
 func NewUnlockFeatureEvent() LockFeatureEvent                    { return LockFeatureEvent{} }
 
