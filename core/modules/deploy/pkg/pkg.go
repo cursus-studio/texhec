@@ -9,7 +9,6 @@ import (
 	reachpkg "core/modules/reach/pkg"
 	"engine/modules/ecs"
 	"engine/modules/entityregistry"
-	"engine/modules/feature"
 	featurepkg "engine/modules/feature/pkg"
 	"engine/modules/grid"
 	netsyncpkg "engine/modules/netsync/pkg"
@@ -38,29 +37,14 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 	ioc.Wrap(b, func(c ioc.Dic, config featurepkg.Config) {
 		{
 			f := featurepkg.RegisterFeature[deploy.DeployEvent](config)
-			featurepkg.RegisterRuleToField(config, &f, &f.By, actions.OwnRule{
-				PlayerContext: feature.NewFieldGetter(&f, &f.PlayerContext),
-				Entity:        feature.NewFieldGetter(&f, &f.By),
-			})
-			featurepkg.RegisterRuleToField(config, &f, &f.By, actions.CanDeployRule{
-				Entity: feature.NewFieldGetter(&f, &f.By),
-			})
-			featurepkg.RegisterRuleToField(config, &f, &f.Blueprint, actions.CanDeployBlueprintRule{
-				Entity:    feature.NewFieldGetter(&f, &f.By),
-				Blueprint: feature.NewFieldGetter(&f, &f.Blueprint),
-			})
-			featurepkg.RegisterRuleToField(config, &f, &f.Coords, actions.CanDeployAtRule{
-				Entity:    feature.NewFieldGetter(&f, &f.By),
-				Blueprint: feature.NewFieldGetter(&f, &f.Blueprint),
-				Coords:    feature.NewFieldGetter(&f, &f.Coords),
-			})
+			featurepkg.RegisterRuleToField(config, f, actions.NewOwnRule(&f, &f.PlayerContext, &f.By))
+			featurepkg.RegisterRuleToField(config, f, actions.NewCanDeployRule(&f, &f.By))
+			featurepkg.RegisterRuleToField(config, f, actions.NewCanDeployBlueprintRule(&f, &f.By, &f.Blueprint))
+			featurepkg.RegisterRuleToField(config, f, actions.NewCanDeployAtRule(&f, &f.By, &f.Blueprint, &f.Coords))
 		}
 		{
 			f := featurepkg.RegisterFeature[deploy.DestroyEvent](config)
-			featurepkg.RegisterRuleToField(config, &f, &f.Entity, actions.OwnRule{
-				PlayerContext: feature.NewFieldGetter(&f, &f.PlayerContext),
-				Entity:        feature.NewFieldGetter(&f, &f.Entity),
-			})
+			featurepkg.RegisterRuleToField(config, f, actions.NewOwnRule(&f, &f.PlayerContext, &f.Entity))
 		}
 	})
 	ioc.Wrap(b, func(c ioc.Dic, config netsyncpkg.Config) {

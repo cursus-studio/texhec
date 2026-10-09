@@ -8,10 +8,10 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                               7            109             34            812
+Go                               7            109             34            803
 Markdown                         1              1              0              5
 -------------------------------------------------------------------------------
-SUM:                             8            110             34            817
+SUM:                             8            110             34            808
 -------------------------------------------------------------------------------
 ```
 ## TODO
@@ -133,12 +133,12 @@ Type: `func(ctx core/modules/actions.PlayerContext, entity engine/modules/uuid.U
 
 `core/modules/actions`:
   - `core/modules/actions.CanMove`
-  - `core/modules/actions.CanMoveRule`
   - `core/modules/actions.CanMoveTo`
-  - `core/modules/actions.CanMoveToRule`
   - `core/modules/actions.Coords`
   - `core/modules/actions.Entity`
-  - `core/modules/actions.OwnRule`
+  - `core/modules/actions.NewCanMoveRule`
+  - `core/modules/actions.NewCanMoveToRule`
+  - `core/modules/actions.NewOwnRule`
   - `core/modules/actions.PlayerContext`
 
 `core/modules/obstruction`:
@@ -210,10 +210,6 @@ Type: `func(ctx core/modules/actions.PlayerContext, entity engine/modules/uuid.U
 `engine/modules/entityregistry`:
   - `engine/modules/entityregistry.Register`
   - `engine/modules/entityregistry.Service`
-
-`engine/modules/feature`:
-  - `engine/modules/feature.Error`
-  - `engine/modules/feature.NewFieldGetter`
 
 `engine/modules/feature/pkg`:
   - `engine/modules/feature/pkg.Config`

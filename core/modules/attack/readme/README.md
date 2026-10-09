@@ -8,10 +8,10 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                               4             36              3            302
+Go                               4             36              3            293
 Markdown                         1              0              0              1
 -------------------------------------------------------------------------------
-SUM:                             5             36              3            303
+SUM:                             5             36              3            294
 -------------------------------------------------------------------------------
 ```
 ## Types
@@ -111,11 +111,11 @@ Type: `func(ctx core/modules/actions.PlayerContext, attacker core/modules/action
 
 `core/modules/actions`:
   - `core/modules/actions.CanAttack`
-  - `core/modules/actions.CanAttackRule`
   - `core/modules/actions.CanBeAttacked`
-  - `core/modules/actions.CanBeAttackedRule`
   - `core/modules/actions.Entity`
-  - `core/modules/actions.OwnRule`
+  - `core/modules/actions.NewCanAttackRule`
+  - `core/modules/actions.NewCanBeAttackedRule`
+  - `core/modules/actions.NewOwnRule`
   - `core/modules/actions.PlayerContext`
 
 `core/modules/attack`:
@@ -175,10 +175,6 @@ Type: `func(ctx core/modules/actions.PlayerContext, attacker core/modules/action
 `engine/modules/entityregistry`:
   - `engine/modules/entityregistry.Register`
   - `engine/modules/entityregistry.Service`
-
-`engine/modules/feature`:
-  - `engine/modules/feature.Error`
-  - `engine/modules/feature.NewFieldGetter`
 
 `engine/modules/feature/pkg`:
   - `engine/modules/feature/pkg.Config`

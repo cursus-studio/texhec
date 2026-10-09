@@ -34,6 +34,15 @@ type IsEnemyRule struct {
 	Entity        feature.FieldGetter[Entity]
 }
 
+func NewOwnRule[Feature any](f *Feature, ctx *PlayerContext, entity *Entity) OwnRule {
+	return OwnRule{feature.NewFieldGetter(f, ctx), feature.NewFieldGetter(f, entity)}
+}
+func NewIsEnemyRule[Feature any](f *Feature, ctx *PlayerContext, entity *Entity) IsEnemyRule {
+	return IsEnemyRule{feature.NewFieldGetter(f, ctx), feature.NewFieldGetter(f, entity)}
+}
+func (r OwnRule) AppliedToField() int     { return r.Entity.Index }
+func (r IsEnemyRule) AppliedToField() int { return r.Entity.Index }
+
 // build
 type CanDeployRule struct {
 	Entity feature.FieldGetter[Entity]
@@ -48,6 +57,19 @@ type CanDeployAtRule struct {
 	Coords    feature.FieldGetter[Coords]
 }
 
+func NewCanDeployRule[Feature any](f *Feature, entity *Entity) CanDeployRule {
+	return CanDeployRule{feature.NewFieldGetter(f, entity)}
+}
+func NewCanDeployBlueprintRule[Feature any](f *Feature, entity *Entity, blueprint *Blueprint) CanDeployBlueprintRule {
+	return CanDeployBlueprintRule{feature.NewFieldGetter(f, entity), feature.NewFieldGetter(f, blueprint)}
+}
+func NewCanDeployAtRule[Feature any](f *Feature, entity *Entity, blueprint *Blueprint, coords *Coords) CanDeployAtRule {
+	return CanDeployAtRule{feature.NewFieldGetter(f, entity), feature.NewFieldGetter(f, blueprint), feature.NewFieldGetter(f, coords)}
+}
+func (r CanDeployRule) AppliedToField() int          { return r.Entity.Index }
+func (r CanDeployBlueprintRule) AppliedToField() int { return r.Blueprint.Index }
+func (r CanDeployAtRule) AppliedToField() int        { return r.Coords.Index }
+
 // move
 type CanMoveRule struct {
 	Entity feature.FieldGetter[Entity]
@@ -57,6 +79,15 @@ type CanMoveToRule struct {
 	Coords feature.FieldGetter[Coords]
 }
 
+func NewCanMoveRule[Feature any](f *Feature, entity *Entity) CanMoveRule {
+	return CanMoveRule{feature.NewFieldGetter(f, entity)}
+}
+func NewCanMoveToRule[Feature any](f *Feature, entity *Entity, coords *Coords) CanMoveToRule {
+	return CanMoveToRule{feature.NewFieldGetter(f, entity), feature.NewFieldGetter(f, coords)}
+}
+func (r CanMoveRule) AppliedToField() int   { return r.Entity.Index }
+func (r CanMoveToRule) AppliedToField() int { return r.Coords.Index }
+
 // attack
 type CanAttackRule struct {
 	Entity feature.FieldGetter[Entity]
@@ -65,6 +96,16 @@ type CanBeAttackedRule struct {
 	Attacker feature.FieldGetter[Entity]
 	Attacked feature.FieldGetter[Entity]
 }
+
+func NewCanAttackRule[Feature any](f *Feature, entity *Entity) CanAttackRule {
+	return CanAttackRule{feature.NewFieldGetter(f, entity)}
+}
+func NewCanBeAttackedRule[Feature any](f *Feature, attacker *Entity, attacked *Entity) CanBeAttackedRule {
+	return CanBeAttackedRule{feature.NewFieldGetter(f, attacker), feature.NewFieldGetter(f, attacked)}
+}
+
+func (r CanAttackRule) AppliedToField() int     { return r.Entity.Index }
+func (r CanBeAttackedRule) AppliedToField() int { return r.Attacked.Index }
 
 //
 

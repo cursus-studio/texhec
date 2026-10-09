@@ -43,6 +43,20 @@ type EnemyRule struct {
 	Enemy     feature.FieldGetter[EntityField]
 }
 
+func NewOwnsRule[Feature any](f *Feature, ctx *PlayerCTX, entity *EntityField) OwnsRule {
+	return OwnsRule{feature.NewFieldGetter(f, ctx), feature.NewFieldGetter(f, entity)}
+}
+func NewCanAttackRule[Feature any](f *Feature, entity *EntityField, enemy *EntityField) CanAttackRule {
+	return CanAttackRule{feature.NewFieldGetter(f, entity), feature.NewFieldGetter(f, enemy)}
+}
+func NewEnemyRule[Feature any](f *Feature, ctx *PlayerCTX, enemy *EntityField) EnemyRule {
+	return EnemyRule{feature.NewFieldGetter(f, ctx), feature.NewFieldGetter(f, enemy)}
+}
+
+func (r OwnsRule) AppliedToField() int      { return r.Entity.Index }
+func (r CanAttackRule) AppliedToField() int { return r.Enemy.Index }
+func (r EnemyRule) AppliedToField() int     { return r.Enemy.Index }
+
 type AttackFeature struct {
 	PlayerCTX
 	Attacker EntityField
@@ -99,28 +113,16 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 
 		{
 			f := featurepkg.RegisterFeature[AttackFeature](config)
-			featurepkg.RegisterRuleToField(config, &f, &f.Attacker, OwnsRule{
-				feature.NewFieldGetter(&f, &f.PlayerCTX),
-				feature.NewFieldGetter(&f, &f.Attacker),
-			})
-			featurepkg.RegisterRuleToField(config, &f, &f.Attacked, CanAttackRule{
-				feature.NewFieldGetter(&f, &f.Attacker),
-				feature.NewFieldGetter(&f, &f.Attacked),
-			})
+			featurepkg.RegisterRuleToField(config, f, NewOwnsRule(&f, &f.PlayerCTX, &f.Attacker))
+			featurepkg.RegisterRuleToField(config, f, NewCanAttackRule(&f, &f.Attacker, &f.Attacked))
 		}
 		{
 			f := featurepkg.RegisterFeature[MoveToFeature](config)
-			featurepkg.RegisterRuleToField(config, &f, &f.From, OwnsRule{
-				feature.NewFieldGetter(&f, &f.PlayerCTX),
-				feature.NewFieldGetter(&f, &f.From),
-			})
+			featurepkg.RegisterRuleToField(config, f, NewOwnsRule(&f, &f.PlayerCTX, &f.From))
 		}
 		{
 			f := featurepkg.RegisterFeature[FocusEnemyFeature](config)
-			featurepkg.RegisterRuleToField(config, &f, &f.Enemy, EnemyRule{
-				feature.NewFieldGetter(&f, &f.PlayerCTX),
-				feature.NewFieldGetter(&f, &f.Enemy),
-			})
+			featurepkg.RegisterRuleToField(config, f, NewEnemyRule(&f, &f.PlayerCTX, &f.Enemy))
 		}
 	})
 })

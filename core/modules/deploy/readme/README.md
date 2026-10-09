@@ -8,9 +8,9 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                               3             51             16            347
+Go                               3             51             16            331
 -------------------------------------------------------------------------------
-SUM:                             3             51             16            347
+SUM:                             3             51             16            331
 -------------------------------------------------------------------------------
 ```
 ## Types
@@ -102,14 +102,14 @@ Type: `func(ctx core/modules/actions.PlayerContext, uuid engine/modules/uuid.UUI
   - `core/modules/actions.Blueprint`
   - `core/modules/actions.CanDeploy`
   - `core/modules/actions.CanDeployAt`
-  - `core/modules/actions.CanDeployAtRule`
   - `core/modules/actions.CanDeployBlueprint`
-  - `core/modules/actions.CanDeployBlueprintRule`
-  - `core/modules/actions.CanDeployRule`
   - `core/modules/actions.Coords`
   - `core/modules/actions.Entity`
+  - `core/modules/actions.NewCanDeployAtRule`
+  - `core/modules/actions.NewCanDeployBlueprintRule`
+  - `core/modules/actions.NewCanDeployRule`
+  - `core/modules/actions.NewOwnRule`
   - `core/modules/actions.Own`
-  - `core/modules/actions.OwnRule`
   - `core/modules/actions.PlayerContext`
 
 `core/modules/deploy`:
@@ -170,10 +170,6 @@ Type: `func(ctx core/modules/actions.PlayerContext, uuid engine/modules/uuid.UUI
 `engine/modules/entityregistry`:
   - `engine/modules/entityregistry.Register`
   - `engine/modules/entityregistry.Service`
-
-`engine/modules/feature`:
-  - `engine/modules/feature.Error`
-  - `engine/modules/feature.NewFieldGetter`
 
 `engine/modules/feature/pkg`:
   - `engine/modules/feature/pkg.Config`

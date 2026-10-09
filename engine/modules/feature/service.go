@@ -85,7 +85,9 @@ func (getter FieldGetter[Field]) From(fields AllFields) (zero Field) {
 //
 
 // rule should be composed from field getters
-type Rule = any
+type Rule interface {
+	AppliedToField() int
+}
 type RuleRenderComponent[RuleType Rule] struct {
 	Rule   RuleType
 	Fields AllFields

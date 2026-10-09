@@ -66,6 +66,8 @@ type CanDeployRule feature.Rule
 type CanMoveToRule feature.Rule
 type CanPlaceOnRule feature.Rule
 
+func (r OwnsRule) AppliedToField() int { return r.Entity.Index }
+
 //
 // rule implementation
 
@@ -168,32 +170,32 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 	})
 	ioc.Wrap(b, func(c ioc.Dic, config featurepkg.Config) {
 		f := featurepkg.RegisterFeature[AttackFeature](config)
-		featurepkg.RegisterRuleToField(config, &f, &f.Attacker, OwnsRule{
+		featurepkg.RegisterRuleToField(config, f, OwnsRule{
 			feature.NewFieldGetter(&f, &f.PlayerCTX),
 			feature.NewFieldGetter(&f, &f.Attacker),
 		})
-		featurepkg.RegisterRuleToField[CanAttackRule](config, &f, &f.Attacked, nil) // should replace these nils
+		featurepkg.RegisterRuleToField[CanAttackRule](config, f, nil) // should replace these nils
 	})
 	ioc.Wrap(b, func(c ioc.Dic, config featurepkg.Config) {
 		f := featurepkg.RegisterFeature[MoveFeature](config)
-		featurepkg.RegisterRuleToField(config, &f, &f.Entity, OwnsRule{
+		featurepkg.RegisterRuleToField(config, f, OwnsRule{
 			feature.NewFieldGetter(&f, &f.PlayerCTX),
 			feature.NewFieldGetter(&f, &f.Entity),
 		})
-		featurepkg.RegisterRuleToField[CanMoveToRule](config, &f, &f.Coords, nil)
+		featurepkg.RegisterRuleToField[CanMoveToRule](config, f, nil)
 	})
 	ioc.Wrap(b, func(c ioc.Dic, config featurepkg.Config) {
 		f := featurepkg.RegisterFeature[DeployFeature](config)
-		featurepkg.RegisterRuleToField(config, &f, &f.Entity, OwnsRule{
+		featurepkg.RegisterRuleToField(config, f, OwnsRule{
 			feature.NewFieldGetter(&f, &f.PlayerCTX),
 			feature.NewFieldGetter(&f, &f.Entity),
 		})
-		featurepkg.RegisterRuleToField[CanDeployRule](config, &f, &f.Deployed, nil)
-		featurepkg.RegisterRuleToField[CanPlaceOnRule](config, &f, &f.Coords, nil)
+		featurepkg.RegisterRuleToField[CanDeployRule](config, f, nil)
+		featurepkg.RegisterRuleToField[CanPlaceOnRule](config, f, nil)
 	})
 	ioc.Wrap(b, func(c ioc.Dic, config featurepkg.Config) {
 		f := featurepkg.RegisterFeature[DestroyFeature](config)
-		featurepkg.RegisterRuleToField(config, &f, &f.Entity, OwnsRule{
+		featurepkg.RegisterRuleToField(config, f, OwnsRule{
 			feature.NewFieldGetter(&f, &f.PlayerCTX),
 			feature.NewFieldGetter(&f, &f.Entity),
 		})

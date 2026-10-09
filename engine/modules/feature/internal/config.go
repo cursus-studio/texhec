@@ -153,10 +153,10 @@ func RegisterFieldProvider[FieldType any](
 		addFeatureFieldIndex(config, featureKey)
 	}
 }
-func RegisterRuleToField[FieldRule feature.Rule, Feature any, AppliedTo any](
-	config Config, zero *Feature, appliedTo *AppliedTo, rule FieldRule) {
+func RegisterRuleToField[Feature any, FieldRule feature.Rule](
+	config Config, rule FieldRule) {
 	featureKey := reflect.TypeFor[Feature]()
-	appliedToIndex := feature.GetFieldIndex(zero, appliedTo)
+	appliedToIndex := rule.AppliedToField()
 	feat, ok := config.featureConfigs[featureKey]
 	if !ok {
 		RegisterFeature[Feature](config)

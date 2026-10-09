@@ -52,10 +52,10 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                              13            191            109           1253
+Go                              13            194            109           1256
 Markdown                         1              6              0             33
 -------------------------------------------------------------------------------
-SUM:                            14            197            109           1286
+SUM:                            14            200            109           1289
 -------------------------------------------------------------------------------
 ```
 ## Types
@@ -435,6 +435,9 @@ Type: `func() engine/modules/ecs.AnyComponentArray`
 Type: `engine/modules/feature.Rule`
 rule should be composed from field getters
 
+#### method Rule AppliedToField
+Type: `func() int`
+
 ### type AnyRuleService
 Type: `engine/modules/feature.AnyRuleService`
 
@@ -638,6 +641,7 @@ Type: `func() engine/modules/feature.LockFeatureEvent`
   - `engine/modules/feature.AllFields`
   - `engine/modules/feature.AnyFieldService`
   - `engine/modules/feature.AnyRuleService`
+  - `engine/modules/feature.AppliedToField`
   - `engine/modules/feature.AppliesAny`
   - `engine/modules/feature.Equal`
   - `engine/modules/feature.Feature`
@@ -653,7 +657,7 @@ Type: `func() engine/modules/feature.LockFeatureEvent`
   - `engine/modules/feature.FieldRenderPreviewRulesPass`
   - `engine/modules/feature.FieldService`
   - `engine/modules/feature.From`
-  - `engine/modules/feature.GetFieldIndex`
+  - `engine/modules/feature.Index`
   - `engine/modules/feature.Interactions`
   - `engine/modules/feature.InteractionsComponent`
   - `engine/modules/feature.InteractionsService`
