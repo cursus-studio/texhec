@@ -3,6 +3,7 @@ package internal
 import (
 	"engine"
 	"engine/modules/feature"
+	"reflect"
 	"slices"
 
 	"github.com/ogiusek/ioc/v2"
@@ -66,4 +67,26 @@ func (s *service) Register() error {
 
 func (s *service) Features() []feature.FeatureKey {
 	return slices.Clone(s.Config.features)
+}
+
+func (s *service) Validate(feat any) error {
+	featureKey := reflect.TypeOf(feat)
+	featureConfig, ok := s.Config.featureConfigs[featureKey]
+	if !ok {
+		return feature.ErrInvalidType
+	}
+
+	featureValue := reflect.ValueOf(feat)
+	fields := make([]any, 0, featureKey.NumField())
+	for i := range featureKey.NumField() {
+		fields = append(fields, featureValue.Field(i).Interface())
+		fieldConfig := featureConfig.Fields[i]
+		for _, rule := range fieldConfig.Rules {
+			ruleService := s.GetRuleService(rule)
+			if err := ruleService.AppliesAny(rule.Rule, fields); err != nil {
+				return err
+			}
+		}
+	}
+	return nil
 }

@@ -11,7 +11,6 @@ import (
 	"engine/modules/entityregistry"
 	featurepkg "engine/modules/feature/pkg"
 	"engine/modules/grid"
-	netsyncpkg "engine/modules/netsync/pkg"
 	typeregistrypkg "engine/modules/typeregistry/pkg"
 	"errors"
 	"fmt"
@@ -46,15 +45,6 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 			f := featurepkg.RegisterFeature[deploy.DestroyEvent](config)
 			featurepkg.RegisterRuleToField(config, f, actions.NewOwnRule(&f, &f.PlayerContext, &f.Entity))
 		}
-	})
-	ioc.Wrap(b, func(c ioc.Dic, config netsyncpkg.Config) {
-		world := ioc.GetServices[game.GameWorld](c)
-		netsyncpkg.AddEventValidation(config, func(event deploy.DeployEvent) error {
-			return world.Player().Own(event.PlayerContext, event.By)
-		})
-		netsyncpkg.AddEventValidation(config, func(event deploy.DestroyEvent) error {
-			return world.Player().Own(event.PlayerContext, event.Entity)
-		})
 	})
 
 	ioc.Wrap(b, func(c ioc.Dic, b entityregistry.Service) {

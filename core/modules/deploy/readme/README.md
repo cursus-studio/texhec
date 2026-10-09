@@ -8,9 +8,9 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                               3             51             16            331
+Go                               3             51             16            321
 -------------------------------------------------------------------------------
-SUM:                             3             51             16            331
+SUM:                             3             51             16            321
 -------------------------------------------------------------------------------
 ```
 ## Types
@@ -182,10 +182,6 @@ Type: `func(ctx core/modules/actions.PlayerContext, uuid engine/modules/uuid.UUI
 
 `engine/modules/loop`:
   - `engine/modules/loop.TickEvent`
-
-`engine/modules/netsync/pkg`:
-  - `engine/modules/netsync/pkg.AddEventValidation`
-  - `engine/modules/netsync/pkg.Config`
 
 `engine/modules/typeregistry/pkg`:
   - `engine/modules/typeregistry/pkg.PkgT`

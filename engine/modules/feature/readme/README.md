@@ -44,7 +44,7 @@ Specialized component for rendering rules for preview field
 ```
 $ go test ./... -bench=.
 PASS
-ok  	engine/modules/feature/test	0.014s
+ok  	engine/modules/feature/test	0.015s
 ```
 ## Lines of code
 ```
@@ -52,10 +52,10 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                              13            194            109           1256
+Go                              13            199            109           1295
 Markdown                         1              6              0             33
 -------------------------------------------------------------------------------
-SUM:                            14            200            109           1289
+SUM:                            14            205            109           1328
 -------------------------------------------------------------------------------
 ```
 ## Types
@@ -85,6 +85,9 @@ Type: `func(field any)`
 
 #### method Service SubmitPreviewInteraction
 Type: `func(fieldType engine/modules/feature.FieldKey)`
+
+#### method Service Validate
+Type: `func(feature any) error`
 
 ### type FieldKey
 Type: `engine/modules/feature.FieldKey`
@@ -644,6 +647,7 @@ Type: `func() engine/modules/feature.LockFeatureEvent`
   - `engine/modules/feature.AppliedToField`
   - `engine/modules/feature.AppliesAny`
   - `engine/modules/feature.Equal`
+  - `engine/modules/feature.ErrInvalidType`
   - `engine/modules/feature.Feature`
   - `engine/modules/feature.FeatureKey`
   - `engine/modules/feature.Features`

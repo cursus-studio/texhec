@@ -85,7 +85,7 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 				}
 				return ErrNotAnOwner
 			}
-		}, errors.New("does not own")),
+		}, ErrNotAnOwner),
 		featurepkg.RulePkg(func(c ioc.Dic) func(rule CanAttackRule, fields feature.AllFields) error {
 			return func(rule CanAttackRule, fields feature.AllFields) error {
 				if rule.Entity.From(fields).OwnerID != rule.Enemy.From(fields).OwnerID {
@@ -93,7 +93,7 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 				}
 				return ErrNotAnEnemy
 			}
-		}, errors.New("cannot attack")),
+		}, ErrNotAnEnemy),
 		featurepkg.RulePkg(func(c ioc.Dic) func(rule EnemyRule, fields feature.AllFields) error {
 			return func(rule EnemyRule, fields feature.AllFields) error {
 				if rule.PlayerCTX.From(fields).ID != rule.Enemy.From(fields).OwnerID {
@@ -101,7 +101,7 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 				}
 				return ErrNotAnEnemy
 			}
-		}, errors.New("is not an enemy")),
+		}, ErrNotAnEnemy),
 	}
 	for _, pkg := range pkgs {
 		pkg(b)
@@ -137,6 +137,14 @@ type World struct {
 
 	Rules map[feature.RuleKey]feature.AnyRuleService
 	T     *testing.T
+}
+
+func (w World) AssertErr(expectedErr, gotErr error) {
+	w.T.Helper()
+	if gotErr == expectedErr {
+		return
+	}
+	w.T.Fatalf("unexpected error \"%v\" expected \"%v\"", gotErr, expectedErr)
 }
 
 func (w World) AssertInteractions(expected feature.InteractionsComponent) {

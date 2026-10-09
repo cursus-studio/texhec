@@ -10,6 +10,18 @@ import (
 	"github.com/ogiusek/ioc/v2"
 )
 
+func TestFeatureValidate(t *testing.T) {
+	world := ioc.GetServices[World](ioc.NewContainer(enginepkg.Pkg, Pkg))
+	world.T = t
+
+	world.AssertErr(feature.ErrInvalidType, world.World.Feature().Validate(""))
+	world.AssertErr(ErrNotAnOwner,
+		world.World.Feature().Validate(AttackFeature{PlayerCTX: PlayerCTX{1}}))
+	world.AssertErr(nil, world.World.Feature().Validate(AttackFeature{PlayerCTX{1}, EntityField{1}, EntityField{2}}))
+	world.AssertErr(ErrNotAnEnemy,
+		world.World.Feature().Validate(AttackFeature{PlayerCTX{1}, EntityField{1}, EntityField{1}}))
+}
+
 func TestFeatures(t *testing.T) {
 	emitted := []AttackFeature{}
 	world := ioc.GetServices[World](ioc.NewContainer(enginepkg.Pkg, Pkg, func(b ioc.Builder) {

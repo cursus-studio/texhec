@@ -11,7 +11,6 @@ import (
 	"engine/modules/entityregistry"
 	featurepkg "engine/modules/feature/pkg"
 	"engine/modules/grid"
-	netsyncpkg "engine/modules/netsync/pkg"
 	typeregistrypkg "engine/modules/typeregistry/pkg"
 	"errors"
 	"fmt"
@@ -41,12 +40,6 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 		featurepkg.RegisterRuleToField(config, f, actions.NewOwnRule(&f, &f.PlayerContext, &f.Attacker))
 		featurepkg.RegisterRuleToField(config, f, actions.NewCanAttackRule(&f, &f.Attacker))
 		featurepkg.RegisterRuleToField(config, f, actions.NewCanBeAttackedRule(&f, &f.Attacker, &f.Target))
-	})
-	ioc.Wrap(b, func(c ioc.Dic, config netsyncpkg.Config) {
-		world := ioc.GetServices[game.GameWorld](c)
-		netsyncpkg.AddEventValidation(config, func(event attack.AttackEvent) error {
-			return world.Player().Own(event.PlayerContext, event.Attacker)
-		})
 	})
 
 	ioc.Wrap(b, func(c ioc.Dic, b entityregistry.Service) {

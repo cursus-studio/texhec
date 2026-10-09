@@ -162,4 +162,5 @@ type Service interface {
 
 	ecs.SystemRegister
 	Features() []FeatureKey
+	Validate(feature any) error
 }

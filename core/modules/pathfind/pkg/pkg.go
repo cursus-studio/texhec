@@ -9,7 +9,6 @@ import (
 	"engine/modules/entityregistry"
 	featurepkg "engine/modules/feature/pkg"
 	gridpkg "engine/modules/grid/pkg"
-	netsyncpkg "engine/modules/netsync/pkg"
 	relationpkg "engine/modules/relation/pkg"
 	typeregistrypkg "engine/modules/typeregistry/pkg"
 	"fmt"
@@ -50,12 +49,6 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 		featurepkg.RegisterRuleToField(config, f, actions.NewOwnRule(&f, &f.PlayerContext, &f.Entity))
 		featurepkg.RegisterRuleToField(config, f, actions.NewCanMoveRule(&f, &f.Entity))
 		featurepkg.RegisterRuleToField(config, f, actions.NewCanMoveToRule(&f, &f.Entity, &f.Coords))
-	})
-	ioc.Wrap(b, func(c ioc.Dic, config netsyncpkg.Config) {
-		world := ioc.GetServices[game.GameWorld](c)
-		netsyncpkg.AddEventValidation(config, func(event pathfind.FindPathEvent) error {
-			return world.Player().Own(event.PlayerContext, event.Entity)
-		})
 	})
 
 	ioc.Wrap(b, func(c ioc.Dic, b entityregistry.Service) {

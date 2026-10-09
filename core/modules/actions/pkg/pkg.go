@@ -4,8 +4,10 @@ import (
 	"core/game"
 	"core/modules/actions"
 	"core/modules/actions/internal"
+	"engine/modules/ecs"
 	"engine/modules/feature"
 	featurepkg "engine/modules/feature/pkg"
+	netsyncpkg "engine/modules/netsync/pkg"
 	"errors"
 
 	"github.com/ogiusek/ioc/v2"
@@ -86,5 +88,16 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 
 	ioc.Register(b, func(c ioc.Dic) actions.Service {
 		return internal.NewService(c)
+	})
+
+	ioc.Wrap(b, func(c ioc.Dic, config netsyncpkg.Config) {
+		world := ioc.GetServices[game.GameWorld](c)
+		netsyncpkg.AddGenericEventValidation(config, func(client ecs.EntityID, event any) error {
+			err := world.Feature().Validate(event)
+			if err == feature.ErrInvalidType {
+				return nil
+			}
+			return err
+		})
 	})
 })

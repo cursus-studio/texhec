@@ -8,10 +8,10 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                               7             91             17            595
+Go                               7             92             17            607
 Markdown                         1              0              0              1
 -------------------------------------------------------------------------------
-SUM:                             8             91             17            596
+SUM:                             8             92             17            608
 -------------------------------------------------------------------------------
 ```
 ## Types
@@ -289,6 +289,7 @@ Type: `func[Feature any](f *Feature, attacker *core/modules/actions.Entity, atta
 
 `engine/modules/feature`:
   - `engine/modules/feature.AllFields`
+  - `engine/modules/feature.ErrInvalidType`
   - `engine/modules/feature.Error`
   - `engine/modules/feature.FieldGetter`
   - `engine/modules/feature.FieldRenderInteraction`
@@ -308,6 +309,7 @@ Type: `func[Feature any](f *Feature, attacker *core/modules/actions.Entity, atta
   - `engine/modules/feature.RuleRenderPreviewRulesPass`
   - `engine/modules/feature.RuleService`
   - `engine/modules/feature.SubmitInteraction`
+  - `engine/modules/feature.Validate`
   - `engine/modules/feature.Value`
 
 `engine/modules/feature/pkg`:
@@ -330,6 +332,10 @@ Type: `func[Feature any](f *Feature, attacker *core/modules/actions.Entity, atta
 `engine/modules/inputs`:
   - `engine/modules/inputs.LeftClick`
   - `engine/modules/inputs.NewLeftClick`
+
+`engine/modules/netsync/pkg`:
+  - `engine/modules/netsync/pkg.AddGenericEventValidation`
+  - `engine/modules/netsync/pkg.Config`
 
 `engine/modules/render`:
   - `engine/modules/render.Color`
