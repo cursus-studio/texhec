@@ -56,18 +56,21 @@ func (s *entityFieldService) Register() error {
 //
 // field rules
 
-type OwnsRule feature.Rule[PlayerCTX, EntityField]            // [PlayerCTX] owns [EntityField]
-type CanAttackRule feature.Rule[EntityField, EntityField]     // [EntityField] canAttack [EntityField]
-type ReachesRule feature.Rule[EntityField, CoordsField]       // [EntityField] reaches [CoordsField]
-type CanDeployRule feature.Rule[EntityField, BlueprintField]  // [EntityField] canDeploy [BlueprintField]
-type CanMoveToRule feature.Rule[EntityField, CoordsField]     // [EntityField] canMoveTo [CoordsField]
-type CanPlaceOnRule feature.Rule[BlueprintField, CoordsField] // [BlueprintField] canPlaceOn [CoordsField]
+type OwnsRule struct {
+	PlayerCTX feature.FieldGetter[PlayerCTX]
+	Entity    feature.FieldGetter[EntityField]
+}
+type CanAttackRule feature.Rule
+type ReachesRule feature.Rule
+type CanDeployRule feature.Rule
+type CanMoveToRule feature.Rule
+type CanPlaceOnRule feature.Rule
 
 //
 // rule implementation
 
 type ownsRuleService struct {
-	Rule ioc.Lazy[feature.RuleService[OwnsRule, PlayerCTX, EntityField]] `inject:""`
+	Rule ioc.Lazy[feature.RuleService[OwnsRule]] `inject:""`
 	// World
 }
 
@@ -126,10 +129,14 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 		featurepkg.FieldPkg[BlueprintField],
 
 		// rules
-		featurepkg.RulePkg[OwnsRule](func(c ioc.Dic) func(ctx PlayerCTX, entity EntityField) error {
-			// here I can retrieve world
-			return func(ctx PlayerCTX, entity EntityField) error {
-				return nil // here I should return entity
+		featurepkg.RulePkg(func(c ioc.Dic) func(OwnsRule, feature.AllFields) error {
+			return func(rule OwnsRule, fields feature.AllFields) error {
+				playerCtx := rule.PlayerCTX.From(fields)
+				entity := rule.Entity.From(fields)
+				if playerCtx == entity {
+					return nil
+				}
+				return nil // return rule error
 			}
 		}, errors.New("does not own")),
 		// RulePkg[CanAttackRule](),
@@ -161,22 +168,34 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 	})
 	ioc.Wrap(b, func(c ioc.Dic, config featurepkg.Config) {
 		f := featurepkg.RegisterFeature[AttackFeature](config)
-		featurepkg.RegisterRuleToField[OwnsRule](config, &f, &f.PlayerCTX, &f.Attacker)
-		featurepkg.RegisterRuleToField[CanAttackRule](config, &f, &f.Attacker, &f.Attacked)
+		featurepkg.RegisterRuleToField(config, &f, &f.Attacker, OwnsRule{
+			feature.NewFieldGetter(&f, &f.PlayerCTX),
+			feature.NewFieldGetter(&f, &f.Attacker),
+		})
+		featurepkg.RegisterRuleToField[CanAttackRule](config, &f, &f.Attacked, nil) // should replace these nils
 	})
 	ioc.Wrap(b, func(c ioc.Dic, config featurepkg.Config) {
 		f := featurepkg.RegisterFeature[MoveFeature](config)
-		featurepkg.RegisterRuleToField[OwnsRule](config, &f, &f.PlayerCTX, &f.Entity)
-		featurepkg.RegisterRuleToField[CanMoveToRule](config, &f, &f.Entity, &f.Coords)
+		featurepkg.RegisterRuleToField(config, &f, &f.Entity, OwnsRule{
+			feature.NewFieldGetter(&f, &f.PlayerCTX),
+			feature.NewFieldGetter(&f, &f.Entity),
+		})
+		featurepkg.RegisterRuleToField[CanMoveToRule](config, &f, &f.Coords, nil)
 	})
 	ioc.Wrap(b, func(c ioc.Dic, config featurepkg.Config) {
 		f := featurepkg.RegisterFeature[DeployFeature](config)
-		featurepkg.RegisterRuleToField[OwnsRule](config, &f, &f.PlayerCTX, &f.Entity)
-		featurepkg.RegisterRuleToField[CanDeployRule](config, &f, &f.Entity, &f.Deployed)
-		featurepkg.RegisterRuleToField[CanPlaceOnRule](config, &f, &f.Deployed, &f.Coords)
+		featurepkg.RegisterRuleToField(config, &f, &f.Entity, OwnsRule{
+			feature.NewFieldGetter(&f, &f.PlayerCTX),
+			feature.NewFieldGetter(&f, &f.Entity),
+		})
+		featurepkg.RegisterRuleToField[CanDeployRule](config, &f, &f.Deployed, nil)
+		featurepkg.RegisterRuleToField[CanPlaceOnRule](config, &f, &f.Coords, nil)
 	})
 	ioc.Wrap(b, func(c ioc.Dic, config featurepkg.Config) {
 		f := featurepkg.RegisterFeature[DestroyFeature](config)
-		featurepkg.RegisterRuleToField[OwnsRule](config, &f, &f.PlayerCTX, &f.Entity)
+		featurepkg.RegisterRuleToField(config, &f, &f.Entity, OwnsRule{
+			feature.NewFieldGetter(&f, &f.PlayerCTX),
+			feature.NewFieldGetter(&f, &f.Entity),
+		})
 	})
 })

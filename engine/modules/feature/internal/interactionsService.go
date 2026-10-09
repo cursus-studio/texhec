@@ -64,6 +64,32 @@ func (s *interactionsService) Interactions() feature.InteractionsComponent {
 	comp, _ := s.interactions.Get(entity)
 	return comp
 }
+func (s *interactionsService) AllFields(comp feature.InteractionsComponent) (allFields feature.AllFields) {
+	if !comp.LockedFeature {
+		return nil
+	}
+	featureKey := comp.Features[0]
+	interactions := slices.Clone(comp.Interactions)
+	if comp.PreviewInteraction != nil {
+		interactions = append(interactions, comp.PreviewInteraction)
+	}
+
+	config := s.Config.featureConfigs[featureKey]
+	for numField := range featureKey.NumField() {
+		fieldConfig := config.Fields[numField]
+
+		if fieldConfig.Provide != nil {
+			allFields = append(allFields, fieldConfig.Provide())
+		} else if len(interactions) != 0 {
+			interaction := interactions[0]
+			allFields = append(allFields, interaction)
+			interactions = interactions[1:]
+		} else {
+			break
+		}
+	}
+	return allFields
+}
 func (s *interactionsService) OnInteractionsMod(listener func(ecs.EntityID)) {
 	s.interactions.OnUpsert(listener)
 }

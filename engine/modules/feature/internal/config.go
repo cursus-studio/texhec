@@ -4,28 +4,9 @@ import (
 	"engine/modules/ecs"
 	"engine/modules/feature"
 	"reflect"
-	"unsafe"
 
 	"github.com/ogiusek/ioc/v2"
 )
-
-func GetFieldIndex[Type any, Field any](zero *Type, field *Field) FieldIndex {
-	// #nosec G103
-	zeroPtr := uintptr(unsafe.Pointer(zero))
-	// #nosec G103
-	fieldPtr := uintptr(unsafe.Pointer(field))
-	fieldOffset := fieldPtr - zeroPtr
-	structType := reflect.TypeFor[Type]()
-	for i := range structType.NumField() {
-		field := structType.Field(i)
-		if field.Offset == fieldOffset {
-			return i
-		}
-	}
-	panic("expected pointer to a field")
-}
-
-//
 
 type FieldIndex = int
 
@@ -44,9 +25,9 @@ type featureFieldConfig struct {
 	Rules []RuleConfig
 }
 type ruleConfig struct {
-	DataInFieldIndex FieldIndex
-	RuleType         feature.RuleKey
-	Service          feature.AnyRuleService
+	RuleType feature.RuleKey
+	Rule     any
+	Service  feature.AnyRuleService
 }
 type featureConfig struct {
 	Fields []FeatureFieldConfig
@@ -67,11 +48,10 @@ func NewFeatureFieldConfig(fieldConfig FieldConfig) FeatureFieldConfig {
 		Rules:       make([]RuleConfig, 0),
 	}
 }
-func NewRuleConfig[RuleType feature.Rule[DataIn, AppliedTo], DataIn any, AppliedTo any](
-	dataInFieldIndex FieldIndex) RuleConfig {
+func NewRuleConfig[RuleType feature.Rule](rule RuleType) RuleConfig {
 	config := &ruleConfig{
-		DataInFieldIndex: dataInFieldIndex,
-		RuleType:         reflect.TypeFor[RuleType](),
+		RuleType: reflect.TypeFor[RuleType](),
+		Rule:     rule,
 	}
 	return config
 }
@@ -173,18 +153,17 @@ func RegisterFieldProvider[FieldType any](
 		addFeatureFieldIndex(config, featureKey)
 	}
 }
-func RegisterRuleToField[FieldRule feature.Rule[DataIn, AppliedTo], Feature any, DataIn any, AppliedTo any](
-	config Config, zero *Feature, in *DataIn, appliedTo *AppliedTo) {
+func RegisterRuleToField[FieldRule feature.Rule, Feature any, AppliedTo any](
+	config Config, zero *Feature, appliedTo *AppliedTo, rule FieldRule) {
 	featureKey := reflect.TypeFor[Feature]()
-	inFieldIndex := GetFieldIndex(zero, in)
-	appliedToIndex := GetFieldIndex(zero, appliedTo)
+	appliedToIndex := feature.GetFieldIndex(zero, appliedTo)
 	feat, ok := config.featureConfigs[featureKey]
 	if !ok {
 		RegisterFeature[Feature](config)
 		feat = config.featureConfigs[featureKey]
 	}
 	ruleConfig := feat.Fields[appliedToIndex]
-	ruleConfig.Rules = append(ruleConfig.Rules, NewRuleConfig[FieldRule, DataIn, AppliedTo](inFieldIndex))
+	ruleConfig.Rules = append(ruleConfig.Rules, NewRuleConfig(rule))
 }
 func RegisterFeature[Feature any](config Config) (zero Feature) {
 	featureKey := reflect.TypeFor[Feature]()

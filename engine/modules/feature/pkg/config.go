@@ -12,13 +12,9 @@ func RegisterFieldProvider[FieldType any](
 	config Config, provide feature.ProvideFieldService[FieldType]) {
 	internal.RegisterFieldProvider(config, provide)
 }
-func RegisterNoInputRuleToField[FieldRule feature.NoInputRule[AppliedTo], Feature any, AppliedTo any](
-	config Config, zero *Feature, appliedTo *AppliedTo) {
-	internal.RegisterRuleToField[FieldRule](config, zero, appliedTo, appliedTo)
-}
-func RegisterRuleToField[FieldRule feature.Rule[DataIn, AppliedTo], Feature any, DataIn any, AppliedTo any](
-	config Config, zero *Feature, in *DataIn, appliedTo *AppliedTo) {
-	internal.RegisterRuleToField[FieldRule](config, zero, in, appliedTo)
+func RegisterRuleToField[FieldRule feature.Rule, Feature any, AppliedTo any](
+	config Config, zero *Feature, appliedTo *AppliedTo, rule FieldRule) {
+	internal.RegisterRuleToField(config, zero, appliedTo, rule)
 }
 func RegisterFeature[Feature any](config Config) (zero Feature) {
 	return internal.RegisterFeature[Feature](config)

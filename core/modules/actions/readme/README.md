@@ -8,10 +8,10 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                               7             85             14            488
+Go                               7             86             17            557
 Markdown                         1              0              0              1
 -------------------------------------------------------------------------------
-SUM:                             8             85             14            489
+SUM:                             8             86             17            558
 -------------------------------------------------------------------------------
 ```
 ## Types
@@ -22,25 +22,25 @@ Type: `core/modules/actions.Service`
 Type: `func() engine/modules/feature.FieldService[core/modules/actions.Blueprint]`
 
 #### method Service CanAttack
-Type: `func() engine/modules/feature.NoInputRuleService[core/modules/actions.CanAttackRule, core/modules/actions.Entity]`
+Type: `func() engine/modules/feature.RuleService[core/modules/actions.CanAttackRule]`
 
 #### method Service CanBeAttacked
-Type: `func() engine/modules/feature.RuleService[core/modules/actions.CanBeAttackedRule, core/modules/actions.Entity, core/modules/actions.Entity]`
+Type: `func() engine/modules/feature.RuleService[core/modules/actions.CanBeAttackedRule]`
 
 #### method Service CanDeploy
-Type: `func() engine/modules/feature.NoInputRuleService[core/modules/actions.CanDeployRule, core/modules/actions.Entity]`
+Type: `func() engine/modules/feature.RuleService[core/modules/actions.CanDeployRule]`
 
 #### method Service CanDeployAt
-Type: `func() engine/modules/feature.RuleService[core/modules/actions.CanDeployAtRule, core/modules/actions.Blueprint, core/modules/actions.Coords]`
+Type: `func() engine/modules/feature.RuleService[core/modules/actions.CanDeployAtRule]`
 
 #### method Service CanDeployBlueprint
-Type: `func() engine/modules/feature.RuleService[core/modules/actions.CanDeployBlueprintRule, core/modules/actions.Entity, core/modules/actions.Blueprint]`
+Type: `func() engine/modules/feature.RuleService[core/modules/actions.CanDeployBlueprintRule]`
 
 #### method Service CanMove
-Type: `func() engine/modules/feature.NoInputRuleService[core/modules/actions.CanMoveRule, core/modules/actions.Entity]`
+Type: `func() engine/modules/feature.RuleService[core/modules/actions.CanMoveRule]`
 
 #### method Service CanMoveTo
-Type: `func() engine/modules/feature.RuleService[core/modules/actions.CanMoveToRule, core/modules/actions.Entity, core/modules/actions.Coords]`
+Type: `func() engine/modules/feature.RuleService[core/modules/actions.CanMoveToRule]`
 
 #### method Service Coords
 Type: `func() engine/modules/feature.FieldService[core/modules/actions.Coords]`
@@ -49,10 +49,10 @@ Type: `func() engine/modules/feature.FieldService[core/modules/actions.Coords]`
 Type: `func() engine/modules/feature.FieldService[core/modules/actions.Entity]`
 
 #### method Service IsEnemy
-Type: `func() engine/modules/feature.RuleService[core/modules/actions.IsEnemyRule, core/modules/actions.PlayerContext, core/modules/actions.Entity]`
+Type: `func() engine/modules/feature.RuleService[core/modules/actions.IsEnemyRule]`
 
 #### method Service Own
-Type: `func() engine/modules/feature.RuleService[core/modules/actions.OwnRule, core/modules/actions.PlayerContext, core/modules/actions.Entity]`
+Type: `func() engine/modules/feature.RuleService[core/modules/actions.OwnRule]`
 rules
 
 #### method Service PlayerContext
@@ -64,36 +64,6 @@ Type: `core/modules/actions.PlayerContextGetter`
 
 #### method PlayerContextGetter Context
 Type: `func() core/modules/actions.PlayerContext`
-
-### type OwnRule
-Type: `core/modules/actions.OwnRule`
-
-### type IsEnemyRule
-Type: `core/modules/actions.IsEnemyRule`
-
-### type CanDeployRule
-Type: `core/modules/actions.CanDeployRule`
-build
-
-### type CanDeployBlueprintRule
-Type: `core/modules/actions.CanDeployBlueprintRule`
-
-### type CanDeployAtRule
-Type: `core/modules/actions.CanDeployAtRule`
-
-### type CanMoveRule
-Type: `core/modules/actions.CanMoveRule`
-move
-
-### type CanMoveToRule
-Type: `core/modules/actions.CanMoveToRule`
-
-### type CanAttackRule
-Type: `core/modules/actions.CanAttackRule`
-attack
-
-### type CanBeAttackedRule
-Type: `core/modules/actions.CanBeAttackedRule`
 
 ### type PlayerContext
 Type: `core/modules/actions.PlayerContext`
@@ -116,6 +86,81 @@ Type: `core/modules/actions.Entity`
 ### type Blueprint
 Type: `core/modules/actions.Blueprint`
 
+### type OwnRule
+Type: `core/modules/actions.OwnRule`
+
+#### property OwnRule PlayerContext
+Type: `engine/modules/feature.FieldGetter[core/modules/actions.PlayerContext]`
+
+#### property OwnRule Entity
+Type: `engine/modules/feature.FieldGetter[core/modules/actions.Entity]`
+
+### type IsEnemyRule
+Type: `core/modules/actions.IsEnemyRule`
+
+#### property IsEnemyRule PlayerContext
+Type: `engine/modules/feature.FieldGetter[core/modules/actions.PlayerContext]`
+
+#### property IsEnemyRule Entity
+Type: `engine/modules/feature.FieldGetter[core/modules/actions.Entity]`
+
+### type CanDeployRule
+Type: `core/modules/actions.CanDeployRule`
+build
+
+#### property CanDeployRule Entity
+Type: `engine/modules/feature.FieldGetter[core/modules/actions.Entity]`
+
+### type CanDeployBlueprintRule
+Type: `core/modules/actions.CanDeployBlueprintRule`
+
+#### property CanDeployBlueprintRule Entity
+Type: `engine/modules/feature.FieldGetter[core/modules/actions.Entity]`
+
+#### property CanDeployBlueprintRule Blueprint
+Type: `engine/modules/feature.FieldGetter[core/modules/actions.Blueprint]`
+
+### type CanDeployAtRule
+Type: `core/modules/actions.CanDeployAtRule`
+
+#### property CanDeployAtRule Blueprint
+Type: `engine/modules/feature.FieldGetter[core/modules/actions.Blueprint]`
+
+#### property CanDeployAtRule Coords
+Type: `engine/modules/feature.FieldGetter[core/modules/actions.Coords]`
+
+### type CanMoveRule
+Type: `core/modules/actions.CanMoveRule`
+move
+
+#### property CanMoveRule Entity
+Type: `engine/modules/feature.FieldGetter[core/modules/actions.Entity]`
+
+### type CanMoveToRule
+Type: `core/modules/actions.CanMoveToRule`
+
+#### property CanMoveToRule Entity
+Type: `engine/modules/feature.FieldGetter[core/modules/actions.Entity]`
+
+#### property CanMoveToRule Coords
+Type: `engine/modules/feature.FieldGetter[core/modules/actions.Coords]`
+
+### type CanAttackRule
+Type: `core/modules/actions.CanAttackRule`
+attack
+
+#### property CanAttackRule Entity
+Type: `engine/modules/feature.FieldGetter[core/modules/actions.Entity]`
+
+### type CanBeAttackedRule
+Type: `core/modules/actions.CanBeAttackedRule`
+
+#### property CanBeAttackedRule Attacker
+Type: `engine/modules/feature.FieldGetter[core/modules/actions.Entity]`
+
+#### property CanBeAttackedRule Attacked
+Type: `engine/modules/feature.FieldGetter[core/modules/actions.Entity]`
+
 
 ## Dependencies
 `core/game`:
@@ -131,6 +176,8 @@ Type: `core/modules/actions.Blueprint`
   - `core/game.Ui`
 
 `core/modules/actions`:
+  - `core/modules/actions.Attacked`
+  - `core/modules/actions.Attacker`
   - `core/modules/actions.Blueprint`
   - `core/modules/actions.CanAttackRule`
   - `core/modules/actions.CanBeAttackedRule`
@@ -183,18 +230,19 @@ Type: `core/modules/actions.Blueprint`
   - `engine/modules/ecs.EntityID`
 
 `engine/modules/feature`:
-  - `engine/modules/feature.AppliedTo`
+  - `engine/modules/feature.AllFields`
   - `engine/modules/feature.Error`
+  - `engine/modules/feature.FieldGetter`
   - `engine/modules/feature.FieldRenderInteraction`
   - `engine/modules/feature.FieldService`
-  - `engine/modules/feature.In`
+  - `engine/modules/feature.Fields`
+  - `engine/modules/feature.From`
   - `engine/modules/feature.Interactions`
   - `engine/modules/feature.LockedFeature`
-  - `engine/modules/feature.NoInputRule`
-  - `engine/modules/feature.NoInputRuleService`
   - `engine/modules/feature.PreviewInteraction`
   - `engine/modules/feature.Render`
   - `engine/modules/feature.Rule`
+  - `engine/modules/feature.RuleRender`
   - `engine/modules/feature.RuleRenderCompletePreview`
   - `engine/modules/feature.RuleRenderPreviewRulesFail`
   - `engine/modules/feature.RuleRenderPreviewRulesPass`
@@ -204,7 +252,6 @@ Type: `core/modules/actions.Blueprint`
 
 `engine/modules/feature/pkg`:
   - `engine/modules/feature/pkg.FieldPkg`
-  - `engine/modules/feature/pkg.NoInputRulePkg`
   - `engine/modules/feature/pkg.RulePkg`
 
 `engine/modules/grid`:

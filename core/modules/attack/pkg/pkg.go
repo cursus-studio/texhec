@@ -9,6 +9,7 @@ import (
 	reachpkg "core/modules/reach/pkg"
 	"engine/modules/ecs"
 	"engine/modules/entityregistry"
+	"engine/modules/feature"
 	featurepkg "engine/modules/feature/pkg"
 	"engine/modules/grid"
 	netsyncpkg "engine/modules/netsync/pkg"
@@ -38,9 +39,17 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 	})
 	ioc.Wrap(b, func(c ioc.Dic, config featurepkg.Config) {
 		f := featurepkg.RegisterFeature[attack.AttackEvent](config)
-		featurepkg.RegisterRuleToField[actions.OwnRule](config, &f, &f.PlayerContext, &f.Attacker)
-		featurepkg.RegisterNoInputRuleToField[actions.CanAttackRule](config, &f, &f.Attacker)
-		featurepkg.RegisterRuleToField[actions.CanBeAttackedRule](config, &f, &f.Attacker, &f.Target)
+		featurepkg.RegisterRuleToField(config, &f, &f.Attacker, actions.OwnRule{
+			PlayerContext: feature.NewFieldGetter(&f, &f.PlayerContext),
+			Entity:        feature.NewFieldGetter(&f, &f.Attacker),
+		})
+		featurepkg.RegisterRuleToField(config, &f, &f.Attacker, actions.CanAttackRule{
+			Entity: feature.NewFieldGetter(&f, &f.Attacker),
+		})
+		featurepkg.RegisterRuleToField(config, &f, &f.Target, actions.CanBeAttackedRule{
+			Attacker: feature.NewFieldGetter(&f, &f.Attacker),
+			Attacked: feature.NewFieldGetter(&f, &f.Target),
+		})
 	})
 	ioc.Wrap(b, func(c ioc.Dic, config netsyncpkg.Config) {
 		world := ioc.GetServices[game.GameWorld](c)

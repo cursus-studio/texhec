@@ -14,14 +14,16 @@ import (
 )
 
 func (s *service) OnCanAttackUpsert(entity ecs.EntityID) {
-	comp, ok := s.CanAttack().Render().Get(entity)
-	if ok && (comp.Render == feature.RuleRenderPreviewRulesPass ||
-		comp.Render == feature.RuleRenderCompletePreview) {
+	var attacker uuid.UUID
+	if comp, ok := s.CanAttack().Render().Get(entity); ok &&
+		(comp.Render == feature.RuleRenderPreviewRulesPass ||
+			comp.Render == feature.RuleRenderCompletePreview) {
+		attacker = uuid.UUID(comp.Rule.Entity.From(comp.Fields))
 		goto render
 	}
 	return
 render:
-	selectedEntity, ok := s.UUID().Entity(uuid.UUID(comp.AppliedTo))
+	selectedEntity, ok := s.UUID().Entity(attacker)
 	if !ok {
 		return
 	}
@@ -41,14 +43,15 @@ render:
 	}
 }
 func (s *service) OnCanDeployUpsert(entity ecs.EntityID) {
-	comp, ok := s.CanDeploy().Render().Get(entity)
-	if ok && (comp.Render == feature.RuleRenderPreviewRulesPass ||
+	var builder uuid.UUID
+	if comp, ok := s.CanDeploy().Render().Get(entity); ok && (comp.Render == feature.RuleRenderPreviewRulesPass ||
 		comp.Render == feature.RuleRenderCompletePreview) {
+		builder = uuid.UUID(comp.Rule.Entity.From(comp.Fields))
 		goto render
 	}
 	return
 render:
-	selectedEntity, ok := s.UUID().Entity(uuid.UUID(comp.AppliedTo))
+	selectedEntity, ok := s.UUID().Entity(builder)
 	if !ok {
 		return
 	}

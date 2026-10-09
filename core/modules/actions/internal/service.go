@@ -17,18 +17,18 @@ type service struct {
 	BlueprintService     feature.FieldService[actions.Blueprint]     `inject:""`
 
 	// rules
-	OwnService     feature.RuleService[actions.OwnRule, actions.PlayerContext, actions.Entity]     `inject:""`
-	IsEnemyService feature.RuleService[actions.IsEnemyRule, actions.PlayerContext, actions.Entity] `inject:""`
+	OwnService     feature.RuleService[actions.OwnRule]     `inject:""`
+	IsEnemyService feature.RuleService[actions.IsEnemyRule] `inject:""`
 
-	CanDeployService          feature.NoInputRuleService[actions.CanDeployRule, actions.Entity]                      `inject:""`
-	CanDeployBlueprintService feature.RuleService[actions.CanDeployBlueprintRule, actions.Entity, actions.Blueprint] `inject:""`
-	CanDeployAtService        feature.RuleService[actions.CanDeployAtRule, actions.Blueprint, actions.Coords]        `inject:""`
+	CanDeployService          feature.RuleService[actions.CanDeployRule]          `inject:""`
+	CanDeployBlueprintService feature.RuleService[actions.CanDeployBlueprintRule] `inject:""`
+	CanDeployAtService        feature.RuleService[actions.CanDeployAtRule]        `inject:""`
 
-	CanMoveService   feature.NoInputRuleService[actions.CanMoveRule, actions.Entity]            `inject:""`
-	CanMoveToService feature.RuleService[actions.CanMoveToRule, actions.Entity, actions.Coords] `inject:""`
+	CanMoveService   feature.RuleService[actions.CanMoveRule]   `inject:""`
+	CanMoveToService feature.RuleService[actions.CanMoveToRule] `inject:""`
 
-	CanAttackService     feature.NoInputRuleService[actions.CanAttackRule, actions.Entity]              `inject:""`
-	CanBeAttackedService feature.RuleService[actions.CanBeAttackedRule, actions.Entity, actions.Entity] `inject:""`
+	CanAttackService     feature.RuleService[actions.CanAttackRule]     `inject:""`
+	CanBeAttackedService feature.RuleService[actions.CanBeAttackedRule] `inject:""`
 }
 
 func NewService(c ioc.Dic) actions.Service {
@@ -73,33 +73,33 @@ func (s *service) Blueprint() feature.FieldService[actions.Blueprint] {
 }
 
 // rules
-func (s *service) Own() feature.RuleService[actions.OwnRule, actions.PlayerContext, actions.Entity] {
+func (s *service) Own() feature.RuleService[actions.OwnRule] {
 	return s.OwnService
 }
-func (s *service) IsEnemy() feature.RuleService[actions.IsEnemyRule, actions.PlayerContext, actions.Entity] {
+func (s *service) IsEnemy() feature.RuleService[actions.IsEnemyRule] {
 	return s.IsEnemyService
 }
 
-func (s *service) CanDeploy() feature.NoInputRuleService[actions.CanDeployRule, actions.Entity] {
+func (s *service) CanDeploy() feature.RuleService[actions.CanDeployRule] {
 	return s.CanDeployService
 }
-func (s *service) CanDeployBlueprint() feature.RuleService[actions.CanDeployBlueprintRule, actions.Entity, actions.Blueprint] {
+func (s *service) CanDeployBlueprint() feature.RuleService[actions.CanDeployBlueprintRule] {
 	return s.CanDeployBlueprintService
 }
-func (s *service) CanDeployAt() feature.RuleService[actions.CanDeployAtRule, actions.Blueprint, actions.Coords] {
+func (s *service) CanDeployAt() feature.RuleService[actions.CanDeployAtRule] {
 	return s.CanDeployAtService
 }
 
-func (s *service) CanMove() feature.NoInputRuleService[actions.CanMoveRule, actions.Entity] {
+func (s *service) CanMove() feature.RuleService[actions.CanMoveRule] {
 	return s.CanMoveService
 }
-func (s *service) CanMoveTo() feature.RuleService[actions.CanMoveToRule, actions.Entity, actions.Coords] {
+func (s *service) CanMoveTo() feature.RuleService[actions.CanMoveToRule] {
 	return s.CanMoveToService
 }
 
-func (s *service) CanAttack() feature.NoInputRuleService[actions.CanAttackRule, actions.Entity] {
+func (s *service) CanAttack() feature.RuleService[actions.CanAttackRule] {
 	return s.CanAttackService
 }
-func (s *service) CanBeAttacked() feature.RuleService[actions.CanBeAttackedRule, actions.Entity, actions.Entity] {
+func (s *service) CanBeAttacked() feature.RuleService[actions.CanBeAttackedRule] {
 	return s.CanBeAttackedService
 }

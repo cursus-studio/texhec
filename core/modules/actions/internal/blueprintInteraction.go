@@ -20,9 +20,11 @@ func (s *service) OnBlueprintClick(event tile.ClickBlueprintEvent) {
 }
 
 func (s *service) OnCanDeployBlueprintUpsert(entity ecs.EntityID) {
-	comp, ok := s.CanDeployBlueprint().Render().Get(entity)
-	if ok && (comp.Render == feature.RuleRenderPreviewRulesFail ||
-		comp.Render == feature.RuleRenderPreviewRulesPass) {
+	var buildingEntity uuid.UUID
+	if comp, ok := s.CanDeployBlueprint().Render().Get(entity); ok &&
+		(comp.Render == feature.RuleRenderPreviewRulesFail ||
+			comp.Render == feature.RuleRenderPreviewRulesPass) {
+		buildingEntity = uuid.UUID(comp.Rule.Entity.From(comp.Fields))
 		goto render
 	}
 	return
@@ -32,7 +34,7 @@ render:
 		event any
 	}
 
-	canEntityBuild, ok := s.UUID().Entity(uuid.UUID(comp.In))
+	canEntityBuild, ok := s.UUID().Entity(buildingEntity)
 	if !ok {
 		s.Logger().Warn(s.CanDeployBlueprint().Error())
 		return

@@ -4,9 +4,12 @@ import (
 	"engine"
 	"engine/modules/ecs"
 	"engine/modules/feature"
+	"engine/modules/feature/internal"
 	featurepkg "engine/modules/feature/pkg"
 	"errors"
+	"fmt"
 	"maps"
+	"reflect"
 	"slices"
 	"testing"
 
@@ -27,9 +30,18 @@ type EntityField struct{ OwnerID int }
 func NewPlayerCTX(id int) PlayerCTX          { return PlayerCTX{id} }
 func NewEntityField(ownerID int) EntityField { return EntityField{ownerID} }
 
-type OwnsRule feature.Rule[PlayerCTX, EntityField]        // [PlayerCTX] owns [EntityField]
-type CanAttackRule feature.Rule[EntityField, EntityField] // [EntityField] canAttack [EntityField]
-type EnemyRule feature.Rule[PlayerCTX, EntityField]       // [PlayerCTX] isEnemy [EntityField]
+type OwnsRule struct {
+	PlayerCTX feature.FieldGetter[PlayerCTX]
+	Entity    feature.FieldGetter[EntityField]
+}
+type CanAttackRule struct {
+	Entity feature.FieldGetter[EntityField]
+	Enemy  feature.FieldGetter[EntityField]
+}
+type EnemyRule struct {
+	PlayerCTX feature.FieldGetter[PlayerCTX]
+	Enemy     feature.FieldGetter[EntityField]
+}
 
 type AttackFeature struct {
 	PlayerCTX
@@ -52,25 +64,25 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 		featurepkg.FieldPkg[EntityField],
 
 		// rules
-		featurepkg.RulePkg[OwnsRule](func(c ioc.Dic) func(ctx PlayerCTX, entity EntityField) error {
-			return func(ctx PlayerCTX, entity EntityField) error {
-				if ctx.ID == entity.OwnerID {
+		featurepkg.RulePkg(func(c ioc.Dic) func(r OwnsRule, fields feature.AllFields) error {
+			return func(rule OwnsRule, fields feature.AllFields) error {
+				if rule.PlayerCTX.From(fields).ID == rule.Entity.From(fields).OwnerID {
 					return nil
 				}
 				return ErrNotAnOwner
 			}
 		}, errors.New("does not own")),
-		featurepkg.RulePkg[CanAttackRule](func(c ioc.Dic) func(ctx EntityField, entity EntityField) error {
-			return func(ctx EntityField, entity EntityField) error {
-				if ctx.OwnerID != entity.OwnerID {
+		featurepkg.RulePkg(func(c ioc.Dic) func(rule CanAttackRule, fields feature.AllFields) error {
+			return func(rule CanAttackRule, fields feature.AllFields) error {
+				if rule.Entity.From(fields).OwnerID != rule.Enemy.From(fields).OwnerID {
 					return nil
 				}
 				return ErrNotAnEnemy
 			}
 		}, errors.New("cannot attack")),
-		featurepkg.RulePkg[EnemyRule](func(c ioc.Dic) func(ctx PlayerCTX, entity EntityField) error {
-			return func(ctx PlayerCTX, entity EntityField) error {
-				if ctx.ID != entity.OwnerID {
+		featurepkg.RulePkg(func(c ioc.Dic) func(rule EnemyRule, fields feature.AllFields) error {
+			return func(rule EnemyRule, fields feature.AllFields) error {
+				if rule.PlayerCTX.From(fields).ID != rule.Enemy.From(fields).OwnerID {
 					return nil
 				}
 				return ErrNotAnEnemy
@@ -87,27 +99,39 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 
 		{
 			f := featurepkg.RegisterFeature[AttackFeature](config)
-			featurepkg.RegisterRuleToField[OwnsRule](config, &f, &f.PlayerCTX, &f.Attacker)
-			featurepkg.RegisterRuleToField[CanAttackRule](config, &f, &f.Attacker, &f.Attacked)
+			featurepkg.RegisterRuleToField(config, &f, &f.Attacker, OwnsRule{
+				feature.NewFieldGetter(&f, &f.PlayerCTX),
+				feature.NewFieldGetter(&f, &f.Attacker),
+			})
+			featurepkg.RegisterRuleToField(config, &f, &f.Attacked, CanAttackRule{
+				feature.NewFieldGetter(&f, &f.Attacker),
+				feature.NewFieldGetter(&f, &f.Attacked),
+			})
 		}
 		{
 			f := featurepkg.RegisterFeature[MoveToFeature](config)
-			featurepkg.RegisterRuleToField[OwnsRule](config, &f, &f.PlayerCTX, &f.From)
+			featurepkg.RegisterRuleToField(config, &f, &f.From, OwnsRule{
+				feature.NewFieldGetter(&f, &f.PlayerCTX),
+				feature.NewFieldGetter(&f, &f.From),
+			})
 		}
 		{
 			f := featurepkg.RegisterFeature[FocusEnemyFeature](config)
-			featurepkg.RegisterRuleToField[EnemyRule](config, &f, &f.PlayerCTX, &f.Enemy)
+			featurepkg.RegisterRuleToField(config, &f, &f.Enemy, EnemyRule{
+				feature.NewFieldGetter(&f, &f.PlayerCTX),
+				feature.NewFieldGetter(&f, &f.Enemy),
+			})
 		}
 	})
 })
 
 type World struct {
-	World         engine.EngineWorld                                           `inject:""`
-	EntityField   feature.FieldService[EntityField]                            `inject:""`
-	OwnsRule      feature.RuleService[OwnsRule, PlayerCTX, EntityField]        `inject:""`
-	CanAttackRule feature.RuleService[CanAttackRule, EntityField, EntityField] `inject:""`
-	EnemyRule     feature.RuleService[EnemyRule, PlayerCTX, EntityField]       `inject:""`
-	Config        featurepkg.Config                                            `inject:""`
+	World         engine.EngineWorld                 `inject:""`
+	EntityField   feature.FieldService[EntityField]  `inject:""`
+	OwnsRule      feature.RuleService[OwnsRule]      `inject:""`
+	CanAttackRule feature.RuleService[CanAttackRule] `inject:""`
+	EnemyRule     feature.RuleService[EnemyRule]     `inject:""`
+	Config        featurepkg.Config                  `inject:""`
 
 	Rules map[feature.RuleKey]feature.AnyRuleService
 	T     *testing.T
@@ -124,82 +148,111 @@ func (w World) AssertInteractions(expected feature.InteractionsComponent) {
 			w.T.Fatalf("if feature is locked there should be a single feature")
 		}
 	}
-
-	// do not render a preview if there is no feature selected
-	if len(expected.Interactions) == 0 &&
-		!expected.LockedFeature {
-		expected.PreviewInteraction = nil
+	allFields := w.World.Feature().AllFields(expected)
+	if !expected.LockedFeature {
+		if len(allFields) != 0 {
+			w.T.Fatalf("expected [] from AllFields and got %v", allFields)
+		}
+	} else if expected.LockedFeature {
+		featureKey := expected.Features[0]
+		featureConfig := w.Config.GetFeatureConfig(featureKey)
+		expectedAllFields := []any{}
+		interactions := slices.Clone(expected.Interactions)
+		if expected.PreviewInteraction != nil {
+			interactions = append(interactions, expected.PreviewInteraction)
+		}
+		for len(interactions) != 0 {
+			fieldConfig := featureConfig.Fields[len(expectedAllFields)]
+			if fieldConfig.Provide != nil {
+				expectedAllFields = append(expectedAllFields, fieldConfig.Provide())
+				continue
+			}
+			expectedAllFields = append(expectedAllFields, interactions[0])
+			interactions = interactions[1:]
+		}
+		if !reflect.DeepEqual(allFields, expectedAllFields) {
+			w.T.Fatalf("expected %v from AllFields and got %v", allFields, expectedAllFields)
+		}
 	}
 
 	// verify world state
 	expectedComponents := make(map[any]struct{})
 
-	// populate expected components
-	for _, interaction := range expected.Interactions {
-		comp := feature.NewFieldRender(interaction.(EntityField), feature.FieldRenderInteraction)
-		expectedComponents[comp] = struct{}{}
+	var featureConfig internal.FeatureConfig
+	if expected.LockedFeature {
+		featureKey := expected.Features[0]
+		featureConfig = w.Config.GetFeatureConfig(featureKey)
 	}
+	// for every field we want to render [feature.FieldRenderInteraction] with
+	// [feature.RuleRenderCompletePreview] for every rule
+	previewFieldIndex := len(allFields)
+	if expected.LockedFeature && expected.PreviewInteraction != nil {
+		previewFieldIndex--
+	}
+	for i, field := range allFields[:previewFieldIndex] {
+		fieldConfig := featureConfig.Fields[i]
+		if fieldConfig.Provide != nil {
+			continue
+		}
+		comp := feature.NewFieldRender(field.(EntityField), feature.FieldRenderInteraction)
+		expectedComponents[comp] = struct{}{}
+		for _, ruleConfig := range fieldConfig.Rules {
+			rule := w.Rules[ruleConfig.RuleType]
+			if err := rule.AppliesAny(ruleConfig.Rule, allFields); err != nil {
+				w.T.Fatal(err.Error())
+			}
+			comp := rule.NewAnyRenderComponent(ruleConfig.Rule, allFields, feature.RuleRenderCompletePreview)
+			expectedComponents[fmt.Sprintf("%v", comp)] = struct{}{}
+		}
+	}
+	if !expected.LockedFeature {
+		for _, field := range expected.Interactions {
+			comp := feature.NewFieldRender(field.(EntityField), feature.FieldRenderInteraction)
+			expectedComponents[comp] = struct{}{}
+		}
+	}
+
+	// for preview field we want [feature.FieldRenderPreviewRulesPass] or [feature.FieldRenderPreviewRulesFail]
+	// with [feature.RuleRenderPreviewRulesPass] or [feature.RuleRenderPreviewRulesFail]
+	if expected.LockedFeature && expected.PreviewInteraction != nil {
+		ruleRender := feature.RuleRenderPreviewRulesPass
+		fieldRender := feature.FieldRenderPreviewRulesPass
+		for _, ruleConfig := range featureConfig.Fields[previewFieldIndex].Rules {
+			rule := w.Rules[ruleConfig.RuleType]
+			if err := rule.AppliesAny(ruleConfig.Rule, allFields); err != nil {
+				ruleRender = feature.RuleRenderPreviewRulesFail
+				fieldRender = feature.FieldRenderPreviewRulesFail
+				break
+			}
+		}
+		comp := feature.NewFieldRender(expected.PreviewInteraction.(EntityField), fieldRender)
+		expectedComponents[comp] = struct{}{}
+		for _, ruleConfig := range featureConfig.Fields[previewFieldIndex].Rules {
+			rule := w.Rules[ruleConfig.RuleType]
+			comp := rule.NewAnyRenderComponent(ruleConfig.Rule, allFields, ruleRender)
+			expectedComponents[fmt.Sprintf("%v", comp)] = struct{}{}
+		}
+	} else if expected.LockedFeature && expected.PreviewInteraction == nil {
+		comp := feature.NewFieldRender(EntityField{}, feature.FieldRenderMissing)
+		expectedComponents[comp] = struct{}{}
+		for _, ruleConfig := range featureConfig.Fields[previewFieldIndex].Rules {
+			rule := w.Rules[ruleConfig.RuleType]
+			comp := rule.NewAnyRenderComponent(ruleConfig.Rule, allFields, feature.RuleRenderPreviewRulesFail)
+			expectedComponents[fmt.Sprintf("%v", comp)] = struct{}{}
+		}
+	}
+
+	// if there is no preview we want to render [feature.FieldRenderMissing]
 	if expected.LockedFeature && expected.PreviewInteraction == nil {
 		comp := feature.NewFieldRender(EntityField{}, feature.FieldRenderMissing)
 		expectedComponents[comp] = struct{}{}
-	}
-	if expected.LockedFeature {
-		featureKey := expected.Features[0]
-		featureConfig := w.Config.GetFeatureConfig(featureKey)
-		allFields := []any{}
-		interactions := slices.Clone(expected.Interactions)
-		for len(interactions) != 0 {
-			fieldConfig := featureConfig.Fields[len(allFields)]
-			if fieldConfig.Provide != nil {
-				allFields = append(allFields, fieldConfig.Provide())
-				continue
-			}
-			allFields = append(allFields, interactions[0])
-			interactions = interactions[1:]
-		}
-		for i := range allFields {
-			for _, ruleConfig := range featureConfig.Fields[i].Rules {
-				rule := w.Rules[ruleConfig.RuleType]
-				dataIn := allFields[ruleConfig.DataInFieldIndex]
-				comp := rule.NewAnyRenderComponent(dataIn, allFields[i], feature.RuleRenderCompletePreview)
-				expectedComponents[comp] = struct{}{}
-			}
-		}
-		fieldIndex := len(allFields)
-		fieldConfig := featureConfig.Fields[fieldIndex]
-
-		rulesPass := expected.PreviewInteraction != nil
-		for _, ruleConfig := range fieldConfig.Rules {
-			if !rulesPass {
-				break
-			}
-			rule := w.Rules[ruleConfig.RuleType]
-			dataIn := allFields[ruleConfig.DataInFieldIndex]
-			rulesPass = rulesPass && rule.AppliesToAny(dataIn, expected.PreviewInteraction) == nil
-		}
-		for _, ruleConfig := range fieldConfig.Rules {
-			rule := w.Rules[ruleConfig.RuleType]
-			dataIn := allFields[ruleConfig.DataInFieldIndex]
-			ruleRender := feature.RuleRenderPreviewRulesPass
-			if !rulesPass {
-				ruleRender = feature.RuleRenderPreviewRulesFail
-			}
-			comp := rule.NewAnyRenderComponent(dataIn, expected.PreviewInteraction, ruleRender)
-			expectedComponents[comp] = struct{}{}
-		}
-		if expected.PreviewInteraction != nil {
-			fieldRender := feature.FieldRenderPreviewRulesPass
-			if !rulesPass {
-				fieldRender = feature.FieldRenderPreviewRulesFail
-			}
-			comp := feature.NewFieldRender(expected.PreviewInteraction.(EntityField), fieldRender)
-			expectedComponents[comp] = struct{}{}
-		}
 	}
 
 	// verify is this actual
 	arrays := []ecs.AnyComponentArray{
 		w.EntityField.RenderAny(),
+	}
+	stringArrays := []ecs.AnyComponentArray{
 		w.OwnsRule.RenderAny(),
 		w.CanAttackRule.RenderAny(),
 		w.EnemyRule.RenderAny(),
@@ -209,6 +262,12 @@ func (w World) AssertInteractions(expected feature.InteractionsComponent) {
 		for _, entity := range array.GetEntities() {
 			comp, _ := array.GetAny(entity)
 			foundComponents[comp] = struct{}{}
+		}
+	}
+	for _, array := range stringArrays {
+		for _, entity := range array.GetEntities() {
+			comp, _ := array.GetAny(entity)
+			foundComponents[fmt.Sprintf("%v", comp)] = struct{}{}
 		}
 	}
 

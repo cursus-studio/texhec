@@ -7,6 +7,7 @@ import (
 	"core/modules/pathfind/internal"
 	"engine/modules/ecs"
 	"engine/modules/entityregistry"
+	"engine/modules/feature"
 	featurepkg "engine/modules/feature/pkg"
 	gridpkg "engine/modules/grid/pkg"
 	netsyncpkg "engine/modules/netsync/pkg"
@@ -47,9 +48,17 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 	})
 	ioc.Wrap(b, func(c ioc.Dic, config featurepkg.Config) {
 		f := featurepkg.RegisterFeature[pathfind.FindPathEvent](config)
-		featurepkg.RegisterRuleToField[actions.OwnRule](config, &f, &f.PlayerContext, &f.Entity)
-		featurepkg.RegisterNoInputRuleToField[actions.CanMoveRule](config, &f, &f.Entity)
-		featurepkg.RegisterRuleToField[actions.CanMoveToRule](config, &f, &f.Entity, &f.Coords)
+		featurepkg.RegisterRuleToField(config, &f, &f.Entity, actions.OwnRule{
+			PlayerContext: feature.NewFieldGetter(&f, &f.PlayerContext),
+			Entity:        feature.NewFieldGetter(&f, &f.Entity),
+		})
+		featurepkg.RegisterRuleToField(config, &f, &f.Entity, actions.CanMoveRule{
+			Entity: feature.NewFieldGetter(&f, &f.Entity),
+		})
+		featurepkg.RegisterRuleToField(config, &f, &f.Coords, actions.CanMoveToRule{
+			Entity: feature.NewFieldGetter(&f, &f.Entity),
+			Coords: feature.NewFieldGetter(&f, &f.Coords),
+		})
 	})
 	ioc.Wrap(b, func(c ioc.Dic, config netsyncpkg.Config) {
 		world := ioc.GetServices[game.GameWorld](c)

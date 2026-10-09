@@ -28,20 +28,21 @@ func (s *service) OnEntityClick(event tile.ClickEntityEvent) {
 }
 
 func (s *service) OnOwnUpsert(entity ecs.EntityID) {
-	comp, ok := s.Own().Render().Get(entity)
-	if ok && (comp.Render == feature.RuleRenderPreviewRulesPass ||
+	var friendly uuid.UUID
+	if comp, ok := s.Own().Render().Get(entity); ok && (comp.Render == feature.RuleRenderPreviewRulesPass ||
 		comp.Render == feature.RuleRenderCompletePreview) {
+		friendly = uuid.UUID(comp.Rule.Entity.From(comp.Fields))
 		goto render
 	}
-	if entityComp, ok := s.Entity().Render().Get(entity); ok &&
-		entityComp.Render == feature.FieldRenderInteraction &&
+	if comp, ok := s.Entity().Render().Get(entity); ok &&
+		comp.Render == feature.FieldRenderInteraction &&
 		!s.Feature().Interactions().LockedFeature {
-		comp.AppliedTo = entityComp.Value
+		friendly = uuid.UUID(comp.Value)
 		goto render
 	}
 	return
 render:
-	selectedEntity, ok := s.UUID().Entity(uuid.UUID(comp.AppliedTo))
+	selectedEntity, ok := s.UUID().Entity(friendly)
 	if !ok {
 		return
 	}
@@ -56,20 +57,21 @@ render:
 	s.Render().Texture().Set(entity, render.NewTexture(s.Definitions().Hud().Can))
 }
 func (s *service) OnEnemyUpsert(entity ecs.EntityID) {
-	comp, ok := s.IsEnemy().Render().Get(entity)
-	if ok && (comp.Render == feature.RuleRenderPreviewRulesPass ||
-		comp.Render == feature.RuleRenderCompletePreview) {
+	var enemy uuid.UUID
+	if comp, ok := s.IsEnemy().Render().Get(entity); ok &&
+		(comp.Render == feature.RuleRenderPreviewRulesPass ||
+			comp.Render == feature.RuleRenderCompletePreview) {
+		enemy = uuid.UUID(comp.Rule.Entity.From(comp.Fields))
 		goto render
 	}
-	if canBeAttacked, ok := s.CanBeAttacked().Render().Get(entity); ok && (canBeAttacked.Render == feature.RuleRenderPreviewRulesPass ||
-		canBeAttacked.Render == feature.RuleRenderCompletePreview) {
-		comp.Render = canBeAttacked.Render
-		comp.AppliedTo = canBeAttacked.AppliedTo
+	if comp, ok := s.CanBeAttacked().Render().Get(entity); ok && (comp.Render == feature.RuleRenderPreviewRulesPass ||
+		comp.Render == feature.RuleRenderCompletePreview) {
+		enemy = uuid.UUID(comp.Rule.Attacked.From(comp.Fields))
 		goto render
 	}
 	return
 render:
-	selectedEntity, ok := s.UUID().Entity(uuid.UUID(comp.AppliedTo))
+	selectedEntity, ok := s.UUID().Entity(enemy)
 	if !ok {
 		return
 	}

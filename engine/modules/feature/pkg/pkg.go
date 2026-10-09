@@ -18,30 +18,19 @@ func FieldPkg[FieldType any](b ioc.Builder) {
 	ioc.Register(b, internal.NewFieldService[FieldType])
 }
 
-func NoInputRulePkg[RuleType feature.NoInputRule[AppliedTo], AppliedTo any](
-	applies func(c ioc.Dic) func(AppliedTo) error,
-	err error,
-) ioc.Pkg {
-	return RulePkg[RuleType](func(c ioc.Dic) func(AppliedTo, AppliedTo) error {
-		applies := applies(c)
-		return func(at1, at2 AppliedTo) error {
-			return applies(at2)
-		}
-	}, err)
-}
-func RulePkg[RuleType feature.Rule[DataIn, AppliedTo], DataIn any, AppliedTo any](
-	applies func(c ioc.Dic) func(DataIn, AppliedTo) error,
+func RulePkg[RuleType feature.Rule](
+	applies func(c ioc.Dic) func(RuleType, feature.AllFields) error,
 	err error,
 ) ioc.Pkg {
 	return ioc.NewPkg(func(b ioc.Builder) {
 		pkgs := []ioc.Pkg{
-			typeregistrypkg.PkgT[feature.RuleRenderComponent[RuleType, DataIn, AppliedTo]],
+			typeregistrypkg.PkgT[feature.RuleRenderComponent[RuleType]],
 		}
 		for _, pkg := range pkgs {
 			pkg(b)
 		}
-		ioc.Register(b, func(c ioc.Dic) feature.RuleService[RuleType, DataIn, AppliedTo] {
-			return internal.NewRuleService[RuleType](c, applies(c), err)
+		ioc.Register(b, func(c ioc.Dic) feature.RuleService[RuleType] {
+			return internal.NewRuleService(c, applies(c), err)
 		})
 	})
 }

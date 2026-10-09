@@ -25,21 +25,45 @@ func (ctx PlayerContext) Context() PlayerContext { return ctx }
 //
 // rules
 
-type OwnRule feature.Rule[PlayerContext, Entity]
-type IsEnemyRule feature.Rule[PlayerContext, Entity]
+type OwnRule struct {
+	PlayerContext feature.FieldGetter[PlayerContext]
+	Entity        feature.FieldGetter[Entity]
+}
+type IsEnemyRule struct {
+	PlayerContext feature.FieldGetter[PlayerContext]
+	Entity        feature.FieldGetter[Entity]
+}
 
 // build
-type CanDeployRule feature.NoInputRule[Entity]
-type CanDeployBlueprintRule feature.Rule[Entity, Blueprint]
-type CanDeployAtRule feature.Rule[Blueprint, Coords]
+type CanDeployRule struct {
+	Entity feature.FieldGetter[Entity]
+}
+type CanDeployBlueprintRule struct {
+	Entity    feature.FieldGetter[Entity]
+	Blueprint feature.FieldGetter[Blueprint]
+}
+type CanDeployAtRule struct {
+	Blueprint feature.FieldGetter[Blueprint]
+	Coords    feature.FieldGetter[Coords]
+}
 
 // move
-type CanMoveRule feature.NoInputRule[Entity]
-type CanMoveToRule feature.Rule[Entity, Coords]
+type CanMoveRule struct {
+	Entity feature.FieldGetter[Entity]
+}
+type CanMoveToRule struct {
+	Entity feature.FieldGetter[Entity]
+	Coords feature.FieldGetter[Coords]
+}
 
 // attack
-type CanAttackRule feature.NoInputRule[Entity]
-type CanBeAttackedRule feature.Rule[Entity, Entity]
+type CanAttackRule struct {
+	Entity feature.FieldGetter[Entity]
+}
+type CanBeAttackedRule struct {
+	Attacker feature.FieldGetter[Entity]
+	Attacked feature.FieldGetter[Entity]
+}
 
 //
 
@@ -51,16 +75,16 @@ type Service interface {
 	Blueprint() feature.FieldService[Blueprint]
 
 	// rules
-	Own() feature.RuleService[OwnRule, PlayerContext, Entity]
-	IsEnemy() feature.RuleService[IsEnemyRule, PlayerContext, Entity]
+	Own() feature.RuleService[OwnRule]
+	IsEnemy() feature.RuleService[IsEnemyRule]
 
-	CanDeploy() feature.NoInputRuleService[CanDeployRule, Entity]
-	CanDeployBlueprint() feature.RuleService[CanDeployBlueprintRule, Entity, Blueprint]
-	CanDeployAt() feature.RuleService[CanDeployAtRule, Blueprint, Coords]
+	CanDeploy() feature.RuleService[CanDeployRule]
+	CanDeployBlueprint() feature.RuleService[CanDeployBlueprintRule]
+	CanDeployAt() feature.RuleService[CanDeployAtRule]
 
-	CanMove() feature.NoInputRuleService[CanMoveRule, Entity]
-	CanMoveTo() feature.RuleService[CanMoveToRule, Entity, Coords]
+	CanMove() feature.RuleService[CanMoveRule]
+	CanMoveTo() feature.RuleService[CanMoveToRule]
 
-	CanAttack() feature.NoInputRuleService[CanAttackRule, Entity]
-	CanBeAttacked() feature.RuleService[CanBeAttackedRule, Entity, Entity]
+	CanAttack() feature.RuleService[CanAttackRule]
+	CanBeAttacked() feature.RuleService[CanBeAttackedRule]
 }

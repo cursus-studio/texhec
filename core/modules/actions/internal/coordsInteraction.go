@@ -33,15 +33,22 @@ func (s *service) OnCoordsClick(e grid.ClickEvent) {
 }
 
 func (s *service) OnCanMoveToUpsert(entity ecs.EntityID) {
-	comp, ok := s.CanMoveTo().Render().Get(entity)
-	if ok && (comp.Render == feature.RuleRenderPreviewRulesPass ||
-		comp.Render == feature.RuleRenderCompletePreview ||
-		comp.Render == feature.RuleRenderPreviewRulesFail) {
+	var movingEntity uuid.UUID
+	var coords grid.Coords
+	var ruleRender feature.RuleRender
+
+	if comp, ok := s.CanMoveTo().Render().Get(entity); ok &&
+		(comp.Render == feature.RuleRenderPreviewRulesPass ||
+			comp.Render == feature.RuleRenderCompletePreview ||
+			comp.Render == feature.RuleRenderPreviewRulesFail) {
+		movingEntity = uuid.UUID(comp.Rule.Entity.From(comp.Fields))
+		coords = grid.Coords(comp.Rule.Coords.From(comp.Fields))
+		ruleRender = comp.Render
 		goto render
 	}
 	return
 render:
-	selectedEntity, ok := s.UUID().Entity(uuid.UUID(comp.In))
+	selectedEntity, ok := s.UUID().Entity(movingEntity)
 	if !ok {
 		return
 	}
@@ -54,7 +61,6 @@ render:
 		return
 	}
 
-	coords := grid.Coords(comp.AppliedTo)
 	pos := tile.NewPos(coords.Coords())
 	size, _ := s.Tile().Size().Get(blueprint)
 
@@ -63,7 +69,7 @@ render:
 	s.Tile().Layer().Set(entity, tile.NewLayer(definitions.ObjectPlaceholderLayer))
 	s.Tile().Pos().Set(entity, pos)
 
-	if comp.Render == feature.RuleRenderPreviewRulesFail {
+	if ruleRender == feature.RuleRenderPreviewRulesFail {
 		s.Render().Color().Set(entity, render.NewColor(mgl32.Vec4{1, 0, 0, 1}))
 	} else {
 		s.Render().Color().Set(entity, render.NewColor(mgl32.Vec4{0, 1, 0, 1}))
@@ -87,26 +93,31 @@ render:
 	}
 }
 func (s *service) OnCanDeployAtUpsert(entity ecs.EntityID) {
-	comp, ok := s.CanDeployAt().Render().Get(entity)
-	if ok && (comp.Render == feature.RuleRenderPreviewRulesPass ||
-		comp.Render == feature.RuleRenderCompletePreview ||
-		comp.Render == feature.RuleRenderPreviewRulesFail) {
+	var blueprintEntity uuid.UUID
+	var coords grid.Coords
+	var ruleRender feature.RuleRender
+	if comp, ok := s.CanDeployAt().Render().Get(entity); ok &&
+		(comp.Render == feature.RuleRenderPreviewRulesPass ||
+			comp.Render == feature.RuleRenderCompletePreview ||
+			comp.Render == feature.RuleRenderPreviewRulesFail) {
+		blueprintEntity = uuid.UUID(comp.Rule.Blueprint.From(comp.Fields))
+		coords = grid.Coords(comp.Rule.Coords.From(comp.Fields))
+		ruleRender = comp.Render
 		goto render
 	}
 	return
 render:
-	blueprint, ok := s.UUID().Entity(uuid.UUID(comp.In))
+	blueprint, ok := s.UUID().Entity(blueprintEntity)
 	if !ok {
 		return
 	}
-	coords := grid.Coords(comp.AppliedTo)
 	pos := tile.NewPos(coords.Coords())
 	size, _ := s.Tile().Size().Get(blueprint)
 
-	s.Tile().Blueprint().SetUUID(entity, uuid.UUID(comp.In))
+	s.Tile().Blueprint().SetUUID(entity, blueprintEntity)
 	s.Tile().Layer().Set(entity, tile.NewLayer(definitions.ObjectPlaceholderLayer))
 	s.Tile().Pos().Set(entity, pos)
-	if comp.Render == feature.RuleRenderPreviewRulesFail {
+	if ruleRender == feature.RuleRenderPreviewRulesFail {
 		s.Render().Color().Set(entity, render.NewColor(mgl32.Vec4{1, 0, 0, 1}))
 	} else {
 		s.Render().Color().Set(entity, render.NewColor(mgl32.Vec4{0, 1, 0, 1}))

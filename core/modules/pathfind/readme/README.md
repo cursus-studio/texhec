@@ -8,10 +8,10 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                               7            109             34            803
+Go                               7            109             34            812
 Markdown                         1              1              0              5
 -------------------------------------------------------------------------------
-SUM:                             8            110             34            808
+SUM:                             8            110             34            817
 -------------------------------------------------------------------------------
 ```
 ## TODO
@@ -211,10 +211,13 @@ Type: `func(ctx core/modules/actions.PlayerContext, entity engine/modules/uuid.U
   - `engine/modules/entityregistry.Register`
   - `engine/modules/entityregistry.Service`
 
+`engine/modules/feature`:
+  - `engine/modules/feature.Error`
+  - `engine/modules/feature.NewFieldGetter`
+
 `engine/modules/feature/pkg`:
   - `engine/modules/feature/pkg.Config`
   - `engine/modules/feature/pkg.RegisterFeature`
-  - `engine/modules/feature/pkg.RegisterNoInputRuleToField`
   - `engine/modules/feature/pkg.RegisterRuleToField`
 
 `engine/modules/grid`:

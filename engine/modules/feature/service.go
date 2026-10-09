@@ -26,10 +26,10 @@ const (
 	FieldRenderInteraction
 	// is used when value is empty and we need to render it
 	FieldRenderMissing
-	// is used when [InteractionsComponent.PreviewInteraction] rules fail
-	FieldRenderPreviewRulesFail
 	// is used when [InteractionsComponent.PreviewInteraction] rules pass
 	FieldRenderPreviewRulesPass
+	// is used when [InteractionsComponent.PreviewInteraction] rules fail
+	FieldRenderPreviewRulesFail
 )
 
 type ProvideFieldService[FieldType any] func() FieldType
@@ -67,36 +67,57 @@ const (
 	RuleRenderPreviewRulesFail
 )
 
-type NoInputRule[AppliedTo any] = Rule[AppliedTo, AppliedTo]
-type Rule[DataIn any, AppliedTo any] any
-type RuleRenderComponent[RuleType Rule[DataIn, AppliedTo], DataIn any, AppliedTo any] struct {
-	In        DataIn
-	AppliedTo AppliedTo
-	Render    RuleRender
+type FieldGetter[Field any] struct {
+	Index int
 }
 
-func NewRuleRender[RuleType Rule[DataIn, AppliedTo], DataIn any, AppliedTo any](
-	in DataIn, appliedTo AppliedTo, render RuleRender) RuleRenderComponent[RuleType, DataIn, AppliedTo] {
-	return RuleRenderComponent[RuleType, DataIn, AppliedTo]{in, appliedTo, render}
+func NewFieldGetter[Feature, Field any](feature *Feature, field *Field) FieldGetter[Field] {
+	return FieldGetter[Field]{GetFieldIndex(feature, field)}
+}
+func (getter FieldGetter[Field]) From(fields AllFields) (zero Field) {
+	if len(fields) <= getter.Index {
+		return zero
+	}
+	field, _ := fields[getter.Index].(Field)
+	return field
+}
+
+//
+
+// rule should be composed from field getters
+type Rule = any
+type RuleRenderComponent[RuleType Rule] struct {
+	Rule   RuleType
+	Fields AllFields
+	Render RuleRender
+}
+
+func NewRuleRender[RuleType Rule](rule RuleType, fields AllFields, render RuleRender) RuleRenderComponent[RuleType] {
+	return RuleRenderComponent[RuleType]{rule, fields, render}
 }
 
 type AnyRuleService interface {
 	RenderAny() ecs.AnyComponentArray
-	NewAnyRenderComponent(in, appliedTo any, render RuleRender) any
+	NewAnyRenderComponent(rule any, fields AllFields, render RuleRender) any
 
-	AppliesToAny(dataIn, appliedTo any) error
+	AppliesAny(any, AllFields) error
 	Error() error
 }
-type RuleService[RuleType Rule[DataIn, AppliedTo], DataIn any, AppliedTo any] interface {
+type RuleService[RuleType Rule] interface {
 	AnyRuleService
-	Render() ecs.ComponentArray[RuleRenderComponent[RuleType, DataIn, AppliedTo]]
+	Render() ecs.ComponentArray[RuleRenderComponent[RuleType]]
 
-	Applies(DataIn, AppliedTo) error
+	Applies(RuleType, AllFields) error
 }
-type NoInputRuleService[RuleType NoInputRule[AppliedTo], AppliedTo any] = RuleService[RuleType, AppliedTo, AppliedTo]
 
 //
 // feature
+
+// is deduced from interactions
+// if feature isn't locked it is empty
+// if feature is locked it contains all [InteractionsComponent.Interactions] with
+// populated fields in between and [InteractionsComponent.PreviewInteraction]
+type AllFields = []any
 
 type InteractionsComponent struct {
 	Interactions       []any
@@ -126,6 +147,7 @@ func (c InteractionsComponent) Equal(other InteractionsComponent) bool {
 
 type InteractionsService interface {
 	Interactions() InteractionsComponent
+	AllFields(InteractionsComponent) AllFields
 	OnInteractionsMod(func(ecs.EntityID))
 
 	SubmitInteraction(field any)
