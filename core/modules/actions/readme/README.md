@@ -1,6 +1,8 @@
 # actions
 ## Architecture
-Stores all game domain interactions and steps
+Stores and renders all game fields and rules.
+Currently all rendering is in one module to ensure consistency but
+certain rules could be spreaded across multiple modules and if this module grows to much it should.
 
 ## Lines of code
 ```
@@ -9,9 +11,9 @@ github.com/AlDanial/cloc
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
 Go                               7             92             17            607
-Markdown                         1              0              0              1
+Markdown                         1              0              0              3
 -------------------------------------------------------------------------------
-SUM:                             8             92             17            608
+SUM:                             8             92             17            610
 -------------------------------------------------------------------------------
 ```
 ## Types
