@@ -47,7 +47,8 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 		featurepkg.RulePkg(func(c ioc.Dic) func(actions.CanDeployAtRule, feature.AllFields) error {
 			world := ioc.Get[game.GameWorld](c)
 			return func(rule actions.CanDeployAtRule, fields feature.AllFields) error {
-				return world.Deploy().CanDeployAt(rule.Blueprint.From(fields), rule.Coords.From(fields))
+				return world.Deploy().CanDeployAt(
+					rule.Entity.From(fields), rule.Blueprint.From(fields), rule.Coords.From(fields))
 			}
 		}, errors.New("deploy:cannot place")),
 

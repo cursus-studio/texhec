@@ -50,6 +50,7 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 				Blueprint: feature.NewFieldGetter(&f, &f.Blueprint),
 			})
 			featurepkg.RegisterRuleToField(config, &f, &f.Coords, actions.CanDeployAtRule{
+				Entity:    feature.NewFieldGetter(&f, &f.By),
 				Blueprint: feature.NewFieldGetter(&f, &f.Blueprint),
 				Coords:    feature.NewFieldGetter(&f, &f.Coords),
 			})

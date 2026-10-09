@@ -8,9 +8,9 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                               3             51             16            339
+Go                               3             51             16            347
 -------------------------------------------------------------------------------
-SUM:                             3             51             16            339
+SUM:                             3             51             16            347
 -------------------------------------------------------------------------------
 ```
 ## Types
@@ -21,7 +21,7 @@ Type: `core/modules/deploy.Service`
 Type: `func(core/modules/actions.Entity) error`
 
 #### method Service CanDeployAt
-Type: `func(core/modules/actions.Blueprint, core/modules/actions.Coords) error`
+Type: `func(core/modules/actions.Entity, core/modules/actions.Blueprint, core/modules/actions.Coords) error`
 
 #### method Service CanDeployBlueprint
 Type: `func(core/modules/actions.Entity, core/modules/actions.Blueprint) error`
@@ -147,6 +147,7 @@ Type: `func(ctx core/modules/actions.PlayerContext, uuid engine/modules/uuid.UUI
   - `core/modules/reach.ErrOutsideOfReach`
   - `core/modules/reach.NewReach`
   - `core/modules/reach.Reach`
+  - `core/modules/reach.ReachesCoords`
   - `core/modules/reach.ServiceT`
 
 `core/modules/reach/pkg`:

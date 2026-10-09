@@ -43,6 +43,7 @@ type CanDeployBlueprintRule struct {
 	Blueprint feature.FieldGetter[Blueprint]
 }
 type CanDeployAtRule struct {
+	Entity    feature.FieldGetter[Entity]
 	Blueprint feature.FieldGetter[Blueprint]
 	Coords    feature.FieldGetter[Coords]
 }

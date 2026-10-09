@@ -47,6 +47,26 @@ func (s *serviceT[Component]) Reaches(fromEntity, toEntity ecs.EntityID) bool {
 	return dist <= tile.Coord(reach.Reach)
 }
 
+func (s *serviceT[Component]) ReachesCoords(fromEntity ecs.EntityID, toPos tile.PosComponent, toSize tile.SizeComponent) bool {
+	blueprint, ok := s.Tile().Blueprint().Get(fromEntity)
+	if !ok {
+		return false
+	}
+	reach, _ := s.component.Get(blueprint)
+	if reach.Reach == 0 {
+		return false
+	}
+
+	fromPos, ok := s.Tile().Pos().Get(fromEntity)
+	if !ok {
+		return false
+	}
+	fromSize, _ := s.Tile().Size().Get(fromEntity)
+
+	dist := s.Reach().Distance(fromPos, fromSize, toPos, toSize)
+	return dist <= tile.Coord(reach.Reach)
+}
+
 func (s *serviceT[Component]) TilesFrom(
 	pos tile.PosComponent,
 	size tile.SizeComponent,

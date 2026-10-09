@@ -89,7 +89,11 @@ func (s *service) CanDeployBlueprint(entityUUID actions.Entity, blueprint action
 	}
 	return nil
 }
-func (s *service) CanDeployAt(blueprint actions.Blueprint, coordsField actions.Coords) error {
+func (s *service) CanDeployAt(by actions.Entity, blueprint actions.Blueprint, coordsField actions.Coords) error {
+	entity, ok := s.UUID().Entity(uuid.UUID(by))
+	if !ok {
+		return s.Actions().CanDeployAt().Error()
+	}
 	blueprintEntity, ok := s.UUID().Entity(uuid.UUID(blueprint))
 	if !ok {
 		return s.Actions().CanDeployAt().Error()
@@ -98,6 +102,9 @@ func (s *service) CanDeployAt(blueprint actions.Blueprint, coordsField actions.C
 	coords := grid.Coords(coordsField)
 	pos := tile.NewPos(coords.Coords())
 	size, _ := s.Tile().Size().Get(blueprintEntity)
+	if ok := s.Reach().ReachesCoords(entity, pos, size); !ok {
+		return s.Actions().CanDeployAt().Error()
+	}
 
 	blueprintObstruction, _ := s.Obstruction().Component().Get(blueprintEntity)
 

@@ -8,10 +8,10 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                               7             86             17            557
+Go                               7             86             17            559
 Markdown                         1              0              0              1
 -------------------------------------------------------------------------------
-SUM:                             8             86             17            558
+SUM:                             8             86             17            560
 -------------------------------------------------------------------------------
 ```
 ## Types
@@ -122,6 +122,9 @@ Type: `engine/modules/feature.FieldGetter[core/modules/actions.Blueprint]`
 
 ### type CanDeployAtRule
 Type: `core/modules/actions.CanDeployAtRule`
+
+#### property CanDeployAtRule Entity
+Type: `engine/modules/feature.FieldGetter[core/modules/actions.Entity]`
 
 #### property CanDeployAtRule Blueprint
 Type: `engine/modules/feature.FieldGetter[core/modules/actions.Blueprint]`

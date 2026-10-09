@@ -56,7 +56,7 @@ type Service interface {
 
 	CanDeploy(actions.Entity) error
 	CanDeployBlueprint(actions.Entity, actions.Blueprint) error
-	CanDeployAt(actions.Blueprint, actions.Coords) error
+	CanDeployAt(actions.Entity, actions.Blueprint, actions.Coords) error
 
 	// deploy differs from execute event by who deploys.
 	// execute adds costs and everything where deploy just deploys without any costs (its deployed by system)
