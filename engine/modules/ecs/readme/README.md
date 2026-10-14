@@ -209,26 +209,26 @@ goos: linux
 goarch: amd64
 pkg: engine/modules/ecs/test
 cpu: Intel(R) Core(TM) i5-8350U CPU @ 1.70GHz
-BenchmarkDirtySetDirty-8               	160513174	         8.075 ns/op
-BenchmarkDirtySetDirtyInversed-8       	167146785	         7.220 ns/op
-BenchmarkDirtySetGet-8                 	611955620	         1.959 ns/op
-BenchmarkDirtySetDirtyAndGet-8         	176902047	         6.762 ns/op
-BenchmarkDirtySetDirtyAnd1Get-8        	138310168	         8.165 ns/op
-Benchmark4SavesWith7Systems-8          	27729162	        41.88 ns/op
-Benchmark16SavesWith7Systems-8         	 6969740	       173.1 ns/op
-Benchmark256SavesWith7Systems-8        	  424767	      2647 ns/op
-Benchmark4096SavesWith7Systems-8       	   28411	     42168 ns/op
-Benchmark16384SavesWith7Systems-8      	    7152	    170510 ns/op
-Benchmark65536SavesWith7Systems-8      	    1773	    680793 ns/op
-Benchmark262144SavesWith7Systems-8     	     444	   2695479 ns/op
-BenchmarkGetComponent-8                	82155733	        14.46 ns/op
-BenchmarkCreateComponents-8            	41404602	        30.42 ns/op
-BenchmarkUpdateComponents-8            	100000000	        10.66 ns/op
-BenchmarkRemoveComponent-8             	79541179	        14.87 ns/op
-BenchmarkRemoveEntityWithComponent-8   	36219610	        34.56 ns/op
-BenchmarkRemoveEntity-8                	69246945	        18.02 ns/op
+BenchmarkDirtySetDirty-8               	138121502	         8.303 ns/op
+BenchmarkDirtySetDirtyInversed-8       	143015061	         7.512 ns/op
+BenchmarkDirtySetGet-8                 	611505194	         1.960 ns/op
+BenchmarkDirtySetDirtyAndGet-8         	178298190	         6.766 ns/op
+BenchmarkDirtySetDirtyAnd1Get-8        	128479060	         8.942 ns/op
+Benchmark4SavesWith7Systems-8          	27956431	        42.18 ns/op
+Benchmark16SavesWith7Systems-8         	 6942226	       173.7 ns/op
+Benchmark256SavesWith7Systems-8        	  435219	      2647 ns/op
+Benchmark4096SavesWith7Systems-8       	   28410	     43035 ns/op
+Benchmark16384SavesWith7Systems-8      	    7051	    169124 ns/op
+Benchmark65536SavesWith7Systems-8      	    1648	    681224 ns/op
+Benchmark262144SavesWith7Systems-8     	     440	   2709132 ns/op
+BenchmarkGetComponent-8                	83652705	        14.40 ns/op
+BenchmarkCreateComponents-8            	39136603	        32.46 ns/op
+BenchmarkUpdateComponents-8            	100000000	        10.50 ns/op
+BenchmarkRemoveComponent-8             	76454094	        14.67 ns/op
+BenchmarkRemoveEntityWithComponent-8   	33988879	        36.24 ns/op
+BenchmarkRemoveEntity-8                	66151047	        19.06 ns/op
 PASS
-ok  	engine/modules/ecs/test	37.589s
+ok  	engine/modules/ecs/test	38.043s
 ```
 ## Lines of code
 ```
@@ -236,10 +236,10 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                              13            225             46            944
+Go                              13            226             46            948
 Markdown                         1             44              0            157
 -------------------------------------------------------------------------------
-SUM:                            14            269             46           1101
+SUM:                            14            270             46           1105
 -------------------------------------------------------------------------------
 ```
 ## Types
@@ -306,9 +306,21 @@ Type: `func(engine/modules/ecs/internal/ecstypes.EntityID)`
 #### method World WarmUp
 Type: `func()`
 
+### type ComponentArrayListeners
+Type: `engine/modules/ecs.ComponentArrayListeners`
+component array
+
+#### method ComponentArrayListeners OnMod
+Type: `func(engine/modules/ecs/internal/ecstypes.OnMod)`
+
+#### method ComponentArrayListeners OnRemove
+Type: `func(engine/modules/ecs/internal/ecstypes.OnMod)`
+
+#### method ComponentArrayListeners OnUpsert
+Type: `func(engine/modules/ecs/internal/ecstypes.OnMod)`
+
 ### type AnyComponentArray
 Type: `engine/modules/ecs.AnyComponentArray`
-component array
 
 #### method AnyComponentArray AddDependency
 Type: `func(engine/modules/ecs/internal/ecstypes.AnyComponentArray)`

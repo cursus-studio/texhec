@@ -21,9 +21,7 @@ type ServerComponent struct{}
 type ClientsComponent struct{}
 
 // entity with this component and connection will get notifications about changes
-type ClientComponent struct {
-	// TODO permissions
-}
+type ClientComponent struct{}
 
 // system stores:
 // - versions changes (event id and may loop)
@@ -31,7 +29,7 @@ type ClientComponent struct {
 // on any change:
 // - store in system all adds, changes and removes to a system with note of version
 // on any event (local):
-// - change reconciliation version
+// - change reconcile version
 // - store all changes
 // on any event (server):
 // - if matches with predicted event we're good

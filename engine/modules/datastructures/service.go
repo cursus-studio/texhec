@@ -23,6 +23,11 @@ func NewSparseArray[Index constraints.Integer, Value any]() SparseArray[Index, V
 	return internal.NewSparseArray[Index, Value]()
 }
 
+// doesn't reorder elements on removal
+func NewStableSparseArray[Index constraints.Integer, Value any]() SparseArray[Index, Value] {
+	return internal.NewStableSparseArray[Index, Value]()
+}
+
 // sparse set
 type SparseSetReader[Index constraints.Integer] = types.SparseSetReader[Index]
 type SparseSet[Index constraints.Integer] = types.SparseSet[Index]

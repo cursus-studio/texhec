@@ -8,9 +8,9 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                               3             52             20            175
+Go                               3             55             21            208
 -------------------------------------------------------------------------------
-SUM:                             3             52             20            175
+SUM:                             3             55             21            208
 -------------------------------------------------------------------------------
 ```
 ## Types
@@ -26,8 +26,8 @@ Type: `func(event any)`
 #### method Service EmitOnTick
 Type: `func(event any)`
 
-#### method Service LastTickUnixNano
-Type: `func() int64`
+#### method Service LastTick
+Type: `func() engine/modules/loop.LastTickComponent`
 
 #### method Service Run
 Type: `func(initialConfiguration engine/modules/loop.ConfigureEvent)`
@@ -67,6 +67,12 @@ Type: `int`
 
 #### property ConfigureEvent TPS
 Type: `int`
+
+### type LastTickComponent
+Type: `engine/modules/loop.LastTickComponent`
+
+#### property LastTickComponent UnixNano
+Type: `int64`
 
 ### type TickEvent
 Type: `engine/modules/loop.TickEvent`
@@ -113,6 +119,9 @@ Type: `func() engine/modules/loop.StopEvent`
 ### func NewConfigureEvent
 Type: `func(fps int, tps int) engine/modules/loop.ConfigureEvent`
 
+### func NewLastTick
+Type: `func(unixNano int64) engine/modules/loop.LastTickComponent`
+
 ### func NewEmitOnFrameEvent
 Type: `func(event any) engine/modules/loop.EmitOnFrameEvent`
 
@@ -130,6 +139,7 @@ Type: `func(event any) engine/modules/loop.EmitOnTickEvent`
 
 `engine/modules/ecs`:
   - `engine/modules/ecs.ComponentArray`
+  - `engine/modules/ecs.EntityID`
   - `engine/modules/ecs.GetComponentArray`
 
 `engine/modules/loop`:
@@ -141,11 +151,14 @@ Type: `func(event any) engine/modules/loop.EmitOnTickEvent`
   - `engine/modules/loop.Event`
   - `engine/modules/loop.FPS`
   - `engine/modules/loop.FrameEvent`
+  - `engine/modules/loop.LastTickComponent`
+  - `engine/modules/loop.NewLastTick`
   - `engine/modules/loop.Service`
   - `engine/modules/loop.Stats`
   - `engine/modules/loop.StopEvent`
   - `engine/modules/loop.TPS`
   - `engine/modules/loop.TickEvent`
+  - `engine/modules/loop.UnixNano`
 
 `engine/modules/typeregistry/pkg`:
   - `engine/modules/typeregistry/pkg.PkgT`

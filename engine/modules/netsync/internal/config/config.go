@@ -2,28 +2,35 @@ package config
 
 import (
 	"engine/modules/ecs"
-	"engine/modules/netsync"
 	"engine/modules/record"
+	"fmt"
 	"reflect"
 
 	"github.com/ogiusek/events"
-	"github.com/ogiusek/ioc/v2"
 )
 
-type InjectedConfig ioc.Lazy[*Config]
+type EventConfig = *eventConfig
+type eventConfig struct {
+	IsTickEvent bool
+	Builder     func(events.Builder, func(any))
+}
 
-type Config struct {
-	EventTypes     []reflect.Type
-	ListenToEvents []func(events.Builder, func(any))
+func NewEventConfig(isTickEvent bool, builder func(events.Builder, func(any))) EventConfig {
+	return &eventConfig{
+		IsTickEvent: isTickEvent,
+		Builder:     builder,
+	}
+}
 
-	SimulatedEvents         []reflect.Type
-	ListenToSimulatedEvents []func(events.Builder, func(any))
+//
 
-	TransparentEvents         []reflect.Type
-	ListenToTransparentEvents []func(events.Builder, func(any))
+type Config = *config
+type config struct {
+	EventTypes   []reflect.Type
+	EventConfigs []EventConfig
+	Events       map[reflect.Type]EventConfig
 
-	VerifyHappenEvents         []reflect.Type
-	ListenToVerifyHappenEvents []func(events.Builder, func(any))
+	TickEvent []int
 
 	RecordConfig record.Config
 
@@ -36,31 +43,53 @@ type Config struct {
 	ValidateEvent        map[reflect.Type]func(any) error
 }
 
-func (config *Config) Auth(client ecs.EntityID, event any) (any, error) {
-	eventValue := reflect.ValueOf(event)
-	eventType := eventValue.Type()
-	if _, ok := config.AllowedClientEvents[eventType]; !ok {
-		return event, nil
-	}
-	eventPointerValue := reflect.New(eventType)
-	eventPointerValue.Elem().Set(eventValue)
+func NewConfig() Config {
+	return &config{
+		EventTypes:   make([]reflect.Type, 0),
+		EventConfigs: make([]EventConfig, 0),
+		Events:       make(map[reflect.Type]EventConfig),
 
-	eventPointer := eventPointerValue.Interface()
-	if validatedEvent, ok := eventPointer.(netsync.ValidatedEvent); ok {
-		validatedEvent.SetConnection(client)
+		TickEvent: make([]int, 0),
+
+		RecordConfig: record.NewConfig(),
+
+		// client
+		MaxPredictions: 255,
+
+		// auth
+		AllowedClientEvents:  make(map[reflect.Type]struct{}),
+		GenericValidateEvent: make([]func(ecs.EntityID, any) error, 0),
+		ValidateEvent:        make(map[reflect.Type]func(any) error),
+	}
+}
+
+func AddEvent[EventType any](config Config) {
+	eventType := reflect.TypeFor[EventType]()
+	if _, ok := config.Events[eventType]; ok {
+		panic(fmt.Sprintf("tried to register \"%v\" second time", eventType.String()))
 	}
 
-	for _, validation := range config.GenericValidateEvent {
-		if err := validation(client, event); err != nil {
-			return nil, err
-		}
-	}
+	eventConfig := NewEventConfig(false, func(b events.Builder, f func(any)) {
+		events.Listen(b, func(e EventType) { f(e) })
+	})
+	config.EventTypes = append(config.EventTypes, eventType)
+	config.EventConfigs = append(config.EventConfigs, eventConfig)
+	config.Events[eventType] = eventConfig
+	config.AllowedClientEvents[eventType] = struct{}{}
+}
 
-	event = eventPointerValue.Elem().Interface()
-	if handler, ok := config.ValidateEvent[eventType]; ok {
-		if err := handler(event); err != nil {
-			return nil, err
-		}
+func AddTickEvent[EventType any](config Config) {
+	AddEvent[EventType](config)
+	config.Events[reflect.TypeFor[EventType]()].IsTickEvent = true
+}
+
+func AddGenericEventValidation(config Config, handler func(client ecs.EntityID, event any) error) {
+	config.GenericValidateEvent = append(config.GenericValidateEvent, handler)
+}
+
+func AddEventValidation[EventType any](config Config, handler func(event EventType) error) {
+	eventType := reflect.TypeFor[EventType]()
+	config.ValidateEvent[eventType] = func(a any) error {
+		return handler(a.(EventType))
 	}
-	return event, nil
 }

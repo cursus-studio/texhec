@@ -4,23 +4,15 @@ import (
 	"engine/modules/ecs"
 	"engine/modules/netsync/internal/config"
 	"engine/modules/record"
-	"reflect"
-
-	"github.com/ogiusek/events"
 )
 
 type Config struct {
-	config *config.Config
+	config config.Config
 }
 
 func newConfig() Config {
 	return Config{
-		config: &config.Config{
-			RecordConfig:        record.NewConfig(),
-			ValidateEvent:       make(map[reflect.Type]func(any) error),
-			AllowedClientEvents: make(map[reflect.Type]struct{}),
-			MaxPredictions:      0,
-		},
+		config: config.NewConfig(),
 	}
 }
 
@@ -31,49 +23,18 @@ func (c *Config) SetMaxPredictions(maxPredictions int) {
 	c.config.MaxPredictions = maxPredictions
 }
 
-func AddEvent[EventType any](config Config) {
-	eventType := reflect.TypeFor[EventType]()
-	config.config.EventTypes = append(config.config.EventTypes, eventType)
-	config.config.ListenToEvents = append(config.config.ListenToEvents, func(b events.Builder, f func(any)) {
-		events.Listen(b, func(e EventType) { f(e) })
-	})
-	config.config.AllowedClientEvents[eventType] = struct{}{}
+func AddEvent[EventType any](c Config) {
+	config.AddEvent[EventType](c.config)
 }
 
-// these event are sent from server to client regurally but they aren't sent from client to server
-func AddSimulatedEvent[EventType any](config Config) {
-	config.config.SimulatedEvents = append(config.config.EventTypes, reflect.TypeFor[EventType]())
-	config.config.ListenToSimulatedEvents = append(config.config.ListenToSimulatedEvents, func(b events.Builder, f func(any)) {
-		events.Listen(b, func(e EventType) { f(e) })
-	})
+func AddTickEvent[EventType any](c Config) {
+	config.AddTickEvent[EventType](c.config)
 }
 
-// these are freely exchanged between server and client instead of sending state
-func AddTransparentEvent[EventType any](config Config) {
-	eventType := reflect.TypeFor[EventType]()
-	config.config.TransparentEvents = append(config.config.TransparentEvents, eventType)
-	config.config.ListenToTransparentEvents = append(config.config.ListenToTransparentEvents, func(b events.Builder, f func(any)) {
-		events.Listen(b, func(e EventType) { f(e) })
-	})
-	config.config.AllowedClientEvents[eventType] = struct{}{}
+func AddGenericEventValidation(c Config, handler func(client ecs.EntityID, event any) error) {
+	config.AddGenericEventValidation(c.config, handler)
 }
 
-// these are events sent to client like ticks, client verifies that these occured between other events
-func AddVerifyEventHappen[EventType any](config Config) {
-	eventType := reflect.TypeFor[EventType]()
-	config.config.VerifyHappenEvents = append(config.config.VerifyHappenEvents, eventType)
-	config.config.ListenToVerifyHappenEvents = append(config.config.ListenToVerifyHappenEvents, func(b events.Builder, f func(any)) {
-		events.Listen(b, func(e EventType) { f(e) })
-	})
-}
-
-func AddGenericEventValidation(config Config, handler func(client ecs.EntityID, event any) error) {
-	config.config.GenericValidateEvent = append(config.config.GenericValidateEvent, handler)
-}
-
-func AddEventValidation[EventType any](config Config, handler func(event EventType) error) {
-	eventType := reflect.TypeFor[EventType]()
-	config.config.ValidateEvent[eventType] = func(a any) error {
-		return handler(a.(EventType))
-	}
+func AddEventValidation[EventType any](c Config, handler func(event EventType) error) {
+	config.AddEventValidation(c.config, handler)
 }

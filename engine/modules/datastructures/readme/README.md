@@ -9,25 +9,25 @@ goos: linux
 goarch: amd64
 pkg: engine/modules/datastructures/test
 cpu: Intel(R) Core(TM) i5-8350U CPU @ 1.70GHz
-BenchmarkMapGetByIndex-8                      	100000000	        10.26 ns/op
-BenchmarkIndexTrackerGetByIndex-8             	12761145	        93.21 ns/op
-BenchmarkIndexTrackerGetByValue-8             	10375312	       105.9 ns/op
-BenchmarkMapIterate-8                         	   98338	     12453 ns/op
-BenchmarkIndexTrackerIterate-8                	 3669985	       319.8 ns/op
-BenchmarkMapAdd-8                             	 3741642	       403.4 ns/op
-BenchmarkIndexTrackerAdd-8                    	 1000000	      1066 ns/op
-BenchmarkMapDelete-8                          	 2653327	       500.7 ns/op
-BenchmarkIndexTrackerDelete-8                 	 1000000	      1415 ns/op
-BenchmarkSparseSetGetWithoutPaging-8          	475007954	         2.547 ns/op
-BenchmarkSparseSetGetWithPaging-8             	252428830	         4.778 ns/op
-BenchmarkSparseSetGetIndicesWithoutPaging-8   	714019465	         1.688 ns/op
-BenchmarkSparseSetGetIndicesWithPaging-8      	698018500	         1.703 ns/op
-BenchmarkSparseSetAddWithoutPaging-8          	283678922	         5.791 ns/op
-BenchmarkSparseSetAddWithPaging-8             	131760746	         9.040 ns/op
-BenchmarkSparseSetRemoveWithoutPaging-8       	257807088	         4.341 ns/op
-BenchmarkSparseSetRemoveWithPaging-8          	131474908	        10.25 ns/op
+BenchmarkMapGetByIndex-8                      	143546320	         8.358 ns/op
+BenchmarkIndexTrackerGetByIndex-8             	15578006	        71.48 ns/op
+BenchmarkIndexTrackerGetByValue-8             	12646851	        87.21 ns/op
+BenchmarkMapIterate-8                         	  109822	     10921 ns/op
+BenchmarkIndexTrackerIterate-8                	 4143535	       289.8 ns/op
+BenchmarkMapAdd-8                             	 3964046	       354.1 ns/op
+BenchmarkIndexTrackerAdd-8                    	 1351284	       832.7 ns/op
+BenchmarkMapDelete-8                          	 2966322	       465.4 ns/op
+BenchmarkIndexTrackerDelete-8                 	 1000000	      1221 ns/op
+BenchmarkSparseSetGetWithoutPaging-8          	472984779	         2.516 ns/op
+BenchmarkSparseSetGetWithPaging-8             	252377475	         4.753 ns/op
+BenchmarkSparseSetGetIndicesWithoutPaging-8   	714335947	         1.684 ns/op
+BenchmarkSparseSetGetIndicesWithPaging-8      	696928789	         1.689 ns/op
+BenchmarkSparseSetAddWithoutPaging-8          	297178858	         4.195 ns/op
+BenchmarkSparseSetAddWithPaging-8             	132219685	         9.060 ns/op
+BenchmarkSparseSetRemoveWithoutPaging-8       	291432214	         3.794 ns/op
+BenchmarkSparseSetRemoveWithPaging-8          	134787138	         8.799 ns/op
 PASS
-ok  	engine/modules/datastructures/test	43.474s
+ok  	engine/modules/datastructures/test	38.083s
 ```
 ## Lines of code
 ```
@@ -35,10 +35,10 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                              12            142             57            748
+Go                              13            163             59            817
 Markdown                         1              0              0              1
 -------------------------------------------------------------------------------
-SUM:                            13            142             57            749
+SUM:                            14            163             59            818
 -------------------------------------------------------------------------------
 ```
 ## Types
@@ -153,6 +153,10 @@ Type: `func[Stored comparable]() engine/modules/datastructures.Set[Stored]`
 
 ### func NewSparseArray
 Type: `func[Index golang.org/x/exp/constraints.Integer, Value any]() engine/modules/datastructures.SparseArray[Index, Value]`
+
+### func NewStableSparseArray
+Type: `func[Index golang.org/x/exp/constraints.Integer, Value any]() engine/modules/datastructures.SparseArray[Index, Value]`
+doesn't reorder elements on removal
 
 ### func NewSparseSet
 Type: `func[Index golang.org/x/exp/constraints.Integer]() engine/modules/datastructures.SparseSet[Index]`

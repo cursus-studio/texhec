@@ -1,0 +1,69 @@
+package prediction
+
+// types here are placeholders and aren't implemented
+type Snapshot = any
+
+type ClientEventID = any
+
+// client events contain ID
+type ClientEvent = any
+type ServerEvent = any
+type Event = any
+
+// client sends [ClientEvent] :
+// - client emits [ClientEvent] and sends it to [Service.QueuePrediction]
+//   creates [Snapshot]
+// - server mirrors [ClientEvent] and send it to [Service.QueueServerEvent]
+//   removes [Snapshot]
+
+// client sends [ClientEvent] while server executed [ServerEvent] :
+// - client emits [ClientEvent] and sends it to [Service.QueuePrediction]
+//   creates [Snapshot]
+// - server sends [ServerEvent] to [Service.QueueServerEvent]
+//   removes [Snapshot]
+//   creates it again [Snapshot]
+// - server mirrors [ClientEvent] and send it to [Service.QueueServerEvent]
+//   removes [Snapshot]
+
+// client sends [ClientEvent] and server rejects it :
+// - client emits [ClientEvent] and sends it to [Service.QueuePrediction]
+//   creates [Snapshot]
+// - server sends [Service.PredictionResponseEvent] with rejected
+//   removes [Snapshot]
+//   creates again other [Snapshot]
+
+// server sends [ServerEvent] :
+// - server sends [ServerEvent] and send it to [Service.QueueServerEvent]
+
+// issues:
+// - how to re-create [ClientEvent]
+//   we just re-emit them. This won't have collisions because we do it after previous event finishes
+// - how identify [ClientEvent] and is it needed
+//   we have [ClientEventID] generator where we can set next generated ID
+
+// notes on ID emission
+// server only uses [ClientEventID] to send a response to the same client
+// and shouldn't store it or send it to different clients
+
+// this should be internal
+type EventIDService interface {
+	GetID() ClientEventID
+	QueueID(ClientEventID)
+}
+
+// write robust tests for this service
+//
+// it is responsible for applying state changes and rollback
+type Service interface {
+	// creates [Snapshot]
+	// should remove all predictions if buffor overflows
+	QueuePrediction(ClientEvent, Snapshot)
+
+	// removes [Snapshot]
+	// re-creates queued [][Snapshot] again with removed one
+	QueueServerEvent(ServerEvent)
+
+	// removes [Snapshot]
+	// re-creates queued [][Snapshot] again without removed one
+	PredictionResponseEvent(event ClientEvent, accepted bool)
+}
