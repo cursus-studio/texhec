@@ -103,11 +103,11 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                               8            183             95           1007
+Go                               8            183             95           1014
 GLSL                             3             31              2            112
 Markdown                         3             10              0             85
 -------------------------------------------------------------------------------
-SUM:                            14            224             97           1204
+SUM:                            14            224             97           1211
 -------------------------------------------------------------------------------
 ```
 ## TODO
@@ -268,6 +268,15 @@ Type: `core/modules/tile.UnloadChunkEvent`
 #### property UnloadChunkEvent Coords
 Type: `engine/modules/grid.ChunkCoordsComponent`
 
+### type HoverEntityEvent
+Type: `core/modules/tile.HoverEntityEvent`
+
+#### property HoverEntityEvent Entity
+Type: `engine/modules/ecs.EntityID`
+
+#### method HoverEntityEvent ApplyEntity
+Type: `func(entity engine/modules/ecs.EntityID) any`
+
 ### type ClickEntityEvent
 Type: `core/modules/tile.ClickEntityEvent`
 
@@ -325,6 +334,9 @@ Type: `func(coords engine/modules/grid.ChunkCoordsComponent) core/modules/tile.M
 ### func NewUnloadChunkEvent
 Type: `func(coords engine/modules/grid.ChunkCoordsComponent) core/modules/tile.UnloadChunkEvent`
 
+### func NewHoverEntityEvent
+Type: `func() core/modules/tile.HoverEntityEvent`
+
 ### func NewClickEntityEvent
 Type: `func() core/modules/tile.ClickEntityEvent`
 
@@ -362,6 +374,7 @@ Type: `func(deployed engine/modules/ecs.EntityID) core/modules/tile.ClickBluepri
   - `core/modules/tile.NameComponent`
   - `core/modules/tile.NewBiomeAsset`
   - `core/modules/tile.NewClickEntityEvent`
+  - `core/modules/tile.NewHoverEntityEvent`
   - `core/modules/tile.NewLayer`
   - `core/modules/tile.NewName`
   - `core/modules/tile.NewRot`
@@ -461,7 +474,9 @@ Type: `func(deployed engine/modules/ecs.EntityID) core/modules/tile.ClickBluepri
   - `engine/modules/grid/pkg.PkgT`
 
 `engine/modules/inputs`:
+  - `engine/modules/inputs.Hover`
   - `engine/modules/inputs.LeftClick`
+  - `engine/modules/inputs.NewHoverComponent`
   - `engine/modules/inputs.NewLeftClick`
   - `engine/modules/inputs.Stack`
   - `engine/modules/inputs.StackComponent`

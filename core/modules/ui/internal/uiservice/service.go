@@ -4,7 +4,7 @@ import (
 	"core/game"
 	"core/modules/ui"
 	"engine/modules/ecs"
-	"engine/modules/interactions"
+	"engine/modules/feature"
 	"engine/modules/transform"
 	"engine/modules/transition"
 	"time"
@@ -50,16 +50,15 @@ func NewService(
 	s.childrenWrapperArray = ecs.GetComponentArray[childrenComponent](s.World())
 
 	s.systems = append(s.systems, ecs.NewSystemRegister(func() error {
-		s.Interactions().AvailableFeatures().OnMod(s.onAvailableFeaturesMod)
+		s.Feature().OnInteractionsMod(s.onAvailableFeaturesMod)
 		events.Listen(s.EventsBuilder(), func(e sdl.MouseButtonEvent) {
 			if e.Button != sdl.BUTTON_RIGHT || e.State != sdl.RELEASED {
 				return
 			}
-			events.Emit(s.Events(), interactions.NewDeselectFeatureEvent())
+			events.Emit(s.Events(), feature.NewUnlockFeatureEvent())
 		})
-		events.Listen(s.EventsBuilder(), func(event interactions.SelectFeatureEvent) {
-			var zero interactions.SelectFeatureEvent
-			if event != zero {
+		events.Listen(s.EventsBuilder(), func(event feature.LockFeatureEvent) {
+			if event != feature.NewUnlockFeatureEvent() {
 				return
 			}
 			s.HideMenu()

@@ -8,10 +8,10 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                               7            107             34            778
+Go                               7            109             34            796
 Markdown                         1              1              0              5
 -------------------------------------------------------------------------------
-SUM:                             8            108             34            783
+SUM:                             8            110             34            801
 -------------------------------------------------------------------------------
 ```
 ## TODO
@@ -25,6 +25,12 @@ Research materials:
 ## Types
 ### type Service
 Type: `core/modules/pathfind.Service`
+
+#### method Service CanMove
+Type: `func(core/modules/actions.Entity) error`
+
+#### method Service CanMoveTo
+Type: `func(core/modules/actions.Entity, core/modules/actions.Coords) error`
 
 #### method Service CanStep
 Type: `func(engine/modules/grid.Coords, core/modules/tile.SizeComponent, core/modules/obstruction.Component, core/modules/pathfind.StepComponent) bool`
@@ -87,13 +93,13 @@ this variable contains region index and is used for region connectivity
 Type: `core/modules/pathfind.FindPathEvent`
 
 #### property FindPathEvent PlayerContext
-Type: `core/modules/player.PlayerContext`
+Type: `core/modules/actions.PlayerContext`
 
-#### property FindPathEvent UUID
-Type: `engine/modules/uuid.UUID`
+#### property FindPathEvent Entity
+Type: `core/modules/actions.Entity`
 
 #### property FindPathEvent Coords
-Type: `engine/modules/grid.Coords`
+Type: `core/modules/actions.Coords`
 
 ## Variables
 ### var ErrInvalidPath
@@ -113,24 +119,26 @@ Type: `func[Number golang.org/x/exp/constraints.Integer](invSpeed Number) core/m
 Type: `func(x engine/modules/grid.Coord, y engine/modules/grid.Coord) core/modules/pathfind.StepComponent`
 
 ### func NewFindPathEvent
-Type: `func(ctx core/modules/player.PlayerContext, entity engine/modules/uuid.UUID, coords engine/modules/grid.Coords) core/modules/pathfind.FindPathEvent`
+Type: `func(ctx core/modules/actions.PlayerContext, entity engine/modules/uuid.UUID, coords engine/modules/grid.Coords) core/modules/pathfind.FindPathEvent`
 
 
 ## Dependencies
 `core/game`:
+  - `core/game.Actions`
   - `core/game.GameWorld`
   - `core/game.Obstruction`
   - `core/game.Pathfind`
-  - `core/game.Player`
   - `core/game.Tile`
 
 `core/modules/actions`:
+  - `core/modules/actions.CanMove`
+  - `core/modules/actions.CanMoveTo`
   - `core/modules/actions.Coords`
-  - `core/modules/actions.CoordsCursorComponent`
-  - `core/modules/actions.CoordsStep`
-  - `core/modules/actions.FriendlyMobileEntityStep`
-  - `core/modules/actions.RegionAnchorComponent`
-  - `core/modules/actions.UUID`
+  - `core/modules/actions.Entity`
+  - `core/modules/actions.NewCanMoveRule`
+  - `core/modules/actions.NewCanMoveToRule`
+  - `core/modules/actions.NewOwnRule`
+  - `core/modules/actions.PlayerContext`
 
 `core/modules/obstruction`:
   - `core/modules/obstruction.Collisions`
@@ -143,13 +151,14 @@ Type: `func(ctx core/modules/player.PlayerContext, entity engine/modules/uuid.UU
 `core/modules/pathfind`:
   - `core/modules/pathfind.CanStep`
   - `core/modules/pathfind.Coords`
+  - `core/modules/pathfind.Entity`
   - `core/modules/pathfind.ErrInvalidPath`
   - `core/modules/pathfind.FindPathEvent`
   - `core/modules/pathfind.InvSpeed`
-  - `core/modules/pathfind.NewFindPathEvent`
   - `core/modules/pathfind.NewSpeed`
   - `core/modules/pathfind.NewStep`
   - `core/modules/pathfind.NewTarget`
+  - `core/modules/pathfind.PlayerContext`
   - `core/modules/pathfind.Region`
   - `core/modules/pathfind.Service`
   - `core/modules/pathfind.Speed`
@@ -158,16 +167,10 @@ Type: `func(ctx core/modules/player.PlayerContext, entity engine/modules/uuid.UU
   - `core/modules/pathfind.StepComponent`
   - `core/modules/pathfind.Target`
   - `core/modules/pathfind.TargetComponent`
-  - `core/modules/pathfind.UUID`
-
-`core/modules/player`:
-  - `core/modules/player.GetContext`
-  - `core/modules/player.PlayerContext`
-  - `core/modules/player.PlayerControlsUUID`
-  - `core/modules/player.PlayerUUID`
 
 `core/modules/tile`:
   - `core/modules/tile.Aligned`
+  - `core/modules/tile.Blueprint`
   - `core/modules/tile.Coord`
   - `core/modules/tile.Coords`
   - `core/modules/tile.ErrInvalidPosition`
@@ -207,6 +210,11 @@ Type: `func(ctx core/modules/player.PlayerContext, entity engine/modules/uuid.UU
   - `engine/modules/entityregistry.Register`
   - `engine/modules/entityregistry.Service`
 
+`engine/modules/feature/pkg`:
+  - `engine/modules/feature/pkg.Config`
+  - `engine/modules/feature/pkg.RegisterFeature`
+  - `engine/modules/feature/pkg.RegisterRuleToField`
+
 `engine/modules/grid`:
   - `engine/modules/grid.AbsoluteCoords`
   - `engine/modules/grid.Chunk`
@@ -232,16 +240,8 @@ Type: `func(ctx core/modules/player.PlayerContext, entity engine/modules/uuid.UU
 `engine/modules/grid/pkg`:
   - `engine/modules/grid/pkg.PkgT`
 
-`engine/modules/interactions/pkg`:
-  - `engine/modules/interactions/pkg.FeaturePkg`
-  - `engine/modules/interactions/pkg.NewCopyRelation`
-
 `engine/modules/loop`:
   - `engine/modules/loop.TickEvent`
-
-`engine/modules/netsync/pkg`:
-  - `engine/modules/netsync/pkg.AddEventValidation`
-  - `engine/modules/netsync/pkg.Config`
 
 `engine/modules/relation`:
   - `engine/modules/relation.Get`
@@ -255,6 +255,7 @@ Type: `func(ctx core/modules/player.PlayerContext, entity engine/modules/uuid.UU
 
 `engine/modules/uuid`:
   - `engine/modules/uuid.Entity`
+  - `engine/modules/uuid.Get`
   - `engine/modules/uuid.UUID`
 
 ### Third Party

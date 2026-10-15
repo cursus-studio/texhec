@@ -2,9 +2,11 @@ package internal
 
 import (
 	"core/game"
+	"core/modules/actions"
 	"core/modules/attack"
 	"core/modules/reach"
 	"engine/modules/ecs"
+	"engine/modules/uuid"
 
 	"github.com/ogiusek/ioc/v2"
 )
@@ -42,4 +44,39 @@ func (s *service) FullHealth(entity ecs.EntityID) (attack.HealthComponent, bool)
 		return s.health.Get(linkEntity)
 	}
 	return s.zeroHealth, false
+}
+
+func (s *service) CanAttack(entityUUID actions.Entity) error {
+	entity, ok := s.UUID().Entity(uuid.UUID(entityUUID))
+	if !ok {
+		return s.Actions().CanAttack().Error()
+	}
+	if _, ok := s.Damage().Get(entity); !ok {
+		return s.Actions().CanAttack().Error()
+	}
+	return nil
+}
+func (s *service) CanBeAttacked(attackerUUID, attackedUUID actions.Entity) error {
+	if err := s.CanAttack(attackerUUID); err != nil {
+		return s.Actions().CanBeAttacked().Error()
+	}
+	attacker, ok := s.UUID().Entity(uuid.UUID(attackerUUID))
+	if !ok {
+		return s.Actions().CanBeAttacked().Error()
+	}
+	attacked, ok := s.UUID().Entity(uuid.UUID(attackedUUID))
+	if !ok {
+		return s.Actions().CanBeAttacked().Error()
+	}
+	attackerOwner, _ := s.Player().Owner().Get(attacker)
+	attackedOwner, ok := s.Player().Owner().Get(attacked)
+	if !ok || attackerOwner == attackedOwner {
+		return s.Actions().CanBeAttacked().Error()
+	}
+	attackerRegion, _ := s.Pathfind().EntityRegion(attacker)
+	attackedRegion, ok := s.Pathfind().EntityRegion(attacked)
+	if !ok || attackerRegion != attackedRegion {
+		return s.Actions().CanBeAttacked().Error()
+	}
+	return nil
 }

@@ -8,15 +8,21 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                               4             35              5            262
+Go                               4             36              3            286
 Markdown                         1              0              0              1
 -------------------------------------------------------------------------------
-SUM:                             5             35              5            263
+SUM:                             5             36              3            287
 -------------------------------------------------------------------------------
 ```
 ## Types
 ### type Service
 Type: `core/modules/attack.Service`
+
+#### method Service CanAttack
+Type: `func(core/modules/actions.Entity) error`
+
+#### method Service CanBeAttacked
+Type: `func(attacker core/modules/actions.Entity, attacked core/modules/actions.Entity) error`
 
 #### method Service Damage
 Type: `func() engine/modules/ecs.ComponentArray[core/modules/attack.DamageComponent]`
@@ -67,13 +73,13 @@ Type: `core/modules/attack.Health`
 Type: `core/modules/attack.AttackEvent`
 
 #### property AttackEvent PlayerContext
-Type: `core/modules/player.PlayerContext`
+Type: `core/modules/actions.PlayerContext`
 
 #### property AttackEvent Attacker
-Type: `engine/modules/uuid.UUID`
+Type: `core/modules/actions.Entity`
 
 #### property AttackEvent Target
-Type: `engine/modules/uuid.UUID`
+Type: `core/modules/actions.Entity`
 
 ## Variables
 ### var ErrCannotAttackEnemyOutOfReach
@@ -90,11 +96,12 @@ Type: `func(health core/modules/attack.Health) core/modules/attack.HealthCompone
 Type: `func(damage core/modules/attack.Health) core/modules/attack.DamageComponent`
 
 ### func NewAttackEvent
-Type: `func(ctx core/modules/player.PlayerContext, attacker engine/modules/uuid.UUID, target engine/modules/uuid.UUID) core/modules/attack.AttackEvent`
+Type: `func(ctx core/modules/actions.PlayerContext, attacker core/modules/actions.Entity, target core/modules/actions.Entity) core/modules/attack.AttackEvent`
 
 
 ## Dependencies
 `core/game`:
+  - `core/game.Actions`
   - `core/game.Attack`
   - `core/game.GameWorld`
   - `core/game.Obstruction`
@@ -103,9 +110,13 @@ Type: `func(ctx core/modules/player.PlayerContext, attacker engine/modules/uuid.
   - `core/game.Tile`
 
 `core/modules/actions`:
-  - `core/modules/actions.EnemyEntityStep`
-  - `core/modules/actions.FriendlyOffensiveEntityStep`
-  - `core/modules/actions.UUID`
+  - `core/modules/actions.CanAttack`
+  - `core/modules/actions.CanBeAttacked`
+  - `core/modules/actions.Entity`
+  - `core/modules/actions.NewCanAttackRule`
+  - `core/modules/actions.NewCanBeAttackedRule`
+  - `core/modules/actions.NewOwnRule`
+  - `core/modules/actions.PlayerContext`
 
 `core/modules/attack`:
   - `core/modules/attack.AttackEvent`
@@ -116,10 +127,10 @@ Type: `func(ctx core/modules/player.PlayerContext, attacker engine/modules/uuid.
   - `core/modules/attack.ErrCannotAttackEnemyOutOfReach`
   - `core/modules/attack.Health`
   - `core/modules/attack.HealthComponent`
-  - `core/modules/attack.NewAttackEvent`
   - `core/modules/attack.NewDamage`
   - `core/modules/attack.NewHealth`
   - `core/modules/attack.NewTarget`
+  - `core/modules/attack.PlayerContext`
   - `core/modules/attack.Reach`
   - `core/modules/attack.Service`
   - `core/modules/attack.Target`
@@ -132,15 +143,10 @@ Type: `func(ctx core/modules/player.PlayerContext, attacker engine/modules/uuid.
   - `core/modules/obstruction.Obstruction`
 
 `core/modules/pathfind`:
+  - `core/modules/pathfind.EntityRegion`
   - `core/modules/pathfind.NewTarget`
   - `core/modules/pathfind.Speed`
   - `core/modules/pathfind.Target`
-
-`core/modules/player`:
-  - `core/modules/player.GetContext`
-  - `core/modules/player.PlayerContext`
-  - `core/modules/player.PlayerControlsUUID`
-  - `core/modules/player.PlayerUUID`
 
 `core/modules/reach`:
   - `core/modules/reach.Component`
@@ -170,21 +176,19 @@ Type: `func(ctx core/modules/player.PlayerContext, attacker engine/modules/uuid.
   - `engine/modules/entityregistry.Register`
   - `engine/modules/entityregistry.Service`
 
+`engine/modules/feature/pkg`:
+  - `engine/modules/feature/pkg.Config`
+  - `engine/modules/feature/pkg.RegisterFeature`
+  - `engine/modules/feature/pkg.RegisterRuleToField`
+
 `engine/modules/grid`:
   - `engine/modules/grid.Coord`
   - `engine/modules/grid.Coords`
-
-`engine/modules/interactions/pkg`:
-  - `engine/modules/interactions/pkg.FeaturePkg`
 
 `engine/modules/loop`:
   - `engine/modules/loop.Delta`
   - `engine/modules/loop.FrameEvent`
   - `engine/modules/loop.TickEvent`
-
-`engine/modules/netsync/pkg`:
-  - `engine/modules/netsync/pkg.AddEventValidation`
-  - `engine/modules/netsync/pkg.Config`
 
 `engine/modules/transition`:
   - `engine/modules/transition.LerpInt`

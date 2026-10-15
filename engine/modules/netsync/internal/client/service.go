@@ -175,13 +175,13 @@ func (s *Service) ListenSendChange(dto servertypes.SendChangeDTO) {
 	if dto.Error.Error() != nil {
 		predictedEvents := s.undoPredictions()
 		// reApplied events are events without applied event
-		reEmitedEvents := make([]clienttypes.PredictedEvent, 0, len(predictedEvents))
+		reEmittedEvents := make([]clienttypes.PredictedEvent, 0, len(predictedEvents))
 		for _, predictedEvent := range predictedEvents {
 			if predictedEvent.ID != dto.EventID {
-				reEmitedEvents = append(reEmitedEvents, predictedEvent)
+				reEmittedEvents = append(reEmittedEvents, predictedEvent)
 			}
 		}
-		s.applyPredictedEvents(reEmitedEvents)
+		s.applyPredictedEvents(reEmittedEvents)
 		if dto.Error.Error() != nil {
 			s.Logger().Log(dto.Error.Error())
 		}
@@ -211,13 +211,13 @@ func (s *Service) ListenSendChange(dto servertypes.SendChangeDTO) {
 	predictedEvents := s.undoPredictions()
 	s.Record().UUID().Apply(s.Config().RecordConfig, dto.Changes)
 	// reApplied events are events without applied event
-	reEmitedEvents := make([]clienttypes.PredictedEvent, 0, len(predictedEvents))
+	reEmittedEvents := make([]clienttypes.PredictedEvent, 0, len(predictedEvents))
 	for _, predictedEvent := range predictedEvents {
 		if predictedEvent.ID != dto.EventID {
-			reEmitedEvents = append(reEmitedEvents, predictedEvent)
+			reEmittedEvents = append(reEmittedEvents, predictedEvent)
 		}
 	}
-	s.applyPredictedEvents(reEmitedEvents)
+	s.applyPredictedEvents(reEmittedEvents)
 }
 
 // reconciliate

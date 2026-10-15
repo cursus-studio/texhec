@@ -3,58 +3,103 @@ package internal
 import (
 	"core/game"
 	"core/modules/actions"
-	"engine/modules/ecs"
-	"engine/modules/interactions"
+	"engine/modules/feature"
 
 	"github.com/ogiusek/events"
 	"github.com/ogiusek/ioc/v2"
 )
 
 type service struct {
-	game.GameWorld              `inject:""`
-	CoordsInteractionService    interactions.InteractionService[actions.CoordsInteraction]    `inject:""`
-	ObjectInteractionService    interactions.InteractionService[actions.EntityInteraction]    `inject:""`
-	BlueprintInteractionService interactions.InteractionService[actions.BlueprintInteraction] `inject:""`
+	game.GameWorld       `inject:""`
+	PlayerContextService feature.FieldService[actions.PlayerContext] `inject:""`
+	CoordsService        feature.FieldService[actions.Coords]        `inject:""`
+	EntityService        feature.FieldService[actions.Entity]        `inject:""`
+	BlueprintService     feature.FieldService[actions.Blueprint]     `inject:""`
 
-	canDeploy    ecs.ComponentArray[actions.CanDeployComponent]
-	coordsCursor ecs.ComponentArray[actions.CoordsCursorComponent]
-	coordsAnchor ecs.ComponentArray[actions.AnchorComponent]
-	regionAnchor ecs.ComponentArray[actions.RegionAnchorComponent]
+	// rules
+	OwnService     feature.RuleService[actions.OwnRule]     `inject:""`
+	IsEnemyService feature.RuleService[actions.IsEnemyRule] `inject:""`
+
+	CanDeployService          feature.RuleService[actions.CanDeployRule]          `inject:""`
+	CanDeployBlueprintService feature.RuleService[actions.CanDeployBlueprintRule] `inject:""`
+	CanDeployAtService        feature.RuleService[actions.CanDeployAtRule]        `inject:""`
+
+	CanMoveService   feature.RuleService[actions.CanMoveRule]   `inject:""`
+	CanMoveToService feature.RuleService[actions.CanMoveToRule] `inject:""`
+
+	CanAttackService     feature.RuleService[actions.CanAttackRule]     `inject:""`
+	CanBeAttackedService feature.RuleService[actions.CanBeAttackedRule] `inject:""`
 }
 
 func NewService(c ioc.Dic) actions.Service {
 	s := ioc.GetServices[*service](c)
-	s.canDeploy = ecs.GetComponentArray[actions.CanDeployComponent](s.World())
-	s.coordsCursor = ecs.GetComponentArray[actions.CoordsCursorComponent](s.World())
-	s.coordsAnchor = ecs.GetComponentArray[actions.AnchorComponent](s.World())
-	s.regionAnchor = ecs.GetComponentArray[actions.RegionAnchorComponent](s.World())
 
-	s.CoordsInteractionService.MissingPreview().OnUpsert(s.OnCoordsMissingUpsert)
-	s.CoordsInteractionService.StatePreview().OnUpsert(s.OnCoordsStateUpsert)
-	events.Listen(s.EventsBuilder(), s.OnTileHover)
-	events.Listen(s.EventsBuilder(), s.OnTileClick)
+	s.Entity().Render().OnUpsert(s.OnOwnUpsert)
+	s.Own().Render().OnUpsert(s.OnOwnUpsert)
 
-	s.ObjectInteractionService.MissingPreview().OnUpsert(s.OnObjectMissingUpsert)
-	s.ObjectInteractionService.StatePreview().OnUpsert(s.OnObjectStateUpsert)
-	events.Listen(s.EventsBuilder(), s.OnClickObject)
+	s.IsEnemy().Render().OnUpsert(s.OnEnemyUpsert)
+	s.CanBeAttacked().Render().OnUpsert(s.OnEnemyUpsert)
 
-	s.BlueprintInteractionService.MissingPreview().OnUpsert(s.OnBlueprintMissingUpsert)
-	s.BlueprintInteractionService.MissingPreview().OnRemove(s.OnBlueprintMissingRemove)
-	s.BlueprintInteractionService.StatePreview().OnUpsert(s.OnBlueprintStateUpsert)
-	events.Listen(s.EventsBuilder(), s.OnClickBlueprint)
+	s.CanMoveTo().Render().OnUpsert(s.OnCanMoveToUpsert)
+	s.CanDeployAt().Render().OnUpsert(s.OnCanDeployAtUpsert)
+
+	s.CanDeploy().Render().OnUpsert(s.OnCanDeployUpsert)
+	s.CanAttack().Render().OnUpsert(s.OnCanAttackUpsert)
+
+	s.CanDeployBlueprint().Render().OnUpsert(s.OnCanDeployBlueprintUpsert)
+	events.Listen(s.EventsBuilder(), s.OnBlueprintClick)
+
+	events.Listen(s.EventsBuilder(), s.OnCoordsHover)
+	events.Listen(s.EventsBuilder(), s.OnCoordsClick)
+
+	events.Listen(s.EventsBuilder(), s.OnEntityClick)
+	events.Listen(s.EventsBuilder(), s.OnEntityHover)
 
 	return s
 }
 
-func (s *service) CanDeploy() ecs.ComponentArray[actions.CanDeployComponent] {
-	return s.canDeploy
+// fields
+func (s *service) PlayerContext() feature.FieldService[actions.PlayerContext] {
+	return s.PlayerContextService
 }
-func (s *service) CoordsCursor() ecs.ComponentArray[actions.CoordsCursorComponent] {
-	return s.coordsCursor
+func (s *service) Coords() feature.FieldService[actions.Coords] {
+	return s.CoordsService
 }
-func (s *service) Anchor() ecs.ComponentArray[actions.AnchorComponent] {
-	return s.coordsAnchor
+func (s *service) Entity() feature.FieldService[actions.Entity] {
+	return s.EntityService
 }
-func (s *service) RegionAnchor() ecs.ComponentArray[actions.RegionAnchorComponent] {
-	return s.regionAnchor
+func (s *service) Blueprint() feature.FieldService[actions.Blueprint] {
+	return s.BlueprintService
+}
+
+// rules
+func (s *service) Own() feature.RuleService[actions.OwnRule] {
+	return s.OwnService
+}
+func (s *service) IsEnemy() feature.RuleService[actions.IsEnemyRule] {
+	return s.IsEnemyService
+}
+
+func (s *service) CanDeploy() feature.RuleService[actions.CanDeployRule] {
+	return s.CanDeployService
+}
+func (s *service) CanDeployBlueprint() feature.RuleService[actions.CanDeployBlueprintRule] {
+	return s.CanDeployBlueprintService
+}
+func (s *service) CanDeployAt() feature.RuleService[actions.CanDeployAtRule] {
+	return s.CanDeployAtService
+}
+
+func (s *service) CanMove() feature.RuleService[actions.CanMoveRule] {
+	return s.CanMoveService
+}
+func (s *service) CanMoveTo() feature.RuleService[actions.CanMoveToRule] {
+	return s.CanMoveToService
+}
+
+func (s *service) CanAttack() feature.RuleService[actions.CanAttackRule] {
+	return s.CanAttackService
+}
+func (s *service) CanBeAttacked() feature.RuleService[actions.CanBeAttackedRule] {
+	return s.CanBeAttackedService
 }

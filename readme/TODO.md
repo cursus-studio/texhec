@@ -41,8 +41,6 @@ Create methods to perform only shallow comparisons or only deep comparisons.
 Check `vulcan` and `wasm` as opengl alternatives
 - ### [inputs](/engine/modules/inputs/readme/README.md)
 Implement a proper input cursor and improve focusing and unfocusing on input
-- ### [interactions](/engine/modules/interactions/readme/README.md)
-Add feature and interaction history
 - ### [netsync](/engine/modules/netsync/readme/README.md)
 This module needs clean up for transparent events and ticks.
 Currently we hope event won't land on tick instead of handling it properly.

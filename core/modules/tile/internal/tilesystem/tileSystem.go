@@ -110,6 +110,7 @@ func (s *system) OnObstructionUpsert(entity ecs.EntityID) {
 	s.UUID().Component().Set(entity, uuid.New(deployed.UUID))
 	s.Inputs().Stack().Set(entity, inputs.StackComponent{})
 	s.Collider().Component().Set(entity, collider.NewCollider(s.Definitions().Assets().SquareCollider))
+	s.Inputs().Hover().Set(entity, inputs.NewHoverComponent(tile.NewHoverEntityEvent()))
 	s.Inputs().LeftClick().Set(entity, inputs.NewLeftClick(tile.NewClickEntityEvent()))
 }
 

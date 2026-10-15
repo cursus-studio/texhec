@@ -1,6 +1,8 @@
 # actions
 ## Architecture
-Stores all game domain interactions and steps
+Stores and renders all game fields and rules.
+Currently all rendering is in one module to ensure consistency but
+certain rules could be spreaded across multiple modules and if this module grows to much it should.
 
 ## Lines of code
 ```
@@ -8,163 +10,216 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                               6             83             13            497
-Markdown                         1              0              0              1
+Go                               7             92             17            607
+Markdown                         1              0              0              3
 -------------------------------------------------------------------------------
-SUM:                             7             83             13            498
+SUM:                             8             92             17            610
 -------------------------------------------------------------------------------
 ```
 ## Types
 ### type Service
 Type: `core/modules/actions.Service`
 
-#### method Service Anchor
-Type: `func() engine/modules/ecs.ComponentArray[core/modules/actions.AnchorComponent]`
+#### method Service Blueprint
+Type: `func() engine/modules/feature.FieldService[core/modules/actions.Blueprint]`
 
-#### method Service BlueprintInteraction
-Type: `func() engine/modules/interactions.InteractionService[core/modules/actions.BlueprintInteraction]`
+#### method Service CanAttack
+Type: `func() engine/modules/feature.RuleService[core/modules/actions.CanAttackRule]`
+
+#### method Service CanBeAttacked
+Type: `func() engine/modules/feature.RuleService[core/modules/actions.CanBeAttackedRule]`
 
 #### method Service CanDeploy
-Type: `func() engine/modules/ecs.ComponentArray[core/modules/actions.CanDeployComponent]`
+Type: `func() engine/modules/feature.RuleService[core/modules/actions.CanDeployRule]`
 
-#### method Service CoordsCursor
-Type: `func() engine/modules/ecs.ComponentArray[core/modules/actions.CoordsCursorComponent]`
+#### method Service CanDeployAt
+Type: `func() engine/modules/feature.RuleService[core/modules/actions.CanDeployAtRule]`
 
-#### method Service CoordsInteraction
-Type: `func() engine/modules/interactions.InteractionService[core/modules/actions.CoordsInteraction]`
+#### method Service CanDeployBlueprint
+Type: `func() engine/modules/feature.RuleService[core/modules/actions.CanDeployBlueprintRule]`
 
-#### method Service EntityInteraction
-Type: `func() engine/modules/interactions.InteractionService[core/modules/actions.EntityInteraction]`
+#### method Service CanMove
+Type: `func() engine/modules/feature.RuleService[core/modules/actions.CanMoveRule]`
 
-#### method Service RegionAnchor
-Type: `func() engine/modules/ecs.ComponentArray[core/modules/actions.RegionAnchorComponent]`
+#### method Service CanMoveTo
+Type: `func() engine/modules/feature.RuleService[core/modules/actions.CanMoveToRule]`
 
-### type CoordsStep
-Type: `core/modules/actions.CoordsStep`
+#### method Service Coords
+Type: `func() engine/modules/feature.FieldService[core/modules/actions.Coords]`
 
-#### method CoordsStep State
-Type: `func() core/modules/actions.CoordsInteraction`
+#### method Service Entity
+Type: `func() engine/modules/feature.FieldService[core/modules/actions.Entity]`
 
-### type EntityStep
-Type: `core/modules/actions.EntityStep`
+#### method Service IsEnemy
+Type: `func() engine/modules/feature.RuleService[core/modules/actions.IsEnemyRule]`
 
-#### method EntityStep State
-Type: `func() core/modules/actions.EntityInteraction`
+#### method Service Own
+Type: `func() engine/modules/feature.RuleService[core/modules/actions.OwnRule]`
+rules
 
-### type FriendlyEntityStep
-Type: `core/modules/actions.FriendlyEntityStep`
+#### method Service PlayerContext
+Type: `func() engine/modules/feature.FieldService[core/modules/actions.PlayerContext]`
+fields
 
-#### method FriendlyEntityStep State
-Type: `func() core/modules/actions.EntityInteraction`
+### type PlayerContextGetter
+Type: `core/modules/actions.PlayerContextGetter`
 
-### type FriendlyMobileEntityStep
-Type: `core/modules/actions.FriendlyMobileEntityStep`
+#### method PlayerContextGetter Context
+Type: `func() core/modules/actions.PlayerContext`
 
-#### method FriendlyMobileEntityStep State
-Type: `func() core/modules/actions.EntityInteraction`
+### type PlayerContext
+Type: `core/modules/actions.PlayerContext`
 
-### type FriendlyBuilderEntityStep
-Type: `core/modules/actions.FriendlyBuilderEntityStep`
+#### method PlayerContext Context
+Type: `func() core/modules/actions.PlayerContext`
 
-#### method FriendlyBuilderEntityStep State
-Type: `func() core/modules/actions.EntityInteraction`
+### type Coords
+Type: `core/modules/actions.Coords`
 
-### type FriendlyOffensiveEntityStep
-Type: `core/modules/actions.FriendlyOffensiveEntityStep`
+#### property Coords X
+Type: `engine/modules/grid.Coord`
 
-#### method FriendlyOffensiveEntityStep State
-Type: `func() core/modules/actions.EntityInteraction`
+#### property Coords Y
+Type: `engine/modules/grid.Coord`
 
-### type EnemyEntityStep
-Type: `core/modules/actions.EnemyEntityStep`
+### type Entity
+Type: `core/modules/actions.Entity`
 
-#### method EnemyEntityStep State
-Type: `func() core/modules/actions.EntityInteraction`
+### type Blueprint
+Type: `core/modules/actions.Blueprint`
 
-### type BlueprintStep
-Type: `core/modules/actions.BlueprintStep`
+### type OwnRule
+Type: `core/modules/actions.OwnRule`
 
-#### method BlueprintStep State
-Type: `func() core/modules/actions.BlueprintInteraction`
+#### property OwnRule PlayerContext
+Type: `engine/modules/feature.FieldGetter[core/modules/actions.PlayerContext]`
 
-### type CanDeployComponent
-Type: `core/modules/actions.CanDeployComponent`
-components to configure interactions
+#### property OwnRule Entity
+Type: `engine/modules/feature.FieldGetter[core/modules/actions.Entity]`
 
-#### property CanDeployComponent Entity
-Type: `engine/modules/ecs.EntityID`
+#### method OwnRule AppliedToField
+Type: `func() int`
 
-### type CoordsCursorComponent
-Type: `core/modules/actions.CoordsCursorComponent`
+### type IsEnemyRule
+Type: `core/modules/actions.IsEnemyRule`
 
-#### property CoordsCursorComponent PropertiesEntity
-Type: `engine/modules/ecs.EntityID`
+#### property IsEnemyRule PlayerContext
+Type: `engine/modules/feature.FieldGetter[core/modules/actions.PlayerContext]`
 
-#### property CoordsCursorComponent CustomImage
-Type: `bool`
-if true then entity is used as an image else default icon is used
+#### property IsEnemyRule Entity
+Type: `engine/modules/feature.FieldGetter[core/modules/actions.Entity]`
 
-### type AnchorComponent
-Type: `core/modules/actions.AnchorComponent`
+#### method IsEnemyRule AppliedToField
+Type: `func() int`
 
-#### property AnchorComponent Entity
-Type: `engine/modules/ecs.EntityID`
+### type CanDeployRule
+Type: `core/modules/actions.CanDeployRule`
+build
 
-### type RegionAnchorComponent
-Type: `core/modules/actions.RegionAnchorComponent`
+#### property CanDeployRule Entity
+Type: `engine/modules/feature.FieldGetter[core/modules/actions.Entity]`
 
-#### property RegionAnchorComponent Region
-Type: `core/modules/pathfind.Region`
+#### method CanDeployRule AppliedToField
+Type: `func() int`
 
-### type CoordsInteraction
-Type: `core/modules/actions.CoordsInteraction`
+### type CanDeployBlueprintRule
+Type: `core/modules/actions.CanDeployBlueprintRule`
 
-#### property CoordsInteraction Coords
-Type: `engine/modules/grid.Coords`
+#### property CanDeployBlueprintRule Entity
+Type: `engine/modules/feature.FieldGetter[core/modules/actions.Entity]`
 
-### type EntityInteraction
-Type: `core/modules/actions.EntityInteraction`
+#### property CanDeployBlueprintRule Blueprint
+Type: `engine/modules/feature.FieldGetter[core/modules/actions.Blueprint]`
 
-#### property EntityInteraction UUID
-Type: `engine/modules/uuid.UUID`
+#### method CanDeployBlueprintRule AppliedToField
+Type: `func() int`
 
-### type BlueprintInteraction
-Type: `core/modules/actions.BlueprintInteraction`
+### type CanDeployAtRule
+Type: `core/modules/actions.CanDeployAtRule`
 
-#### property BlueprintInteraction UUID
-Type: `engine/modules/uuid.UUID`
+#### property CanDeployAtRule Entity
+Type: `engine/modules/feature.FieldGetter[core/modules/actions.Entity]`
 
-## Variables
-### var ErrRequiresSpeed
-Type: `error`
+#### property CanDeployAtRule Blueprint
+Type: `engine/modules/feature.FieldGetter[core/modules/actions.Blueprint]`
 
-### var ErrRequiresDeploy
-Type: `error`
+#### property CanDeployAtRule Coords
+Type: `engine/modules/feature.FieldGetter[core/modules/actions.Coords]`
 
-### var ErrRequiresAttack
-Type: `error`
+#### method CanDeployAtRule AppliedToField
+Type: `func() int`
+
+### type CanMoveRule
+Type: `core/modules/actions.CanMoveRule`
+move
+
+#### property CanMoveRule Entity
+Type: `engine/modules/feature.FieldGetter[core/modules/actions.Entity]`
+
+#### method CanMoveRule AppliedToField
+Type: `func() int`
+
+### type CanMoveToRule
+Type: `core/modules/actions.CanMoveToRule`
+
+#### property CanMoveToRule Entity
+Type: `engine/modules/feature.FieldGetter[core/modules/actions.Entity]`
+
+#### property CanMoveToRule Coords
+Type: `engine/modules/feature.FieldGetter[core/modules/actions.Coords]`
+
+#### method CanMoveToRule AppliedToField
+Type: `func() int`
+
+### type CanAttackRule
+Type: `core/modules/actions.CanAttackRule`
+attack
+
+#### property CanAttackRule Entity
+Type: `engine/modules/feature.FieldGetter[core/modules/actions.Entity]`
+
+#### method CanAttackRule AppliedToField
+Type: `func() int`
+
+### type CanBeAttackedRule
+Type: `core/modules/actions.CanBeAttackedRule`
+
+#### property CanBeAttackedRule Attacker
+Type: `engine/modules/feature.FieldGetter[core/modules/actions.Entity]`
+
+#### property CanBeAttackedRule Attacked
+Type: `engine/modules/feature.FieldGetter[core/modules/actions.Entity]`
+
+#### method CanBeAttackedRule AppliedToField
+Type: `func() int`
 
 ## Functions
-### func NewCanDeploy
-Type: `func(canDeploy engine/modules/ecs.EntityID) core/modules/actions.CanDeployComponent`
+### func NewOwnRule
+Type: `func[Feature any](f *Feature, ctx *core/modules/actions.PlayerContext, entity *core/modules/actions.Entity) core/modules/actions.OwnRule`
 
-### func NewCoordsCursor
-Type: `func(propertiesEntity engine/modules/ecs.EntityID, customImage bool) core/modules/actions.CoordsCursorComponent`
+### func NewIsEnemyRule
+Type: `func[Feature any](f *Feature, ctx *core/modules/actions.PlayerContext, entity *core/modules/actions.Entity) core/modules/actions.IsEnemyRule`
 
-### func NewAnchor
-Type: `func(entity engine/modules/ecs.EntityID) core/modules/actions.AnchorComponent`
+### func NewCanDeployRule
+Type: `func[Feature any](f *Feature, entity *core/modules/actions.Entity) core/modules/actions.CanDeployRule`
 
-### func NewRegionAnchor
-Type: `func(region core/modules/pathfind.Region) core/modules/actions.RegionAnchorComponent`
+### func NewCanDeployBlueprintRule
+Type: `func[Feature any](f *Feature, entity *core/modules/actions.Entity, blueprint *core/modules/actions.Blueprint) core/modules/actions.CanDeployBlueprintRule`
 
-### func NewCoordsInteraction
-Type: `func(coords engine/modules/grid.Coords) core/modules/actions.CoordsInteraction`
+### func NewCanDeployAtRule
+Type: `func[Feature any](f *Feature, entity *core/modules/actions.Entity, blueprint *core/modules/actions.Blueprint, coords *core/modules/actions.Coords) core/modules/actions.CanDeployAtRule`
 
-### func NewEntityInteraction
-Type: `func(uuid engine/modules/uuid.UUID) core/modules/actions.EntityInteraction`
+### func NewCanMoveRule
+Type: `func[Feature any](f *Feature, entity *core/modules/actions.Entity) core/modules/actions.CanMoveRule`
 
-### func NewBlueprintInteraction
-Type: `func(uuid engine/modules/uuid.UUID) core/modules/actions.BlueprintInteraction`
+### func NewCanMoveToRule
+Type: `func[Feature any](f *Feature, entity *core/modules/actions.Entity, coords *core/modules/actions.Coords) core/modules/actions.CanMoveToRule`
+
+### func NewCanAttackRule
+Type: `func[Feature any](f *Feature, entity *core/modules/actions.Entity) core/modules/actions.CanAttackRule`
+
+### func NewCanBeAttackedRule
+Type: `func[Feature any](f *Feature, attacker *core/modules/actions.Entity, attacked *core/modules/actions.Entity) core/modules/actions.CanBeAttackedRule`
 
 
 ## Dependencies
@@ -181,38 +236,22 @@ Type: `func(uuid engine/modules/uuid.UUID) core/modules/actions.BlueprintInterac
   - `core/game.Ui`
 
 `core/modules/actions`:
-  - `core/modules/actions.AnchorComponent`
-  - `core/modules/actions.BlueprintInteraction`
-  - `core/modules/actions.BlueprintStep`
-  - `core/modules/actions.CanDeployComponent`
+  - `core/modules/actions.Attacked`
+  - `core/modules/actions.Attacker`
+  - `core/modules/actions.Blueprint`
+  - `core/modules/actions.CanAttackRule`
+  - `core/modules/actions.CanBeAttackedRule`
+  - `core/modules/actions.CanDeployAtRule`
+  - `core/modules/actions.CanDeployBlueprintRule`
+  - `core/modules/actions.CanDeployRule`
+  - `core/modules/actions.CanMoveRule`
+  - `core/modules/actions.CanMoveToRule`
   - `core/modules/actions.Coords`
-  - `core/modules/actions.CoordsCursorComponent`
-  - `core/modules/actions.CoordsInteraction`
-  - `core/modules/actions.CoordsStep`
-  - `core/modules/actions.CustomImage`
-  - `core/modules/actions.EnemyEntityStep`
   - `core/modules/actions.Entity`
-  - `core/modules/actions.EntityInteraction`
-  - `core/modules/actions.EntityStep`
-  - `core/modules/actions.ErrRequiresAttack`
-  - `core/modules/actions.ErrRequiresDeploy`
-  - `core/modules/actions.ErrRequiresSpeed`
-  - `core/modules/actions.FriendlyBuilderEntityStep`
-  - `core/modules/actions.FriendlyEntityStep`
-  - `core/modules/actions.FriendlyMobileEntityStep`
-  - `core/modules/actions.FriendlyOffensiveEntityStep`
-  - `core/modules/actions.NewAnchor`
-  - `core/modules/actions.NewBlueprintInteraction`
-  - `core/modules/actions.NewCanDeploy`
-  - `core/modules/actions.NewCoordsCursor`
-  - `core/modules/actions.NewCoordsInteraction`
-  - `core/modules/actions.NewEntityInteraction`
-  - `core/modules/actions.NewRegionAnchor`
-  - `core/modules/actions.PropertiesEntity`
-  - `core/modules/actions.Region`
-  - `core/modules/actions.RegionAnchorComponent`
+  - `core/modules/actions.IsEnemyRule`
+  - `core/modules/actions.OwnRule`
+  - `core/modules/actions.PlayerContext`
   - `core/modules/actions.Service`
-  - `core/modules/actions.UUID`
 
 `core/modules/definitions`:
   - `core/modules/definitions.Assets`
@@ -223,37 +262,22 @@ Type: `func(uuid engine/modules/uuid.UUID) core/modules/actions.BlueprintInterac
   - `core/modules/definitions.GameGroup`
   - `core/modules/definitions.Hud`
   - `core/modules/definitions.ObjectPlaceholderLayer`
-  - `core/modules/definitions.ObjectSelectionPlaceholderLayer`
   - `core/modules/definitions.RangePlaceholderLayer`
-  - `core/modules/definitions.Selected`
   - `core/modules/definitions.SquareMesh`
   - `core/modules/definitions.TilePlaceholderLayer`
 
 `core/modules/obstruction`:
   - `core/modules/obstruction.Collisions`
   - `core/modules/obstruction.Component`
-  - `core/modules/obstruction.Deployed`
   - `core/modules/obstruction.NewAABB`
   - `core/modules/obstruction.Obstruction`
-
-`core/modules/pathfind`:
-  - `core/modules/pathfind.CoordsRegion`
-  - `core/modules/pathfind.EntityRegion`
-  - `core/modules/pathfind.Region`
-  - `core/modules/pathfind.RegionObstruction`
-  - `core/modules/pathfind.Speed`
-
-`core/modules/player`:
-  - `core/modules/player.ControlsEntity`
-  - `core/modules/player.ControlsUUID`
-  - `core/modules/player.ErrRequiresToBeEnemy`
 
 `core/modules/tile`:
   - `core/modules/tile.Blueprint`
   - `core/modules/tile.ClickBlueprintEvent`
   - `core/modules/tile.ClickEntityEvent`
   - `core/modules/tile.Entity`
-  - `core/modules/tile.ErrBlueprintIsMissingUUID`
+  - `core/modules/tile.HoverEntityEvent`
   - `core/modules/tile.Layer`
   - `core/modules/tile.Name`
   - `core/modules/tile.NewClickBlueprintEvent`
@@ -263,9 +287,36 @@ Type: `func(uuid engine/modules/uuid.UUID) core/modules/actions.BlueprintInterac
   - `core/modules/tile.Size`
 
 `engine/modules/ecs`:
-  - `engine/modules/ecs.ComponentArray`
   - `engine/modules/ecs.EntityID`
-  - `engine/modules/ecs.GetComponentArray`
+
+`engine/modules/feature`:
+  - `engine/modules/feature.AllFields`
+  - `engine/modules/feature.ErrInvalidType`
+  - `engine/modules/feature.Error`
+  - `engine/modules/feature.FieldGetter`
+  - `engine/modules/feature.FieldRenderInteraction`
+  - `engine/modules/feature.FieldService`
+  - `engine/modules/feature.Fields`
+  - `engine/modules/feature.From`
+  - `engine/modules/feature.Index`
+  - `engine/modules/feature.Interactions`
+  - `engine/modules/feature.LockedFeature`
+  - `engine/modules/feature.NewFieldGetter`
+  - `engine/modules/feature.PreviewInteraction`
+  - `engine/modules/feature.Render`
+  - `engine/modules/feature.Rule`
+  - `engine/modules/feature.RuleRender`
+  - `engine/modules/feature.RuleRenderCompletePreview`
+  - `engine/modules/feature.RuleRenderPreviewRulesFail`
+  - `engine/modules/feature.RuleRenderPreviewRulesPass`
+  - `engine/modules/feature.RuleService`
+  - `engine/modules/feature.SubmitInteraction`
+  - `engine/modules/feature.Validate`
+  - `engine/modules/feature.Value`
+
+`engine/modules/feature/pkg`:
+  - `engine/modules/feature/pkg.FieldPkg`
+  - `engine/modules/feature/pkg.RulePkg`
 
 `engine/modules/grid`:
   - `engine/modules/grid.AbsoluteCoords`
@@ -284,17 +335,9 @@ Type: `func(uuid engine/modules/uuid.UUID) core/modules/actions.BlueprintInterac
   - `engine/modules/inputs.LeftClick`
   - `engine/modules/inputs.NewLeftClick`
 
-`engine/modules/interactions`:
-  - `engine/modules/interactions.InteractionService`
-  - `engine/modules/interactions.MissingPreview`
-  - `engine/modules/interactions.Save`
-  - `engine/modules/interactions.State`
-  - `engine/modules/interactions.StatePreview`
-  - `engine/modules/interactions.Step`
-
-`engine/modules/interactions/pkg`:
-  - `engine/modules/interactions/pkg.InteractionPkg`
-  - `engine/modules/interactions/pkg.StepPkg`
+`engine/modules/netsync/pkg`:
+  - `engine/modules/netsync/pkg.AddGenericEventValidation`
+  - `engine/modules/netsync/pkg.Config`
 
 `engine/modules/render`:
   - `engine/modules/render.Color`
@@ -317,13 +360,9 @@ Type: `func(uuid engine/modules/uuid.UUID) core/modules/actions.BlueprintInterac
   - `engine/modules/transform.RelativePos`
   - `engine/modules/transform.RelativeSizeXY`
 
-`engine/modules/typeregistry/pkg`:
-  - `engine/modules/typeregistry/pkg.PkgT`
-
 `engine/modules/uuid`:
   - `engine/modules/uuid.Component`
   - `engine/modules/uuid.Entity`
-  - `engine/modules/uuid.ErrMissingUUID`
   - `engine/modules/uuid.Get`
   - `engine/modules/uuid.ID`
   - `engine/modules/uuid.SetUUID`

@@ -1,11 +1,10 @@
 package attack
 
 import (
-	"core/modules/player"
+	"core/modules/actions"
 	"core/modules/reach"
 	"engine/modules/ecs"
 	"engine/modules/transition"
-	"engine/modules/uuid"
 	"errors"
 )
 
@@ -43,11 +42,11 @@ func (c1 HealthComponent) Lerp(c2 HealthComponent, mix32 float32) HealthComponen
 //
 
 type AttackEvent struct {
-	player.PlayerContext
-	Attacker, Target uuid.UUID
+	actions.PlayerContext
+	Attacker, Target actions.Entity
 }
 
-func NewAttackEvent(ctx player.PlayerContext, attacker, target uuid.UUID) AttackEvent {
+func NewAttackEvent(ctx actions.PlayerContext, attacker, target actions.Entity) AttackEvent {
 	return AttackEvent{ctx, attacker, target}
 }
 
@@ -62,4 +61,7 @@ type Service interface {
 	Damage() ecs.ComponentArray[DamageComponent]
 
 	FullHealth(ecs.EntityID) (HealthComponent, bool)
+
+	CanAttack(actions.Entity) error
+	CanBeAttacked(attacker, attacked actions.Entity) error
 }

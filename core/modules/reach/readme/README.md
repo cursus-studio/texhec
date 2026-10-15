@@ -9,11 +9,11 @@ goos: linux
 goarch: amd64
 pkg: core/modules/reach/test
 cpu: Intel(R) Core(TM) i5-8350U CPU @ 1.70GHz
-BenchmarkDist-8                 	124853566	         9.655 ns/op
-Benchmark4TilesWithinReach-8    	12420687	        96.86 ns/op
-Benchmark12TilesWithinReach-8   	 8930929	       136.4 ns/op
+BenchmarkDist-8                 	100000000	        10.09 ns/op
+Benchmark4TilesWithinReach-8    	12352659	        97.42 ns/op
+Benchmark12TilesWithinReach-8   	 8318912	       142.2 ns/op
 PASS
-ok  	core/modules/reach/test	3.647s
+ok  	core/modules/reach/test	3.423s
 ```
 ## Lines of code
 ```
@@ -21,10 +21,10 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                               8             57             27            364
+Go                               8             60             27            382
 Markdown                         2              0              0              2
 -------------------------------------------------------------------------------
-SUM:                            10             57             27            366
+SUM:                            10             60             27            384
 -------------------------------------------------------------------------------
 ```
 ## TODO
@@ -46,6 +46,9 @@ Type: `func() engine/modules/ecs.ComponentArray[core/modules/reach.Component[Fea
 
 #### method ServiceT Reaches
 Type: `func(fromEntity engine/modules/ecs.EntityID, toEntity engine/modules/ecs.EntityID) bool`
+
+#### method ServiceT ReachesCoords
+Type: `func(fromEntity engine/modules/ecs.EntityID, toPos core/modules/tile.PosComponent, toSize core/modules/tile.SizeComponent) bool`
 
 #### method ServiceT TilesFrom
 Type: `func(core/modules/tile.PosComponent, core/modules/tile.SizeComponent, core/modules/reach.Component[FeatureComponent]) []engine/modules/grid.Coords`
@@ -90,6 +93,7 @@ takes square of distnace
 
 `core/modules/tile`:
   - `core/modules/tile.Aligned`
+  - `core/modules/tile.Blueprint`
   - `core/modules/tile.Coord`
   - `core/modules/tile.Pos`
   - `core/modules/tile.PosComponent`

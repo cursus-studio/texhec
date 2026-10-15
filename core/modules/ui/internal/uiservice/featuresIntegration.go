@@ -2,13 +2,13 @@ package uiservice
 
 import (
 	"engine/modules/ecs"
+	"engine/modules/feature"
 	"engine/modules/inputs"
-	"engine/modules/interactions"
 	"engine/modules/text"
 )
 
 func (s *service) onAvailableFeaturesMod(entity ecs.EntityID) {
-	availableFeatures, _ := s.Interactions().AvailableFeatures().Get(entity)
+	availableFeatures := s.Feature().Interactions()
 	if len(availableFeatures.Features) == 0 {
 		s.HideMenu()
 		return
@@ -19,8 +19,8 @@ func (s *service) onAvailableFeaturesMod(entity ecs.EntityID) {
 	}
 	btns := []Button{}
 
-	for _, feature := range availableFeatures.Features {
-		btns = append(btns, Button{feature.Name(), interactions.NewSelectFeatureEvent(feature)})
+	for _, feat := range availableFeatures.Features {
+		btns = append(btns, Button{feat.Name(), feature.NewLockFeatureEvent(feat)})
 	}
 
 	for _, p := range s.Ui().ShowMenu() {

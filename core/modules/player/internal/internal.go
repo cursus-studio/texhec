@@ -2,6 +2,7 @@ package internal
 
 import (
 	"core/game"
+	"core/modules/actions"
 	"core/modules/economy"
 	"core/modules/player"
 	"engine/modules/ecs"
@@ -66,39 +67,35 @@ func (s *service) Owner() uuid.LinkService[player.OwnerLink] {
 
 //
 
-func (s *service) ControlsEntity(entity ecs.EntityID) error {
+func (s *service) Own(ctx actions.PlayerContext, entityUUID actions.Entity) error {
+	entity, ok := s.UUID().Entity(uuid.UUID(entityUUID))
+	if !ok {
+		return s.Actions().Own().Error()
+	}
 	owner, ok := s.Owner().Get(entity)
 	if !ok {
-		return player.ErrRequiresOwner
-	}
-	if _, ok := s.ActingPlayer().Get(owner); !ok {
-		return player.ErrRequiresControl
-	}
-	return nil
-}
-func (s *service) ControlsUUID(uuidVal uuid.UUID) error {
-	if entity, ok := s.UUID().Entity(uuidVal); ok {
-		return s.ControlsEntity(entity)
-	}
-	return uuid.ErrMissingUUID
-}
-
-func (s *service) PlayerControlsEntity(playerUUID uuid.UUID, entity ecs.EntityID) error {
-	owner, ok := s.Owner().Get(entity)
-	if !ok {
-		return player.ErrRequiresOwner
+		return s.Actions().Own().Error()
 	}
 	ownerUUID, ok := s.UUID().Component().Get(owner)
-	if !ok || ownerUUID.ID != playerUUID {
-		return player.ErrRequiresOwner
+	if !ok || ownerUUID.ID != uuid.UUID(ctx) {
+		return s.Actions().Own().Error()
 	}
 	return nil
 }
-func (s *service) PlayerControlsUUID(playerUUID, uuidVal uuid.UUID) error {
-	if entity, ok := s.UUID().Entity(uuidVal); ok {
-		return s.PlayerControlsEntity(playerUUID, entity)
+func (s *service) IsEnemy(ctx actions.PlayerContext, entityUUID actions.Entity) error {
+	entity, ok := s.UUID().Entity(uuid.UUID(entityUUID))
+	if !ok {
+		return s.Actions().IsEnemy().Error()
 	}
-	return uuid.ErrMissingUUID
+	owner, ok := s.Owner().Get(entity)
+	if !ok {
+		return nil
+	}
+	ownerUUID, _ := s.UUID().Component().Get(owner)
+	if ownerUUID.ID == uuid.UUID(ctx) {
+		return s.Actions().IsEnemy().Error()
+	}
+	return nil
 }
 
 //
@@ -176,15 +173,15 @@ func (s *service) OnAssignActingPlayerDTO(dto player.AssignActingPlayerDTO) {
 	events.Emit(s.Events(), loop.NewEmitOnFrameEvent(dto))
 }
 
-func (s *service) GetContext() player.PlayerContext {
+func (s *service) GetContext() actions.PlayerContext {
 	entities := s.ActingPlayer().GetEntities()
 	if len(entities) != 1 {
-		return player.PlayerContext{}
+		return actions.PlayerContext{}
 	}
 	entity := entities[0]
 	uuid, ok := s.UUID().Component().Get(entity)
 	if !ok {
-		return player.PlayerContext{}
+		return actions.PlayerContext{}
 	}
-	return player.PlayerContext{PlayerUUID: uuid.ID}
+	return actions.PlayerContext(uuid.ID)
 }

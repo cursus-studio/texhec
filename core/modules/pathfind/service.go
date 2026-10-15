@@ -2,8 +2,8 @@
 package pathfind
 
 import (
+	"core/modules/actions"
 	"core/modules/obstruction"
-	"core/modules/player"
 	"core/modules/tile"
 	"engine/modules/ecs"
 	"engine/modules/grid"
@@ -57,6 +57,9 @@ type Service interface {
 	Speed() ecs.ComponentArray[SpeedComponent]
 	Step() ecs.ComponentArray[StepComponent]
 
+	CanMove(actions.Entity) error
+	CanMoveTo(actions.Entity, actions.Coords) error
+
 	// region
 	RegionObstruction(Region) (obstruction.Obstruction, bool)
 	CoordsRegion(grid.Coords, obstruction.Obstruction) (Region, bool)
@@ -81,11 +84,11 @@ type Service interface {
 // - look on `HPA*` and `JPS`
 
 type FindPathEvent struct {
-	player.PlayerContext
-	UUID   uuid.UUID
-	Coords grid.Coords
+	actions.PlayerContext
+	Entity actions.Entity
+	Coords actions.Coords
 }
 
-func NewFindPathEvent(ctx player.PlayerContext, entity uuid.UUID, coords grid.Coords) FindPathEvent {
-	return FindPathEvent{ctx, entity, coords}
+func NewFindPathEvent(ctx actions.PlayerContext, entity uuid.UUID, coords grid.Coords) FindPathEvent {
+	return FindPathEvent{ctx, actions.Entity(entity), actions.Coords(coords)}
 }
