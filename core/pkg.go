@@ -115,15 +115,15 @@ func getDic() ioc.Dic {
 				// i want to sync:
 				// - world: seed
 				record.AddToConfig[seed.SeedComponent](config.RecordConfig())
-				// - chunks: chukn coords, grid content
+				// - chunks: chunk coords, grid content
 				record.AddToConfig[grid.ChunkCoordsComponent](config.RecordConfig())
 				record.AddToConfig[grid.ChunkComponent[tile.ID]](config.RecordConfig())
 				record.AddToConfig[grid.ChunkComponent[obstruction.Obstruction]](config.RecordConfig())
-				// - objects: coords, blueprint, owner, deployed mark
-				record.AddToConfig[uuid.LinkUUIDComponent[player.OwnerLink]](config.RecordConfig())
-				record.AddToConfig[obstruction.DeployedComponent](config.RecordConfig())
-				record.AddToConfig[uuid.LinkUUIDComponent[tile.BlueprintLink]](config.RecordConfig())
+				// - objects: coords, owner, blueprint, deployed mark
 				record.AddToConfig[tile.PosComponent](config.RecordConfig())
+				record.AddToConfig[uuid.LinkUUIDComponent[player.OwnerLink]](config.RecordConfig())
+				record.AddToConfig[uuid.LinkUUIDComponent[tile.BlueprintLink]](config.RecordConfig())
+				record.AddToConfig[obstruction.DeployedComponent](config.RecordConfig())
 				// - players: name, wallet
 				record.AddToConfig[player.PlayerComponent](config.RecordConfig())
 				record.AddToConfig[player.PlayerUUIDComponent](config.RecordConfig())

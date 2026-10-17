@@ -7,10 +7,12 @@ import (
 	"engine/modules/uuid"
 	"errors"
 	"fmt"
+	"io"
 	"math"
 	"net"
 	"os"
 	"reflect"
+	"time"
 
 	"github.com/ogiusek/events"
 )
@@ -51,6 +53,7 @@ func (conn *ConnBuffer) Read(dst []byte) (n int, err error) {
 	}
 	_ = conn.SetReadDeadline(getDeadline())
 	netN, err := conn.Conn.Read(dst[n:])
+	_ = conn.SetReadDeadline(time.Time{})
 	n += netN
 	return n, err
 }
@@ -92,17 +95,6 @@ func (conn *conn) Send(message any) error {
 
 //
 
-func (s *service) CloseConn(entity ecs.EntityID) {
-	connComp, ok := s.Connection().Component().Get(entity)
-	if !ok {
-		return
-	}
-	conn := connComp.Conn().(*conn)
-	conn.Close()
-
-	s.World().RemoveEntity(entity)
-}
-
 func (s *service) PollMessages(entity ecs.EntityID) {
 	connComp, ok := s.Connection().Component().Get(entity)
 	if !ok {
@@ -111,7 +103,7 @@ func (s *service) PollMessages(entity ecs.EntityID) {
 	conn := connComp.Conn().(*conn)
 
 	messageLengthInBytes := make([]byte, 4)
-	if n, err := conn.conn.Read(messageLengthInBytes); n < int(len(messageLengthInBytes)) && errors.Is(err, os.ErrDeadlineExceeded) {
+	if n, err := conn.conn.Read(messageLengthInBytes); (n != 0 && n < int(len(messageLengthInBytes))) || errors.Is(err, os.ErrDeadlineExceeded) {
 		conn.conn.Buffer(messageLengthInBytes[:n])
 		return
 	} else if err != nil {
@@ -121,7 +113,7 @@ func (s *service) PollMessages(entity ecs.EntityID) {
 
 	messageLength := binary.BigEndian.Uint32(messageLengthInBytes)
 	messageBytes := make([]byte, messageLength)
-	if n, err := conn.conn.Read(messageBytes); n < int(len(messageLengthInBytes)) && errors.Is(err, os.ErrDeadlineExceeded) {
+	if n, err := io.ReadFull(&conn.conn, messageBytes); (n != 0 && n < int(len(messageLengthInBytes))) || errors.Is(err, os.ErrDeadlineExceeded) {
 		conn.conn.Buffer(messageLengthInBytes)
 		conn.conn.Buffer(messageBytes[:n])
 		return
@@ -142,6 +134,17 @@ func (s *service) PollMessages(entity ecs.EntityID) {
 	}
 	// f.logger.Info(fmt.Sprintf("received '***' type '%v'", reflect.TypeOf(message).String()))
 	events.EmitAny(s.Events(), msg)
+}
+
+func (s *service) CloseConn(entity ecs.EntityID) {
+	connComp, ok := s.Connection().Component().Get(entity)
+	if !ok {
+		return
+	}
+	conn := connComp.Conn().(*conn)
+	conn.Close()
+
+	s.World().RemoveEntity(entity)
 }
 
 func (s *service) OnSetUUID(setUUID connection.SetConnUUIDDTO) {
