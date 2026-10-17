@@ -30,7 +30,7 @@ func (err Error) Error() error {
 type ReconcileDTO struct {
 	connection.MsgCtx
 	TickUnixNano int64
-	State        record.UUIDRecording
+	State        record.UUIDState
 	Error        Error
 }
 

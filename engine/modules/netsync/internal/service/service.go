@@ -5,6 +5,7 @@ import (
 	"engine/modules/ecs"
 	"engine/modules/netsync"
 	"engine/modules/netsync/internal/client"
+	"engine/modules/netsync/internal/clienttypes"
 	"engine/modules/netsync/internal/config"
 	"engine/modules/netsync/internal/prediction"
 	"engine/modules/netsync/internal/server"
@@ -37,9 +38,20 @@ func (s *service) Start() ecs.SystemRegister {
 		for _, config := range s.Config().EventConfigs {
 			config.Builder(s.EventsBuilder(), func(a any) {
 				if len(s.Server().GetEntities()) != 0 {
-					s.Logger().Warn(s.PredictionService().StartPrediction(a))
+					err := s.PredictionService().StartPrediction(a)
+					if err == prediction.ErrPredictionMachineFailed {
+						conn := s.ClientService().GetConnection()
+						if conn != nil {
+							err := conn.Send(clienttypes.ReconcileDTO{})
+							s.Logger().Warn(err)
+						}
+					} else {
+						s.Logger().Warn(err)
+					}
 				}
-				s.ServerService().BeforeEvent(a)
+				if len(s.Clients().GetEntities()) != 0 {
+					s.ServerService().BeforeEvent(a)
+				}
 			})
 		}
 		return nil
@@ -47,6 +59,7 @@ func (s *service) Start() ecs.SystemRegister {
 }
 func (s *service) Stop() ecs.SystemRegister {
 	return ecs.NewSystemRegister(func() error {
+		s.ServerService().AddAfterListeners()
 		for _, config := range s.Config().EventConfigs {
 			config.Builder(s.EventsBuilder(), func(a any) {
 				if len(s.Server().GetEntities()) != 0 {

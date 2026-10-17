@@ -128,6 +128,10 @@ func getDic() ioc.Dic {
 				record.AddToConfig[player.PlayerComponent](config.RecordConfig())
 				record.AddToConfig[player.PlayerUUIDComponent](config.RecordConfig())
 				record.AddToConfig[economy.WalletComponent](config.RecordConfig())
+				// - features: pathfind, attack, deploy
+				record.AddToConfig[attack.TargetComponent](config.RecordConfig())
+				record.AddToConfig[pathfind.TargetComponent](config.RecordConfig())
+				record.AddToConfig[pathfind.StepComponent](config.RecordConfig())
 
 				netsyncpkg.AddEvent[deploy.DeployEvent](config)
 				netsyncpkg.AddEvent[attack.AttackEvent](config)

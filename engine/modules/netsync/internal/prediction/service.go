@@ -87,6 +87,8 @@ type service struct {
 	newPredictions    []ClientEvent
 	currentPrediction null.Nullable[RecordedPrediction]
 
+	revertPrediction null.Nullable[record.RecordingID]
+
 	// we use stable sparse array. not stable sparse array would cause swap and pop
 	predictions datastructures.SparseArray[ClientEventID, Prediction]
 }
@@ -115,9 +117,11 @@ func (s *service) UndoPredictions() []Prediction {
 		predictions = append(predictions, prediction)
 		s.predictions.Remove(id)
 	}
+	recordings := make([]record.Recording, 0, len(predictions))
 	for _, prediction := range predictions {
-		s.World.Record().Entity().Apply(s.Config.RecordConfig, prediction.Recording)
+		recordings = append(recordings, prediction.Recording)
 	}
+	s.World.Record().Apply(s.Config.RecordConfig, recordings...)
 	return predictions
 }
 
@@ -136,11 +140,13 @@ func (s *service) StartPrediction(event Event) error {
 	// prediction overflow
 	if _, ok := s.predictions.Get(eventID); ok {
 		s.UndoPredictions()
+		s.newPredictions = nil
+		s.revertPrediction = null.New(s.World.Record().StartBackwardsRecording(s.Config.RecordConfig))
 		return ErrPredictionMachineFailed
 	}
 	currentPrediction := RecordedPrediction{
 		ID:        eventID,
-		Recording: s.World.Record().Entity().StartBackwardsRecording(s.Config.RecordConfig),
+		Recording: s.World.Record().StartBackwardsRecording(s.Config.RecordConfig),
 		Event:     event,
 	}
 	s.currentPrediction = null.New(currentPrediction)
@@ -151,13 +157,19 @@ func (s *service) StartPrediction(event Event) error {
 	return nil
 }
 func (s *service) StopPrediction() error {
+	if id, ok := s.revertPrediction.Ok(); ok {
+		recording, _ := s.World.Record().Stop(id)
+		s.World.Record().Apply(s.Config.RecordConfig, recording)
+		s.revertPrediction = null.Null[record.RecordingID]()
+		return nil
+	}
 	prediction, ok := s.currentPrediction.Ok()
 	if !ok {
 		// this occurs when we used [IgnoreEventID]
 		return nil
 	}
 	s.currentPrediction = null.Null[RecordedPrediction]()
-	recording, ok := s.World.Record().Entity().Stop(prediction.Recording)
+	recording, ok := s.World.Record().Stop(prediction.Recording)
 	if !ok {
 		return ErrPredictionMachineFailed
 	}

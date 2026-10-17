@@ -84,7 +84,6 @@ Type: `func[StateComponent any](entity engine/modules/ecs.EntityID, state StateC
   - `engine/modules/record.AddToConfig`
   - `engine/modules/record.Config`
   - `engine/modules/record.Entities`
-  - `engine/modules/record.Entity`
   - `engine/modules/record.NewConfig`
   - `engine/modules/record.RecordingID`
   - `engine/modules/record.StartBackwardsRecording`

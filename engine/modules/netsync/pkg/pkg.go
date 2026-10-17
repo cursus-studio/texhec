@@ -22,8 +22,6 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 		typeregistrypkg.PkgT[servertypes.ReconcileDTO],
 		typeregistrypkg.PkgT[servertypes.EventDTO],
 		typeregistrypkg.PkgT[servertypes.PredictionResponseDTO],
-
-		typeregistrypkg.PkgT[server.ReconcileOnTickEvent],
 	}
 	for _, pkg := range pkgs {
 		pkg(b)
@@ -40,7 +38,7 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 	ioc.Register(b, func(c ioc.Dic) prediction.Service {
 		return prediction.NewService(c)
 	})
-	ioc.Register(b, func(c ioc.Dic) prediction.IDService { return prediction.NewEventIDService(c, 255) })
+	ioc.Register(b, func(c ioc.Dic) prediction.IDService { return prediction.NewEventIDService(c) })
 	ioc.Register(b, func(c ioc.Dic) *server.Service { return server.NewService(c) })
 	ioc.Register(b, func(c ioc.Dic) *client.Service { return client.NewService(c) })
 })

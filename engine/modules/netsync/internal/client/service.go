@@ -85,7 +85,7 @@ func NewService(c ioc.Dic) *Service {
 
 // reconcile
 func (s *Service) ListenReconcile(dto servertypes.ReconcileDTO) {
-	conn := s.getConnection()
+	conn := s.GetConnection()
 	if conn == nil {
 		return
 	}
@@ -97,7 +97,7 @@ func (s *Service) ListenReconcile(dto servertypes.ReconcileDTO) {
 		conn.Close()
 		return
 	}
-	s.Record().UUID().Apply(s.Config().RecordConfig, dto.State)
+	s.Record().ApplyUUIDState(s.Config().RecordConfig, dto.State)
 	s.Loop().SyncToUnixNano(dto.TickUnixNano)
 
 	s.Prediction.ReApplyPredictions(predictions)
@@ -114,7 +114,7 @@ func (s *Service) ListenPredicted(dto servertypes.PredictionResponseDTO) {
 
 // private methods
 
-func (s *Service) getConnection() connection.Conn {
+func (s *Service) GetConnection() connection.Conn {
 	if entities := s.NetSync().Server().GetEntities(); len(entities) == 1 {
 		server := entities[0]
 		comp, ok := s.Connection().Component().Get(server)

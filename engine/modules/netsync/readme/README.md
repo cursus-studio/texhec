@@ -14,10 +14,10 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                              14            198             78            937
+Go                              14            200             80            991
 Markdown                         1              2              0              5
 -------------------------------------------------------------------------------
-SUM:                            15            200             78            942
+SUM:                            15            202             80            996
 -------------------------------------------------------------------------------
 ```
 ## TODO
@@ -89,6 +89,7 @@ entity with this component and connection will get notifications about changes
   - `engine/modules/connection.Send`
 
 `engine/modules/datastructures`:
+  - `engine/modules/datastructures.NewSparseArray`
   - `engine/modules/datastructures.NewStableSparseArray`
   - `engine/modules/datastructures.SparseArray`
 
@@ -104,7 +105,6 @@ entity with this component and connection will get notifications about changes
 `engine/modules/loop`:
   - `engine/modules/loop.FrameEvent`
   - `engine/modules/loop.LastTick`
-  - `engine/modules/loop.NewEmitOnTickEvent`
   - `engine/modules/loop.SyncToUnixNano`
   - `engine/modules/loop.TickEvent`
   - `engine/modules/loop.UnixNano`
@@ -122,16 +122,17 @@ entity with this component and connection will get notifications about changes
 
 `engine/modules/record`:
   - `engine/modules/record.Apply`
+  - `engine/modules/record.ApplyUUIDState`
   - `engine/modules/record.Config`
-  - `engine/modules/record.Entity`
-  - `engine/modules/record.GetState`
+  - `engine/modules/record.Entities`
   - `engine/modules/record.NewConfig`
+  - `engine/modules/record.Peek`
   - `engine/modules/record.Recording`
   - `engine/modules/record.RecordingID`
   - `engine/modules/record.StartBackwardsRecording`
+  - `engine/modules/record.StartRecording`
   - `engine/modules/record.Stop`
-  - `engine/modules/record.UUID`
-  - `engine/modules/record.UUIDRecording`
+  - `engine/modules/record.UUIDState`
 
 `engine/modules/typeregistry/pkg`:
   - `engine/modules/typeregistry/pkg.PkgT`

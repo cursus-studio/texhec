@@ -35,7 +35,7 @@ type config struct {
 	RecordConfig record.Config
 
 	// client
-	MaxPredictions int
+	MaxPredictions uint8
 
 	// auth
 	AllowedClientEvents  map[reflect.Type]struct{}

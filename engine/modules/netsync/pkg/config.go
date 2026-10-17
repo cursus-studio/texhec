@@ -19,7 +19,7 @@ func newConfig() Config {
 func (c *Config) RecordConfig() record.Config {
 	return c.config.RecordConfig
 }
-func (c *Config) SetMaxPredictions(maxPredictions int) {
+func (c *Config) SetMaxPredictions(maxPredictions uint8) {
 	c.config.MaxPredictions = maxPredictions
 }
 

@@ -2,6 +2,7 @@ package prediction
 
 import (
 	"engine"
+	"engine/modules/netsync/internal/config"
 
 	"github.com/ogiusek/ioc/v2"
 )
@@ -18,16 +19,17 @@ type IDService interface {
 }
 
 type eventIDService struct {
-	World     engine.EngineWorld `inject:""`
+	World     engine.EngineWorld      `inject:""`
+	Config    ioc.Lazy[config.Config] `inject:""`
 	minID     ClientEventID
 	id        ClientEventID
 	queuedIDs []ClientEventID
 }
 
-func NewEventIDService(c ioc.Dic, maxPredictions ClientEventID) IDService {
+func NewEventIDService(c ioc.Dic) IDService {
 	s := ioc.GetServices[*eventIDService](c)
 	maxID := ^ClientEventID(0)
-	s.minID = max(1, maxID-maxPredictions)
+	s.minID = max(1, maxID-ClientEventID(s.Config().MaxPredictions-1))
 	s.id = s.minID
 	return s
 }

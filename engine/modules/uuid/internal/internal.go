@@ -54,3 +54,20 @@ func (s *service) Component() ecs.ComponentArray[uuid.Component] { return s.uuid
 func (s *service) Entity(uuid uuid.UUID) (ecs.EntityID, bool) {
 	return s.Get(uuid)
 }
+
+func (s *service) CreateGetUUID(entity ecs.EntityID) uuid.UUID {
+	if uuid, ok := s.uuidArray.Get(entity); ok {
+		return uuid.ID
+	}
+	newUUID := s.NewUUID()
+	s.uuidArray.Set(entity, uuid.New(newUUID))
+	return newUUID
+}
+func (s *service) CreateGetEntity(uuidVal uuid.UUID) ecs.EntityID {
+	if entity, ok := s.Entity(uuidVal); ok {
+		return entity
+	}
+	entity := s.World().NewEntity()
+	s.uuidArray.Set(entity, uuid.New(uuidVal))
+	return entity
+}

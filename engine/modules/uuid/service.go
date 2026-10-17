@@ -28,6 +28,10 @@ type Service interface {
 	Factory
 	Component() ecs.ComponentArray[Component]
 	Entity(UUID) (ecs.EntityID, bool)
+
+	// creates if doesn't have assigned uuid
+	CreateGetUUID(ecs.EntityID) UUID
+	CreateGetEntity(UUID) ecs.EntityID
 }
 
 //

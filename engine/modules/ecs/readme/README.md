@@ -209,26 +209,26 @@ goos: linux
 goarch: amd64
 pkg: engine/modules/ecs/test
 cpu: Intel(R) Core(TM) i5-8350U CPU @ 1.70GHz
-BenchmarkDirtySetDirty-8               	138121502	         8.303 ns/op
-BenchmarkDirtySetDirtyInversed-8       	143015061	         7.512 ns/op
-BenchmarkDirtySetGet-8                 	611505194	         1.960 ns/op
-BenchmarkDirtySetDirtyAndGet-8         	178298190	         6.766 ns/op
-BenchmarkDirtySetDirtyAnd1Get-8        	128479060	         8.942 ns/op
-Benchmark4SavesWith7Systems-8          	27956431	        42.18 ns/op
-Benchmark16SavesWith7Systems-8         	 6942226	       173.7 ns/op
-Benchmark256SavesWith7Systems-8        	  435219	      2647 ns/op
-Benchmark4096SavesWith7Systems-8       	   28410	     43035 ns/op
-Benchmark16384SavesWith7Systems-8      	    7051	    169124 ns/op
-Benchmark65536SavesWith7Systems-8      	    1648	    681224 ns/op
-Benchmark262144SavesWith7Systems-8     	     440	   2709132 ns/op
-BenchmarkGetComponent-8                	83652705	        14.40 ns/op
-BenchmarkCreateComponents-8            	39136603	        32.46 ns/op
-BenchmarkUpdateComponents-8            	100000000	        10.50 ns/op
-BenchmarkRemoveComponent-8             	76454094	        14.67 ns/op
-BenchmarkRemoveEntityWithComponent-8   	33988879	        36.24 ns/op
-BenchmarkRemoveEntity-8                	66151047	        19.06 ns/op
+BenchmarkDirtySetDirty-8               	133839832	         8.808 ns/op
+BenchmarkDirtySetDirtyInversed-8       	142597009	         7.715 ns/op
+BenchmarkDirtySetGet-8                 	467896408	         2.542 ns/op
+BenchmarkDirtySetDirtyAndGet-8         	173282946	         6.888 ns/op
+BenchmarkDirtySetDirtyAnd1Get-8        	126204028	         9.396 ns/op
+Benchmark4SavesWith7Systems-8          	26978976	        44.15 ns/op
+Benchmark16SavesWith7Systems-8         	 6774742	       178.8 ns/op
+Benchmark256SavesWith7Systems-8        	  422395	      2740 ns/op
+Benchmark4096SavesWith7Systems-8       	   27228	     44037 ns/op
+Benchmark16384SavesWith7Systems-8      	    6886	    175661 ns/op
+Benchmark65536SavesWith7Systems-8      	    1711	    702523 ns/op
+Benchmark262144SavesWith7Systems-8     	     427	   2785622 ns/op
+BenchmarkGetComponent-8                	82391868	        14.58 ns/op
+BenchmarkCreateComponents-8            	34923764	        31.14 ns/op
+BenchmarkUpdateComponents-8            	100000000	        10.29 ns/op
+BenchmarkRemoveComponent-8             	75251121	        14.95 ns/op
+BenchmarkRemoveEntityWithComponent-8   	33219927	        36.39 ns/op
+BenchmarkRemoveEntity-8                	59030358	        18.88 ns/op
 PASS
-ok  	engine/modules/ecs/test	38.043s
+ok  	engine/modules/ecs/test	38.662s
 ```
 ## Lines of code
 ```
@@ -236,10 +236,10 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                              13            226             46            948
+Go                              13            226             46            947
 Markdown                         1             44              0            157
 -------------------------------------------------------------------------------
-SUM:                            14            270             46           1105
+SUM:                            14            270             46           1104
 -------------------------------------------------------------------------------
 ```
 ## Types
@@ -268,6 +268,9 @@ Type: `func()`
 Type: `func(engine/modules/ecs/internal/ecstypes.EntityID)`
 
 #### method DirtySet Get
+Type: `func() []engine/modules/ecs/internal/ecstypes.EntityID`
+
+#### method DirtySet GetWithoutClear
 Type: `func() []engine/modules/ecs/internal/ecstypes.EntityID`
 
 #### method DirtySet Ok

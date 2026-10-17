@@ -15,6 +15,8 @@ import (
 	"github.com/ogiusek/ioc/v2"
 )
 
+var MaxPredictions uint8 = 5
+
 type ValueComponent struct {
 	Value int
 }
@@ -124,6 +126,7 @@ var Pkg = ioc.NewPkgT(func(b ioc.Builder, t *testing.T) {
 		netsyncpkg.AddEvent[IncreaseToNextEvenEvent](config)
 		netsyncpkg.AddEvent[IncreaseToNextOddEvent](config)
 		netsyncpkg.AddTickEvent[IncreaseByTenEvent](config)
+		config.SetMaxPredictions(MaxPredictions)
 	})
 	ioc.Register(b, func(c ioc.Dic) World {
 		w := ioc.GetServices[World](c)

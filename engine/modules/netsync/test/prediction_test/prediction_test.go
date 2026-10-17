@@ -40,6 +40,16 @@ func TestPredictions(t *testing.T) {
 		w.AssertWorldState(lastCompValue, Queued(0), Flushed{})
 	}
 
+	// test reconcile
+	{
+		for range MaxPredictions {
+			events.Emit(w.Events(), IncreaseToNextOddEvent{})
+		}
+		// expecte reconcile
+		events.Emit(w.Events(), IncreaseToNextOddEvent{})
+		w.AssertWorldState(lastCompValue, Queued(0), Flushed{})
+	}
+
 	// client sends [prediction.ClientEvent] while server executed [prediction.ServerEvent] :
 	// - client emits [prediction.ClientEvent] and sends it to [prediction.Service.QueuePrediction]
 	//   creates [prediction.Prediction]

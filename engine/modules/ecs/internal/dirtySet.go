@@ -17,13 +17,11 @@ func NewDirtySet() ecstypes.DirtySet {
 }
 
 func (f *dirtySet) Get() []ecstypes.EntityID {
-	if !f.ok {
-		return nil
-	}
 	values := f.entities
 	f.Clear()
 	return values
 }
+func (f *dirtySet) GetWithoutClear() []ecstypes.EntityID { return f.entities }
 
 func (f *dirtySet) Dirty(entity ecstypes.EntityID) {
 	if !f.ok {

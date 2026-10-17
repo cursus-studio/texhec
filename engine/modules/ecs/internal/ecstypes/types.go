@@ -7,6 +7,7 @@ import "reflect"
 type DirtySet interface {
 	// get also clears
 	Get() []EntityID
+	GetWithoutClear() []EntityID
 	Dirty(EntityID)
 	Clear()
 

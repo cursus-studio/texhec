@@ -16,8 +16,7 @@ type entityArray struct {
 	dirtySet ecs.DirtySet
 
 	// backwards dependencies
-	dependencies     datastructures.Set[*BackwardRecording]
-	uuidDependencies datastructures.Set[*UUIDBackwardRecording]
+	dependencies datastructures.Set[*BackwardRecording]
 
 	ecs.AnyComponentArray
 }
@@ -30,9 +29,8 @@ type service struct {
 	worldCopyUUID   ecs.ComponentArray[uuid.Component]
 	worldCopyArrays map[string]ecs.AnyComponentArray
 
-	mutex  *sync.Mutex
-	entity *entityKeyedRecorder
-	uuid   *uuidKeyedRecorder
+	mutex *sync.Mutex
+	*entityKeyedRecorder
 }
 
 func NewService(c ioc.Dic) record.Service {
@@ -45,19 +43,64 @@ func NewService(c ioc.Dic) record.Service {
 
 	s.mutex = &sync.Mutex{}
 
-	s.entity = newEntityKeyedRecorder(s)
-	s.uuid = newUUIDKeyedRecorder(s)
+	s.entityKeyedRecorder = newEntityKeyedRecorder(s)
 
 	return s
 }
 
-//
+func (s *service) UUIDState(recording record.Recording) record.UUIDState {
+	state := record.UUIDState{
+		Keys:   make([]uuid.UUID, 0, len(recording.Entities.GetIndices())),
+		Values: make([]record.EntityComponents, 0, len(recording.Entities.GetIndices())),
+	}
 
-func (s *service) Entity() record.EntityKeyedRecorder {
-	return s.entity
+	for i, entity := range recording.Entities.GetIndices() {
+		// we do not record removed entities
+		if len(recording.Entities.GetValues()[i]) == 0 {
+			continue
+		}
+		state.Keys = append(state.Keys, s.UUID().CreateGetUUID(entity))
+		state.Values = append(state.Values, recording.Entities.GetValues()[i])
+	}
+
+	return state
 }
-func (s *service) UUID() record.UUIDKeyedRecorder {
-	return s.uuid
+func (s *service) ApplyUUIDState(config record.Config, state record.UUIDState) {
+	arrays := make([]ecs.AnyComponentArray, 0, len(*config.ComponentsOrder))
+	for _, arrayType := range *config.ComponentsOrder {
+		array := s.GetWorldArray(arrayType, config)
+		array.PrepareBulk()
+		arrays = append(arrays, array)
+	}
+
+	overflowEntities := datastructures.NewSparseSet[ecs.EntityID]()
+	for _, array := range arrays {
+		for _, entity := range array.GetEntities() {
+			overflowEntities.Add(entity)
+		}
+	}
+
+	for i, uuid := range state.Keys {
+		entity := s.UUID().CreateGetEntity(uuid)
+		overflowEntities.Remove(entity)
+		components := state.Values[i]
+		for i, component := range components {
+			array := arrays[i]
+			if component == nil {
+				array.Remove(entity)
+				continue
+			}
+			array.SetAny(entity, component)
+		}
+	}
+
+	for _, overflowEntity := range overflowEntities.GetIndices() {
+		s.World().RemoveEntity(overflowEntity)
+	}
+
+	for _, array := range arrays {
+		array.CommitBulk()
+	}
 }
 
 //
@@ -81,7 +124,7 @@ func (s *service) synchronizeArrayState(
 	}
 
 	// apply in Entity arrays
-	for _, recording := range s.entity.backwardsRecordings.GetValues() {
+	for _, recording := range s.backwardsRecordings.GetValues() {
 		for _, entity := range entities {
 			if _, ok := recording.Entities.Get(entity); ok {
 				continue
@@ -100,39 +143,6 @@ func (s *service) synchronizeArrayState(
 			}
 		saveEntity:
 			recording.Entities.Set(entity, components)
-		}
-	}
-
-	// apply in UUID arrays
-	for _, recording := range s.uuid.backwardsRecordings.GetValues() {
-		for _, entity := range entities {
-			uuid, ok := s.worldCopyUUID.Get(entity)
-			if !ok {
-				uuid, ok = s.EngineWorld.UUID().Component().Get(entity)
-				if !ok {
-					uuid.ID = s.EngineWorld.UUID().NewUUID()
-					s.EngineWorld.UUID().Component().Set(entity, uuid)
-				}
-				s.worldCopyUUID.Set(entity, uuid)
-			}
-			if _, ok := recording.Entities[uuid.ID]; ok {
-				continue
-			}
-			var components []any
-			if !s.worldCopy.EntityExists(entity) {
-				goto saveUUID
-			}
-			components = make([]any, 0, len(recording.WorldCopyArrays))
-			for _, array := range recording.WorldCopyArrays {
-				component, ok := array.GetAny(entity)
-				if !ok {
-					component = nil
-				}
-				components = append(components, component)
-			}
-		saveUUID:
-			recording.EntitiesOrder = append(recording.EntitiesOrder, uuid.ID)
-			recording.Entities[uuid.ID] = components
 		}
 	}
 
@@ -156,28 +166,8 @@ func (s *service) GetWorldArray(arrayType reflect.Type, config record.Config) en
 	if array, ok := s.worldArrays[arrayKey]; ok {
 		return array
 	}
-	arrayCtor := config.RecordedComponents[arrayType]
-	inheritCtor := config.InheritZero[arrayType]
-	entityArray := entityArray{
-		dirtySet:          ecs.NewDirtySet(),
-		dependencies:      datastructures.NewSet[*BackwardRecording](),
-		uuidDependencies:  datastructures.NewSet[*UUIDBackwardRecording](),
-		AnyComponentArray: arrayCtor(s.World()),
-	}
-	entityArray.AddDirtySet(entityArray.dirtySet)
-	s.worldArrays[arrayKey] = entityArray
-	entityArray.dirtySet.Clear()
-
-	inheritCtor(s.World())
-	array := arrayCtor(s.worldCopy)
-	s.worldCopyArrays[arrayKey] = array
-
-	for _, entity := range entityArray.GetEntities() {
-		component, _ := entityArray.GetAny(entity)
-		array.SetAny(entity, component)
-	}
-
-	return entityArray
+	worldArray, _ := s.createWorldArrays(arrayType, config)
+	return worldArray
 }
 
 func (s *service) GetWorldCopyArray(arrayType reflect.Type, config record.Config) ecs.AnyComponentArray {
@@ -185,12 +175,17 @@ func (s *service) GetWorldCopyArray(arrayType reflect.Type, config record.Config
 	if array, ok := s.worldCopyArrays[arrayKey]; ok {
 		return array
 	}
+	_, worldCopyArray := s.createWorldArrays(arrayType, config)
+	return worldCopyArray
+}
+
+func (s *service) createWorldArrays(arrayType reflect.Type, config record.Config) (entityArray, ecs.AnyComponentArray) {
+	arrayKey := arrayType.String()
 	arrayCtor := config.RecordedComponents[arrayType]
 	inheritCtor := config.InheritZero[arrayType]
 	entityArray := entityArray{
 		dirtySet:          ecs.NewDirtySet(),
 		dependencies:      datastructures.NewSet[*BackwardRecording](),
-		uuidDependencies:  datastructures.NewSet[*UUIDBackwardRecording](),
 		AnyComponentArray: arrayCtor(s.World()),
 	}
 	entityArray.AddDirtySet(entityArray.dirtySet)
@@ -206,5 +201,5 @@ func (s *service) GetWorldCopyArray(arrayType reflect.Type, config record.Config
 		array.SetAny(entity, component)
 	}
 
-	return array
+	return entityArray, array
 }
