@@ -47,17 +47,21 @@ func NewInteractionsService(c ioc.Dic) feature.InteractionsService {
 }
 
 func (s *interactionsService) InteractionsEntity() ecs.EntityID {
-	entities := slices.Clone(s.interactions.GetEntities())
+	entities := s.interactions.GetEntities()
 	if len(entities) == 0 {
 		entity := s.World.World().NewEntity()
 		comp := feature.NewInteractions(nil, nil, nil, false)
 		s.interactions.Set(entity, comp)
 		return entity
 	}
-	for _, entity := range entities[1:] {
+	for _, entity := range slices.Clone(entities[1:]) {
 		s.interactions.Remove(entity)
 	}
 	return entities[0]
+}
+
+func (s *interactionsService) InteractionsListeners() ecs.ComponentArrayListeners {
+	return s.interactions
 }
 func (s *interactionsService) Interactions() feature.InteractionsComponent {
 	entity := s.InteractionsEntity()
@@ -89,9 +93,6 @@ func (s *interactionsService) AllFields(comp feature.InteractionsComponent) (all
 		}
 	}
 	return allFields
-}
-func (s *interactionsService) OnInteractionsMod(listener func(ecs.EntityID)) {
-	s.interactions.OnUpsert(listener)
 }
 
 func (s *interactionsService) canUseFieldKey(fieldKey reflect.Type) bool {

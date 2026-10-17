@@ -127,10 +127,10 @@ func (s *system[Component]) First(event FirstEvent) {
 		s.Service.componentArray.Set(entity, waypoint.Waypoints[len(waypoint.Waypoints)-1])
 	}
 
-	s.Service.recordingID = s.Record().Entity().StartBackwardsRecording(s.Service.config)
+	s.Service.recordingID = s.Record().StartBackwardsRecording(s.Service.config)
 }
 func (s *system[Component]) Last(event LastEvent) {
-	r, ok := s.Record().Entity().Stop(s.Service.recordingID)
+	r, ok := s.Record().Stop(s.Service.recordingID)
 	if !ok {
 		return
 	}

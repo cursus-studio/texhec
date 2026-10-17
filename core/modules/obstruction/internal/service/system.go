@@ -21,7 +21,7 @@ func (s *service) UpdateObstructionGridBeforeGet() {
 	}
 
 	var entities []ecs.EntityID
-	recording, ok := s.Record().Entity().Stop(s.recordingID)
+	recording, ok := s.Record().Stop(s.recordingID)
 	if !ok {
 		entities = s.Obstruction().Deployed().GetEntities()
 		goto entityLoop
@@ -82,5 +82,5 @@ entityLoop:
 		}
 	}
 
-	s.recordingID = s.Record().Entity().StartBackwardsRecording(s.config)
+	s.recordingID = s.Record().StartBackwardsRecording(s.config)
 }

@@ -4,7 +4,6 @@ import (
 	"engine/modules/record"
 	"engine/modules/record/internal/recordimpl"
 	typeregistrypkg "engine/modules/typeregistry/pkg"
-	"engine/modules/uuid"
 
 	"github.com/ogiusek/ioc/v2"
 )
@@ -17,8 +16,7 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 	pkgs := []ioc.Pkg{
 		typeregistrypkg.PkgT[record.Recording],
 
-		typeregistrypkg.PkgT[record.UUIDRecording],
-		typeregistrypkg.PkgT[map[uuid.UUID][]any],
+		typeregistrypkg.PkgT[record.UUIDState],
 	}
 	for _, pkg := range pkgs {
 		pkg(b)

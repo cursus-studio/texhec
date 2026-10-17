@@ -50,7 +50,8 @@ func NewService(
 	s.childrenWrapperArray = ecs.GetComponentArray[childrenComponent](s.World())
 
 	s.systems = append(s.systems, ecs.NewSystemRegister(func() error {
-		s.Feature().OnInteractionsMod(s.onAvailableFeaturesMod)
+		s.Feature().InteractionsListeners().OnUpsert(s.onAvailableFeaturesUpsert)
+		s.Feature().InteractionsListeners().OnRemove(s.onAvailableFeaturesRemove)
 		events.Listen(s.EventsBuilder(), func(e sdl.MouseButtonEvent) {
 			if e.Button != sdl.BUTTON_RIGHT || e.State != sdl.RELEASED {
 				return

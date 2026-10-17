@@ -7,6 +7,7 @@ import "reflect"
 type DirtySet interface {
 	// get also clears
 	Get() []EntityID
+	GetWithoutClear() []EntityID
 	Dirty(EntityID)
 	Clear()
 
@@ -47,6 +48,13 @@ type Component = any
 type BeforeGet = func()
 type OnMod = func(EntityID)
 
+type ComponentArrayListeners interface {
+	OnUpsert(OnMod)
+	OnRemove(OnMod)
+	// is called OnUpsert and OnRemove
+	OnMod(OnMod)
+}
+
 type AnyComponentArray interface {
 	GetAny(entity EntityID) (Component, bool)
 	GetEntities() []EntityID
@@ -66,10 +74,7 @@ type AnyComponentArray interface {
 	// releases immediate listeners
 	CommitBulk()
 
-	OnUpsert(OnMod)
-	OnRemove(OnMod)
-	// is called OnUpsert and OnRemove
-	OnMod(OnMod)
+	ComponentArrayListeners
 
 	ComponentType() reflect.Type
 }

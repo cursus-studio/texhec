@@ -121,7 +121,25 @@ func (s *entityKeyedRecorder) Stop(id record.RecordingID) (record.Recording, boo
 	}
 	return record.Recording{}, false
 }
+func (s *entityKeyedRecorder) Peek(id record.RecordingID) (r record.Recording, ok bool) {
+	s.WarmUp().WarmUp()
+	s.mutex.Lock()
+	defer s.mutex.Unlock()
+	if recording, ok := s.forwardRecordings.Get(id); ok {
+		return s.getStateFor(recording.Config, recording.DirtySet.GetWithoutClear()), true
+	}
+	if recording, ok := s.backwardsRecordings.Get(id); ok {
+		s.SyncBackwardsRecordingState()
+		return record.Recording{Entities: recording.Entities}, true
+	}
+	return record.Recording{}, false
+}
+
 func (s *entityKeyedRecorder) Apply(config record.Config, recordings ...record.Recording) {
+	if len(recordings) == 0 {
+		return
+	}
+
 	arrays := make([]ecs.AnyComponentArray, 0, len(*config.ComponentsOrder))
 	for _, arrayType := range *config.ComponentsOrder {
 		array := s.GetWorldArray(arrayType, config)
@@ -129,24 +147,29 @@ func (s *entityKeyedRecorder) Apply(config record.Config, recordings ...record.R
 		arrays = append(arrays, array)
 	}
 
-	for _, recording := range recordings {
+	finalRecording := recordings[0]
+	for _, recording := range recordings[1:] {
 		for _, entity := range recording.Entities.GetIndices() {
-			components, ok := recording.Entities.Get(entity)
-			if !ok {
+			components, _ := recording.Entities.Get(entity)
+			finalRecording.Entities.Set(entity, components)
+		}
+	}
+	for _, entity := range finalRecording.Entities.GetIndices() {
+		components, ok := finalRecording.Entities.Get(entity)
+		if !ok {
+			continue
+		}
+		if components == nil {
+			s.World().RemoveEntity(entity)
+			continue
+		}
+		for i, component := range components {
+			array := arrays[i]
+			if component == nil {
+				array.Remove(entity)
 				continue
 			}
-			if components == nil {
-				s.World().RemoveEntity(entity)
-				continue
-			}
-			for i, component := range components {
-				array := arrays[i]
-				if component == nil {
-					array.Remove(entity)
-					continue
-				}
-				array.SetAny(entity, component)
-			}
+			array.SetAny(entity, component)
 		}
 	}
 	for _, array := range arrays {

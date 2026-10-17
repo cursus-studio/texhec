@@ -11,7 +11,7 @@ Runs on both client (using `git hooks`) and server (using `jenkins`).
 Before-commit documentation sections are automatically generated and added to main readmes.
 
 - ### Low-Level [TEXHEC Engine](/engine/readme/README.md)
-Defines data structures to store whole game state in continuous chunks and game engine foundations
+Defines data structures to store whole game state in continuous chunks and game engine foundations.
 
 - ### Game [TEXHEC Core](/core/readme/README.md)
 Defines game and game objects. In [DOD](#dod) section you can see performance of **engine** and **core**.
@@ -49,7 +49,7 @@ A 1.000.000 tile map is generated in seconds and rendered in less than **5.1ms**
 - CPU: 5-year-old `Intel® Core™ i5-8350U × 8 Intel®`
 - GPU: `UHD Graphics 620 (KBL GT2)`
 
-![Map scroll](map_scroll.gif)
+![Map scroll](map_scroll.mp4)
 
 #### Architecture
 In this project we follow **DOD** by using [ECS](/engine/modules/ecs/readme/README.md)
@@ -58,6 +58,25 @@ In this project we follow **DOD** by using [ECS](/engine/modules/ecs/readme/READ
 Using **DOD** alongside **EDD** creates deterministic engine.
 Using **TPS** (ticks per second) to perform modifications and **FPS** (frames per second)
 to perform client GUI and input updates creates environment which is easy to debug and to send over network.
+
+### Client side prediction
+Deterministic architecture (based on **DOD** and **EDD**) enabled easy introduction of
+[netsync module](/engine/modules/netsync/readme/README.md) with [prediction domain tests](/engine/modules/netsync/test/prediction_test/prediction_test.go).
+During gameplay only events are exchanged to avoid growing domain complexity, preformance costs and delay for the client.
+In case anti-cheat would be needed it would be implemented separately to avoid all issues not only state preview.
+
+![Client server connection](server_client.mp4)
+
+### Feature domain R&D
+Adding features with interactions took by default few events each openning its own UI.
+There is not much wizard pattern materials on internet so this module involved **R&D** and introduces
+**field**, **rule**, **feature** keywords. Look on [feature module](/engine/modules/feature/readme/README.md).
+
+Now we can re-use code for rendering and selection and have one event per feature.
+New feature now involves only a single event and its wiring.
+If we need a new dedicated renderer when selecting specific field we can add additional rule and attach it to render when field is selected.
+
+This domain has non-trivial rendering rules therefor there are [robust tests](/engine/modules/feature/test)
 
 ### Golang
 Golang despite having **GC** is a perfect choice for a game engine.

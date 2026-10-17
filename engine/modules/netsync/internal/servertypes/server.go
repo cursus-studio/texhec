@@ -2,8 +2,8 @@ package servertypes
 
 import (
 	"engine/modules/connection"
+	"engine/modules/netsync/internal/prediction"
 	"engine/modules/record"
-	"engine/modules/uuid"
 	"errors"
 )
 
@@ -27,31 +27,20 @@ func (err Error) Error() error {
 
 // server messages
 
-type SendStateDTO struct {
+type ReconcileDTO struct {
 	connection.MsgCtx
 	TickUnixNano int64
-	State        record.UUIDRecording
+	State        record.UUIDState
 	Error        Error
 }
 
-type SendChangeDTO struct {
-	connection.MsgCtx
-	EventID uuid.UUID
-	Changes record.UUIDRecording
-	Error   Error
-}
-
-type TransparentEventDTO struct {
-	connection.MsgCtx
-	Event any
-	Error Error
-}
-
-type VerifyEventHappenDTO struct {
+type EventDTO struct {
 	connection.MsgCtx
 	Event any
 }
 
-// Add here tick dto to notify about events order
-// - use VerityEventHappenDTO and create a queue for it
-// - extract prediction machine
+type PredictionResponseDTO struct {
+	connection.MsgCtx
+	ID       prediction.ClientEventID
+	Accepted bool
+}

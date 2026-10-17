@@ -2,16 +2,22 @@
 ## Architecture
 synchronizes client and server worlds while accounting for permissions
 
+## Benchmarks
+```
+$ go test ./... -bench=.
+PASS
+ok  	engine/modules/netsync/test/prediction_test	0.014s
+```
 ## Lines of code
 ```
 github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                              11            131             62            698
+Go                              14            200             80            991
 Markdown                         1              2              0              5
 -------------------------------------------------------------------------------
-SUM:                            12            133             62            703
+SUM:                            15            202             80            996
 -------------------------------------------------------------------------------
 ```
 ## TODO
@@ -72,7 +78,6 @@ entity with this component and connection will get notifications about changes
   - `engine.Loop`
   - `engine.NetSync`
   - `engine.Record`
-  - `engine.UUID`
   - `engine.World`
 
 `engine/modules/connection`:
@@ -82,6 +87,11 @@ entity with this component and connection will get notifications about changes
   - `engine/modules/connection.ConnEntity`
   - `engine/modules/connection.MsgCtx`
   - `engine/modules/connection.Send`
+
+`engine/modules/datastructures`:
+  - `engine/modules/datastructures.NewSparseArray`
+  - `engine/modules/datastructures.NewStableSparseArray`
+  - `engine/modules/datastructures.SparseArray`
 
 `engine/modules/ecs`:
   - `engine/modules/ecs.ComponentArray`
@@ -94,10 +104,10 @@ entity with this component and connection will get notifications about changes
 
 `engine/modules/loop`:
   - `engine/modules/loop.FrameEvent`
-  - `engine/modules/loop.LastTickUnixNano`
-  - `engine/modules/loop.NewEmitOnTickEvent`
+  - `engine/modules/loop.LastTick`
   - `engine/modules/loop.SyncToUnixNano`
   - `engine/modules/loop.TickEvent`
+  - `engine/modules/loop.UnixNano`
 
 `engine/modules/netsync`:
   - `engine/modules/netsync.Client`
@@ -112,24 +122,22 @@ entity with this component and connection will get notifications about changes
 
 `engine/modules/record`:
   - `engine/modules/record.Apply`
+  - `engine/modules/record.ApplyUUIDState`
   - `engine/modules/record.Config`
   - `engine/modules/record.Entities`
-  - `engine/modules/record.GetState`
   - `engine/modules/record.NewConfig`
+  - `engine/modules/record.Peek`
+  - `engine/modules/record.Recording`
+  - `engine/modules/record.RecordingID`
   - `engine/modules/record.StartBackwardsRecording`
   - `engine/modules/record.StartRecording`
   - `engine/modules/record.Stop`
-  - `engine/modules/record.UUID`
-  - `engine/modules/record.UUIDRecording`
-  - `engine/modules/record.UUIDRecordingID`
+  - `engine/modules/record.UUIDState`
 
 `engine/modules/typeregistry/pkg`:
   - `engine/modules/typeregistry/pkg.PkgT`
 
-`engine/modules/uuid`:
-  - `engine/modules/uuid.NewUUID`
-  - `engine/modules/uuid.UUID`
-
 ### Third Party
 - `github.com/ogiusek/events`
 - `github.com/ogiusek/ioc/v2`
+- `github.com/ogiusek/null`

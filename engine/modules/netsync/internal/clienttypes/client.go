@@ -2,26 +2,17 @@ package clienttypes
 
 import (
 	"engine/modules/connection"
-	"engine/modules/uuid"
+	"engine/modules/netsync/internal/prediction"
 )
-
-// types
-
-type PredictedEvent struct {
-	connection.MsgCtx
-	ID    uuid.UUID
-	Event any
-}
 
 // client messages
 
-type FetchStateDTO struct {
+type ReconcileDTO struct {
 	connection.MsgCtx
 }
 
-type EmitEventDTO PredictedEvent
-
-type TransparentEventDTO struct {
+type PredictedEventDTO struct {
 	connection.MsgCtx
+	ID    prediction.ClientEventID
 	Event any
 }

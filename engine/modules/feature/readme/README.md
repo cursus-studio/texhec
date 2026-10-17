@@ -44,7 +44,7 @@ Specialized component for rendering rules for preview field
 ```
 $ go test ./... -bench=.
 PASS
-ok  	engine/modules/feature/test	0.015s
+ok  	engine/modules/feature/test	0.014s
 ```
 ## Lines of code
 ```
@@ -52,10 +52,10 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                              13            199            109           1295
+Go                              13            200            109           1298
 Markdown                         1              6              0             33
 -------------------------------------------------------------------------------
-SUM:                            14            205            109           1328
+SUM:                            14            206            109           1331
 -------------------------------------------------------------------------------
 ```
 ## Types
@@ -71,8 +71,8 @@ Type: `func() []engine/modules/feature.FeatureKey`
 #### method Service Interactions
 Type: `func() engine/modules/feature.InteractionsComponent`
 
-#### method Service OnInteractionsMod
-Type: `func(func(engine/modules/ecs.EntityID))`
+#### method Service InteractionsListeners
+Type: `func() engine/modules/ecs.ComponentArrayListeners`
 
 #### method Service PreviewInteraction
 Type: `func(field any)`
@@ -486,8 +486,8 @@ Type: `func(engine/modules/feature.InteractionsComponent) engine/modules/feature
 #### method InteractionsService Interactions
 Type: `func() engine/modules/feature.InteractionsComponent`
 
-#### method InteractionsService OnInteractionsMod
-Type: `func(func(engine/modules/ecs.EntityID))`
+#### method InteractionsService InteractionsListeners
+Type: `func() engine/modules/ecs.ComponentArrayListeners`
 
 #### method InteractionsService PreviewInteraction
 Type: `func(field any)`
@@ -635,6 +635,7 @@ Type: `func() engine/modules/feature.LockFeatureEvent`
 `engine/modules/ecs`:
   - `engine/modules/ecs.AnyComponentArray`
   - `engine/modules/ecs.ComponentArray`
+  - `engine/modules/ecs.ComponentArrayListeners`
   - `engine/modules/ecs.EntityID`
   - `engine/modules/ecs.GetComponentArray`
   - `engine/modules/ecs.Register`

@@ -10,9 +10,9 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                               4             38              7            178
+Go                               4             40              8            196
 -------------------------------------------------------------------------------
-SUM:                             4             38              7            178
+SUM:                             4             40              8            196
 -------------------------------------------------------------------------------
 ```
 ## Types
@@ -21,6 +21,13 @@ Type: `engine/modules/uuid.Service`
 
 #### method Service Component
 Type: `func() engine/modules/ecs.ComponentArray[engine/modules/uuid.Component]`
+
+#### method Service CreateGetEntity
+Type: `func(engine/modules/uuid.UUID) engine/modules/ecs.EntityID`
+
+#### method Service CreateGetUUID
+Type: `func(engine/modules/ecs.EntityID) engine/modules/uuid.UUID`
+creates if doesn't have assigned uuid
 
 #### method Service Entity
 Type: `func(engine/modules/uuid.UUID) (engine/modules/ecs.EntityID, bool)`
@@ -135,6 +142,7 @@ Type: `func[Wrapped any](entity engine/modules/ecs.EntityID) engine/modules/uuid
   - `engine/modules/uuid.LinkCacheComponent`
   - `engine/modules/uuid.LinkService`
   - `engine/modules/uuid.LinkUUIDComponent`
+  - `engine/modules/uuid.New`
   - `engine/modules/uuid.NewLinkCache`
   - `engine/modules/uuid.NewLinkUUID`
   - `engine/modules/uuid.Service`

@@ -161,7 +161,6 @@ Type: `func(uuid engine/modules/uuid.UUID) core/modules/obstruction.DeployedComp
   - `engine/modules/record.ComponentGetter`
   - `engine/modules/record.Config`
   - `engine/modules/record.Entities`
-  - `engine/modules/record.Entity`
   - `engine/modules/record.NewConfig`
   - `engine/modules/record.RecordingID`
   - `engine/modules/record.StartBackwardsRecording`
