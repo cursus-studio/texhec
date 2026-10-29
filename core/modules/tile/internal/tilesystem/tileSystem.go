@@ -2,9 +2,11 @@ package tilesystem
 
 import (
 	"core/game"
+	"core/modules/definitions"
 	"core/modules/tile"
 	"engine/modules/collider"
 	"engine/modules/ecs"
+	"engine/modules/groups"
 	"engine/modules/inputs"
 	"engine/modules/render"
 	"engine/modules/transform"
@@ -76,7 +78,7 @@ func (s *system) OnTilePosSizeRotUpsert(entity ecs.EntityID) {
 
 // all objects have it including shadow/placeholder objects
 func (s *system) OnLinkUpsert(entity ecs.EntityID) {
-	worldEntity, ok := s.Seed().WorldSeed()
+	worldEntity, _, ok := s.Seed().Seed().GetSingleton()
 	if !ok {
 		return
 	}
@@ -98,7 +100,7 @@ func (s *system) OnLinkUpsert(entity ecs.EntityID) {
 	s.Render().Mesh().Set(entity, render.NewMesh(s.Definitions().Assets().SquareMesh))
 	s.Render().Texture().Set(entity, render.NewTexture(linkEntity))
 
-	s.Groups().InheritGroups(entity)
+	s.Groups().Component().Set(entity, groups.EmptyGroups().Enable(definitions.GameGroup))
 }
 
 // this is for deployed objects

@@ -27,18 +27,12 @@ var (
 type Service struct {
 	engine.EngineWorld `inject:""`
 	Prediction         prediction.Service      `inject:""`
+	PredictionID       prediction.IDService    `inject:""`
 	Config             ioc.Lazy[config.Config] `inject:""`
-
-	dirtySet ecs.DirtySet
 }
 
 func NewService(c ioc.Dic) *Service {
 	s := ioc.GetServices[*Service](c)
-
-	s.dirtySet = ecs.NewDirtySet()
-
-	s.NetSync().Server().AddDirtySet(s.dirtySet)
-	s.Connection().Component().AddDirtySet(s.dirtySet)
 
 	events.Listen(s.EventsBuilder(), s.ListenReconcile)
 	events.Listen(s.EventsBuilder(), s.ListenEvent)
@@ -66,19 +60,19 @@ func NewService(c ioc.Dic) *Service {
 	})
 
 	// on connect reconcile
-	events.Listen(s.EventsBuilder(), func(loop.FrameEvent) {
-		for _, entity := range s.dirtySet.Get() {
-			if _, ok := s.NetSync().Server().Get(entity); !ok {
-				continue
-			}
-			conn, ok := s.Connection().Component().Get(entity)
-			if !ok {
-				continue
-			}
-			err := conn.Conn().Send(clienttypes.ReconcileDTO{})
-			s.Logger().Warn(err)
+	onConnAdd := func(entity ecs.EntityID) {
+		if _, ok := s.NetSync().Server().Get(entity); !ok {
+			return
 		}
-	})
+		conn, ok := s.Connection().Component().Get(entity)
+		if !ok {
+			return
+		}
+		err := conn.Conn().Send(clienttypes.ReconcileDTO{})
+		s.Logger().Warn(err)
+	}
+	s.NetSync().Server().OnUpsert(onConnAdd)
+	s.Connection().Component().OnUpsert(onConnAdd)
 
 	return s
 }
@@ -90,17 +84,19 @@ func (s *Service) ListenReconcile(dto servertypes.ReconcileDTO) {
 		return
 	}
 
-	predictions := s.Prediction.UndoPredictions()
+	_ = s.Prediction.UndoPredictions()
 
 	if dto.Error.Error() != nil {
 		s.Logger().Log(dto.Error.Error())
 		conn.Close()
 		return
 	}
-	s.Record().ApplyUUIDState(s.Config().RecordConfig, dto.State)
 	s.Loop().SyncToUnixNano(dto.TickUnixNano)
-
-	s.Prediction.ReApplyPredictions(predictions)
+	s.Record().ApplyUUIDState(s.Config().RecordConfig, dto.TickState)
+	for _, event := range dto.PostTickEvents {
+		s.PredictionID.QueueID(prediction.IgnoreEventID)
+		events.EmitAny(s.Events(), event)
+	}
 }
 
 func (s *Service) ListenEvent(dto servertypes.EventDTO) {

@@ -21,6 +21,7 @@ Map scale preview:
 - [fpslogger](/core/modules/fpslogger/readme/README.md)
 - [generation](/core/modules/generation/readme/README.md)
 - [loading](/core/modules/loading/readme/README.md)
+- [lobby](/core/modules/lobby/readme/README.md)
 - [obstruction](/core/modules/obstruction/readme/README.md)
 - [pathfind](/core/modules/pathfind/readme/README.md)
 - [player](/core/modules/player/readme/README.md)
@@ -39,11 +40,11 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                              80            984            293           6210
+Go                              92           1160            341           7025
 Markdown                        17             25              0            154
 GLSL                             3             31              2            112
 -------------------------------------------------------------------------------
-SUM:                           100           1040            295           6476
+SUM:                           112           1216            343           7291
 -------------------------------------------------------------------------------
 ```
 ## Dependencies

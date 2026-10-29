@@ -8,10 +8,10 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                               4             36              3            286
+Go                               4             37              3            289
 Markdown                         1              0              0              1
 -------------------------------------------------------------------------------
-SUM:                             5             36              3            287
+SUM:                             5             37              3            290
 -------------------------------------------------------------------------------
 ```
 ## Types
@@ -189,6 +189,10 @@ Type: `func(ctx core/modules/actions.PlayerContext, attacker core/modules/action
   - `engine/modules/loop.Delta`
   - `engine/modules/loop.FrameEvent`
   - `engine/modules/loop.TickEvent`
+
+`engine/modules/netsync/pkg`:
+  - `engine/modules/netsync/pkg.ComponentPkg`
+  - `engine/modules/netsync/pkg.EventPkg`
 
 `engine/modules/transition`:
   - `engine/modules/transition.LerpInt`

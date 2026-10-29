@@ -8,9 +8,9 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                               3             51             16            321
+Go                               3             57             17            357
 -------------------------------------------------------------------------------
-SUM:                             3             51             16            321
+SUM:                             3             57             17            357
 -------------------------------------------------------------------------------
 ```
 ## Types
@@ -34,6 +34,9 @@ Type: `func(blueprint engine/modules/ecs.EntityID, owner engine/modules/ecs.Enti
 deploy differs from execute event by who deploys.
 execute adds costs and everything where deploy just deploys without any costs (its deployed by system)
 
+#### method Service DeployCounter
+Type: `func() engine/modules/ecs.ComponentArray[core/modules/deploy.DeployCounterComponent]`
+
 #### method Service DeployEvent
 Type: `func(core/modules/deploy.DeployEvent)`
 
@@ -45,6 +48,15 @@ Type: `func() core/modules/reach.ServiceT[core/modules/deploy.Component]`
 
 #### method Service Register
 Type: `func() error`
+
+### type DeployCounterComponent
+Type: `core/modules/deploy.DeployCounterComponent`
+
+#### property DeployCounterComponent I
+Type: `uint32`
+
+#### method DeployCounterComponent Inc
+Type: `func() core/modules/deploy.DeployCounterComponent`
 
 ### type Component
 Type: `core/modules/deploy.Component`
@@ -77,6 +89,9 @@ Type: `core/modules/actions.PlayerContext`
 Type: `core/modules/actions.Entity`
 
 ## Functions
+### func NewDeployCounter
+Type: `func(i uint32) core/modules/deploy.DeployCounterComponent`
+
 ### func NewDeploy
 Type: `func(deployable ...engine/modules/ecs.EntityID) core/modules/deploy.Component`
 
@@ -117,10 +132,13 @@ Type: `func(ctx core/modules/actions.PlayerContext, uuid engine/modules/uuid.UUI
   - `core/modules/deploy.By`
   - `core/modules/deploy.Component`
   - `core/modules/deploy.Coords`
+  - `core/modules/deploy.DeployCounterComponent`
   - `core/modules/deploy.DeployEvent`
   - `core/modules/deploy.Deployable`
   - `core/modules/deploy.DestroyEvent`
   - `core/modules/deploy.Entity`
+  - `core/modules/deploy.I`
+  - `core/modules/deploy.Inc`
   - `core/modules/deploy.PlayerContext`
   - `core/modules/deploy.Reach`
   - `core/modules/deploy.Service`
@@ -183,6 +201,14 @@ Type: `func(ctx core/modules/actions.PlayerContext, uuid engine/modules/uuid.UUI
 `engine/modules/loop`:
   - `engine/modules/loop.TickEvent`
 
+`engine/modules/netsync/pkg`:
+  - `engine/modules/netsync/pkg.ComponentPkg`
+  - `engine/modules/netsync/pkg.EventPkg`
+
+`engine/modules/seed`:
+  - `engine/modules/seed.ErrWorldShouldHaveOneSeed`
+  - `engine/modules/seed.Seed`
+
 `engine/modules/typeregistry/pkg`:
   - `engine/modules/typeregistry/pkg.PkgT`
 
@@ -191,7 +217,7 @@ Type: `func(ctx core/modules/actions.PlayerContext, uuid engine/modules/uuid.UUI
   - `engine/modules/uuid.Entity`
   - `engine/modules/uuid.Get`
   - `engine/modules/uuid.ID`
-  - `engine/modules/uuid.NewUUID`
+  - `engine/modules/uuid.NewDeterministicUUID`
   - `engine/modules/uuid.NewUUIDFromAny`
   - `engine/modules/uuid.SetUUID`
   - `engine/modules/uuid.UUID`

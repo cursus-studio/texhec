@@ -81,6 +81,7 @@ type AnyComponentArray interface {
 type ComponentArray[Component any] interface {
 	AnyComponentArray
 	Get(entity EntityID) (Component, bool)
+	GetSingleton() (EntityID, Component, bool)
 
 	Set(EntityID, Component)
 

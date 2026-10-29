@@ -29,9 +29,10 @@ func (err Error) Error() error {
 
 type ReconcileDTO struct {
 	connection.MsgCtx
-	TickUnixNano int64
-	State        record.UUIDState
-	Error        Error
+	TickUnixNano   int64
+	TickState      record.UUIDState
+	PostTickEvents []any
+	Error          Error
 }
 
 type EventDTO struct {

@@ -14,9 +14,9 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                               6             55             11            313
+Go                               6             56             11            315
 -------------------------------------------------------------------------------
-SUM:                             6             55             11            313
+SUM:                             6             56             11            315
 -------------------------------------------------------------------------------
 ```
 ## Types
@@ -155,6 +155,9 @@ Type: `func(uuid engine/modules/uuid.UUID) core/modules/obstruction.DeployedComp
 
 `engine/modules/grid/pkg`:
   - `engine/modules/grid/pkg.PkgT`
+
+`engine/modules/netsync/pkg`:
+  - `engine/modules/netsync/pkg.ComponentPkg`
 
 `engine/modules/record`:
   - `engine/modules/record.AddToConfig`

@@ -5,7 +5,6 @@ import (
 	"engine/modules/datastructures"
 	"engine/modules/ecs"
 	"engine/modules/loop"
-	"engine/modules/netsync"
 	"engine/modules/netsync/internal/clienttypes"
 	"engine/modules/netsync/internal/config"
 	"engine/modules/netsync/internal/servertypes"
@@ -19,8 +18,9 @@ type Service struct {
 	engine.EngineWorld `inject:""`
 	Config             ioc.Lazy[config.Config] `inject:""`
 
-	recordingID record.RecordingID
-	state       record.Recording
+	recordingID    record.RecordingID
+	state          record.Recording
+	postTickEvents []any
 
 	ignoreNext bool
 
@@ -29,7 +29,6 @@ type Service struct {
 
 func NewService(c ioc.Dic) *Service {
 	s := ioc.GetServices[*Service](c)
-	s.Connection().Component().OnUpsert(s.OnConnectionUpsert)
 
 	s.recordingID = s.Record().StartRecording(s.Config().RecordConfig)
 
@@ -38,17 +37,6 @@ func NewService(c ioc.Dic) *Service {
 	}
 
 	return s
-}
-
-func (s *Service) OnConnectionUpsert(entity ecs.EntityID) {
-	parent, ok := s.Hierarchy().Parent(entity)
-	if !ok {
-		return
-	}
-	if _, ok := s.NetSync().Clients().Get(parent); !ok {
-		return
-	}
-	s.NetSync().Client().Set(entity, netsync.ClientComponent{})
 }
 
 func (s *Service) AddBeforeListeners() {
@@ -79,7 +67,9 @@ func (s *Service) BeforeEvent(event any) {
 		response := servertypes.EventDTO{Event: event}
 		s.Logger().Log(connComp.Conn().Send(response))
 	}
+	s.postTickEvents = append(s.postTickEvents, event)
 }
+
 func (s *Service) AfterTick(loop.TickEvent) {
 	recording, ok := s.Record().Peek(s.recordingID)
 	if !ok {
@@ -93,6 +83,7 @@ func (s *Service) AfterTick(loop.TickEvent) {
 		}
 		s.state.Entities.Set(entity, components)
 	}
+	s.postTickEvents = s.postTickEvents[:0]
 }
 
 // public methods
@@ -103,8 +94,9 @@ func (s *Service) ListenReconcile(dto clienttypes.ReconcileDTO) {
 		return
 	}
 	err := connComp.Conn().Send(servertypes.ReconcileDTO{
-		TickUnixNano: s.Loop().LastTick().UnixNano,
-		State:        s.Record().UUIDState(s.state),
+		TickUnixNano:   s.Loop().LastTick().UnixNano,
+		TickState:      s.Record().UUIDState(s.state),
+		PostTickEvents: s.postTickEvents,
 	})
 	s.Logger().Warn(err)
 }

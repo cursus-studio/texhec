@@ -8,10 +8,10 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                               3             41             12            268
+Go                               4             40              9            246
 Markdown                         1              3              0             13
 -------------------------------------------------------------------------------
-SUM:                             4             44             12            281
+SUM:                             5             43              9            259
 -------------------------------------------------------------------------------
 ```
 ## Types
@@ -25,21 +25,17 @@ Type: `func() error`
 ## Dependencies
 `core/game`:
   - `core/game.Definitions`
-  - `core/game.Deploy`
   - `core/game.GameWorld`
   - `core/game.Obstruction`
-  - `core/game.Player`
   - `core/game.Tile`
+
+`core/modules/definitions`:
+  - `core/modules/definitions.Assets`
+  - `core/modules/definitions.GameGroup`
+  - `core/modules/definitions.SquareCollider`
 
 `core/modules/generation`:
   - `core/modules/generation.Service`
-
-`core/modules/player`:
-  - `core/modules/player.ActingPlayer`
-  - `core/modules/player.Name`
-  - `core/modules/player.NewActingPlayer`
-  - `core/modules/player.NewPlayer`
-  - `core/modules/player.Player`
 
 `core/modules/tile`:
   - `core/modules/tile.Component`
@@ -56,6 +52,10 @@ Type: `func() error`
   - `engine/modules/batcher.NewBatch`
   - `engine/modules/batcher.NewTask`
   - `engine/modules/batcher.Queue`
+
+`engine/modules/collider`:
+  - `engine/modules/collider.Component`
+  - `engine/modules/collider.NewCollider`
 
 `engine/modules/datastructures`:
   - `engine/modules/datastructures.NewSparseArray`
@@ -85,6 +85,12 @@ Type: `func() error`
   - `engine/modules/grid.SetTile`
   - `engine/modules/grid.X`
   - `engine/modules/grid.Y`
+
+`engine/modules/groups`:
+  - `engine/modules/groups.Component`
+  - `engine/modules/groups.EmptyGroups`
+  - `engine/modules/groups.Enable`
+  - `engine/modules/groups.InheritGroups`
 
 `engine/modules/noise`:
   - `engine/modules/noise.AddPerlin`

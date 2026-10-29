@@ -3,9 +3,7 @@ package main
 import (
 	"core/game"
 	"core/modules/definitions"
-	"engine/modules/collider"
 	"engine/modules/ecs"
-	"engine/modules/groups"
 	"engine/modules/inputs"
 	"engine/modules/loop"
 	"engine/modules/scene"
@@ -69,21 +67,6 @@ func main() {
 			}
 		})
 
-		world.Seed().Seed().OnUpsert(func(entity ecs.EntityID) {
-			world.Hierarchy().SetParent(entity, world.Scene().Scene())
-			world.Groups().Component().Set(entity, groups.EmptyGroups().Enable(definitions.GameGroup))
-		})
-		world.Grid().Coords().OnUpsert(func(entity ecs.EntityID) {
-			worldGenerationEntity, ok := world.Seed().WorldSeed()
-			if !ok {
-				return
-			}
-			world.Hierarchy().SetParent(entity, worldGenerationEntity)
-			world.Groups().InheritGroups(entity)
-
-			world.Collider().Component().Set(entity, collider.NewCollider(world.Definitions().Assets().SquareCollider))
-		})
-
 		return nil
 	})
 
@@ -133,18 +116,18 @@ func main() {
 		world.Logger().Log(err)
 	}
 
-	loadSceneEvent := scene.NewChangeSceneEvent(definitions.MenuID)
+	loadSceneEvent := scene.NewChangeSceneEvent(definitions.MainMenuID)
 	if len(os.Args) > 1 {
 		arg := os.Args[1]
 		switch arg {
-		case definitions.MenuID.ID:
+		case definitions.MainMenuID.ID:
 			fallthrough
-		case definitions.GameID.ID:
-			fallthrough
-		case definitions.GameServerID.ID:
-			fallthrough
-		case definitions.GameClientID.ID:
-			fallthrough
+		// case definitions.GameID.ID:
+		// 	fallthrough
+		// case definitions.GameServerID.ID:
+		// 	fallthrough
+		// case definitions.GameClientID.ID:
+		// 	fallthrough
 		case definitions.SettingsID.ID:
 			fallthrough
 		case definitions.CreditsID.ID:

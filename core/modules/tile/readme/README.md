@@ -103,11 +103,11 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                               8            183             95           1014
+Go                               8            184             95           1025
 GLSL                             3             31              2            112
 Markdown                         3             10              0             85
 -------------------------------------------------------------------------------
-SUM:                            14            224             97           1211
+SUM:                            14            225             97           1222
 -------------------------------------------------------------------------------
 ```
 ## TODO
@@ -354,10 +354,16 @@ Type: `func(deployed engine/modules/ecs.EntityID) core/modules/tile.ClickBluepri
 `core/modules/definitions`:
   - `core/modules/definitions.Assets`
   - `core/modules/definitions.ConstructLayer`
+  - `core/modules/definitions.GameGroup`
   - `core/modules/definitions.SquareCollider`
   - `core/modules/definitions.SquareMesh`
   - `core/modules/definitions.TileLayer`
   - `core/modules/definitions.UnitLayer`
+
+`core/modules/obstruction`:
+  - `core/modules/obstruction.Deployed`
+  - `core/modules/obstruction.Obstruction`
+  - `core/modules/obstruction.UUID`
 
 `core/modules/tile`:
   - `core/modules/tile.BiomeAsset`
@@ -456,6 +462,7 @@ Type: `func(deployed engine/modules/ecs.EntityID) core/modules/tile.ClickBluepri
 
 `engine/modules/grid`:
   - `engine/modules/grid.Chunk`
+  - `engine/modules/grid.ChunkComponent`
   - `engine/modules/grid.ChunkCoordsComponent`
   - `engine/modules/grid.ChunkSize`
   - `engine/modules/grid.Coord`
@@ -473,6 +480,12 @@ Type: `func(deployed engine/modules/ecs.EntityID) core/modules/tile.ClickBluepri
 `engine/modules/grid/pkg`:
   - `engine/modules/grid/pkg.PkgT`
 
+`engine/modules/groups`:
+  - `engine/modules/groups.Component`
+  - `engine/modules/groups.EmptyGroups`
+  - `engine/modules/groups.Enable`
+  - `engine/modules/groups.SharesAnyGroup`
+
 `engine/modules/inputs`:
   - `engine/modules/inputs.Hover`
   - `engine/modules/inputs.LeftClick`
@@ -480,6 +493,9 @@ Type: `func(deployed engine/modules/ecs.EntityID) core/modules/tile.ClickBluepri
   - `engine/modules/inputs.NewLeftClick`
   - `engine/modules/inputs.Stack`
   - `engine/modules/inputs.StackComponent`
+
+`engine/modules/netsync/pkg`:
+  - `engine/modules/netsync/pkg.ComponentPkg`
 
 `engine/modules/relation`:
   - `engine/modules/relation.Get`
@@ -520,6 +536,7 @@ Type: `func(deployed engine/modules/ecs.EntityID) core/modules/tile.ClickBluepri
   - `engine/modules/uuid.Component`
   - `engine/modules/uuid.Get`
   - `engine/modules/uuid.LinkService`
+  - `engine/modules/uuid.LinkUUIDComponent`
   - `engine/modules/uuid.New`
   - `engine/modules/uuid.UUID`
 

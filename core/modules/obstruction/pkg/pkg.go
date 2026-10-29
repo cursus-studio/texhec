@@ -8,6 +8,7 @@ import (
 	"engine/modules/ecs"
 	"engine/modules/entityregistry"
 	gridpkg "engine/modules/grid/pkg"
+	netsyncpkg "engine/modules/netsync/pkg"
 	typeregistrypkg "engine/modules/typeregistry/pkg"
 	"strings"
 
@@ -20,6 +21,8 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 
 		typeregistrypkg.PkgT[obstruction.Component],
 		typeregistrypkg.PkgT[obstruction.DeployedComponent],
+
+		netsyncpkg.ComponentPkg[obstruction.DeployedComponent],
 	}
 	for _, pkg := range pkgs {
 		pkg(b)

@@ -8,10 +8,10 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                               3             30              2            178
+Go                               3             31              2            180
 Markdown                         1              0              0              1
 -------------------------------------------------------------------------------
-SUM:                             4             30              2            179
+SUM:                             4             31              2            181
 -------------------------------------------------------------------------------
 ```
 ## Types
@@ -117,6 +117,9 @@ Type: `func(money core/modules/economy.Money) core/modules/economy.CostComponent
   - `engine/modules/loop.Delta`
   - `engine/modules/loop.FrameEvent`
   - `engine/modules/loop.TickEvent`
+
+`engine/modules/netsync/pkg`:
+  - `engine/modules/netsync/pkg.ComponentPkg`
 
 `engine/modules/text`:
   - `engine/modules/text.Align`

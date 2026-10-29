@@ -14,10 +14,10 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                              14            200             80            991
+Go                              14            198             80           1000
 Markdown                         1              2              0              5
 -------------------------------------------------------------------------------
-SUM:                            15            202             80            996
+SUM:                            15            200             80           1005
 -------------------------------------------------------------------------------
 ```
 ## TODO
@@ -73,7 +73,6 @@ entity with this component and connection will get notifications about changes
   - `engine.EngineWorld`
   - `engine.Events`
   - `engine.EventsBuilder`
-  - `engine.Hierarchy`
   - `engine.Logger`
   - `engine.Loop`
   - `engine.NetSync`
@@ -88,6 +87,9 @@ entity with this component and connection will get notifications about changes
   - `engine/modules/connection.MsgCtx`
   - `engine/modules/connection.Send`
 
+`engine/modules/connection/pkg`:
+  - `engine/modules/connection/pkg.ParentPkg`
+
 `engine/modules/datastructures`:
   - `engine/modules/datastructures.NewSparseArray`
   - `engine/modules/datastructures.NewStableSparseArray`
@@ -95,10 +97,8 @@ entity with this component and connection will get notifications about changes
 
 `engine/modules/ecs`:
   - `engine/modules/ecs.ComponentArray`
-  - `engine/modules/ecs.DirtySet`
   - `engine/modules/ecs.EntityID`
   - `engine/modules/ecs.GetComponentArray`
-  - `engine/modules/ecs.NewDirtySet`
   - `engine/modules/ecs.NewSystemRegister`
   - `engine/modules/ecs.SystemRegister`
 
@@ -112,7 +112,6 @@ entity with this component and connection will get notifications about changes
 `engine/modules/netsync`:
   - `engine/modules/netsync.Client`
   - `engine/modules/netsync.ClientComponent`
-  - `engine/modules/netsync.Clients`
   - `engine/modules/netsync.ClientsComponent`
   - `engine/modules/netsync.Server`
   - `engine/modules/netsync.ServerComponent`
@@ -121,6 +120,7 @@ entity with this component and connection will get notifications about changes
   - `engine/modules/netsync.ValidatedEvent`
 
 `engine/modules/record`:
+  - `engine/modules/record.AddToConfig`
   - `engine/modules/record.Apply`
   - `engine/modules/record.ApplyUUIDState`
   - `engine/modules/record.Config`

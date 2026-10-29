@@ -114,8 +114,12 @@ func (s *service) handleParentChildren(parent ecs.EntityID) []save {
 	totalSize -= gap.Gap
 
 	size, _ := s.Transform().AbsoluteSize().Get(parent)
-	progress := totalSize - size.Size[order.Primary()]
-	progress *= align.Primary
+
+	direction := float32(-1)
+	if order.Order == layout.OrderHorizontal {
+		direction = 1
+	}
+	progress := direction * (size.Size[order.Primary()] - totalSize) * align.Primary
 
 	for _, child := range children {
 		// pos
@@ -124,12 +128,12 @@ func (s *service) handleParentChildren(parent ecs.EntityID) []save {
 
 		// pivot point
 		pivot := transform.NewPivotPoint(.5, .5, .5)
-		pivot.Point[order.Primary()] = 1
+		pivot.Point[order.Primary()] = (1 - direction) / 2
 		pivot.Point[order.Secondary()] = align.Secondary
 
 		// parent pivot
 		parentPivot := transform.NewParentPivotPoint(.5, .5, .5)
-		parentPivot.Point[order.Primary()] = 1
+		parentPivot.Point[order.Primary()] = (1 - direction) / 2
 		parentPivot.Point[order.Secondary()] = align.Secondary
 
 		save := save{
@@ -142,7 +146,7 @@ func (s *service) handleParentChildren(parent ecs.EntityID) []save {
 
 		// update progress
 		size, _ := s.Transform().AbsoluteSize().Get(child)
-		progress -= size.Size[order.Primary()] + gap.Gap
+		progress += direction * (size.Size[order.Primary()] + gap.Gap)
 	}
 
 	return saves

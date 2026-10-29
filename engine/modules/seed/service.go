@@ -31,7 +31,7 @@ func (s1 Seed) SeededRand(s2 Seed) *rand.Rand {
 }
 
 var (
-	ErrWorldCanHaveOneSeed error = errors.New("world can have only one seed")
+	ErrWorldShouldHaveOneSeed error = errors.New("world should have one seed")
 )
 
 type SeedComponent struct {
@@ -44,5 +44,6 @@ func NewSeed[Number constraints.Integer](s Number) SeedComponent {
 
 type Service interface {
 	Seed() ecs.ComponentArray[SeedComponent]
-	WorldSeed() (ecs.EntityID, bool)
+
+	GenerateSeed() Seed
 }

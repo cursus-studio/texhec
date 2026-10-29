@@ -7,7 +7,9 @@ import (
 	"core/modules/player"
 	"engine/modules/ecs"
 	"engine/modules/loop"
+	"engine/modules/relation"
 	"engine/modules/uuid"
+	"fmt"
 
 	"github.com/ogiusek/events"
 	"github.com/ogiusek/ioc/v2"
@@ -15,9 +17,11 @@ import (
 
 type service struct {
 	game.GameWorld `inject:""`
-	OwnerLink      uuid.LinkService[player.OwnerLink] `inject:""`
+	Relation       relation.Service[player.NameComponent] `inject:""`
+	OwnerLink      uuid.LinkService[player.OwnerLink]     `inject:""`
 
-	player            ecs.ComponentArray[player.PlayerComponent]
+	name              ecs.ComponentArray[player.NameComponent]
+	color             ecs.ComponentArray[player.ColorComponent]
 	playerUUID        ecs.ComponentArray[player.PlayerUUIDComponent]
 	actingPlayer      ecs.ComponentArray[player.ActingPlayerComponent]
 	actingConnection  ecs.ComponentArray[player.ActingConnectionComponent]
@@ -27,15 +31,15 @@ type service struct {
 
 func NewService(c ioc.Dic) player.Service {
 	s := ioc.GetServices[*service](c)
-	s.player = ecs.GetComponentArray[player.PlayerComponent](s.World())
+	s.name = ecs.GetComponentArray[player.NameComponent](s.World())
+	s.color = ecs.GetComponentArray[player.ColorComponent](s.World())
 	s.playerUUID = ecs.GetComponentArray[player.PlayerUUIDComponent](s.World())
 	s.actingPlayer = ecs.GetComponentArray[player.ActingPlayerComponent](s.World())
 	s.actingConnection = ecs.GetComponentArray[player.ActingConnectionComponent](s.World())
 	s.playersConnection = ecs.GetComponentArray[player.PlayersConnectionComponent](s.World())
 	s.playerConnection = ecs.GetComponentArray[player.PlayerConnectionComponent](s.World())
 
-	s.player.OnUpsert(s.OnPlayerUpsert)
-	s.Connection().Component().OnUpsert(s.OnConnectionUpsert)
+	s.Name().OnUpsert(s.OnPlayerUpsert)
 	s.playerUUID.OnUpsert(s.OnPlayerUUIDUpsert)
 
 	events.Listen(s.EventsBuilder(), s.OnAssignActingPlayerDTO)
@@ -43,12 +47,10 @@ func NewService(c ioc.Dic) player.Service {
 	return s
 }
 
-func (s *service) Player() ecs.ComponentArray[player.PlayerComponent] {
-	return s.player
-}
-func (s *service) PlayerUUID() ecs.ComponentArray[player.PlayerUUIDComponent] {
-	return s.playerUUID
-}
+func (s *service) NameRelation() relation.Service[player.NameComponent]       { return s.Relation }
+func (s *service) Name() ecs.ComponentArray[player.NameComponent]             { return s.name }
+func (s *service) Color() ecs.ComponentArray[player.ColorComponent]           { return s.color }
+func (s *service) PlayerUUID() ecs.ComponentArray[player.PlayerUUIDComponent] { return s.playerUUID }
 func (s *service) ActingPlayer() ecs.ComponentArray[player.ActingPlayerComponent] {
 	return s.actingPlayer
 }
@@ -101,13 +103,14 @@ func (s *service) IsEnemy(ctx actions.PlayerContext, entityUUID actions.Entity) 
 //
 
 func (s *service) OnPlayerUpsert(playerEntity ecs.EntityID) {
-	worldGenerationEntity, ok := s.Seed().WorldSeed()
+	worldGenerationEntity, _, ok := s.Seed().Seed().GetSingleton()
 	if !ok {
 		return
 	}
 	s.Hierarchy().SetParent(playerEntity, worldGenerationEntity)
-	playerUUID := s.UUID().NewUUID()
 	if _, ok := s.PlayerUUID().Get(playerEntity); !ok {
+		playerComp, _ := s.Name().Get(playerEntity)
+		playerUUID := s.UUID().NewDeterministicUUID(fmt.Appendf(nil, "player:%v", playerComp.Name))
 		s.PlayerUUID().Set(playerEntity, player.NewPlayerUUID(playerUUID))
 	}
 	if _, ok := s.Economy().Wallet().Get(playerEntity); !ok {
@@ -121,45 +124,6 @@ func (s *service) OnPlayerUUIDUpsert(playerEntity ecs.EntityID) {
 		return
 	}
 	s.UUID().Component().Set(playerEntity, uuid.New(playerUUID.UUID))
-}
-
-func (s *service) OnConnectionUpsert(connEntity ecs.EntityID) {
-	conn, ok := s.Connection().Component().Get(connEntity)
-	if !ok {
-		return
-	}
-	parent, ok := s.Hierarchy().Parent(connEntity)
-	if !ok {
-		return
-	}
-	if _, ok := s.PlayersConnection().Get(parent); !ok {
-		return
-	}
-	var playerEntity ecs.EntityID
-	var playerUUID uuid.UUID
-	for _, playerEntity = range s.player.GetEntities() {
-		if _, ok := s.actingPlayer.Get(playerEntity); ok {
-			continue
-		}
-		if _, ok := s.actingConnection.Get(playerEntity); ok {
-			continue
-		}
-		uuid, ok := s.UUID().Component().Get(playerEntity)
-		if !ok {
-			continue
-		}
-		playerUUID = uuid.ID
-		break
-	}
-	var zeroUUID uuid.UUID
-	if playerUUID == zeroUUID {
-		return
-	}
-	s.PlayerConnection().Set(connEntity, player.NewPlayerConnection(playerUUID))
-	s.ActingConnection().Set(playerEntity, player.NewActiongConnection(connEntity))
-	if err := conn.Conn().Send(player.NewAssignActingPlayerDTO(playerUUID)); err != nil {
-		s.Logger().Warn(err)
-	}
 }
 
 func (s *service) OnAssignActingPlayerDTO(dto player.AssignActingPlayerDTO) {

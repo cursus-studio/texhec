@@ -28,9 +28,8 @@ func NewService(c ioc.Dic) uuid.Service {
 func (s *service) NewUUID() uuid.UUID {
 	return uuid.UUID(uuidSource.New())
 }
-
-func (s *service) NewUUIDFromString(seed string) uuid.UUID {
-	return uuid.UUID(uuidSource.NewSHA1(uuidSource.NameSpaceURL, []byte(seed)))
+func (s *service) NewDeterministicUUID(seed []byte) uuid.UUID {
+	return uuid.UUID(uuidSource.NewSHA1(uuidSource.NameSpaceURL, seed))
 }
 
 type SeededUUID struct {

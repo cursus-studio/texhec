@@ -27,6 +27,9 @@ func NewTask(batches []Batch) batcher.Task {
 }
 
 func (t *task) Step() {
+	if len(t.batches) == t.currentBatch {
+		return
+	}
 	batch := t.batches[t.currentBatch]
 	if finished := batch.Step(); finished {
 		t.currentBatch++

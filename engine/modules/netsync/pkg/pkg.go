@@ -1,6 +1,9 @@
 package netsyncpkg
 
 import (
+	"engine"
+	connectionpkg "engine/modules/connection/pkg"
+	"engine/modules/ecs"
 	"engine/modules/netsync"
 	"engine/modules/netsync/internal/client"
 	"engine/modules/netsync/internal/clienttypes"
@@ -9,6 +12,7 @@ import (
 	"engine/modules/netsync/internal/server"
 	"engine/modules/netsync/internal/servertypes"
 	"engine/modules/netsync/internal/service"
+	"engine/modules/record"
 	typeregistrypkg "engine/modules/typeregistry/pkg"
 
 	"github.com/ogiusek/ioc/v2"
@@ -22,6 +26,13 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 		typeregistrypkg.PkgT[servertypes.ReconcileDTO],
 		typeregistrypkg.PkgT[servertypes.EventDTO],
 		typeregistrypkg.PkgT[servertypes.PredictionResponseDTO],
+
+		connectionpkg.ParentPkg(func(c ioc.Dic) func(parent, conn ecs.EntityID, comp netsync.ClientsComponent) {
+			s := ioc.Get[engine.EngineWorld](c)
+			return func(parent, conn ecs.EntityID, comp netsync.ClientsComponent) {
+				s.NetSync().Client().Set(conn, netsync.ClientComponent{})
+			}
+		}),
 	}
 	for _, pkg := range pkgs {
 		pkg(b)
@@ -42,3 +53,10 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 	ioc.Register(b, func(c ioc.Dic) *server.Service { return server.NewService(c) })
 	ioc.Register(b, func(c ioc.Dic) *client.Service { return client.NewService(c) })
 })
+
+func ComponentPkg[Component any](b ioc.Builder) {
+	ioc.Wrap(b, func(c ioc.Dic, config Config) { record.AddToConfig[Component](config.RecordConfig()) })
+}
+func EventPkg[Event any](b ioc.Builder) {
+	ioc.Wrap(b, func(c ioc.Dic, config Config) { AddEvent[Event](config) })
+}

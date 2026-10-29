@@ -56,7 +56,7 @@ func (s *service) populateValue(v reflect.Value) error {
 			}
 			continue
 		}
-		uuidValue := s.UUID().NewUUIDFromString(string(fieldType.Tag))
+		uuidValue := s.UUID().NewDeterministicUUID([]byte(fieldType.Tag))
 		if entity, ok := s.UUID().Entity(uuidValue); ok {
 			fieldValue.Set(reflect.ValueOf(entity))
 			continue

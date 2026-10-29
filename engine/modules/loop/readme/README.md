@@ -8,9 +8,9 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                               3             55             21            208
+Go                               3             56             21            212
 -------------------------------------------------------------------------------
-SUM:                             3             55             21            208
+SUM:                             3             56             21            212
 -------------------------------------------------------------------------------
 ```
 ## Types
@@ -159,6 +159,10 @@ Type: `func(event any) engine/modules/loop.EmitOnTickEvent`
   - `engine/modules/loop.TPS`
   - `engine/modules/loop.TickEvent`
   - `engine/modules/loop.UnixNano`
+
+`engine/modules/netsync/pkg`:
+  - `engine/modules/netsync/pkg.AddTickEvent`
+  - `engine/modules/netsync/pkg.Config`
 
 `engine/modules/typeregistry/pkg`:
   - `engine/modules/typeregistry/pkg.PkgT`

@@ -17,8 +17,10 @@ import (
 
 var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 	ioc.Register(b, func(c ioc.Dic) game.SettingsBuilder {
+		world := ioc.Get[game.GameWorld](c)
 		return func(sceneParent ecs.EntityID) {
-			world := ioc.Get[game.GameWorld](c)
+			world.Ui().AddBgCamera(sceneParent)
+
 			cameraEntity := world.World().NewEntity()
 			world.Hierarchy().SetParent(cameraEntity, sceneParent)
 			world.Groups().Component().Set(cameraEntity, groups.DefaultGroups())
@@ -36,10 +38,6 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 			world.Text().Content().Set(signature, text.NewText("settings"))
 			world.Text().FontSize().Set(signature, text.NewFontSize(32))
 			world.Text().Break().Set(signature, text.NewBreak(text.BreakNone))
-
-			background := world.World().NewEntity()
-			world.Hierarchy().SetParent(background, cameraEntity)
-			world.Ui().AnimatedBackground().Set(background, ui.AnimatedBackgroundComponent{})
 
 			buttonArea := world.World().NewEntity()
 			world.Transform().Size().Set(buttonArea, transform.NewSize(500, 200, 1))

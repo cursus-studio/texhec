@@ -6,7 +6,7 @@ positions and re-size children
 ```
 $ go test ./... -bench=.
 PASS
-ok  	engine/modules/layout/test	0.014s
+ok  	engine/modules/layout/test	0.015s
 ```
 ## Lines of code
 ```
@@ -14,9 +14,9 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                               6             68             25            263
+Go                               6             79             30            286
 -------------------------------------------------------------------------------
-SUM:                             6             68             25            263
+SUM:                             6             79             30            286
 -------------------------------------------------------------------------------
 ```
 ## Types
@@ -110,6 +110,7 @@ Type: `func(x float32) engine/modules/layout.GapComponent`
   - `engine/modules/layout.NewGap`
   - `engine/modules/layout.Order`
   - `engine/modules/layout.OrderComponent`
+  - `engine/modules/layout.OrderHorizontal`
   - `engine/modules/layout.Primary`
   - `engine/modules/layout.Secondary`
   - `engine/modules/layout.Service`

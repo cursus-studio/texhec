@@ -8,10 +8,10 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                               7            109             34            796
+Go                               7            110             34            800
 Markdown                         1              1              0              5
 -------------------------------------------------------------------------------
-SUM:                             8            110             34            801
+SUM:                             8            111             34            805
 -------------------------------------------------------------------------------
 ```
 ## TODO
@@ -242,6 +242,10 @@ Type: `func(ctx core/modules/actions.PlayerContext, entity engine/modules/uuid.U
 
 `engine/modules/loop`:
   - `engine/modules/loop.TickEvent`
+
+`engine/modules/netsync/pkg`:
+  - `engine/modules/netsync/pkg.ComponentPkg`
+  - `engine/modules/netsync/pkg.EventPkg`
 
 `engine/modules/relation`:
   - `engine/modules/relation.Get`

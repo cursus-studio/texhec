@@ -42,7 +42,7 @@ Type: `engine/modules/ecs.EntityID`
   - `core/modules/definitions.EffectChannel`
   - `core/modules/definitions.ExampleAudio`
   - `core/modules/definitions.Hud`
-  - `core/modules/definitions.MenuID`
+  - `core/modules/definitions.MainMenuID`
 
 `core/modules/settings`:
   - `core/modules/settings.EnterSettingsEvent`

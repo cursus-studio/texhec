@@ -22,8 +22,10 @@ import (
 
 var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 	ioc.Register(b, func(c ioc.Dic) game.CreditsBuilder {
+		world := ioc.Get[game.GameWorld](c)
 		return func(sceneParent ecs.EntityID) {
-			world := ioc.Get[game.GameWorld](c)
+			world.Ui().AddBgCamera(sceneParent)
+
 			cameraEntity := world.World().NewEntity()
 			world.Hierarchy().SetParent(cameraEntity, sceneParent)
 			world.Groups().Component().Set(cameraEntity, groups.DefaultGroups())
@@ -41,10 +43,6 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 			world.Text().Content().Set(signature, text.NewText("credits"))
 			world.Text().FontSize().Set(signature, text.NewFontSize(32))
 			world.Text().Break().Set(signature, text.NewBreak(text.BreakNone))
-
-			background := world.World().NewEntity()
-			world.Hierarchy().SetParent(background, cameraEntity)
-			world.Ui().AnimatedBackground().Set(background, ui.AnimatedBackgroundComponent{})
 
 			buttonArea := world.World().NewEntity()
 			world.Hierarchy().SetParent(buttonArea, cameraEntity)
@@ -74,7 +72,7 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 			world.Transform().Size().Set(btn, transform.NewSize(500, 100, 1))
 			world.Transform().ParentPivotPoint().Set(btn, transform.NewParentPivotPoint(.5, 0, .5))
 
-			world.Inputs().LeftClick().Set(btn, inputs.NewLeftClick(scene.NewChangeSceneEvent(definitions.MenuID)))
+			world.Inputs().LeftClick().Set(btn, inputs.NewLeftClick(scene.NewChangeSceneEvent(definitions.MainMenuID)))
 			world.Text().Content().Set(btn, text.NewText(strings.ToUpper("return to menu")))
 		}
 	})

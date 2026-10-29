@@ -9,9 +9,9 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                               5             64             31            325
+Go                               5             66             31            332
 -------------------------------------------------------------------------------
-SUM:                             5             64             31            325
+SUM:                             5             66             31            332
 -------------------------------------------------------------------------------
 ```
 ## Types
@@ -187,6 +187,7 @@ Type: `func[Tile engine/modules/grid.TileConstraint](entity engine/modules/ecs.E
   - `engine.Grid`
   - `engine.Inputs`
   - `engine.Transform`
+  - `engine.UUID`
   - `engine.World`
 
 `engine/modules/collider`:
@@ -258,6 +259,11 @@ Type: `func[Tile engine/modules/grid.TileConstraint](entity engine/modules/ecs.E
 
 `engine/modules/typeregistry/pkg`:
   - `engine/modules/typeregistry/pkg.PkgT`
+
+`engine/modules/uuid`:
+  - `engine/modules/uuid.Component`
+  - `engine/modules/uuid.New`
+  - `engine/modules/uuid.NewDeterministicUUID`
 
 ### Third Party
 - `github.com/ogiusek/events`

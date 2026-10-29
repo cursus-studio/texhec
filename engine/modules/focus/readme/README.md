@@ -8,10 +8,10 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                               5             47             22            214
+Go                               5             45             22            199
 Markdown                         1              0              0              1
 -------------------------------------------------------------------------------
-SUM:                             6             47             22            215
+SUM:                             6             45             22            200
 -------------------------------------------------------------------------------
 ```
 ## Types
@@ -34,9 +34,6 @@ Type: `func(engine/modules/focus.BubbleEvent)`
 
 #### method Service Focused
 Type: `func() engine/modules/ecs.ComponentArray[engine/modules/focus.FocusedComponent]`
-
-#### method Service FocusedEntity
-Type: `func() (engine/modules/ecs.EntityID, bool)`
 
 #### method Service NewFocusedBubbleEvent
 Type: `func(event any) (engine/modules/focus.BubbleEvent, bool)`
@@ -140,7 +137,6 @@ Type: `func() engine/modules/focus.DefaultFocusedComponent`
   - `engine.EventsBuilder`
   - `engine.Focus`
   - `engine.Hierarchy`
-  - `engine.Logger`
   - `engine.Scene`
   - `engine.World`
 

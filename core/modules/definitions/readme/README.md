@@ -8,10 +8,10 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                               3             42              8            336
+Go                               3             43              9            336
 Markdown                         1              1              0              3
 -------------------------------------------------------------------------------
-SUM:                             4             43              8            339
+SUM:                             4             44              9            339
 -------------------------------------------------------------------------------
 ```
 ## TODO
@@ -156,22 +156,22 @@ Type: `engine/modules/ecs.EntityID`
 Type: `engine/modules/ecs.EntityID`
 
 ## Variables
-### var MenuID
+### var MainMenuID
 Type: `engine/modules/scene.ID`
 
-### var GameID
-Type: `engine/modules/scene.ID`
-
-### var GameServerID
-Type: `engine/modules/scene.ID`
-
-### var GameClientID
+### var PlayID
 Type: `engine/modules/scene.ID`
 
 ### var SettingsID
 Type: `engine/modules/scene.ID`
 
 ### var CreditsID
+Type: `engine/modules/scene.ID`
+
+### var PlayConnectID
+Type: `engine/modules/scene.ID`
+
+### var PlayGenerateID
 Type: `engine/modules/scene.ID`
 
 ### var EffectChannel

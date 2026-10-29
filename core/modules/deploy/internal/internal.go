@@ -8,9 +8,11 @@ import (
 	"core/modules/obstruction"
 	"core/modules/reach"
 	"core/modules/tile"
+	"encoding/binary"
 	"engine/modules/ecs"
 	"engine/modules/grid"
 	"engine/modules/loop"
+	"engine/modules/seed"
 	"engine/modules/uuid"
 	"slices"
 
@@ -28,8 +30,9 @@ type service struct {
 	game.GameWorld `inject:""`
 	ReachT         reach.ServiceT[deploy.Component] `inject:""`
 
-	boughtComponent ecs.ComponentArray[BoughtComponent]
-	component       ecs.ComponentArray[deploy.Component]
+	boughtComponent        ecs.ComponentArray[BoughtComponent]
+	deployCounterComponent ecs.ComponentArray[deploy.DeployCounterComponent]
+	component              ecs.ComponentArray[deploy.Component]
 }
 
 func NewService(c ioc.Dic) deploy.Service {
@@ -37,6 +40,7 @@ func NewService(c ioc.Dic) deploy.Service {
 	s.ReachT.Component().SetEmpty(reach.NewReach[deploy.Component](1))
 
 	s.boughtComponent = ecs.GetComponentArray[BoughtComponent](s.World())
+	s.deployCounterComponent = ecs.GetComponentArray[deploy.DeployCounterComponent](s.World())
 	s.component = ecs.GetComponentArray[deploy.Component](s.World())
 
 	events.Listen(s.EventsBuilder(), s.DeployEvent)
@@ -50,6 +54,9 @@ func (s *service) Register() error {
 	return nil
 }
 
+func (s *service) DeployCounter() ecs.ComponentArray[deploy.DeployCounterComponent] {
+	return s.deployCounterComponent
+}
 func (s *service) Component() ecs.ComponentArray[deploy.Component] { return s.component }
 func (s *service) Reach() reach.ServiceT[deploy.Component]         { return s.ReachT }
 
@@ -119,6 +126,18 @@ func (s *service) CanDeployAt(by actions.Entity, blueprint actions.Blueprint, co
 
 //
 
+func (s *service) incCounter() (deploy.DeployCounterComponent, bool) {
+	entity, _, ok := s.Seed().Seed().GetSingleton()
+	if !ok {
+		return deploy.DeployCounterComponent{}, false
+	}
+	comp, _ := s.deployCounterComponent.Get(entity)
+	s.deployCounterComponent.Set(entity, comp.Inc())
+	return comp, true
+}
+
+//
+
 func (s *service) Deploy(
 	blueprint,
 	owner ecs.EntityID,
@@ -143,11 +162,20 @@ func (s *service) Deploy(
 	if !ok {
 		s.Logger().Fatal(s.Actions().Own().Error())
 	}
+	inc, ok := s.incCounter()
+	if !ok {
+		s.Logger().Fatal(seed.ErrWorldShouldHaveOneSeed)
+	}
 
 	// place
 	deployed := s.World().NewEntity()
 	s.Player().Owner().SetUUID(deployed, ownerUUID.ID)
-	s.Obstruction().Deployed().Set(deployed, obstruction.NewDeployed(s.UUID().NewUUID()))
+
+	uuidBuf := make([]byte, 0, len("deploy:")+4)
+	uuidBuf = append(uuidBuf, "deploy:"...)
+	uuidBuf = binary.LittleEndian.AppendUint32(uuidBuf, inc.I)
+
+	s.Obstruction().Deployed().Set(deployed, obstruction.NewDeployed(s.UUID().NewDeterministicUUID(uuidBuf)))
 	s.Tile().Blueprint().SetUUID(deployed, blueprintUUID.ID)
 	s.Tile().Pos().Set(deployed, pos)
 	return deployed, nil

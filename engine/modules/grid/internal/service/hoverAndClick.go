@@ -1,11 +1,13 @@
 package service
 
 import (
+	"encoding/binary"
 	"engine/modules/collider"
 	"engine/modules/ecs"
 	"engine/modules/grid"
 	"engine/modules/inputs"
 	"engine/modules/transform"
+	"engine/modules/uuid"
 
 	"github.com/ogiusek/events"
 )
@@ -23,6 +25,13 @@ func (s *service) OnUpsert(entity ecs.EntityID) {
 	if !ok {
 		return
 	}
+
+	uuidBuf := make([]byte, 0, len("grid:")+8)
+	uuidBuf = append(uuidBuf, "grid:"...)
+	uuidBuf = binary.LittleEndian.AppendUint32(uuidBuf, uint32(coords.X))
+	uuidBuf = binary.LittleEndian.AppendUint32(uuidBuf, uint32(coords.Y))
+	s.UUID().Component().Set(entity, uuid.New(s.UUID().NewDeterministicUUID(uuidBuf)))
+
 	s.Inputs().Hover().Set(entity, inputs.NewHoverComponent(HoverEvent{}))
 	s.Inputs().Stack().Set(entity, inputs.StackComponent{})
 	s.Inputs().LeftClick().Set(entity, inputs.NewLeftClick(ClickEvent{}))

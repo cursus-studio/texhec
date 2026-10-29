@@ -8,9 +8,9 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                               3             21              5            118
+Go                               3             23              5            133
 -------------------------------------------------------------------------------
-SUM:                             3             21              5            118
+SUM:                             3             23              5            133
 -------------------------------------------------------------------------------
 ```
 ## Types
@@ -20,11 +20,17 @@ Type: `engine/modules/window.Service`
 #### method Service Ctx
 Type: `func() github.com/veandco/go-sdl2/sdl.GLContext`
 
+#### method Service GetClipboard
+Type: `func() (string, bool)`
+
 #### method Service GetMousePos
 Type: `func() engine/modules/window.MousePos`
 
 #### method Service NormalizeMousePos
 Type: `func(engine/modules/window.MousePos) github.com/go-gl/mathgl/mgl32.Vec2`
+
+#### method Service SetClipboard
+Type: `func(string)`
 
 #### method Service Window
 Type: `func() *github.com/veandco/go-sdl2/sdl.Window`

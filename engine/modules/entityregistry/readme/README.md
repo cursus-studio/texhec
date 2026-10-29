@@ -14,7 +14,7 @@ example:
 ```
 $ go test ./... -bench=.
 PASS
-ok  	engine/modules/entityregistry/test	0.015s
+ok  	engine/modules/entityregistry/test	0.016s
 ```
 ## Lines of code
 ```
@@ -68,7 +68,7 @@ Type: `func[Registry any](s engine/modules/entityregistry.Service) (Registry, er
   - `engine/modules/uuid.Component`
   - `engine/modules/uuid.Entity`
   - `engine/modules/uuid.New`
-  - `engine/modules/uuid.NewUUIDFromString`
+  - `engine/modules/uuid.NewDeterministicUUID`
 
 `engine/pkg`:
   - `engine/pkg.Pkg`

@@ -11,6 +11,7 @@ import (
 	"engine/modules/entityregistry"
 	featurepkg "engine/modules/feature/pkg"
 	"engine/modules/grid"
+	netsyncpkg "engine/modules/netsync/pkg"
 	typeregistrypkg "engine/modules/typeregistry/pkg"
 	"errors"
 	"fmt"
@@ -23,7 +24,12 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 	pkgs := []ioc.Pkg{
 		typeregistrypkg.PkgT[deploy.DeployEvent],
 		typeregistrypkg.PkgT[deploy.DestroyEvent],
+		typeregistrypkg.PkgT[deploy.DeployCounterComponent],
 		typeregistrypkg.PkgT[internal.BoughtComponent],
+
+		netsyncpkg.ComponentPkg[deploy.DeployCounterComponent],
+		netsyncpkg.EventPkg[deploy.DeployEvent],
+		netsyncpkg.EventPkg[deploy.DestroyEvent],
 
 		reachpkg.PkgT[deploy.Component],
 	}

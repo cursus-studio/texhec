@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"core/game"
 	"core/modules/definitions"
+	"core/modules/obstruction"
 	"core/modules/tile"
 	"core/modules/tile/internal/tilerenderer"
 	"core/modules/tile/internal/tileservice"
@@ -12,9 +13,12 @@ import (
 	"engine/modules/ecs"
 	"engine/modules/entityregistry"
 	"engine/modules/graphics"
+	"engine/modules/grid"
 	gridpkg "engine/modules/grid/pkg"
+	netsyncpkg "engine/modules/netsync/pkg"
 	relationpkg "engine/modules/relation/pkg"
 	typeregistrypkg "engine/modules/typeregistry/pkg"
+	"engine/modules/uuid"
 	uuidpkg "engine/modules/uuid/pkg"
 	"fmt"
 	"image"
@@ -54,6 +58,12 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 		typeregistrypkg.PkgT[tile.LayerComponent],
 
 		typeregistrypkg.PkgT[tile.NameComponent],
+
+		netsyncpkg.ComponentPkg[tile.PosComponent],
+		netsyncpkg.ComponentPkg[grid.ChunkCoordsComponent],
+		netsyncpkg.ComponentPkg[grid.ChunkComponent[tile.ID]],
+		netsyncpkg.ComponentPkg[grid.ChunkComponent[obstruction.Obstruction]],
+		netsyncpkg.ComponentPkg[uuid.LinkUUIDComponent[tile.BlueprintLink]],
 	}
 	for _, pkg := range pkgs {
 		pkg(b)

@@ -9,15 +9,23 @@ import (
 	"engine/modules/uuid"
 )
 
+type DeployCounterComponent struct {
+	I uint32
+}
 type Component struct {
 	Deployable []ecs.EntityID
 }
 
+func NewDeployCounter(i uint32) DeployCounterComponent {
+	return DeployCounterComponent{i}
+}
 func NewDeploy(deployable ...ecs.EntityID) Component {
 	return Component{
 		deployable,
 	}
 }
+
+func (c DeployCounterComponent) Inc() DeployCounterComponent { return NewDeployCounter(c.I + 1) }
 
 //
 
@@ -52,6 +60,7 @@ type Service interface {
 	ecs.SystemRegister
 	Reach() reach.ServiceT[Component]
 
+	DeployCounter() ecs.ComponentArray[DeployCounterComponent]
 	Component() ecs.ComponentArray[Component]
 
 	CanDeploy(actions.Entity) error
