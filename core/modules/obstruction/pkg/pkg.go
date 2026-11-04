@@ -19,7 +19,7 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 	pkgs := []ioc.Pkg{
 		gridpkg.PkgT[obstruction.Obstruction],
 
-		typeregistrypkg.PkgT[obstruction.Component],
+		typeregistrypkg.PkgT[obstruction.ObstructionComponent],
 		typeregistrypkg.PkgT[obstruction.DeployedComponent],
 
 		netsyncpkg.ComponentPkg[obstruction.DeployedComponent],
@@ -45,7 +45,7 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 			if strings.Contains(structTagValue, "air") {
 				obstructionVal |= definitions.AirspaceObstruction
 			}
-			world.Obstruction().Component().Set(entity, obstruction.NewObstruction(obstructionVal))
+			world.Obstruction().Obstrucion().Set(entity, obstruction.NewObstruction(obstructionVal))
 		})
 	})
 })

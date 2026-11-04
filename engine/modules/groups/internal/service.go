@@ -24,7 +24,11 @@ func NewService(c ioc.Dic) groups.Service {
 	return s
 }
 
-func (s *service) Component() ecs.ComponentArray[groups.GroupsComponent] {
+func (s *service) Init() {
+	s.groupsArray.SetEmpty(groups.DefaultGroups())
+}
+
+func (s *service) Groups() ecs.ComponentArray[groups.GroupsComponent] {
 	return s.groupsArray
 }
 func (s *service) Inherit() ecs.ComponentArray[hierarchy.InheritComponent[groups.GroupsComponent]] {

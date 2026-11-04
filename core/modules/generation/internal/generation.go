@@ -25,11 +25,11 @@ func (s *service) Register() error {
 		worldGenerationEntity, _, _ := s.Seed().Seed().GetSingleton()
 		s.Hierarchy().SetParent(chunkEntity, worldGenerationEntity)
 		s.Groups().InheritGroups(chunkEntity)
-		s.Collider().Component().Set(chunkEntity, collider.NewCollider(s.Definitions().Assets().SquareCollider))
+		s.Collider().Collider().Set(chunkEntity, collider.NewCollider(s.Definitions().Assets().SquareCollider))
 	})
 	s.Seed().Seed().OnUpsert(func(entity ecs.EntityID) {
 		s.Hierarchy().SetParent(entity, s.Scene().Scene())
-		s.Groups().Component().Set(entity, groups.EmptyGroups().Enable(definitions.GameGroup))
+		s.Groups().Groups().Set(entity, groups.EmptyGroups().Enable(definitions.GameGroup))
 	})
 	return nil
 }
@@ -38,7 +38,7 @@ func (s *service) Chances() (*Config, []tile.ID) {
 	types := []tile.ID{}
 
 	for _, chance := range s.Config.chances {
-		tileComp, ok := s.Tile().Component().Get(chance.tileType)
+		tileComp, ok := s.Tile().Tile().Get(chance.tileType)
 		if !ok {
 			s.Logger().Log(fmt.Errorf("\"%v\" isn't a tile tile and therefor cannot be used in generation", chance.tileType))
 			continue
@@ -172,7 +172,7 @@ func (s *service) GenerateOn(event tile.MissingChunkEvent) {
 			if !ok {
 				continue
 			}
-			obstruction, _ := s.Obstruction().Component().Get(entity)
+			obstruction, _ := s.Obstruction().Obstrucion().Get(entity)
 			obstructGridComponent.SetTile(gridI, obstruction.Obstruction)
 		}
 	})

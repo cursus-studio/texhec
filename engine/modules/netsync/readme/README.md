@@ -29,44 +29,6 @@ transparent events are going to be messed.
 
 
 
-## Types
-### type Service
-Type: `engine/modules/netsync.Service`
-
-#### method Service Client
-Type: `func() engine/modules/ecs.ComponentArray[engine/modules/netsync.ClientComponent]`
-
-#### method Service Clients
-Type: `func() engine/modules/ecs.ComponentArray[engine/modules/netsync.ClientsComponent]`
-
-#### method Service Server
-Type: `func() engine/modules/ecs.ComponentArray[engine/modules/netsync.ServerComponent]`
-
-#### method Service Start
-Type: `func() engine/modules/ecs.SystemRegister`
-
-#### method Service Stop
-Type: `func() engine/modules/ecs.SystemRegister`
-
-### type ValidatedEvent
-Type: `engine/modules/netsync.ValidatedEvent`
-event pointer should implement it
-
-#### method ValidatedEvent SetConnection
-Type: `func(engine/modules/ecs.EntityID)`
-
-### type ServerComponent
-Type: `engine/modules/netsync.ServerComponent`
-entity with this component and with connection component will be one with which we'll synchronize
-
-### type ClientsComponent
-Type: `engine/modules/netsync.ClientsComponent`
-
-### type ClientComponent
-Type: `engine/modules/netsync.ClientComponent`
-entity with this component and connection will get notifications about changes
-
-
 ## Dependencies
 `engine`:
   - `engine.Connection`
@@ -81,9 +43,9 @@ entity with this component and connection will get notifications about changes
 
 `engine/modules/connection`:
   - `engine/modules/connection.Close`
-  - `engine/modules/connection.Component`
   - `engine/modules/connection.Conn`
   - `engine/modules/connection.ConnEntity`
+  - `engine/modules/connection.Connection`
   - `engine/modules/connection.MsgCtx`
   - `engine/modules/connection.Send`
 

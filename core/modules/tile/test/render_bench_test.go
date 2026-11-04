@@ -2,6 +2,7 @@ package test
 
 import (
 	"core/game"
+	"core/modules/definitions"
 	"core/modules/tile"
 	corepkg "core/pkg"
 	assetspkg "engine/modules/assets/pkg"
@@ -9,6 +10,7 @@ import (
 	"engine/modules/ecs"
 	"engine/modules/entityregistry"
 	"engine/modules/grid"
+	"engine/modules/groups"
 	"engine/modules/loop"
 	"engine/modules/seed"
 	"engine/modules/transform"
@@ -30,7 +32,9 @@ type Tiles struct {
 	Mountain ecs.EntityID `path:"tiles/mountain.biome" tile:"" generate:"25"`
 }
 
-func BenchmarkRenderingChunk(b *testing.B) {
+func benchmarkXbyX(b *testing.B, x int) {
+	b.Helper()
+
 	if gpu, err := ghw.GPU(); err != nil {
 		b.Error(err)
 		return
@@ -83,6 +87,7 @@ func BenchmarkRenderingChunk(b *testing.B) {
 	gameCamera := world.World().NewEntity()
 	ortho := camera.NewOrtho(-1000, +1000)
 	ortho.Zoom = 10. / n
+	world.Groups().Groups().Set(gameCamera, groups.EmptyGroups().Enable(definitions.GameGroup))
 	world.Camera().Ortho().Set(gameCamera, ortho)
 	tileSize := world.Grid().GetTileSize().Size
 	cameraPos := transform.NewPos(tileSize.X()*n, tileSize.Y()*n, 0)
@@ -92,7 +97,11 @@ func BenchmarkRenderingChunk(b *testing.B) {
 	world.Hierarchy().SetParent(generationEntity, gameCamera)
 	world.Seed().Seed().Set(generationEntity, seed.NewSeed(21377137))
 
-	events.Emit(world.Events(), tile.NewMissingChunkEvent(grid.NewChunkCoords(0, 0)))
+	for range x {
+		for range x {
+			events.Emit(world.Events(), tile.NewMissingChunkEvent(grid.NewChunkCoords(0, 0)))
+		}
+	}
 	for _, task := range world.Batcher().Tasks() {
 		task.Perform()
 	}
@@ -103,3 +112,5 @@ func BenchmarkRenderingChunk(b *testing.B) {
 	}
 	gl.Finish()
 }
+
+func BenchmarkRenderingChunk(b *testing.B) { benchmarkXbyX(b, 1) }

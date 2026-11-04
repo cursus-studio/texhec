@@ -30,7 +30,7 @@ func (s *service) OnUpsert(entity ecs.EntityID) {
 	uuidBuf = append(uuidBuf, "grid:"...)
 	uuidBuf = binary.LittleEndian.AppendUint32(uuidBuf, uint32(coords.X))
 	uuidBuf = binary.LittleEndian.AppendUint32(uuidBuf, uint32(coords.Y))
-	s.UUID().Component().Set(entity, uuid.New(s.UUID().NewDeterministicUUID(uuidBuf)))
+	s.UUID().UUID().Set(entity, uuid.NewUUID(s.UUID().NewDeterministicUUID(uuidBuf)))
 
 	s.Inputs().Hover().Set(entity, inputs.NewHoverComponent(HoverEvent{}))
 	s.Inputs().Stack().Set(entity, inputs.StackComponent{})

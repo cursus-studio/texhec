@@ -50,7 +50,7 @@ render:
 
 		s.Render().Mesh().Set(ind, render.NewMesh(s.Definitions().Assets().SquareMesh))
 		s.Render().Texture().Set(ind, render.NewTexture(s.Definitions().Assets().Border))
-		s.Groups().Component().Set(ind, groups.EmptyGroups().Enable(definitions.GameGroup))
+		s.Groups().Groups().Set(ind, groups.EmptyGroups().Enable(definitions.GameGroup))
 
 		s.Tile().Layer().Set(ind, tile.NewLayer(definitions.RangePlaceholderLayer))
 		s.Tile().Pos().Set(ind, tile.NewPos(reachCoords.Coords()))

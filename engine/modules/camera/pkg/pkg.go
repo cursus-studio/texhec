@@ -21,7 +21,7 @@ import (
 
 var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 	pkgs := []ioc.Pkg{
-		typeregistrypkg.PkgT[camera.Component],
+		typeregistrypkg.PkgT[camera.CameraComponent],
 		typeregistrypkg.PkgT[camera.MobileCameraComponent],
 		typeregistrypkg.PkgT[camera.CameraLimitsComponent],
 		typeregistrypkg.PkgT[camera.ViewportComponent],

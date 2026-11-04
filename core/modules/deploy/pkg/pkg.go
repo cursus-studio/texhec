@@ -31,7 +31,7 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 		netsyncpkg.EventPkg[deploy.DeployEvent],
 		netsyncpkg.EventPkg[deploy.DestroyEvent],
 
-		reachpkg.PkgT[deploy.Component],
+		reachpkg.PkgT[deploy.DeployComponent],
 	}
 	for _, pkg := range pkgs {
 		pkg(b)
@@ -65,8 +65,8 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 				return
 			}
 			reachVal *= reachVal
-			reachComp := reach.NewReach[deploy.Component](grid.Coord(reachVal))
-			world.Deploy().Reach().Component().Set(entity, reachComp)
+			reachComp := reach.NewReach[deploy.DeployComponent](grid.Coord(reachVal))
+			world.Deploy().Reach().Reach().Set(entity, reachComp)
 		})
 	})
 })

@@ -60,7 +60,7 @@ func (s *Service) BeforeEvent(event any) {
 		return
 	}
 	for _, client := range s.NetSync().Client().GetEntities() {
-		connComp, ok := s.Connection().Component().Get(client)
+		connComp, ok := s.Connection().Connection().Get(client)
 		if !ok {
 			continue
 		}
@@ -89,7 +89,7 @@ func (s *Service) AfterTick(loop.TickEvent) {
 // public methods
 
 func (s *Service) ListenReconcile(dto clienttypes.ReconcileDTO) {
-	connComp, ok := s.Connection().Component().Get(dto.ConnEntity)
+	connComp, ok := s.Connection().Connection().Get(dto.ConnEntity)
 	if !ok {
 		return
 	}
@@ -102,7 +102,7 @@ func (s *Service) ListenReconcile(dto clienttypes.ReconcileDTO) {
 }
 
 func (s *Service) ListenPredictedEvent(dto clienttypes.PredictedEventDTO) {
-	conn, ok := s.Connection().Component().Get(dto.ConnEntity)
+	conn, ok := s.Connection().Connection().Get(dto.ConnEntity)
 	if !ok {
 		return
 	}
@@ -119,7 +119,7 @@ func (s *Service) ListenPredictedEvent(dto clienttypes.PredictedEventDTO) {
 		if client == dto.ConnEntity {
 			continue
 		}
-		connComp, ok := s.Connection().Component().Get(client)
+		connComp, ok := s.Connection().Connection().Get(client)
 		if !ok {
 			continue
 		}

@@ -53,7 +53,7 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 					if _, ok := s.Player().ActingConnection().Get(playerEntity); ok {
 						continue
 					}
-					uuid, ok := s.UUID().Component().Get(playerEntity)
+					uuid, ok := s.UUID().UUID().Get(playerEntity)
 					if !ok {
 						continue
 					}
@@ -63,7 +63,7 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 				return 0, uuid
 			}
 			return func(parent, connEntity ecs.EntityID, comp player.PlayersConnectionComponent) {
-				conn, ok := s.Connection().Component().Get(connEntity)
+				conn, ok := s.Connection().Connection().Get(connEntity)
 				if !ok {
 					return
 				}

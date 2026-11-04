@@ -13,30 +13,6 @@ Go                               3             18              1             71
 SUM:                             3             18              1             71
 -------------------------------------------------------------------------------
 ```
-## Types
-### type Service
-Type: `engine/modules/drag.Service`
-
-#### method Service Register
-Type: `func() error`
-
-### type DraggableEvent
-Type: `engine/modules/drag.DraggableEvent`
-
-#### property DraggableEvent Entity
-Type: `engine/modules/ecs.EntityID`
-
-#### property DraggableEvent Drag
-Type: `engine/modules/inputs.DragEvent`
-
-#### method DraggableEvent ApplyDrag
-Type: `func(dragEvent engine/modules/inputs.DragEvent) any`
-
-## Functions
-### func NewDraggable
-Type: `func(entity engine/modules/ecs.EntityID) engine/modules/drag.DraggableEvent`
-
-
 ## Dependencies
 `engine`:
   - `engine.Camera`

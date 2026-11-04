@@ -12,15 +12,15 @@ import (
 type DeployCounterComponent struct {
 	I uint32
 }
-type Component struct {
+type DeployComponent struct {
 	Deployable []ecs.EntityID
 }
 
 func NewDeployCounter(i uint32) DeployCounterComponent {
 	return DeployCounterComponent{i}
 }
-func NewDeploy(deployable ...ecs.EntityID) Component {
-	return Component{
+func NewDeploy(deployable ...ecs.EntityID) DeployComponent {
+	return DeployComponent{
 		deployable,
 	}
 }
@@ -58,10 +58,10 @@ func NewDestroyEvent(ctx actions.PlayerContext, uuid uuid.UUID) DestroyEvent {
 
 type Service interface {
 	ecs.SystemRegister
-	Reach() reach.ServiceT[Component]
+	Reach() reach.ServiceT[DeployComponent]
 
 	DeployCounter() ecs.ComponentArray[DeployCounterComponent]
-	Component() ecs.ComponentArray[Component]
+	DeployComp() ecs.ComponentArray[DeployComponent]
 
 	CanDeploy(actions.Entity) error
 	CanDeployBlueprint(actions.Entity, actions.Blueprint) error

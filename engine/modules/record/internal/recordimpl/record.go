@@ -26,7 +26,7 @@ type service struct {
 	worldArrays        map[string]entityArray
 
 	worldCopy       ecs.World
-	worldCopyUUID   ecs.ComponentArray[uuid.Component]
+	worldCopyUUID   ecs.ComponentArray[uuid.UUIDComponent]
 	worldCopyArrays map[string]ecs.AnyComponentArray
 
 	mutex *sync.Mutex
@@ -38,7 +38,7 @@ func NewService(c ioc.Dic) record.Service {
 	s.worldArrays = make(map[string]entityArray)
 
 	s.worldCopy = ecs.NewWorld()
-	s.worldCopyUUID = ecs.GetComponentArray[uuid.Component](s.worldCopy)
+	s.worldCopyUUID = ecs.GetComponentArray[uuid.UUIDComponent](s.worldCopy)
 	s.worldCopyArrays = make(map[string]ecs.AnyComponentArray)
 
 	s.mutex = &sync.Mutex{}

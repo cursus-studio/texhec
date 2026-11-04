@@ -78,7 +78,7 @@ func (s *service) Own(ctx actions.PlayerContext, entityUUID actions.Entity) erro
 	if !ok {
 		return s.Actions().Own().Error()
 	}
-	ownerUUID, ok := s.UUID().Component().Get(owner)
+	ownerUUID, ok := s.UUID().UUID().Get(owner)
 	if !ok || ownerUUID.ID != uuid.UUID(ctx) {
 		return s.Actions().Own().Error()
 	}
@@ -93,7 +93,7 @@ func (s *service) IsEnemy(ctx actions.PlayerContext, entityUUID actions.Entity) 
 	if !ok {
 		return nil
 	}
-	ownerUUID, _ := s.UUID().Component().Get(owner)
+	ownerUUID, _ := s.UUID().UUID().Get(owner)
 	if ownerUUID.ID == uuid.UUID(ctx) {
 		return s.Actions().IsEnemy().Error()
 	}
@@ -123,7 +123,7 @@ func (s *service) OnPlayerUUIDUpsert(playerEntity ecs.EntityID) {
 	if !ok {
 		return
 	}
-	s.UUID().Component().Set(playerEntity, uuid.New(playerUUID.UUID))
+	s.UUID().UUID().Set(playerEntity, uuid.NewUUID(playerUUID.UUID))
 }
 
 func (s *service) OnAssignActingPlayerDTO(dto player.AssignActingPlayerDTO) {
@@ -131,7 +131,7 @@ func (s *service) OnAssignActingPlayerDTO(dto player.AssignActingPlayerDTO) {
 		s.ActingPlayer().Set(playerEntity, player.NewActingPlayer())
 		return
 	}
-	if _, ok := s.Connection().Component().Get(dto.ConnEntity); !ok {
+	if _, ok := s.Connection().Connection().Get(dto.ConnEntity); !ok {
 		return
 	}
 	events.Emit(s.Events(), loop.NewEmitOnFrameEvent(dto))
@@ -143,7 +143,7 @@ func (s *service) GetContext() actions.PlayerContext {
 		return actions.PlayerContext{}
 	}
 	entity := entities[0]
-	uuid, ok := s.UUID().Component().Get(entity)
+	uuid, ok := s.UUID().UUID().Get(entity)
 	if !ok {
 		return actions.PlayerContext{}
 	}

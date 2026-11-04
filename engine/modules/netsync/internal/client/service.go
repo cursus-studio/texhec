@@ -45,7 +45,7 @@ func NewService(c ioc.Dic) *Service {
 			return
 		}
 		for _, entity := range s.NetSync().Server().GetEntities() {
-			conn, ok := s.Connection().Component().Get(entity)
+			conn, ok := s.Connection().Connection().Get(entity)
 			if !ok {
 				continue
 			}
@@ -64,7 +64,7 @@ func NewService(c ioc.Dic) *Service {
 		if _, ok := s.NetSync().Server().Get(entity); !ok {
 			return
 		}
-		conn, ok := s.Connection().Component().Get(entity)
+		conn, ok := s.Connection().Connection().Get(entity)
 		if !ok {
 			return
 		}
@@ -72,7 +72,7 @@ func NewService(c ioc.Dic) *Service {
 		s.Logger().Warn(err)
 	}
 	s.NetSync().Server().OnUpsert(onConnAdd)
-	s.Connection().Component().OnUpsert(onConnAdd)
+	s.Connection().Connection().OnUpsert(onConnAdd)
 
 	return s
 }
@@ -113,7 +113,7 @@ func (s *Service) ListenPredicted(dto servertypes.PredictionResponseDTO) {
 func (s *Service) GetConnection() connection.Conn {
 	if entities := s.NetSync().Server().GetEntities(); len(entities) == 1 {
 		server := entities[0]
-		comp, ok := s.Connection().Component().Get(server)
+		comp, ok := s.Connection().Connection().Get(server)
 		if ok {
 			return comp.Conn()
 		}

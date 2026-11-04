@@ -37,7 +37,7 @@ func TestHost(t *testing.T) {
 
 	s.Poll()
 
-	if connections := len(s.Connection().Component().GetEntities()); connections != 1 {
+	if connections := len(s.Connection().Connection().GetEntities()); connections != 1 {
 		t.Errorf("Expected 1 connection not %v", connections)
 		return
 	}
@@ -52,7 +52,7 @@ func TestHost(t *testing.T) {
 
 	s.Poll()
 
-	if connections := len(s.Connection().Component().GetEntities()); connections != 0 {
+	if connections := len(s.Connection().Connection().GetEntities()); connections != 0 {
 		t.Errorf("Expected 0 connection not %v", connections)
 		return
 	}

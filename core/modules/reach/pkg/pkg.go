@@ -14,7 +14,7 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 
 func PkgT[FeatureComponent any](b ioc.Builder) {
 	pkgs := []ioc.Pkg{
-		typeregistrypkg.PkgT[reach.Component[FeatureComponent]],
+		typeregistrypkg.PkgT[reach.ReachComponent[FeatureComponent]],
 	}
 	for _, pkg := range pkgs {
 		pkg(b)

@@ -25,7 +25,7 @@ var playPkg = ioc.NewPkg(func(b ioc.Builder) {
 
 			cameraEntity := world.World().NewEntity()
 			world.Hierarchy().SetParent(cameraEntity, sceneParent)
-			world.Groups().Component().Set(cameraEntity, groups.DefaultGroups())
+			world.Groups().Groups().Set(cameraEntity, groups.DefaultGroups())
 			world.Camera().Ortho().Set(cameraEntity, camera.NewOrtho(-1000, 1000))
 			world.Ui().CursorCamera().Set(cameraEntity, ui.CursorCameraComponent{})
 

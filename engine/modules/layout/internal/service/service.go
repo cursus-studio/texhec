@@ -51,7 +51,7 @@ func (s *service) Init() {
 	s.Transform().AddDirtySet(s.dirtyParents)
 
 	s.Transform().AddDirtySet(s.dirtyChildren)
-	s.Hierarchy().Component().AddDirtySet(s.dirtyChildren)
+	s.Hierarchy().Parent().AddDirtySet(s.dirtyChildren)
 
 	// before get trigger
 	s.Transform().AbsolutePos().BeforeGet(s.BeforeGet)
@@ -67,7 +67,7 @@ type save struct {
 
 func (s *service) BeforeGet() {
 	for _, child := range s.dirtyChildren.Get() {
-		if parent, ok := s.Hierarchy().Parent(child); ok {
+		if parent, ok := s.Hierarchy().GetParent(child); ok {
 			s.dirtyParents.Dirty(parent)
 		}
 	}

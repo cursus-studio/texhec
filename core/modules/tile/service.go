@@ -26,12 +26,12 @@ type ID uint8
 
 //
 
-type Component struct {
+type TileComponent struct {
 	ID ID
 }
 
-func NewTile(id ID) Component {
-	return Component{id}
+func NewTile(id ID) TileComponent {
+	return TileComponent{id}
 }
 
 //
@@ -160,7 +160,7 @@ type Service interface {
 	ecs.SystemRegister
 	Renderer() ecs.SystemRegister
 
-	Component() ecs.ComponentArray[Component]
+	Tile() ecs.ComponentArray[TileComponent]
 	Grid() grid.ServiceT[ID]
 	GetTile(ID) (ecs.EntityID, bool)
 

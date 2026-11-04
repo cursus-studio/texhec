@@ -13,46 +13,6 @@ Go                               3             21              4             75
 SUM:                             3             21              4             75
 -------------------------------------------------------------------------------
 ```
-## Types
-### type Service
-Type: `engine/modules/seed.Service`
-
-#### method Service GenerateSeed
-Type: `func() engine/modules/seed.Seed`
-
-#### method Service Seed
-Type: `func() engine/modules/ecs.ComponentArray[engine/modules/seed.SeedComponent]`
-
-### type Seed
-Type: `engine/modules/seed.Seed`
-
-#### method Seed Source
-Type: `func() uint64`
-
-#### method Seed Value
-Type: `func() uint64`
-
-#### method Seed SeededRand
-Type: `func(s2 engine/modules/seed.Seed) *math/rand/v2.Rand`
-
-### type SeedComponent
-Type: `engine/modules/seed.SeedComponent`
-
-#### property SeedComponent Seed
-Type: `engine/modules/seed.Seed`
-
-## Variables
-### var ErrWorldShouldHaveOneSeed
-Type: `error`
-
-## Functions
-### func New
-Type: `func[Number golang.org/x/exp/constraints.Integer](s Number) engine/modules/seed.Seed`
-
-### func NewSeed
-Type: `func[Number golang.org/x/exp/constraints.Integer](s Number) engine/modules/seed.SeedComponent`
-
-
 ## Dependencies
 `engine`:
   - `engine.Clock`

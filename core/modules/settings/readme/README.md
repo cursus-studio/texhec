@@ -13,23 +13,6 @@ Go                               3             30              8            105
 SUM:                             3             30              8            105
 -------------------------------------------------------------------------------
 ```
-## Types
-### type Service
-Type: `core/modules/settings.Service`
-
-#### method Service Register
-Type: `func() error`
-
-### type EnterSettingsEvent
-Type: `core/modules/settings.EnterSettingsEvent`
-
-### type EnterSettingsForParentEvent
-Type: `core/modules/settings.EnterSettingsForParentEvent`
-
-#### property EnterSettingsForParentEvent Parent
-Type: `engine/modules/ecs.EntityID`
-
-
 ## Dependencies
 `core/game`:
   - `core/game.Definitions`

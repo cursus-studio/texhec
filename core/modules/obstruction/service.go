@@ -19,12 +19,12 @@ type Obstruction uint8
 
 // Defines how entity or tile obstruct
 // On obstruction collision new entity is removed and warning is logged
-type Component struct {
+type ObstructionComponent struct {
 	Obstruction Obstruction
 }
 
-func NewObstruction(obstruction Obstruction) Component {
-	return Component{obstruction}
+func NewObstruction(obstruction Obstruction) ObstructionComponent {
+	return ObstructionComponent{obstruction}
 }
 
 // aabb on grid
@@ -66,7 +66,7 @@ func NewDeployed(uuid uuid.UUID) DeployedComponent {
 type Service interface {
 	ecs.SystemRegister
 	Grid() grid.ServiceT[Obstruction]
-	Component() ecs.ComponentArray[Component]
+	Obstrucion() ecs.ComponentArray[ObstructionComponent]
 	Deployed() ecs.ComponentArray[DeployedComponent]
 
 	Collisions(AABB, Obstruction) []grid.Coords

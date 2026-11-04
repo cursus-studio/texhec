@@ -96,7 +96,7 @@ func (conn *conn) Send(message any) error {
 //
 
 func (s *service) PollMessages(entity ecs.EntityID) {
-	connComp, ok := s.Connection().Component().Get(entity)
+	connComp, ok := s.Connection().Get(entity)
 	if !ok {
 		return
 	}
@@ -137,7 +137,7 @@ func (s *service) PollMessages(entity ecs.EntityID) {
 }
 
 func (s *service) CloseConn(entity ecs.EntityID) {
-	connComp, ok := s.Connection().Component().Get(entity)
+	connComp, ok := s.Connection().Get(entity)
 	if !ok {
 		return
 	}
@@ -148,5 +148,5 @@ func (s *service) CloseConn(entity ecs.EntityID) {
 }
 
 func (s *service) OnSetUUID(setUUID connection.SetConnUUIDDTO) {
-	s.UUID().Component().Set(setUUID.ConnEntity, uuid.New(setUUID.UUID))
+	s.UUID().UUID().Set(setUUID.ConnEntity, uuid.NewUUID(setUUID.UUID))
 }

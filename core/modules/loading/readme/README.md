@@ -13,14 +13,6 @@ Go                               3             19              1             88
 SUM:                             3             19              1             88
 -------------------------------------------------------------------------------
 ```
-## Types
-### type Service
-Type: `core/modules/loading.Service`
-
-#### method Service Register
-Type: `func() error`
-
-
 ## Dependencies
 `core/game`:
   - `core/game.GameWorld`

@@ -14,67 +14,6 @@ Markdown                         1              0              0              1
 SUM:                             4             31              2            181
 -------------------------------------------------------------------------------
 ```
-## Types
-### type Service
-Type: `core/modules/economy.Service`
-
-#### method Service Cost
-Type: `func() engine/modules/ecs.ComponentArray[core/modules/economy.CostComponent]`
-
-#### method Service Factory
-Type: `func() engine/modules/ecs.ComponentArray[core/modules/economy.FactoryComponent]`
-
-#### method Service Register
-Type: `func() error`
-
-#### method Service Wallet
-Type: `func() engine/modules/ecs.ComponentArray[core/modules/economy.WalletComponent]`
-
-### type Money
-Type: `core/modules/economy.Money`
-
-### type WalletComponent
-Type: `core/modules/economy.WalletComponent`
-
-#### property WalletComponent Money
-Type: `core/modules/economy.Money`
-
-#### method WalletComponent Pay
-Type: `func(cost core/modules/economy.CostComponent) core/modules/economy.WalletComponent`
-
-#### method WalletComponent Smooth
-Type: `func()`
-
-#### method WalletComponent Lerp
-Type: `func(c2 core/modules/economy.WalletComponent, mix32 float32) core/modules/economy.WalletComponent`
-
-### type FactoryComponent
-Type: `core/modules/economy.FactoryComponent`
-
-#### property FactoryComponent MoneyPerSecond
-Type: `core/modules/economy.Money`
-
-### type CostComponent
-Type: `core/modules/economy.CostComponent`
-
-#### property CostComponent Cost
-Type: `core/modules/economy.Money`
-
-## Variables
-### var ErrToExpensive
-Type: `error`
-
-## Functions
-### func NewWallet
-Type: `func(money core/modules/economy.Money) core/modules/economy.WalletComponent`
-
-### func NewFactory
-Type: `func(money core/modules/economy.Money) core/modules/economy.FactoryComponent`
-
-### func NewCost
-Type: `func(money core/modules/economy.Money) core/modules/economy.CostComponent`
-
-
 ## Dependencies
 `core/game`:
   - `core/game.Economy`
@@ -109,9 +48,9 @@ Type: `func(money core/modules/economy.Money) core/modules/economy.CostComponent
   - `engine/modules/entityregistry.Service`
 
 `engine/modules/groups`:
-  - `engine/modules/groups.Component`
   - `engine/modules/groups.EmptyGroups`
   - `engine/modules/groups.Enable`
+  - `engine/modules/groups.Groups`
 
 `engine/modules/loop`:
   - `engine/modules/loop.Delta`

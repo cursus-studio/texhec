@@ -49,7 +49,7 @@ func (s *service) OnAddPlayer(event lobby.AddPlayerEvent) {
 		}
 	}
 	entity := s.World().NewEntity()
-	s.UUID().Component().Set(entity, uuid.New(event.NewPlayerUUID))
+	s.UUID().UUID().Set(entity, uuid.NewUUID(event.NewPlayerUUID))
 	s.Player().Name().Set(entity, name)
 	s.Player().Color().Set(entity, color)
 }
@@ -118,7 +118,7 @@ func (s *service) OnSetConnectionPlayer(event lobby.SetConnectionPlayerEvent) {
 		return
 	}
 
-	if _, isServer := s.Connection().Component().Get(connectionEntity); isServer {
+	if _, isServer := s.Connection().Connection().Get(connectionEntity); isServer {
 		s.Player().ActingConnection().Set(playerEntity, player.NewActiongConnection(connectionEntity))
 		return
 	}

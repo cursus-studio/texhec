@@ -22,7 +22,7 @@ func (s *service) renderClientLobby() {
 
 	cameraEntity := s.World().NewEntity()
 	s.Hierarchy().SetParent(cameraEntity, lobbyUi)
-	s.Groups().Component().Set(cameraEntity, groups.DefaultGroups())
+	s.Groups().Groups().Set(cameraEntity, groups.DefaultGroups())
 	s.Camera().Ortho().Set(cameraEntity, camera.NewOrtho(-1000, 1000))
 	s.Ui().CursorCamera().Set(cameraEntity, ui.CursorCameraComponent{})
 

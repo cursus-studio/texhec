@@ -14,91 +14,6 @@ Markdown                         1              0              0              1
 SUM:                             5             37              3            290
 -------------------------------------------------------------------------------
 ```
-## Types
-### type Service
-Type: `core/modules/attack.Service`
-
-#### method Service CanAttack
-Type: `func(core/modules/actions.Entity) error`
-
-#### method Service CanBeAttacked
-Type: `func(attacker core/modules/actions.Entity, attacked core/modules/actions.Entity) error`
-
-#### method Service Damage
-Type: `func() engine/modules/ecs.ComponentArray[core/modules/attack.DamageComponent]`
-
-#### method Service FullHealth
-Type: `func(engine/modules/ecs.EntityID) (core/modules/attack.HealthComponent, bool)`
-
-#### method Service Health
-Type: `func() engine/modules/ecs.ComponentArray[core/modules/attack.HealthComponent]`
-
-#### method Service Reach
-Type: `func() core/modules/reach.ServiceT[core/modules/attack.TargetComponent]`
-
-#### method Service Register
-Type: `func() error`
-
-#### method Service Target
-Type: `func() engine/modules/ecs.ComponentArray[core/modules/attack.TargetComponent]`
-
-### type Health
-Type: `core/modules/attack.Health`
-
-### type TargetComponent
-Type: `core/modules/attack.TargetComponent`
-
-#### property TargetComponent Entity
-Type: `engine/modules/ecs.EntityID`
-
-### type HealthComponent
-Type: `core/modules/attack.HealthComponent`
-
-#### property HealthComponent Health
-Type: `core/modules/attack.Health`
-
-#### method HealthComponent Smooth
-Type: `func()`
-
-#### method HealthComponent Lerp
-Type: `func(c2 core/modules/attack.HealthComponent, mix32 float32) core/modules/attack.HealthComponent`
-
-### type DamageComponent
-Type: `core/modules/attack.DamageComponent`
-
-#### property DamageComponent Damage
-Type: `core/modules/attack.Health`
-
-### type AttackEvent
-Type: `core/modules/attack.AttackEvent`
-
-#### property AttackEvent PlayerContext
-Type: `core/modules/actions.PlayerContext`
-
-#### property AttackEvent Attacker
-Type: `core/modules/actions.Entity`
-
-#### property AttackEvent Target
-Type: `core/modules/actions.Entity`
-
-## Variables
-### var ErrCannotAttackEnemyOutOfReach
-Type: `error`
-
-## Functions
-### func NewTarget
-Type: `func(target engine/modules/ecs.EntityID) core/modules/attack.TargetComponent`
-
-### func NewHealth
-Type: `func(health core/modules/attack.Health) core/modules/attack.HealthComponent`
-
-### func NewDamage
-Type: `func(damage core/modules/attack.Health) core/modules/attack.DamageComponent`
-
-### func NewAttackEvent
-Type: `func(ctx core/modules/actions.PlayerContext, attacker core/modules/actions.Entity, target core/modules/actions.Entity) core/modules/attack.AttackEvent`
-
-
 ## Dependencies
 `core/game`:
   - `core/game.Actions`
@@ -138,8 +53,8 @@ Type: `func(ctx core/modules/actions.PlayerContext, attacker core/modules/action
 
 `core/modules/obstruction`:
   - `core/modules/obstruction.Collisions`
-  - `core/modules/obstruction.Component`
   - `core/modules/obstruction.NewAABB`
+  - `core/modules/obstruction.Obstrucion`
   - `core/modules/obstruction.Obstruction`
 
 `core/modules/pathfind`:
@@ -149,8 +64,8 @@ Type: `func(ctx core/modules/actions.PlayerContext, attacker core/modules/action
   - `core/modules/pathfind.Target`
 
 `core/modules/reach`:
-  - `core/modules/reach.Component`
   - `core/modules/reach.NewReach`
+  - `core/modules/reach.Reach`
   - `core/modules/reach.Reaches`
   - `core/modules/reach.ServiceT`
   - `core/modules/reach.TilesFrom`

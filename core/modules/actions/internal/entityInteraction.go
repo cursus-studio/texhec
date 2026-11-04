@@ -11,14 +11,14 @@ import (
 )
 
 func (s *service) OnEntityHover(event tile.HoverEntityEvent) {
-	uuid, ok := s.UUID().Component().Get(event.Entity)
+	uuid, ok := s.UUID().UUID().Get(event.Entity)
 	if !ok {
 		return
 	}
 	s.Feature().PreviewInteraction(actions.Entity(uuid.ID))
 }
 func (s *service) OnEntityClick(event tile.ClickEntityEvent) {
-	uuid, ok := s.UUID().Component().Get(event.Entity)
+	uuid, ok := s.UUID().UUID().Get(event.Entity)
 	if !ok {
 		return
 	}

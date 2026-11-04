@@ -49,7 +49,7 @@ func (s *service) Init() {
 		arr.AddDependency(s.AspectRatioArray)
 		arr.AddDependency(s.PivotPointArray)
 
-		arr.AddDependency(s.Hierarchy().Component())
+		arr.AddDependency(s.Hierarchy().Parent())
 		arr.AddDependency(s.InheritMaskArray)
 		arr.AddDependency(s.ParentPivotPointArray)
 	}

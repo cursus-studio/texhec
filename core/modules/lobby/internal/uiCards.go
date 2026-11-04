@@ -80,7 +80,7 @@ func (s *service) lobbyCardContentHeight(card ecs.EntityID) float32 {
 // - choose config (map size, units, wallet)
 
 func (s *service) renderPlayerCard(parent ecs.EntityID, playerEntity ecs.EntityID) ecs.EntityID {
-	playerUUID, ok := s.UUID().Component().Get(playerEntity)
+	playerUUID, ok := s.UUID().UUID().Get(playerEntity)
 	if !ok {
 		return 0
 	}

@@ -12,7 +12,7 @@ import (
 )
 
 func (s *service) OnBlueprintClick(event tile.ClickBlueprintEvent) {
-	uuidComp, ok := s.UUID().Component().Get(event.Entity)
+	uuidComp, ok := s.UUID().UUID().Get(event.Entity)
 	if !ok {
 		return
 	}
@@ -44,7 +44,7 @@ render:
 		s.Logger().Warn(s.CanDeployBlueprint().Error())
 		return
 	}
-	deployed, _ := s.Deploy().Component().Get(canEntityBuildBlueprint)
+	deployed, _ := s.Deploy().DeployComp().Get(canEntityBuildBlueprint)
 	if len(deployed.Deployable) == 0 {
 		s.Logger().Warn(s.CanDeployBlueprint().Error())
 		return

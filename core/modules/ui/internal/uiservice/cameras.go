@@ -26,15 +26,15 @@ func (s *service) GetCamera(gameCameraEntity ecs.EntityID) ecs.EntityID {
 	}
 	sceneParent := s.Scene().Scene()
 	s.Hierarchy().SetParent(gameCameraEntity, sceneParent)
-	s.Groups().Component().Set(gameCameraEntity, groups.EmptyGroups().Enable(definitions.GameGroup))
+	s.Groups().Groups().Set(gameCameraEntity, groups.EmptyGroups().Enable(definitions.GameGroup))
 
 	gameCamera := s.World().NewEntity()
 	s.Hierarchy().SetParent(gameCamera, sceneParent)
 	s.Camera().Priority().Set(gameCamera, camera.NewPriority(0))
 	s.camera.Set(gameCamera, gameCameraComponent{})
-	s.UUID().Component().Set(gameCamera, uuid.New([16]byte{48}))
+	s.UUID().UUID().Set(gameCamera, uuid.NewUUID([16]byte{48}))
 	s.Camera().Ortho().Set(gameCamera, camera.NewOrtho(-1000, +1000))
-	s.Groups().Component().Set(gameCamera, groups.EmptyGroups().Enable(definitions.GameGroup))
+	s.Groups().Groups().Set(gameCamera, groups.EmptyGroups().Enable(definitions.GameGroup))
 	s.Camera().Mobile().Set(gameCamera, camera.NewMobileCamera())
 	return gameCamera
 }
@@ -65,7 +65,7 @@ func (s *service) AddUICamera(sceneParent ecs.EntityID) ecs.EntityID {
 	s.Hierarchy().SetParent(uiCamera, sceneParent)
 	s.Camera().Priority().Set(uiCamera, camera.NewPriority(1))
 	s.Camera().Ortho().Set(uiCamera, camera.NewOrtho(-1000, +1000))
-	s.Groups().Component().Set(uiCamera, groups.EmptyGroups().Enable(definitions.UiGroup))
+	s.Groups().Groups().Set(uiCamera, groups.EmptyGroups().Enable(definitions.UiGroup))
 	s.Ui().UiCamera().Set(uiCamera, ui.UiCameraComponent{})
 	s.Ui().CursorCamera().Set(uiCamera, ui.CursorCameraComponent{})
 
@@ -76,14 +76,14 @@ func (s *service) AddUICamera(sceneParent ecs.EntityID) ecs.EntityID {
 	s.Transform().PivotPoint().Set(settingsEntity, transform.NewPivotPoint(0, 1, .5))
 	s.Transform().Inherit().Set(settingsEntity, transform.NewInherit(transform.RelativePos))
 	s.Transform().ParentPivotPoint().Set(settingsEntity, transform.NewParentPivotPoint(0, 1, .5))
-	s.Groups().Component().Set(settingsEntity, groups.EmptyGroups().Enable(definitions.UiGroup))
+	s.Groups().Groups().Set(settingsEntity, groups.EmptyGroups().Enable(definitions.UiGroup))
 
 	s.Render().Mesh().Set(settingsEntity, render.NewMesh(s.Definitions().Assets().SquareMesh))
 	s.Render().Texture().Set(settingsEntity, render.NewTexture(s.Definitions().Hud().Settings))
 
 	s.Inputs().LeftClick().Set(settingsEntity, inputs.NewLeftClick(settings.EnterSettingsEvent{}))
 	s.Inputs().KeepSelected().Set(settingsEntity, inputs.KeepSelectedComponent{})
-	s.Collider().Component().Set(settingsEntity, collider.NewCollider(s.Definitions().Assets().SquareCollider))
+	s.Collider().Collider().Set(settingsEntity, collider.NewCollider(s.Definitions().Assets().SquareCollider))
 	return uiCamera
 }
 func (s *service) AddBgCamera(sceneParent ecs.EntityID) ecs.EntityID {
@@ -91,7 +91,7 @@ func (s *service) AddBgCamera(sceneParent ecs.EntityID) ecs.EntityID {
 	s.Hierarchy().SetParent(bgCamera, sceneParent)
 	s.Camera().Priority().Set(bgCamera, camera.NewPriority(-1))
 	s.Camera().Ortho().Set(bgCamera, camera.NewOrtho(-1000, +1000))
-	s.Groups().Component().Set(bgCamera, groups.EmptyGroups().Enable(definitions.BgGroup))
+	s.Groups().Groups().Set(bgCamera, groups.EmptyGroups().Enable(definitions.BgGroup))
 
 	bg := s.World().NewEntity()
 	s.Hierarchy().SetParent(bg, bgCamera)

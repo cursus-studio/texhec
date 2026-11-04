@@ -37,11 +37,11 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 		relationpkg.SpatialRelationPkg(
 			func(w ecs.World) ecs.DirtySet {
 				dirtySet := ecs.NewDirtySet()
-				ecs.GetComponentArray[tile.Component](w).AddDirtySet(dirtySet)
+				ecs.GetComponentArray[tile.TileComponent](w).AddDirtySet(dirtySet)
 				return dirtySet
 			},
 			func(w ecs.World) func(entity ecs.EntityID) (tile.ID, bool) {
-				componentArray := ecs.GetComponentArray[tile.Component](w)
+				componentArray := ecs.GetComponentArray[tile.TileComponent](w)
 				return func(entity ecs.EntityID) (tile.ID, bool) {
 					comp, ok := componentArray.Get(entity)
 					return comp.ID, ok
@@ -51,7 +51,7 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 		),
 		uuidpkg.LinkPkgT[tile.BlueprintLink],
 
-		typeregistrypkg.PkgT[tile.Component],
+		typeregistrypkg.PkgT[tile.TileComponent],
 		typeregistrypkg.PkgT[tile.PosComponent],
 		typeregistrypkg.PkgT[tile.SizeComponent],
 		typeregistrypkg.PkgT[tile.RotComponent],
@@ -161,7 +161,7 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 		})
 		b.Register("tile", func(entity ecs.EntityID, structTagValue string) {
 			counter++
-			world.Tile().Component().Set(entity, tile.NewTile(counter))
+			world.Tile().Tile().Set(entity, tile.NewTile(counter))
 		})
 		b.Register("size", func(entity ecs.EntityID, structTagValue string) {
 			errInvalidFormat := fmt.Errorf("size should be in format \"1x1\" where first number is width and second is height")

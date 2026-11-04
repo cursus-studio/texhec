@@ -56,7 +56,7 @@ render:
 	if !ok {
 		return
 	}
-	uuidComp, ok := s.UUID().Component().Get(blueprint)
+	uuidComp, ok := s.UUID().UUID().Get(blueprint)
 	if !ok {
 		return
 	}
@@ -75,7 +75,7 @@ render:
 		s.Render().Color().Set(entity, render.NewColor(mgl32.Vec4{0, 1, 0, 1}))
 	}
 
-	blueprintObstruction, _ := s.Obstruction().Component().Get(blueprint)
+	blueprintObstruction, _ := s.Obstruction().Obstrucion().Get(blueprint)
 	aabb := obstruction.NewAABB(pos, size)
 	collisions := s.Obstruction().Collisions(aabb, blueprintObstruction.Obstruction)
 	for _, collision := range collisions {
@@ -123,7 +123,7 @@ render:
 		s.Render().Color().Set(entity, render.NewColor(mgl32.Vec4{0, 1, 0, 1}))
 	}
 
-	blueprintObstruction, _ := s.Obstruction().Component().Get(blueprint)
+	blueprintObstruction, _ := s.Obstruction().Obstrucion().Get(blueprint)
 	aabb := obstruction.NewAABB(pos, size)
 	collisions := s.Obstruction().Collisions(aabb, blueprintObstruction.Obstruction)
 	for _, collision := range collisions {

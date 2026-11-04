@@ -13,14 +13,6 @@ Go                               8             49              1            266
 SUM:                             8             49              1            266
 -------------------------------------------------------------------------------
 ```
-## Types
-### type Service
-Type: `engine/modules/relation.Service[Key any]`
-
-#### method Service Get
-Type: `func(Key) (engine/modules/ecs.EntityID, bool)`
-
-
 ## Dependencies
 `engine/modules/datastructures`:
   - `engine/modules/datastructures.NewSparseArray`

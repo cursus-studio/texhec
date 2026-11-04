@@ -8,7 +8,7 @@ import (
 )
 
 type Service interface {
-	Component() ecs.ComponentArray[GroupsComponent]
+	Groups() ecs.ComponentArray[GroupsComponent]
 	Inherit() ecs.ComponentArray[hierarchy.InheritComponent[GroupsComponent]]
 	InheritGroups(ecs.EntityID)
 }

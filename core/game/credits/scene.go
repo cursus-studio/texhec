@@ -28,7 +28,7 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 
 			cameraEntity := world.World().NewEntity()
 			world.Hierarchy().SetParent(cameraEntity, sceneParent)
-			world.Groups().Component().Set(cameraEntity, groups.DefaultGroups())
+			world.Groups().Groups().Set(cameraEntity, groups.DefaultGroups())
 			world.Camera().Ortho().Set(cameraEntity, camera.NewOrtho(-1000, +1000))
 			world.Ui().CursorCamera().Set(cameraEntity, ui.CursorCameraComponent{})
 
@@ -59,7 +59,7 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 			world.Render().Mesh().Set(draggable, render.NewMesh(world.Definitions().Assets().SquareMesh))
 			world.Render().Texture().Set(draggable, render.NewTexture(world.Definitions().Hud().Cursor))
 
-			world.Collider().Component().Set(draggable, collider.NewCollider(world.Definitions().Assets().SquareCollider))
+			world.Collider().Collider().Set(draggable, collider.NewCollider(world.Definitions().Assets().SquareCollider))
 			world.Inputs().Drag().Set(draggable, inputs.NewDragComponent(drag.NewDraggable(draggable)))
 
 			world.Text().Content().Set(draggable, text.NewText(strings.ToUpper("drag me")))

@@ -34,7 +34,7 @@ mainLoop:
 		s.AnimatedBackground().Set(menu, ui.AnimatedBackgroundComponent{})
 
 		s.Groups().InheritGroups(menu)
-		s.Collider().Component().Set(menu, collider.NewCollider(s.Definitions().Assets().SquareCollider))
+		s.Collider().Collider().Set(menu, collider.NewCollider(s.Definitions().Assets().SquareCollider))
 		s.Inputs().KeepSelected().Set(menu, inputs.KeepSelectedComponent{})
 		s.menuArray.Set(menu, menuComponent{})
 
@@ -60,7 +60,7 @@ mainLoop:
 
 		s.Inputs().LeftClick().Set(quit, inputs.NewLeftClick(feature.NewUnlockFeatureEvent()))
 		s.Inputs().KeepSelected().Set(quit, inputs.KeepSelectedComponent{})
-		s.Collider().Component().Set(quit, collider.NewCollider(s.Definitions().Assets().SquareCollider))
+		s.Collider().Collider().Set(quit, collider.NewCollider(s.Definitions().Assets().SquareCollider))
 
 		// child wrapper
 		childWrapper := s.World().NewEntity()

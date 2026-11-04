@@ -176,7 +176,7 @@ func (s *service) onGenerate(lobby.GenerateEvent) {
 func (s *service) NewPlayersInitials(wallet economy.WalletComponent, units []ecs.EntityID) lobby.PlayersInitialsComponent {
 	uuids := make([]uuid.UUID, 0, len(units))
 	for _, entity := range units {
-		uuid, ok := s.UUID().Component().Get(entity)
+		uuid, ok := s.UUID().UUID().Get(entity)
 		if !ok {
 			s.Logger().Warn(fmt.Errorf("entity is missing uuid"))
 			continue

@@ -18,132 +18,6 @@ SUM:                             5             41             12            307
 Restrict actions to allow only user to perform his actions.
 Perhaps attach `PlayerComponent` to camera.
 
-## Types
-### type Service
-Type: `core/modules/player.Service`
-
-#### method Service ActingConnection
-Type: `func() engine/modules/ecs.ComponentArray[core/modules/player.ActingConnectionComponent]`
-
-#### method Service ActingPlayer
-Type: `func() engine/modules/ecs.ComponentArray[core/modules/player.ActingPlayerComponent]`
-
-#### method Service Color
-Type: `func() engine/modules/ecs.ComponentArray[core/modules/player.ColorComponent]`
-
-#### method Service GetContext
-Type: `func() core/modules/actions.PlayerContext`
-
-#### method Service IsEnemy
-Type: `func(player core/modules/actions.PlayerContext, entity core/modules/actions.Entity) error`
-
-#### method Service Name
-Type: `func() engine/modules/ecs.ComponentArray[core/modules/player.NameComponent]`
-attached to player
-
-#### method Service NameRelation
-Type: `func() engine/modules/relation.Service[core/modules/player.NameComponent]`
-
-#### method Service Own
-Type: `func(player core/modules/actions.PlayerContext, entity core/modules/actions.Entity) error`
-returns nil if object is controled
-
-#### method Service Owner
-Type: `func() engine/modules/uuid.LinkService[core/modules/player.OwnerLink]`
-points to player entity
-
-#### method Service PlayerConnection
-Type: `func() engine/modules/ecs.ComponentArray[core/modules/player.PlayerConnectionComponent]`
-
-#### method Service PlayerUUID
-Type: `func() engine/modules/ecs.ComponentArray[core/modules/player.PlayerUUIDComponent]`
-
-#### method Service PlayersConnection
-Type: `func() engine/modules/ecs.ComponentArray[core/modules/player.PlayersConnectionComponent]`
-attached to host and connection
-
-### type NameComponent
-Type: `core/modules/player.NameComponent`
-marks that player is performing a move
-
-#### property NameComponent Name
-Type: `string`
-
-### type ColorComponent
-Type: `core/modules/player.ColorComponent`
-
-#### property ColorComponent Color
-Type: `github.com/go-gl/mathgl/mgl32.Vec3`
-
-### type PlayerUUIDComponent
-Type: `core/modules/player.PlayerUUIDComponent`
-
-#### property PlayerUUIDComponent UUID
-Type: `engine/modules/uuid.UUID`
-
-### type ActingPlayerComponent
-Type: `core/modules/player.ActingPlayerComponent`
-
-### type ActingConnectionComponent
-Type: `core/modules/player.ActingConnectionComponent`
-
-#### property ActingConnectionComponent Connection
-Type: `engine/modules/ecs.EntityID`
-
-### type OwnerLink
-Type: `core/modules/player.OwnerLink`
-
-### type AssignActingPlayerDTO
-Type: `core/modules/player.AssignActingPlayerDTO`
-
-#### property AssignActingPlayerDTO MsgCtx
-Type: `engine/modules/connection.MsgCtx`
-
-#### property AssignActingPlayerDTO PlayerUUID
-Type: `engine/modules/uuid.UUID`
-
-### type PlayersConnectionComponent
-Type: `core/modules/player.PlayersConnectionComponent`
-
-#### property PlayersConnectionComponent AcceptNewConnections
-Type: `bool`
-
-### type PlayerConnectionComponent
-Type: `core/modules/player.PlayerConnectionComponent`
-
-#### property PlayerConnectionComponent Player
-Type: `engine/modules/uuid.UUID`
-
-## Variables
-### var ErrNameCollision
-Type: `error`
-
-## Functions
-### func NewName
-Type: `func(name string) core/modules/player.NameComponent`
-
-### func NewColor
-Type: `func(color github.com/go-gl/mathgl/mgl32.Vec3) core/modules/player.ColorComponent`
-
-### func NewPlayerUUID
-Type: `func(uuid engine/modules/uuid.UUID) core/modules/player.PlayerUUIDComponent`
-
-### func NewActingPlayer
-Type: `func() core/modules/player.ActingPlayerComponent`
-
-### func NewActiongConnection
-Type: `func(entity engine/modules/ecs.EntityID) core/modules/player.ActingConnectionComponent`
-
-### func NewAssignActingPlayerDTO
-Type: `func(playerUUID engine/modules/uuid.UUID) core/modules/player.AssignActingPlayerDTO`
-
-### func NewPlayersConnection
-Type: `func(acceptnewConnections bool) core/modules/player.PlayersConnectionComponent`
-
-### func NewPlayerConnection
-Type: `func(player engine/modules/uuid.UUID) core/modules/player.PlayerConnectionComponent`
-
-
 ## Dependencies
 `core/game`:
   - `core/game.Actions`
@@ -193,9 +67,9 @@ Type: `func(player engine/modules/uuid.UUID) core/modules/player.PlayerConnectio
   - `core/modules/player.UUID`
 
 `engine/modules/connection`:
-  - `engine/modules/connection.Component`
   - `engine/modules/connection.Conn`
   - `engine/modules/connection.ConnEntity`
+  - `engine/modules/connection.Connection`
   - `engine/modules/connection.MsgCtx`
   - `engine/modules/connection.Send`
 
@@ -232,14 +106,13 @@ Type: `func(player engine/modules/uuid.UUID) core/modules/player.PlayerConnectio
   - `engine/modules/typeregistry/pkg.PkgT`
 
 `engine/modules/uuid`:
-  - `engine/modules/uuid.Component`
   - `engine/modules/uuid.Entity`
   - `engine/modules/uuid.Get`
   - `engine/modules/uuid.ID`
   - `engine/modules/uuid.LinkService`
   - `engine/modules/uuid.LinkUUIDComponent`
-  - `engine/modules/uuid.New`
   - `engine/modules/uuid.NewDeterministicUUID`
+  - `engine/modules/uuid.NewUUID`
   - `engine/modules/uuid.UUID`
 
 `engine/modules/uuid/pkg`:

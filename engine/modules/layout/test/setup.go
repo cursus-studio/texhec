@@ -33,7 +33,7 @@ func (s Setup) Expect(entity ecs.EntityID, x, y float32) {
 		parentPivot, _ := s.Transform().ParentPivotPoint().Get(entity)
 		size, _ := s.Transform().AbsoluteSize().Get(entity)
 
-		parent, _ := s.Hierarchy().Parent(entity)
+		parent, _ := s.Hierarchy().GetParent(entity)
 		pSize, _ := s.Transform().AbsoluteSize().Get(parent)
 		s.T.Errorf(
 			"expected %v and got %v (pivot %v, parent %v, size %v, pSize %v)",

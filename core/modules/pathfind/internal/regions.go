@@ -231,7 +231,7 @@ func (s *regionsService) OnChunkUpsert(originalChunkEntity ecs.EntityID) {
 			if !ok {
 				continue
 			}
-			tileObstruction, ok := s.Obstruction().Component().Get(tileEntity)
+			tileObstruction, ok := s.Obstruction().Obstrucion().Get(tileEntity)
 			if !ok || obstruction&tileObstruction.Obstruction != 0 {
 				continue
 			}
@@ -337,14 +337,14 @@ func (s *regionsService) EntityRegion(entity ecs.EntityID) (pathfind.Region, boo
 		return s.zeroRegion, false
 	}
 	coords, _ := pos.Aligned()
-	obstruction, ok := s.Obstruction().Component().Get(entity)
+	obstruction, ok := s.Obstruction().Obstrucion().Get(entity)
 	if !ok {
 		return s.zeroRegion, false
 	}
 	return s.CoordsRegion(coords, obstruction.Obstruction)
 }
 func (s *regionsService) ShareRegion(entity ecs.EntityID, coords grid.Coords) bool {
-	obstruction, ok := s.Obstruction().Component().Get(entity)
+	obstruction, ok := s.Obstruction().Obstrucion().Get(entity)
 	if !ok {
 		return false
 	}

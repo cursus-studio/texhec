@@ -22,8 +22,8 @@ func ParentPkg[Parent any](reaction func(c ioc.Dic) func(parent, conn ecs.Entity
 
 			s := ioc.Get[engine.EngineWorld](c)
 			parent := ecs.GetComponentArray[Parent](s.World())
-			connection.Component().OnUpsert(func(entity ecs.EntityID) {
-				parentEntity, ok := s.Hierarchy().Parent(entity)
+			connection.Connection().OnUpsert(func(entity ecs.EntityID) {
+				parentEntity, ok := s.Hierarchy().GetParent(entity)
 				if !ok {
 					return
 				}

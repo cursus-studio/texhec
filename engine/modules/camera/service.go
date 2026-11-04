@@ -27,7 +27,7 @@ var (
 
 type Service interface {
 	ecs.SystemRegister
-	Component() ecs.ComponentArray[Component]
+	Camera() ecs.ComponentArray[CameraComponent]
 	Priority() ecs.ComponentArray[PriorityComponent]
 
 	Mobile() ecs.ComponentArray[MobileCameraComponent]

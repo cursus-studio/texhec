@@ -13,16 +13,16 @@ import (
 
 type serviceT[Component any] struct {
 	game.GameWorld `inject:""`
-	component      ecs.ComponentArray[reach.Component[Component]]
+	component      ecs.ComponentArray[reach.ReachComponent[Component]]
 }
 
 func NewServiceT[Component any](c ioc.Dic) reach.ServiceT[Component] {
 	s := ioc.GetServices[*serviceT[Component]](c)
-	s.component = ecs.GetComponentArray[reach.Component[Component]](s.World())
+	s.component = ecs.GetComponentArray[reach.ReachComponent[Component]](s.World())
 	return s
 }
 
-func (s *serviceT[Component]) Component() ecs.ComponentArray[reach.Component[Component]] {
+func (s *serviceT[Component]) Reach() ecs.ComponentArray[reach.ReachComponent[Component]] {
 	return s.component
 }
 func (s *serviceT[Component]) Reaches(fromEntity, toEntity ecs.EntityID) bool {
@@ -43,7 +43,7 @@ func (s *serviceT[Component]) Reaches(fromEntity, toEntity ecs.EntityID) bool {
 	}
 	toSize, _ := s.Tile().Size().Get(toEntity)
 
-	dist := s.Reach().Distance(fromPos, fromSize, toPos, toSize)
+	dist := s.GameWorld.Reach().Distance(fromPos, fromSize, toPos, toSize)
 	return dist <= tile.Coord(reach.Reach)
 }
 
@@ -63,14 +63,14 @@ func (s *serviceT[Component]) ReachesCoords(fromEntity ecs.EntityID, toPos tile.
 	}
 	fromSize, _ := s.Tile().Size().Get(fromEntity)
 
-	dist := s.Reach().Distance(fromPos, fromSize, toPos, toSize)
+	dist := s.GameWorld.Reach().Distance(fromPos, fromSize, toPos, toSize)
 	return dist <= tile.Coord(reach.Reach)
 }
 
 func (s *serviceT[Component]) TilesFrom(
 	pos tile.PosComponent,
 	size tile.SizeComponent,
-	reach reach.Component[Component],
+	reach reach.ReachComponent[Component],
 ) []grid.Coords {
 	if reach.Reach == 0 {
 		return nil

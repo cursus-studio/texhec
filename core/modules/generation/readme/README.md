@@ -14,14 +14,6 @@ Markdown                         1              3              0             13
 SUM:                             5             43              9            259
 -------------------------------------------------------------------------------
 ```
-## Types
-### type Service
-Type: `core/modules/generation.Service`
-
-#### method Service Register
-Type: `func() error`
-
-
 ## Dependencies
 `core/game`:
   - `core/game.Definitions`
@@ -38,12 +30,12 @@ Type: `func() error`
   - `core/modules/generation.Service`
 
 `core/modules/tile`:
-  - `core/modules/tile.Component`
   - `core/modules/tile.Coords`
   - `core/modules/tile.GetTile`
   - `core/modules/tile.Grid`
   - `core/modules/tile.ID`
   - `core/modules/tile.MissingChunkEvent`
+  - `core/modules/tile.Tile`
 
 `engine/modules/batcher`:
   - `engine/modules/batcher.AddConcurrentBatch`
@@ -54,7 +46,7 @@ Type: `func() error`
   - `engine/modules/batcher.Queue`
 
 `engine/modules/collider`:
-  - `engine/modules/collider.Component`
+  - `engine/modules/collider.Collider`
   - `engine/modules/collider.NewCollider`
 
 `engine/modules/datastructures`:
@@ -87,9 +79,9 @@ Type: `func() error`
   - `engine/modules/grid.Y`
 
 `engine/modules/groups`:
-  - `engine/modules/groups.Component`
   - `engine/modules/groups.EmptyGroups`
   - `engine/modules/groups.Enable`
+  - `engine/modules/groups.Groups`
   - `engine/modules/groups.InheritGroups`
 
 `engine/modules/noise`:

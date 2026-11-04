@@ -103,246 +103,15 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                               8            184             95           1025
+Go                               8            186             95           1034
 GLSL                             3             31              2            112
 Markdown                         3             10              0             85
 -------------------------------------------------------------------------------
-SUM:                            14            225             97           1222
+SUM:                            14            227             97           1231
 -------------------------------------------------------------------------------
 ```
 ## TODO
 Currently animated tiles aren't supported and there is a big chance that they won't be supported
-
-## Types
-### type Service
-Type: `core/modules/tile.Service`
-
-#### method Service Blueprint
-Type: `func() engine/modules/uuid.LinkService[core/modules/tile.BlueprintLink]`
-
-#### method Service Component
-Type: `func() engine/modules/ecs.ComponentArray[core/modules/tile.Component]`
-
-#### method Service GetPos
-Type: `func(coords engine/modules/grid.Coords) engine/modules/transform.PosComponent`
-
-#### method Service GetTile
-Type: `func(core/modules/tile.ID) (engine/modules/ecs.EntityID, bool)`
-
-#### method Service Grid
-Type: `func() engine/modules/grid.ServiceT[core/modules/tile.ID]`
-
-#### method Service Layer
-Type: `func() engine/modules/ecs.ComponentArray[core/modules/tile.LayerComponent]`
-
-#### method Service Name
-Type: `func() engine/modules/ecs.ComponentArray[core/modules/tile.NameComponent]`
-
-#### method Service NewBiomeAsset
-Type: `func(srcImages [6][]image.Image) (core/modules/tile.BiomeAsset, error)`
-src images should be:
-- 1111
-- 1110
-- 1010
-- 1001
-- 0001
-
-#### method Service Pos
-Type: `func() engine/modules/ecs.ComponentArray[core/modules/tile.PosComponent]`
-is often used to check is element a prototype or a placed object
-
-#### method Service Register
-Type: `func() error`
-
-#### method Service Renderer
-Type: `func() engine/modules/ecs.SystemRegister`
-
-#### method Service Rot
-Type: `func() engine/modules/ecs.ComponentArray[core/modules/tile.RotComponent]`
-
-#### method Service Size
-Type: `func() engine/modules/ecs.ComponentArray[core/modules/tile.SizeComponent]`
-
-### type BiomeAsset
-Type: `core/modules/tile.BiomeAsset`
-
-#### method BiomeAsset AspectRatio
-Type: `func() image.Rectangle`
-
-#### method BiomeAsset Images
-Type: `func() [15][]image.Image`
-
-#### method BiomeAsset Release
-Type: `func()`
-
-#### method BiomeAsset Res
-Type: `func() image.Rectangle`
-
-### type ApplyCoordsEvent
-Type: `core/modules/tile.ApplyCoordsEvent`
-
-#### method ApplyCoordsEvent ApplyCoords
-Type: `func(engine/modules/grid.Coords) any`
-
-### type ID
-Type: `core/modules/tile.ID`
-
-### type Component
-Type: `core/modules/tile.Component`
-
-#### property Component ID
-Type: `core/modules/tile.ID`
-
-### type Coord
-Type: `core/modules/tile.Coord`
-
-### type PosComponent
-Type: `core/modules/tile.PosComponent`
-
-#### property PosComponent X
-Type: `core/modules/tile.Coord`
-
-#### property PosComponent Y
-Type: `core/modules/tile.Coord`
-
-#### method PosComponent Smooth
-Type: `func()`
-
-#### method PosComponent Lerp
-Type: `func(c2 core/modules/tile.PosComponent, mix32 float32) core/modules/tile.PosComponent`
-
-#### method PosComponent Aligned
-Type: `func() (coords engine/modules/grid.Coords, isAligned bool)`
-
-### type LayerComponent
-Type: `core/modules/tile.LayerComponent`
-
-#### property LayerComponent Z
-Type: `core/modules/tile.Coord`
-
-### type NameComponent
-Type: `core/modules/tile.NameComponent`
-
-#### property NameComponent Name
-Type: `string`
-
-### type BlueprintLink
-Type: `core/modules/tile.BlueprintLink`
-
-### type SizeComponent
-Type: `core/modules/tile.SizeComponent`
-
-#### property SizeComponent X
-Type: `engine/modules/grid.Coord`
-
-#### property SizeComponent Y
-Type: `engine/modules/grid.Coord`
-
-#### method SizeComponent Size
-Type: `func() (engine/modules/grid.Coord, engine/modules/grid.Coord)`
-
-### type RotComponent
-Type: `core/modules/tile.RotComponent`
-
-#### property RotComponent Radians
-Type: `float32`
-
-#### method RotComponent Smooth
-Type: `func()`
-
-#### method RotComponent Lerp
-Type: `func(c2 core/modules/tile.RotComponent, mix32 float32) core/modules/tile.RotComponent`
-
-#### method RotComponent Quat
-Type: `func() github.com/go-gl/mathgl/mgl32.Quat`
-
-### type MissingChunkEvent
-Type: `core/modules/tile.MissingChunkEvent`
-
-#### property MissingChunkEvent Coords
-Type: `engine/modules/grid.ChunkCoordsComponent`
-
-### type UnloadChunkEvent
-Type: `core/modules/tile.UnloadChunkEvent`
-
-#### property UnloadChunkEvent Coords
-Type: `engine/modules/grid.ChunkCoordsComponent`
-
-### type HoverEntityEvent
-Type: `core/modules/tile.HoverEntityEvent`
-
-#### property HoverEntityEvent Entity
-Type: `engine/modules/ecs.EntityID`
-
-#### method HoverEntityEvent ApplyEntity
-Type: `func(entity engine/modules/ecs.EntityID) any`
-
-### type ClickEntityEvent
-Type: `core/modules/tile.ClickEntityEvent`
-
-#### property ClickEntityEvent Entity
-Type: `engine/modules/ecs.EntityID`
-
-#### method ClickEntityEvent ApplyEntity
-Type: `func(entity engine/modules/ecs.EntityID) any`
-
-### type ClickBlueprintEvent
-Type: `core/modules/tile.ClickBlueprintEvent`
-
-#### property ClickBlueprintEvent Entity
-Type: `engine/modules/ecs.EntityID`
-
-## Variables
-### var ErrInvalidPosition
-Type: `error`
-error logged when grid.GetIndex returns !ok
-
-### var ErrInvalidStep
-Type: `error`
-
-### var ErrPositionAndSpeedIsRequiredToStep
-Type: `error`
-
-### var ErrBlueprintIsMissingUUID
-Type: `error`
-
-### var Tau
-Type: `untyped float`
-
-## Functions
-### func NewTile
-Type: `func(id core/modules/tile.ID) core/modules/tile.Component`
-
-### func NewPos
-Type: `func[Number golang.org/x/exp/constraints.Integer | golang.org/x/exp/constraints.Float](x Number, y Number) core/modules/tile.PosComponent`
-
-### func NewLayer
-Type: `func[Number golang.org/x/exp/constraints.Integer | golang.org/x/exp/constraints.Float](z Number) core/modules/tile.LayerComponent`
-
-### func NewName
-Type: `func(name string) core/modules/tile.NameComponent`
-
-### func NewSize
-Type: `func[Number golang.org/x/exp/constraints.Integer](x Number, y Number) core/modules/tile.SizeComponent`
-
-### func NewRot
-Type: `func(radians float32) core/modules/tile.RotComponent`
-
-### func NewMissingChunkEvent
-Type: `func(coords engine/modules/grid.ChunkCoordsComponent) core/modules/tile.MissingChunkEvent`
-
-### func NewUnloadChunkEvent
-Type: `func(coords engine/modules/grid.ChunkCoordsComponent) core/modules/tile.UnloadChunkEvent`
-
-### func NewHoverEntityEvent
-Type: `func() core/modules/tile.HoverEntityEvent`
-
-### func NewClickEntityEvent
-Type: `func() core/modules/tile.ClickEntityEvent`
-
-### func NewClickBlueprintEvent
-Type: `func(deployed engine/modules/ecs.EntityID) core/modules/tile.ClickBlueprintEvent`
-
 
 ## Dependencies
 `core/game`:
@@ -369,7 +138,6 @@ Type: `func(deployed engine/modules/ecs.EntityID) core/modules/tile.ClickBluepri
   - `core/modules/tile.BiomeAsset`
   - `core/modules/tile.Blueprint`
   - `core/modules/tile.BlueprintLink`
-  - `core/modules/tile.Component`
   - `core/modules/tile.Coord`
   - `core/modules/tile.Grid`
   - `core/modules/tile.ID`
@@ -394,6 +162,8 @@ Type: `func(deployed engine/modules/ecs.EntityID) core/modules/tile.ClickBluepri
   - `core/modules/tile.Service`
   - `core/modules/tile.Size`
   - `core/modules/tile.SizeComponent`
+  - `core/modules/tile.Tile`
+  - `core/modules/tile.TileComponent`
   - `core/modules/tile.X`
   - `core/modules/tile.Y`
   - `core/modules/tile.Z`
@@ -407,7 +177,7 @@ Type: `func(deployed engine/modules/ecs.EntityID) core/modules/tile.ClickBluepri
   - `engine/modules/assets.Service`
 
 `engine/modules/collider`:
-  - `engine/modules/collider.Component`
+  - `engine/modules/collider.Collider`
   - `engine/modules/collider.NewCollider`
 
 `engine/modules/datastructures`:
@@ -481,9 +251,9 @@ Type: `func(deployed engine/modules/ecs.EntityID) core/modules/tile.ClickBluepri
   - `engine/modules/grid/pkg.PkgT`
 
 `engine/modules/groups`:
-  - `engine/modules/groups.Component`
   - `engine/modules/groups.EmptyGroups`
   - `engine/modules/groups.Enable`
+  - `engine/modules/groups.Groups`
   - `engine/modules/groups.SharesAnyGroup`
 
 `engine/modules/inputs`:
@@ -533,11 +303,10 @@ Type: `func(deployed engine/modules/ecs.EntityID) core/modules/tile.ClickBluepri
   - `engine/modules/typeregistry/pkg.PkgT`
 
 `engine/modules/uuid`:
-  - `engine/modules/uuid.Component`
   - `engine/modules/uuid.Get`
   - `engine/modules/uuid.LinkService`
   - `engine/modules/uuid.LinkUUIDComponent`
-  - `engine/modules/uuid.New`
+  - `engine/modules/uuid.NewUUID`
   - `engine/modules/uuid.UUID`
 
 `engine/modules/uuid/pkg`:

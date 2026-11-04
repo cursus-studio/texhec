@@ -16,17 +16,17 @@ var (
 
 // engine interface
 
-type Component struct {
+type UUIDComponent struct {
 	ID UUID
 }
 
-func New(id UUID) Component {
-	return Component{id}
+func NewUUID(id UUID) UUIDComponent {
+	return UUIDComponent{id}
 }
 
 type Service interface {
 	Factory
-	Component() ecs.ComponentArray[Component]
+	UUID() ecs.ComponentArray[UUIDComponent]
 	Entity(UUID) (ecs.EntityID, bool)
 
 	// creates if doesn't have assigned uuid

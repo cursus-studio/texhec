@@ -16,12 +16,12 @@ type service struct {
 	engine.EngineWorld          `inject:""`
 	relation.Service[uuid.UUID] `inject:""`
 
-	uuidArray ecs.ComponentArray[uuid.Component]
+	uuidArray ecs.ComponentArray[uuid.UUIDComponent]
 }
 
 func NewService(c ioc.Dic) uuid.Service {
 	s := ioc.GetServices[*service](c)
-	s.uuidArray = ecs.GetComponentArray[uuid.Component](s.World())
+	s.uuidArray = ecs.GetComponentArray[uuid.UUIDComponent](s.World())
 	return s
 }
 
@@ -48,7 +48,7 @@ func (s *service) NewUUIDFromAny(seed any) uuid.UUID {
 
 //
 
-func (s *service) Component() ecs.ComponentArray[uuid.Component] { return s.uuidArray }
+func (s *service) UUID() ecs.ComponentArray[uuid.UUIDComponent] { return s.uuidArray }
 
 func (s *service) Entity(uuid uuid.UUID) (ecs.EntityID, bool) {
 	return s.Get(uuid)
@@ -59,7 +59,7 @@ func (s *service) CreateGetUUID(entity ecs.EntityID) uuid.UUID {
 		return uuid.ID
 	}
 	newUUID := s.NewUUID()
-	s.uuidArray.Set(entity, uuid.New(newUUID))
+	s.uuidArray.Set(entity, uuid.NewUUID(newUUID))
 	return newUUID
 }
 func (s *service) CreateGetEntity(uuidVal uuid.UUID) ecs.EntityID {
@@ -67,6 +67,6 @@ func (s *service) CreateGetEntity(uuidVal uuid.UUID) ecs.EntityID {
 		return entity
 	}
 	entity := s.World().NewEntity()
-	s.uuidArray.Set(entity, uuid.New(uuidVal))
+	s.uuidArray.Set(entity, uuid.NewUUID(uuidVal))
 	return entity
 }

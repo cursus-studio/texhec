@@ -43,7 +43,7 @@ func heuristic(a, b grid.Coords) int {
 func (s *service) findPath(
 	from, to grid.Coords,
 	size tile.SizeComponent,
-	obstruction obstruction.Component,
+	obstruction obstruction.ObstructionComponent,
 ) (path []grid.Coords, ok bool) {
 	r1, _ := s.CoordsRegion(from, obstruction.Obstruction)
 	r2, _ := s.CoordsRegion(to, obstruction.Obstruction)

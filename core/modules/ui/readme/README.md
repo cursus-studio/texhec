@@ -14,61 +14,6 @@ Markdown                         1              8              0             27
 SUM:                            10            128             15            625
 -------------------------------------------------------------------------------
 ```
-## Types
-### type Service
-Type: `core/modules/ui.Service`
-
-#### method Service AddBgCamera
-Type: `func(sceneParent engine/modules/ecs.EntityID) engine/modules/ecs.EntityID`
-
-#### method Service AddUICamera
-Type: `func(sceneParent engine/modules/ecs.EntityID) engine/modules/ecs.EntityID`
-
-#### method Service AnimatedBackground
-Type: `func() engine/modules/ecs.ComponentArray[core/modules/ui.AnimatedBackgroundComponent]`
-
-#### method Service CursorCamera
-Type: `func() engine/modules/ecs.ComponentArray[core/modules/ui.CursorCameraComponent]`
-
-#### method Service GameCamera
-Type: `func() engine/modules/ecs.ComponentArray[core/modules/ui.GameCameraComponent]`
-
-#### method Service HideMenu
-Type: `func()`
-removes all children
-
-#### method Service Register
-Type: `func() error`
-
-#### method Service ShowMenu
-Type: `func() (parents []engine/modules/ecs.EntityID)`
-returns parent to attach ui elements
-potentially with enter animation
-
-#### method Service UiCamera
-Type: `func() engine/modules/ecs.ComponentArray[core/modules/ui.UiCameraComponent]`
-
-### type UiCameraComponent
-Type: `core/modules/ui.UiCameraComponent`
-marker which says module relative to which element to position
-
-### type AnimatedBackgroundComponent
-Type: `core/modules/ui.AnimatedBackgroundComponent`
-
-### type CursorCameraComponent
-Type: `core/modules/ui.CursorCameraComponent`
-
-### type GameCameraComponent
-Type: `core/modules/ui.GameCameraComponent`
-
-#### property GameCameraComponent MaxChunksZoomOut
-Type: `core/modules/ui.MaxChunksZoomOut`
-
-## Functions
-### func NewGameCamera
-Type: `func(maxChunksZoomOut core/modules/ui.MaxChunksZoomOut) core/modules/ui.GameCameraComponent`
-
-
 ## Dependencies
 `core/game`:
   - `core/game.Attack`
@@ -124,7 +69,7 @@ Type: `func(maxChunksZoomOut core/modules/ui.MaxChunksZoomOut) core/modules/ui.G
   - `engine/modules/camera.ShootRay`
 
 `engine/modules/collider`:
-  - `engine/modules/collider.Component`
+  - `engine/modules/collider.Collider`
   - `engine/modules/collider.Direction`
   - `engine/modules/collider.NewCollider`
   - `engine/modules/collider.Pos`
@@ -151,9 +96,9 @@ Type: `func(maxChunksZoomOut core/modules/ui.MaxChunksZoomOut) core/modules/ui.G
   - `engine/modules/feature.NewUnlockFeatureEvent`
 
 `engine/modules/groups`:
-  - `engine/modules/groups.Component`
   - `engine/modules/groups.EmptyGroups`
   - `engine/modules/groups.Enable`
+  - `engine/modules/groups.Groups`
   - `engine/modules/groups.InheritGroups`
 
 `engine/modules/inputs`:
@@ -222,8 +167,8 @@ Type: `func(maxChunksZoomOut core/modules/ui.MaxChunksZoomOut) core/modules/ui.G
   - `engine/modules/typeregistry/pkg.PkgT`
 
 `engine/modules/uuid`:
-  - `engine/modules/uuid.Component`
-  - `engine/modules/uuid.New`
+  - `engine/modules/uuid.NewUUID`
+  - `engine/modules/uuid.UUID`
 
 ### Third Party
 - `github.com/go-gl/mathgl/mgl32`
