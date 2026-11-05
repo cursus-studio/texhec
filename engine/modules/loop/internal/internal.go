@@ -47,8 +47,10 @@ func NewService(c ioc.Dic) loop.Service {
 	})
 
 	events.Listen(s.EventsBuilder(), func(loop.TickEvent) {
-		entity := s.LastTickEntity()
-		lastTick, _ := s.lastTick.Get(entity)
+		entity, lastTick, ok := s.lastTick.GetSingleton()
+		if !ok {
+			entity = s.World().NewEntity()
+		}
 		defer s.lastTick.Set(entity, lastTick)
 		lastTick.UnixNano = time.Unix(0, lastTick.UnixNano).Add(s.TickDuration).UnixNano()
 	})
@@ -84,22 +86,8 @@ func NewService(c ioc.Dic) loop.Service {
 	return s
 }
 
-func (s *service) LastTickEntity() ecs.EntityID {
-	entities := s.lastTick.GetEntities()
-	if len(entities) == 0 {
-		entity := s.World().NewEntity()
-		comp := loop.NewLastTick(0)
-		s.lastTick.Set(entity, comp)
-		return entity
-	}
-	for _, entity := range slices.Clone(entities[1:]) {
-		s.lastTick.Remove(entity)
-	}
-	return entities[0]
-}
 func (s *service) LastTick() loop.LastTickComponent {
-	entity := s.LastTickEntity()
-	comp, _ := s.lastTick.Get(entity)
+	_, comp, _ := s.lastTick.GetSingleton()
 	return comp
 }
 
@@ -138,8 +126,10 @@ func (s *service) Configure(e loop.ConfigureEvent) {
 	s.TickProgress = now.Sub(now.Truncate(s.TickDuration))
 
 	tickTime := now.Add(-s.TickProgress)
-	entity := s.LastTickEntity()
-	lastTick, _ := s.lastTick.Get(entity)
+	entity, lastTick, ok := s.lastTick.GetSingleton()
+	if !ok {
+		entity = s.World().NewEntity()
+	}
 	defer s.lastTick.Set(entity, lastTick)
 	lastTick.UnixNano = tickTime.UnixNano()
 
@@ -151,8 +141,10 @@ func (s *service) Configure(e loop.ConfigureEvent) {
 }
 
 func (s *service) SyncToUnixNano(lastTickUnix int64) {
-	entity := s.LastTickEntity()
-	lastTick, _ := s.lastTick.Get(entity)
+	entity, lastTick, ok := s.lastTick.GetSingleton()
+	if !ok {
+		entity = s.World().NewEntity()
+	}
 	defer s.lastTick.Set(entity, lastTick)
 	lastTick.UnixNano = time.Unix(0, lastTick.UnixNano).Add(-s.TickDuration).UnixNano()
 	for s.LastTick().UnixNano-lastTickUnix != 0 {

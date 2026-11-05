@@ -8,9 +8,9 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                               3             56             21            212
+Go                               3             56             21            204
 -------------------------------------------------------------------------------
-SUM:                             3             56             21            212
+SUM:                             3             56             21            204
 -------------------------------------------------------------------------------
 ```
 ## Dependencies
@@ -23,7 +23,6 @@ SUM:                             3             56             21            212
 
 `engine/modules/ecs`:
   - `engine/modules/ecs.ComponentArray`
-  - `engine/modules/ecs.EntityID`
   - `engine/modules/ecs.GetComponentArray`
 
 `engine/modules/loop`:
@@ -36,7 +35,6 @@ SUM:                             3             56             21            212
   - `engine/modules/loop.FPS`
   - `engine/modules/loop.FrameEvent`
   - `engine/modules/loop.LastTickComponent`
-  - `engine/modules/loop.NewLastTick`
   - `engine/modules/loop.Service`
   - `engine/modules/loop.Stats`
   - `engine/modules/loop.StopEvent`
