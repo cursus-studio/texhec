@@ -2,18 +2,17 @@ package test
 
 import (
 	"core/game"
-	"core/modules/definitions"
 	"core/modules/tile"
+	"core/modules/ui"
 	corepkg "core/pkg"
 	assetspkg "engine/modules/assets/pkg"
 	"engine/modules/camera"
 	"engine/modules/ecs"
 	"engine/modules/entityregistry"
+	"engine/modules/graphics"
 	"engine/modules/grid"
-	"engine/modules/groups"
 	"engine/modules/loop"
 	"engine/modules/seed"
-	"engine/modules/transform"
 	"engine/modules/window"
 	"fmt"
 	"runtime"
@@ -32,7 +31,8 @@ type Tiles struct {
 	Mountain ecs.EntityID `path:"tiles/mountain.biome" tile:"" generate:"25"`
 }
 
-func benchmarkXbyX(b *testing.B, x int) {
+// modify this to render all these damn chunks
+func benchmarkXbyX(b *testing.B, side grid.Coord) {
 	b.Helper()
 
 	if gpu, err := ghw.GPU(); err != nil {
@@ -59,21 +59,46 @@ func benchmarkXbyX(b *testing.B, x int) {
 				w.Window().SetSize(1000, 1000)
 				gl.ClearColor(0.2, 0.3, 0.3, 1.0)
 			})
+
+			ioc.Wrap(b, func(c ioc.Dic, f graphics.Service) {
+				f.TextureArray().Wrap(func(ta graphics.TextureArray) {
+					ta.Bind()
+					defer gl.BindTexture(gl.TEXTURE_2D_ARRAY, 0)
+
+					gl.TexParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE)
+					gl.TexParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE)
+					gl.TexParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_MAG_FILTER, gl.NEAREST)
+					gl.TexParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_MIN_FILTER, gl.NEAREST)
+				})
+			})
 			ioc.Wrap(b, func(c ioc.Dic, b assetspkg.Config) { b.SetPath("../../../assets/") })
 		},
 	))
 	tilesInChunk := world.Grid().ChunkSize()
 	tilesInChunk *= tilesInChunk
-	fmt.Printf("tiles in chunk: %v\n", tilesInChunk)
+	fmt.Printf("tiles rendered: %v\n", tilesInChunk*side*side)
 
 	events.GlobalErrHandler(world.EventsBuilder(), world.Logger().Log)
 
 	errs := ecs.RegisterSystems(
-		world.Render(),
-		world.Tile(),
-		world.Batcher(),
-		world.Tile().Renderer(),
+		// update
+		world.Camera(),
+		world.Transition(),
+
 		world.Generation(),
+		world.Tile(),
+
+		// ui update
+		world.Ui(),
+		world.Settings(),
+		world.Batcher(),
+		// } (update)
+
+		// render
+		world.Render(),
+		world.Tile().Renderer(),
+		world.Render().Renderer(),
+		world.Text().Renderer(),
 	)
 	for _, err := range errs {
 		world.Logger().Log(err)
@@ -83,28 +108,34 @@ func benchmarkXbyX(b *testing.B, x int) {
 	_, err := entityregistry.GetRegistry[Tiles](world.EntityRegistry())
 	world.Logger().Log(err)
 
-	n := float32(world.Grid().ChunkSize())
-	gameCamera := world.World().NewEntity()
-	ortho := camera.NewOrtho(-1000, +1000)
-	ortho.Zoom = 10. / n
-	world.Groups().Groups().Set(gameCamera, groups.EmptyGroups().Enable(definitions.GameGroup))
-	world.Camera().Ortho().Set(gameCamera, ortho)
-	tileSize := world.Grid().GetTileSize().Size
-	cameraPos := transform.NewPos(tileSize.X()*n, tileSize.Y()*n, 0)
-	world.Transform().Pos().Set(gameCamera, cameraPos)
+	//
+
+	gameCameraEntity := world.World().NewEntity()
+	gameCamera := ui.NewGameCamera(ui.MaxChunksZoomOut(side))
+	world.Ui().GameCamera().Set(gameCameraEntity, gameCamera)
 
 	generationEntity := world.World().NewEntity()
-	world.Hierarchy().SetParent(generationEntity, gameCamera)
+	world.Hierarchy().SetParent(generationEntity, gameCameraEntity)
 	world.Seed().Seed().Set(generationEntity, seed.NewSeed(21377137))
 
-	for range x {
-		for range x {
-			events.Emit(world.Events(), tile.NewMissingChunkEvent(grid.NewChunkCoords(0, 0)))
+	for x := range gameCamera.MaxChunksZoomOut {
+		for y := range gameCamera.MaxChunksZoomOut {
+			events.Emit(world.Events(), tile.NewMissingChunkEvent(grid.NewChunkCoords(grid.Coord(x), grid.Coord(y))))
 		}
 	}
 	for _, task := range world.Batcher().Tasks() {
 		task.Perform()
 	}
+
+	world.Ui().GameCamera().Remove(gameCameraEntity)
+
+	{ // set camera to max zoom out for preview
+		cameraLimitsEntity := world.Camera().Limits().GetEntities()[0]
+		limitsComp, _ := world.Camera().Limits().Get(cameraLimitsEntity)
+		world.Camera().Limits().Set(cameraLimitsEntity, camera.NewCameraLimits(
+			limitsComp.MinZoom, limitsComp.MinZoom, limitsComp.Min, limitsComp.Max))
+	}
+
 	events.Emit(world.Events(), loop.FrameEvent{})
 	b.ResetTimer()
 	for b.Loop() {
@@ -113,4 +144,6 @@ func benchmarkXbyX(b *testing.B, x int) {
 	gl.Finish()
 }
 
-func BenchmarkRenderingChunk(b *testing.B) { benchmarkXbyX(b, 1) }
+// func BenchmarkRendering6144x6144(b *testing.B) { benchmarkXbyX(b, 6144/32) }
+func BenchmarkRendering1024x1024(b *testing.B) { benchmarkXbyX(b, 1024/32) }
+func BenchmarkRendering32x32(b *testing.B)     { benchmarkXbyX(b, 1) }
