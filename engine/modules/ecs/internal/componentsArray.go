@@ -4,6 +4,7 @@ import (
 	"engine/modules/datastructures"
 	"engine/modules/ecs/internal/ecstypes"
 	"reflect"
+	"slices"
 )
 
 // impl
@@ -130,6 +131,17 @@ func (c *componentArray[Component]) Get(entity ecstypes.EntityID) (Component, bo
 	} else {
 		return value, true
 	}
+}
+func (c *componentArray[Component]) GetSingleton() (ecstypes.EntityID, Component, bool) {
+	entities := c.GetEntities()
+	if len(entities) == 0 {
+		return 0, c.empty, false
+	}
+	for _, entity := range slices.Clone(entities[1:]) {
+		c.Remove(entity)
+	}
+	comp, ok := c.Get(entities[0])
+	return entities[0], comp, ok
 }
 
 func (c *componentArray[Component]) GetEntities() []ecstypes.EntityID {

@@ -9,9 +9,9 @@ import (
 func (s *service) Register() error {
 	s.Tile().Pos().AddDirtySet(s.dirtyEntities)
 	s.Tile().Size().AddDirtySet(s.dirtyEntities)
-	s.Obstruction().Component().AddDirtySet(s.dirtyEntities)
-	s.Obstruction().Deployed().AddDirtySet(s.dirtyEntities)
-	s.Obstruction().Grid().Chunk().BeforeGet(s.UpdateObstructionGridBeforeGet)
+	s.Obstrucion().AddDirtySet(s.dirtyEntities)
+	s.Deployed().AddDirtySet(s.dirtyEntities)
+	s.Grid().Chunk().BeforeGet(s.UpdateObstructionGridBeforeGet)
 	return nil
 }
 
@@ -21,7 +21,7 @@ func (s *service) UpdateObstructionGridBeforeGet() {
 	}
 
 	var entities []ecs.EntityID
-	recording, ok := s.Record().Entity().Stop(s.recordingID)
+	recording, ok := s.Record().Stop(s.recordingID)
 	if !ok {
 		entities = s.Obstruction().Deployed().GetEntities()
 		goto entityLoop
@@ -68,7 +68,7 @@ entityLoop:
 			continue
 		}
 		size, _ := s.Tile().Size().Get(entity)
-		obstructionComp, _ := s.Obstruction().Component().Get(entity)
+		obstructionComp, _ := s.Obstrucion().Get(entity)
 		aabb := obstruction.NewAABB(pos, size)
 		for _, coords := range aabb.Tiles {
 			data, ok := s.Obstruction().Grid().CoordsData(coords)
@@ -82,5 +82,5 @@ entityLoop:
 		}
 	}
 
-	s.recordingID = s.Record().Entity().StartBackwardsRecording(s.config)
+	s.recordingID = s.Record().StartBackwardsRecording(s.config)
 }

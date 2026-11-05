@@ -7,7 +7,7 @@ import (
 )
 
 type Service interface {
-	Component() ecs.ComponentArray[Component]
+	Collider() ecs.ComponentArray[ColliderComponent]
 
 	// todo add collision groups
 	// narrow

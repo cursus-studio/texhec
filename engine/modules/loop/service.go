@@ -22,6 +22,16 @@ func NewConfigureEvent(fps, tps int) ConfigureEvent {
 
 //
 
+type LastTickComponent struct {
+	UnixNano int64
+}
+
+func NewLastTick(unixNano int64) LastTickComponent {
+	return LastTickComponent{unixNano}
+}
+
+//
+
 // tick has fixed delta to ensure determinism
 // tick is triggered before frame as many times as many ticks passed between frames
 type TickEvent struct{ Delta time.Duration }
@@ -51,15 +61,15 @@ func NewEmitOnTickEvent(event any) EmitOnTickEvent {
 //
 
 type Service interface {
+	LastTick() LastTickComponent
+	// also re-ticks
+	SyncToUnixNano(int64)
+
 	// Starts the game loop if it isn't started.
 	// Waits until game loop stops.
 	Run(initialConfiguration ConfigureEvent)
 	Stop()                    // emits stop event
 	Configure(ConfigureEvent) // emits confugure event
-
-	// also re-ticks
-	SyncToUnixNano(int64)
-	LastTickUnixNano() int64
 
 	Stats() Stats
 

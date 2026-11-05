@@ -12,7 +12,7 @@ func TestClient(t *testing.T) {
 		t.Fatalf("\"%v\" is occupied and cannot be tested", s.Addr)
 	}
 
-	if connections := len(s.Connection().Component().GetEntities()); connections != 0 {
+	if connections := len(s.Connection().Connection().GetEntities()); connections != 0 {
 		t.Fatalf("Expected 0 connection not %v", connections)
 		return
 	}
@@ -33,10 +33,10 @@ func TestClient(t *testing.T) {
 	// ensure connection request is accepted
 	s.Poll()
 
-	if connections := len(s.Connection().Component().GetEntities()); connections != 1 {
+	if connections := len(s.Connection().Connection().GetEntities()); connections != 1 {
 		t.Fatalf("Expected 1 connection not %v", connections)
 	}
-	s.Message.ConnEntity = s.Connection().Component().GetEntities()[0]
+	s.Message.ConnEntity = s.Connection().Connection().GetEntities()[0]
 
 	if err := s.Send(connFromServer, s.Message); err != nil {
 		t.Fatalf("unexpected error sending message: %v", err)
@@ -57,7 +57,7 @@ func TestClient(t *testing.T) {
 	// ensure connection is removed
 	s.Poll()
 
-	if connections := len(s.Connection().Component().GetEntities()); connections != 0 {
+	if connections := len(s.Connection().Connection().GetEntities()); connections != 0 {
 		t.Fatalf("Expected 0 connection not %v", connections)
 	}
 }

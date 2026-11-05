@@ -31,7 +31,7 @@ func NewSetup(t *testing.T) Setup {
 }
 
 func (setup *Setup) expectGroups(entity ecs.EntityID, expectedGroups groups.GroupsComponent) {
-	groups, _ := setup.groups.Component().Get(entity)
+	groups, _ := setup.groups.Groups().Get(entity)
 	if groups != expectedGroups {
 		setup.T.Errorf("expected pos %v but has %v", expectedGroups, groups)
 	}

@@ -86,7 +86,7 @@ func (s *service) OnFrame(loop.FrameEvent) {
 	s.Transform().PivotPoint().Set(entity, transform.NewPivotPoint(1, 1, .5))
 	s.Transform().Inherit().Set(entity, transform.NewInherit(transform.RelativePos))
 	s.Transform().ParentPivotPoint().Set(entity, transform.NewParentPivotPoint(1, 1, .5))
-	s.Groups().Component().Set(entity, groups.EmptyGroups().Enable(definitions.UiGroup))
+	s.Groups().Groups().Set(entity, groups.EmptyGroups().Enable(definitions.UiGroup))
 
 	s.Text().Content().Set(entity, text.NewText(fmt.Sprintf("%d$", wallet.Money)))
 	s.Text().Break().Set(entity, text.NewBreak(text.BreakNone))

@@ -6,7 +6,7 @@ this module allows us to encode and decode golang objects.
 ```
 $ go test ./... -bench=.
 PASS
-ok  	engine/modules/codec/test	0.007s
+ok  	engine/modules/codec/test	0.015s
 ```
 ## Lines of code
 ```
@@ -19,26 +19,6 @@ Go                               6             29              3            165
 SUM:                             6             29              3            165
 -------------------------------------------------------------------------------
 ```
-## Types
-### type Service
-Type: `engine/modules/codec.Service`
-
-#### method Service Decode
-Type: `func([]byte) (any, error)`
-can return:
-ErrInvalidInput
-
-#### method Service Encode
-Type: `func(any) ([]byte, error)`
-
-## Variables
-### var ErrCannotDecodeBytes
-Type: `error`
-
-### var ErrCannotEncodeType
-Type: `error`
-
-
 ## Dependencies
 `engine`:
   - `engine.EngineWorld`

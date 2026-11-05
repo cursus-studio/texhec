@@ -18,12 +18,26 @@ type scrollSystem struct {
 func NewScrollSystem(c ioc.Dic) ecs.SystemRegister {
 	return ecs.NewSystemRegister(func() error {
 		s := ioc.GetServices[*scrollSystem](c)
-		events.Listen(s.EventsBuilder(), s.Listen)
+		events.Listen(s.EventsBuilder(), s.ListenScroll)
+		events.Listen(s.EventsBuilder(), s.ListenResize)
 		return nil
 	})
 }
 
-func (s *scrollSystem) Listen(event sdl.MouseWheelEvent) {
+func (s *scrollSystem) ListenResize(events sdl.WindowEvent) {
+	for _, cameraEntity := range s.Camera().Limits().GetEntities() {
+		ortho, ok := s.Camera().Ortho().Get(cameraEntity)
+		if !ok {
+			continue
+		}
+
+		limits, _ := s.Camera().Limits().Get(cameraEntity)
+		ortho.Zoom = max(min(ortho.Zoom, limits.MaxZoom), limits.MinZoom)
+		s.Camera().Ortho().Set(cameraEntity, ortho)
+	}
+}
+
+func (s *scrollSystem) ListenScroll(event sdl.MouseWheelEvent) {
 	if event.Y == 0 {
 		return
 	}

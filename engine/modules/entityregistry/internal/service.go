@@ -56,7 +56,7 @@ func (s *service) populateValue(v reflect.Value) error {
 			}
 			continue
 		}
-		uuidValue := s.UUID().NewUUIDFromString(string(fieldType.Tag))
+		uuidValue := s.UUID().NewDeterministicUUID([]byte(fieldType.Tag))
 		if entity, ok := s.UUID().Entity(uuidValue); ok {
 			fieldValue.Set(reflect.ValueOf(entity))
 			continue
@@ -64,7 +64,7 @@ func (s *service) populateValue(v reflect.Value) error {
 
 		entity := s.World().NewEntity()
 		fieldValue.Set(reflect.ValueOf(entity))
-		s.UUID().Component().Set(entity, uuid.New(uuidValue))
+		s.UUID().UUID().Set(entity, uuid.NewUUID(uuidValue))
 
 		for tagIndex, tagName := range s.tags {
 			tagValue, ok := fieldType.Tag.Lookup(tagName)

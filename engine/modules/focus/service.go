@@ -82,6 +82,5 @@ type Service interface {
 	DefaultFocused() ecs.ComponentArray[DefaultFocusedComponent]
 	Focused() ecs.ComponentArray[FocusedComponent]
 
-	FocusedEntity() (ecs.EntityID, bool)
 	NewFocusedBubbleEvent(event any) (BubbleEvent, bool)
 }

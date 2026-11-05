@@ -13,7 +13,7 @@ to parse is to our asset type.
 ```
 $ go test ./... -bench=.
 PASS
-ok  	engine/modules/assets/test	0.009s
+ok  	engine/modules/assets/test	0.013s
 ```
 ## Lines of code
 ```
@@ -27,62 +27,6 @@ Markdown                         1              0              0              8
 SUM:                             7             60              5            282
 -------------------------------------------------------------------------------
 ```
-## Types
-### type Service
-Type: `engine/modules/assets.Service`
-
-#### method Service Cache
-Type: `func() engine/modules/ecs.ComponentArray[engine/modules/assets.CacheComponent]`
-
-#### method Service Get
-Type: `func(engine/modules/ecs.EntityID) (engine/modules/assets.Asset, error)`
-get also caches asset
-
-#### method Service Path
-Type: `func() engine/modules/ecs.ComponentArray[engine/modules/assets.PathComponent]`
-
-#### method Service Register
-Type: `func(extension string, dispatcher func(path engine/modules/assets.PathComponent) (engine/modules/assets.Asset, error))`
-
-### type Asset
-Type: `engine/modules/assets.Asset`
-
-#### method Asset Release
-Type: `func()`
-
-### type PathComponent
-Type: `engine/modules/assets.PathComponent`
-
-#### property PathComponent Path
-Type: `string`
-
-#### method PathComponent Extension
-Type: `func() string`
-
-### type CacheComponent
-Type: `engine/modules/assets.CacheComponent`
-
-#### property CacheComponent Cache
-Type: `engine/modules/assets.Asset`
-
-## Variables
-### var ErrAssetHasDifferentType
-Type: `error`
-
-### var ErrAssetNotFound
-Type: `error`
-
-## Functions
-### func NewPath
-Type: `func(path string) engine/modules/assets.PathComponent`
-
-### func NewCache
-Type: `func(cache engine/modules/assets.Asset) engine/modules/assets.CacheComponent`
-
-### func GetAsset
-Type: `func[Asset any](assets engine/modules/assets.Service, assetID engine/modules/ecs.EntityID) (Asset, error)`
-
-
 ## Dependencies
 `engine`:
   - `engine.EngineWorld`

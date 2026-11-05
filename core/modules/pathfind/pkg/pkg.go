@@ -9,6 +9,7 @@ import (
 	"engine/modules/entityregistry"
 	featurepkg "engine/modules/feature/pkg"
 	gridpkg "engine/modules/grid/pkg"
+	netsyncpkg "engine/modules/netsync/pkg"
 	relationpkg "engine/modules/relation/pkg"
 	typeregistrypkg "engine/modules/typeregistry/pkg"
 	"fmt"
@@ -24,6 +25,10 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 		typeregistrypkg.PkgT[pathfind.StepComponent],
 
 		typeregistrypkg.PkgT[pathfind.FindPathEvent],
+
+		netsyncpkg.ComponentPkg[pathfind.TargetComponent],
+		netsyncpkg.ComponentPkg[pathfind.StepComponent],
+		netsyncpkg.EventPkg[pathfind.FindPathEvent],
 
 		relationpkg.MapRelationPkg(
 			func(w ecs.World) ecs.DirtySet {

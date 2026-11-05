@@ -66,8 +66,8 @@ func (s *service) OnTick(event loop.TickEvent) {
 			continue
 		}
 		size, _ := s.Tile().Size().Get(target.Entity)
-		reach, _ := s.Reach().Component().Get(entity)
-		obstructionComp, _ := s.Obstruction().Component().Get(entity)
+		reach, _ := s.Reach().Reach().Get(entity)
+		obstructionComp, _ := s.Obstruction().Obstrucion().Get(entity)
 		coords := s.Attack().Reach().TilesFrom(pos, size, reach)
 		for _, coord := range coords {
 			aabb := obstruction.NewAABB(tile.NewPos(coord.Coords()), size)

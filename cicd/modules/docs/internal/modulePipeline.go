@@ -61,9 +61,9 @@ func (s *service) GetModuleDocs(modulePath string) (string, error) {
 	if section, err := s.Todo(modulePath); err == nil && section != "" {
 		sections = append(sections, string(section))
 	}
-	if section, err := s.Types(modulePath); err == nil && section != "" {
-		sections = append(sections, string(section))
-	}
+	// if section, err := s.Types(modulePath); err == nil && section != "" {
+	// 	sections = append(sections, string(section))
+	// }
 	if section, err := s.Dependencies(modulePath); err == nil && section != "" {
 		sections = append(sections, string(section))
 	}

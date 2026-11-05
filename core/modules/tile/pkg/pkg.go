@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"core/game"
 	"core/modules/definitions"
+	"core/modules/obstruction"
 	"core/modules/tile"
 	"core/modules/tile/internal/tilerenderer"
 	"core/modules/tile/internal/tileservice"
@@ -12,9 +13,12 @@ import (
 	"engine/modules/ecs"
 	"engine/modules/entityregistry"
 	"engine/modules/graphics"
+	"engine/modules/grid"
 	gridpkg "engine/modules/grid/pkg"
+	netsyncpkg "engine/modules/netsync/pkg"
 	relationpkg "engine/modules/relation/pkg"
 	typeregistrypkg "engine/modules/typeregistry/pkg"
+	"engine/modules/uuid"
 	uuidpkg "engine/modules/uuid/pkg"
 	"fmt"
 	"image"
@@ -33,11 +37,11 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 		relationpkg.SpatialRelationPkg(
 			func(w ecs.World) ecs.DirtySet {
 				dirtySet := ecs.NewDirtySet()
-				ecs.GetComponentArray[tile.Component](w).AddDirtySet(dirtySet)
+				ecs.GetComponentArray[tile.TileComponent](w).AddDirtySet(dirtySet)
 				return dirtySet
 			},
 			func(w ecs.World) func(entity ecs.EntityID) (tile.ID, bool) {
-				componentArray := ecs.GetComponentArray[tile.Component](w)
+				componentArray := ecs.GetComponentArray[tile.TileComponent](w)
 				return func(entity ecs.EntityID) (tile.ID, bool) {
 					comp, ok := componentArray.Get(entity)
 					return comp.ID, ok
@@ -47,13 +51,19 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 		),
 		uuidpkg.LinkPkgT[tile.BlueprintLink],
 
-		typeregistrypkg.PkgT[tile.Component],
+		typeregistrypkg.PkgT[tile.TileComponent],
 		typeregistrypkg.PkgT[tile.PosComponent],
 		typeregistrypkg.PkgT[tile.SizeComponent],
 		typeregistrypkg.PkgT[tile.RotComponent],
 		typeregistrypkg.PkgT[tile.LayerComponent],
 
 		typeregistrypkg.PkgT[tile.NameComponent],
+
+		netsyncpkg.ComponentPkg[tile.PosComponent],
+		netsyncpkg.ComponentPkg[grid.ChunkCoordsComponent],
+		netsyncpkg.ComponentPkg[grid.ChunkComponent[tile.ID]],
+		netsyncpkg.ComponentPkg[grid.ChunkComponent[obstruction.Obstruction]],
+		netsyncpkg.ComponentPkg[uuid.LinkUUIDComponent[tile.BlueprintLink]],
 	}
 	for _, pkg := range pkgs {
 		pkg(b)
@@ -151,7 +161,7 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 		})
 		b.Register("tile", func(entity ecs.EntityID, structTagValue string) {
 			counter++
-			world.Tile().Component().Set(entity, tile.NewTile(counter))
+			world.Tile().Tile().Set(entity, tile.NewTile(counter))
 		})
 		b.Register("size", func(entity ecs.EntityID, structTagValue string) {
 			errInvalidFormat := fmt.Errorf("size should be in format \"1x1\" where first number is width and second is height")

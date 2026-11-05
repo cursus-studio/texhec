@@ -9,6 +9,7 @@ import (
 	"core/modules/fpslogger"
 	"core/modules/generation"
 	"core/modules/loading"
+	"core/modules/lobby"
 	"core/modules/obstruction"
 	"core/modules/pathfind"
 	"core/modules/player"
@@ -34,6 +35,7 @@ type GameWorld struct {
 	FpsLogger   ioc.Lazy[fpslogger.Service]   `inject:""`
 	Generation  ioc.Lazy[generation.Service]  `inject:""`
 	Loading     ioc.Lazy[loading.Service]     `inject:""`
+	Lobby       ioc.Lazy[lobby.Service]       `inject:""`
 	Obstruction ioc.Lazy[obstruction.Service] `inject:""`
 	Pathfind    ioc.Lazy[pathfind.Service]    `inject:""`
 	Player      ioc.Lazy[player.Service]      `inject:""`
@@ -43,20 +45,41 @@ type GameWorld struct {
 	Ui          ioc.Lazy[ui.Service]          `inject:""`
 }
 
-type MenuBuilder scene.Scene
-type GameBuilder scene.Scene
-type GameServerBuilder scene.Scene
-type GameClientBuilder scene.Scene
+// [PlayBuilder] [SettingsBuilder] [CreditsBuilder]
+type MainMenuBuilder scene.Scene
+
+//
+
+// [PlayConnectBuilder] [PlayGenerateBuilder] [PlayLoadBuilder]
+type PlayBuilder scene.Scene
 type SettingsBuilder scene.Scene
 type CreditsBuilder scene.Scene
 
+//
+
+// 1. set ip (set by scene)
+// 2. preview [HostForm] and [LobbyForm] (synced by connection, creates a view and removed set ip view)
+// 3. [StartGameEvent] (event creates a view)
+type PlayConnectBuilder scene.Scene
+
+// 1. [HostComponent]. preview [HostForm] and [LobbyForm]
+// 2. [StartGameEvent]
+type PlayGenerateBuilder scene.Scene
+
+// 1. [HostComponent]. preview [HostForm] and [LobbyForm]
+// 2. [StartGameEvent]
+type PlayLoadBuilder scene.Scene
+
 var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 	ioc.Wrap(b, func(c ioc.Dic, b scene.Service) {
-		b.SetScene(definitions.MenuID, scene.Scene(ioc.Get[MenuBuilder](c)))
-		b.SetScene(definitions.GameID, scene.Scene(ioc.Get[GameBuilder](c)))
-		b.SetScene(definitions.GameServerID, scene.Scene(ioc.Get[GameServerBuilder](c)))
-		b.SetScene(definitions.GameClientID, scene.Scene(ioc.Get[GameClientBuilder](c)))
+		b.SetScene(definitions.MainMenuID, scene.Scene(ioc.Get[MainMenuBuilder](c)))
+
+		b.SetScene(definitions.PlayID, scene.Scene(ioc.Get[PlayBuilder](c)))
 		b.SetScene(definitions.SettingsID, scene.Scene(ioc.Get[SettingsBuilder](c)))
 		b.SetScene(definitions.CreditsID, scene.Scene(ioc.Get[CreditsBuilder](c)))
+
+		b.SetScene(definitions.PlayConnectID, scene.Scene(ioc.Get[PlayConnectBuilder](c)))
+		b.SetScene(definitions.PlayGenerateID, scene.Scene(ioc.Get[PlayGenerateBuilder](c)))
+		// b.SetScene(definitions.PlayLoadID, scene.Scene(ioc.Get[PlayLoadBuilder](c)))
 	})
 })

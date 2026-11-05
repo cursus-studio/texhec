@@ -108,12 +108,12 @@ func (s *textRenderer) ListenRender(render rendersys.RenderEvent) {
 
 	// render layouts
 	s.program.Bind()
-	cameraGroups, _ := s.Groups().Component().Get(render.Camera)
+	cameraGroups, _ := s.Groups().Groups().Get(render.Camera)
 	cameraMatrix := s.Camera().Mat4(render.Camera)
 
 	for _, entity := range s.layoutsBatches.GetIndices() {
 		entityColor, _ := s.Text().Color().Get(entity)
-		entityGroups, _ := s.Groups().Component().Get(entity)
+		entityGroups, _ := s.Groups().Groups().Get(entity)
 		if !cameraGroups.SharesAnyGroup(entityGroups) {
 			continue
 		}

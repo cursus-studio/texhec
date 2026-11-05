@@ -2,9 +2,11 @@ package tilesystem
 
 import (
 	"core/game"
+	"core/modules/definitions"
 	"core/modules/tile"
 	"engine/modules/collider"
 	"engine/modules/ecs"
+	"engine/modules/groups"
 	"engine/modules/inputs"
 	"engine/modules/render"
 	"engine/modules/transform"
@@ -76,7 +78,7 @@ func (s *system) OnTilePosSizeRotUpsert(entity ecs.EntityID) {
 
 // all objects have it including shadow/placeholder objects
 func (s *system) OnLinkUpsert(entity ecs.EntityID) {
-	worldEntity, ok := s.Seed().WorldSeed()
+	worldEntity, _, ok := s.Seed().Seed().GetSingleton()
 	if !ok {
 		return
 	}
@@ -84,12 +86,12 @@ func (s *system) OnLinkUpsert(entity ecs.EntityID) {
 	if !ok {
 		return
 	}
-	uuid, ok := s.UUID().Component().Get(entity)
+	uuid, ok := s.UUID().UUID().Get(entity)
 	s.Prototype().CloneTo(linkEntity, entity)
 	if ok {
-		s.UUID().Component().Set(entity, uuid)
+		s.UUID().UUID().Set(entity, uuid)
 	} else {
-		s.UUID().Component().Remove(entity)
+		s.UUID().UUID().Remove(entity)
 	}
 
 	s.Hierarchy().SetParent(entity, worldEntity)
@@ -98,7 +100,7 @@ func (s *system) OnLinkUpsert(entity ecs.EntityID) {
 	s.Render().Mesh().Set(entity, render.NewMesh(s.Definitions().Assets().SquareMesh))
 	s.Render().Texture().Set(entity, render.NewTexture(linkEntity))
 
-	s.Groups().InheritGroups(entity)
+	s.Groups().Groups().Set(entity, groups.EmptyGroups().Enable(definitions.GameGroup))
 }
 
 // this is for deployed objects
@@ -107,9 +109,9 @@ func (s *system) OnObstructionUpsert(entity ecs.EntityID) {
 	if !ok {
 		return
 	}
-	s.UUID().Component().Set(entity, uuid.New(deployed.UUID))
+	s.UUID().UUID().Set(entity, uuid.NewUUID(deployed.UUID))
 	s.Inputs().Stack().Set(entity, inputs.StackComponent{})
-	s.Collider().Component().Set(entity, collider.NewCollider(s.Definitions().Assets().SquareCollider))
+	s.Collider().Collider().Set(entity, collider.NewCollider(s.Definitions().Assets().SquareCollider))
 	s.Inputs().Hover().Set(entity, inputs.NewHoverComponent(tile.NewHoverEntityEvent()))
 	s.Inputs().LeftClick().Set(entity, inputs.NewLeftClick(tile.NewClickEntityEvent()))
 }

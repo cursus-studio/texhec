@@ -13,7 +13,7 @@ type parentComponent struct{}
 
 type service struct {
 	engine.EngineWorld `inject:""`
-	hierarchyArray     ecs.ComponentArray[hierarchy.Component]
+	hierarchyArray     ecs.ComponentArray[hierarchy.ParentComponent]
 	parentArray        ecs.ComponentArray[parentComponent]
 
 	parents      datastructures.SparseArray[ecs.EntityID, ecs.EntityID]
@@ -24,7 +24,7 @@ type service struct {
 func NewService(c ioc.Dic) hierarchy.Service {
 	s := ioc.GetServices[*service](c)
 
-	s.hierarchyArray = ecs.GetComponentArray[hierarchy.Component](s.World())
+	s.hierarchyArray = ecs.GetComponentArray[hierarchy.ParentComponent](s.World())
 	s.parentArray = ecs.GetComponentArray[parentComponent](s.World())
 	s.parents = datastructures.NewSparseArray[ecs.EntityID, ecs.EntityID]()
 	s.children = datastructures.NewSparseArray[ecs.EntityID, datastructures.SparseSet[ecs.EntityID]]()
@@ -37,13 +37,13 @@ func NewService(c ioc.Dic) hierarchy.Service {
 	return s
 }
 
-func (s *service) Component() ecs.ComponentArray[hierarchy.Component] {
+func (s *service) Parent() ecs.ComponentArray[hierarchy.ParentComponent] {
 	return s.hierarchyArray
 }
 
 func (s *service) IsChildOf(child ecs.EntityID, wantedParent ecs.EntityID) bool {
 	for {
-		parent, ok := s.Parent(child)
+		parent, ok := s.GetParent(child)
 		if !ok {
 			return false
 		}
@@ -58,7 +58,7 @@ func (s *service) SetParent(child ecs.EntityID, parent ecs.EntityID) {
 	s.hierarchyArray.Set(child, hierarchy.NewParent(parent))
 }
 
-func (s *service) Parent(child ecs.EntityID) (ecs.EntityID, bool) {
+func (s *service) GetParent(child ecs.EntityID) (ecs.EntityID, bool) {
 	comp, ok := s.hierarchyArray.Get(child)
 	return comp.Parent, ok
 }

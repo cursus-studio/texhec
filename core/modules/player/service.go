@@ -4,20 +4,28 @@ import (
 	"core/modules/actions"
 	"engine/modules/connection"
 	"engine/modules/ecs"
+	"engine/modules/relation"
 	"engine/modules/uuid"
+	"errors"
+
+	"github.com/go-gl/mathgl/mgl32"
+)
+
+var (
+	ErrNameCollision = errors.New("player:name collision")
 )
 
 // marks that player is performing a move
-type PlayerComponent struct {
-	Name string
-}
+type NameComponent struct{ Name string }
+type ColorComponent struct{ Color mgl32.Vec3 }
 type PlayerUUIDComponent struct {
 	UUID uuid.UUID
 }
 type ActingPlayerComponent struct{}
 type ActingConnectionComponent struct{ Connection ecs.EntityID }
 
-func NewPlayer(name string) PlayerComponent            { return PlayerComponent{name} }
+func NewName(name string) NameComponent                { return NameComponent{name} }
+func NewColor(color mgl32.Vec3) ColorComponent         { return ColorComponent{color} }
 func NewPlayerUUID(uuid uuid.UUID) PlayerUUIDComponent { return PlayerUUIDComponent{uuid} }
 func NewActingPlayer() ActingPlayerComponent           { return ActingPlayerComponent{} }
 func NewActiongConnection(entity ecs.EntityID) ActingConnectionComponent {
@@ -39,12 +47,16 @@ func NewAssignActingPlayerDTO(playerUUID uuid.UUID) AssignActingPlayerDTO {
 
 //
 
-type PlayersConnectionComponent struct{}
+type PlayersConnectionComponent struct {
+	AcceptNewConnections bool
+}
 type PlayerConnectionComponent struct {
 	Player uuid.UUID
 }
 
-func NewPlayersConnection() PlayersConnectionComponent { return PlayersConnectionComponent{} }
+func NewPlayersConnection(acceptnewConnections bool) PlayersConnectionComponent {
+	return PlayersConnectionComponent{acceptnewConnections}
+}
 func NewPlayerConnection(player uuid.UUID) PlayerConnectionComponent {
 	return PlayerConnectionComponent{player}
 }
@@ -52,8 +64,10 @@ func NewPlayerConnection(player uuid.UUID) PlayerConnectionComponent {
 //
 
 type Service interface {
+	NameRelation() relation.Service[NameComponent]
 	// attached to player
-	Player() ecs.ComponentArray[PlayerComponent]
+	Name() ecs.ComponentArray[NameComponent]
+	Color() ecs.ComponentArray[ColorComponent]
 	PlayerUUID() ecs.ComponentArray[PlayerUUIDComponent]
 	ActingPlayer() ecs.ComponentArray[ActingPlayerComponent]
 	ActingConnection() ecs.ComponentArray[ActingConnectionComponent]

@@ -22,11 +22,13 @@ import (
 
 var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 	ioc.Register(b, func(c ioc.Dic) game.CreditsBuilder {
+		world := ioc.Get[game.GameWorld](c)
 		return func(sceneParent ecs.EntityID) {
-			world := ioc.Get[game.GameWorld](c)
+			world.Ui().AddBgCamera(sceneParent)
+
 			cameraEntity := world.World().NewEntity()
 			world.Hierarchy().SetParent(cameraEntity, sceneParent)
-			world.Groups().Component().Set(cameraEntity, groups.DefaultGroups())
+			world.Groups().Groups().Set(cameraEntity, groups.DefaultGroups())
 			world.Camera().Ortho().Set(cameraEntity, camera.NewOrtho(-1000, +1000))
 			world.Ui().CursorCamera().Set(cameraEntity, ui.CursorCameraComponent{})
 
@@ -41,10 +43,6 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 			world.Text().Content().Set(signature, text.NewText("credits"))
 			world.Text().FontSize().Set(signature, text.NewFontSize(32))
 			world.Text().Break().Set(signature, text.NewBreak(text.BreakNone))
-
-			background := world.World().NewEntity()
-			world.Hierarchy().SetParent(background, cameraEntity)
-			world.Ui().AnimatedBackground().Set(background, ui.AnimatedBackgroundComponent{})
 
 			buttonArea := world.World().NewEntity()
 			world.Hierarchy().SetParent(buttonArea, cameraEntity)
@@ -61,7 +59,7 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 			world.Render().Mesh().Set(draggable, render.NewMesh(world.Definitions().Assets().SquareMesh))
 			world.Render().Texture().Set(draggable, render.NewTexture(world.Definitions().Hud().Cursor))
 
-			world.Collider().Component().Set(draggable, collider.NewCollider(world.Definitions().Assets().SquareCollider))
+			world.Collider().Collider().Set(draggable, collider.NewCollider(world.Definitions().Assets().SquareCollider))
 			world.Inputs().Drag().Set(draggable, inputs.NewDragComponent(drag.NewDraggable(draggable)))
 
 			world.Text().Content().Set(draggable, text.NewText(strings.ToUpper("drag me")))
@@ -74,7 +72,7 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 			world.Transform().Size().Set(btn, transform.NewSize(500, 100, 1))
 			world.Transform().ParentPivotPoint().Set(btn, transform.NewParentPivotPoint(.5, 0, .5))
 
-			world.Inputs().LeftClick().Set(btn, inputs.NewLeftClick(scene.NewChangeSceneEvent(definitions.MenuID)))
+			world.Inputs().LeftClick().Set(btn, inputs.NewLeftClick(scene.NewChangeSceneEvent(definitions.MainMenuID)))
 			world.Text().Content().Set(btn, text.NewText(strings.ToUpper("return to menu")))
 		}
 	})

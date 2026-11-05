@@ -88,7 +88,7 @@ func (s *system) ListenRender(parent ecs.EntityID) error {
 		{"SHOT", audio.NewPlayEvent(definitions.EffectChannel, s.Definitions().Assets().ExampleAudio)},
 		{"SHOT2", audio.NewPlayEvent(definitions.EffectChannel, s.Definitions().Assets().ExampleAudio)},
 		{"SHOT3", audio.NewPlayEvent(definitions.EffectChannel, s.Definitions().Assets().ExampleAudio)},
-		{"QUIT", scene.NewChangeSceneEvent(definitions.MenuID)},
+		{"QUIT", scene.NewChangeSceneEvent(definitions.MainMenuID)},
 	}
 
 	for _, btn := range btns {

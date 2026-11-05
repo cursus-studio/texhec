@@ -17,7 +17,7 @@ type service struct {
 	game.GameWorld         `inject:""`
 	ObstructionGridService grid.ServiceT[obstruction.Obstruction] `inject:""`
 
-	obstruction ecs.ComponentArray[obstruction.Component]
+	obstruction ecs.ComponentArray[obstruction.ObstructionComponent]
 	deployed    ecs.ComponentArray[obstruction.DeployedComponent]
 
 	// system
@@ -27,7 +27,7 @@ type service struct {
 
 	posGetter         record.ComponentGetter[tile.PosComponent]
 	sizeGetter        record.ComponentGetter[tile.SizeComponent]
-	obstructionGetter record.ComponentGetter[obstruction.Component]
+	obstructionGetter record.ComponentGetter[obstruction.ObstructionComponent]
 	deployedGetter    record.ComponentGetter[obstruction.DeployedComponent]
 	obstructions      datastructures.SparseSet[obstruction.Obstruction]
 }
@@ -35,7 +35,7 @@ type service struct {
 func NewService(c ioc.Dic) obstruction.Service {
 	s := ioc.GetServices[*service](c)
 
-	s.obstruction = ecs.GetComponentArray[obstruction.Component](s.World())
+	s.obstruction = ecs.GetComponentArray[obstruction.ObstructionComponent](s.World())
 	s.deployed = ecs.GetComponentArray[obstruction.DeployedComponent](s.World())
 
 	s.obstruction.SetEmpty(obstruction.NewObstruction(definitions.LowlandObstruction))
@@ -46,21 +46,23 @@ func NewService(c ioc.Dic) obstruction.Service {
 
 	s.posGetter = record.AddToConfig[tile.PosComponent](s.config)
 	s.sizeGetter = record.AddToConfig[tile.SizeComponent](s.config)
-	s.obstructionGetter = record.AddToConfig[obstruction.Component](s.config)
+	s.obstructionGetter = record.AddToConfig[obstruction.ObstructionComponent](s.config)
 	s.deployedGetter = record.AddToConfig[obstruction.DeployedComponent](s.config)
 	s.obstructions = datastructures.NewSparseSet[obstruction.Obstruction]()
 
 	return s
 }
 
-func (s *service) Grid() grid.ServiceT[obstruction.Obstruction]                { return s.ObstructionGridService }
-func (s *service) Component() ecs.ComponentArray[obstruction.Component]        { return s.obstruction }
+func (s *service) Grid() grid.ServiceT[obstruction.Obstruction] { return s.ObstructionGridService }
+func (s *service) Obstrucion() ecs.ComponentArray[obstruction.ObstructionComponent] {
+	return s.obstruction
+}
 func (s *service) Deployed() ecs.ComponentArray[obstruction.DeployedComponent] { return s.deployed }
 
 func (s *service) Collisions(aabb obstruction.AABB, obstruction obstruction.Obstruction) []grid.Coords {
 	var collisions []grid.Coords
 	for _, coords := range aabb.Tiles {
-		data, ok := s.Obstruction().Grid().CoordsData(coords)
+		data, ok := s.Grid().CoordsData(coords)
 		if !ok {
 			collisions = append(collisions, coords)
 			continue

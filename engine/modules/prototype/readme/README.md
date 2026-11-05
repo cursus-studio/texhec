@@ -11,12 +11,12 @@ goos: linux
 goarch: amd64
 pkg: engine/modules/prototype/test
 cpu: Intel(R) Core(TM) i5-8350U CPU @ 1.70GHz
-BenchmarkClone1-8         	  567273	      2123 ns/op
-BenchmarkClone2-8         	  553878	      2056 ns/op
-BenchmarkManual1Clone-8   	48528190	        24.75 ns/op
-BenchmarkManual2Clone-8   	41206909	        29.87 ns/op
+BenchmarkClone1-8         	  561829	      2106 ns/op
+BenchmarkClone2-8         	  547321	      2149 ns/op
+BenchmarkManual1Clone-8   	54823017	        21.72 ns/op
+BenchmarkManual2Clone-8   	45089587	        26.40 ns/op
 PASS
-ok  	engine/modules/prototype/test	4.795s
+ok  	engine/modules/prototype/test	4.769s
 ```
 ## Lines of code
 ```
@@ -29,30 +29,6 @@ Go                               7             46              4            194
 SUM:                             7             46              4            194
 -------------------------------------------------------------------------------
 ```
-## Types
-### type Service
-Type: `engine/modules/prototype.Service`
-
-#### method Service Clone
-Type: `func(cloned engine/modules/ecs.EntityID) engine/modules/ecs.EntityID`
-
-#### method Service CloneTo
-Type: `func(cloned engine/modules/ecs.EntityID, clone engine/modules/ecs.EntityID)`
-
-### type CloneEvent
-Type: `engine/modules/prototype.CloneEvent`
-
-#### property CloneEvent Cloned
-Type: `engine/modules/ecs.EntityID`
-
-#### property CloneEvent Clone
-Type: `engine/modules/ecs.EntityID`
-
-## Functions
-### func NewCloneEvent
-Type: `func(cloned engine/modules/ecs.EntityID, clone engine/modules/ecs.EntityID) engine/modules/prototype.CloneEvent`
-
-
 ## Dependencies
 `engine`:
   - `engine.EngineWorld`

@@ -4,8 +4,8 @@ import (
 	"engine/modules/ecs"
 )
 
-type Component struct{ ID ecs.EntityID }
+type ColliderComponent struct{ ID ecs.EntityID }
 
-func NewCollider(id ecs.EntityID) Component {
-	return Component{ID: id}
+func NewCollider(id ecs.EntityID) ColliderComponent {
+	return ColliderComponent{ID: id}
 }

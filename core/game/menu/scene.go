@@ -19,12 +19,14 @@ import (
 )
 
 var Pkg = ioc.NewPkg(func(b ioc.Builder) {
-	ioc.Register(b, func(c ioc.Dic) game.MenuBuilder {
+	ioc.Register(b, func(c ioc.Dic) game.MainMenuBuilder {
+		world := ioc.Get[game.GameWorld](c)
 		return func(sceneParent ecs.EntityID) {
-			world := ioc.Get[game.GameWorld](c)
+			world.Ui().AddBgCamera(sceneParent)
+
 			cameraEntity := world.World().NewEntity()
 			world.Hierarchy().SetParent(cameraEntity, sceneParent)
-			world.Groups().Component().Set(cameraEntity, groups.DefaultGroups())
+			world.Groups().Groups().Set(cameraEntity, groups.DefaultGroups())
 			world.Camera().Ortho().Set(cameraEntity, camera.NewOrtho(-1000, 1000))
 			world.Ui().CursorCamera().Set(cameraEntity, ui.CursorCameraComponent{})
 
@@ -36,16 +38,9 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 			world.Transform().Inherit().Set(signature, transform.NewInherit(transform.RelativePos))
 			world.Transform().ParentPivotPoint().Set(signature, transform.NewParentPivotPoint(0, 0, .5))
 
-			world.Text().Content().Set(signature, text.NewText("menu"))
+			world.Text().Content().Set(signature, text.NewText("main menu"))
 			world.Text().FontSize().Set(signature, text.NewFontSize(32))
 			world.Text().Break().Set(signature, text.NewBreak(text.BreakNone))
-
-			background := world.World().NewEntity()
-			world.Hierarchy().SetParent(background, cameraEntity)
-			world.Transform().Pos().Set(background, transform.NewPos(0, 0, 1))
-			world.Transform().PivotPoint().Set(background, transform.NewPivotPoint(.5, .5, 0))
-			world.Transform().ParentPivotPoint().Set(background, transform.NewParentPivotPoint(.5, .5, 0))
-			world.Ui().AnimatedBackground().Set(background, ui.AnimatedBackgroundComponent{})
 
 			buttonArea := world.World().NewEntity()
 			world.Hierarchy().SetParent(buttonArea, cameraEntity)
@@ -62,9 +57,7 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 				OnClick any
 			}
 			buttons := []Button{
-				{"play", scene.NewChangeSceneEvent(definitions.GameID)},
-				{"server", scene.NewChangeSceneEvent(definitions.GameServerID)},
-				{"client", scene.NewChangeSceneEvent(definitions.GameClientID)},
+				{"play", scene.NewChangeSceneEvent(definitions.PlayID)},
 				{"settings", scene.NewChangeSceneEvent(definitions.SettingsID)},
 				{"credits", scene.NewChangeSceneEvent(definitions.CreditsID)},
 				{"exit", loop.NewStopEvent()},
@@ -77,9 +70,6 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 				world.Inputs().LeftClick().Set(btn, inputs.NewLeftClick(button.OnClick))
 				world.Text().Content().Set(btn, text.NewText(strings.ToUpper(button.Text)))
 			}
-
-			input := world.Prototype().Clone(world.Definitions().Hud().Input)
-			world.Hierarchy().SetParent(input, buttonArea)
 		}
 	})
 })

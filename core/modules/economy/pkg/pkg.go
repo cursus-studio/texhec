@@ -6,6 +6,7 @@ import (
 	"core/modules/economy/internal"
 	"engine/modules/ecs"
 	"engine/modules/entityregistry"
+	netsyncpkg "engine/modules/netsync/pkg"
 	typeregistrypkg "engine/modules/typeregistry/pkg"
 	"errors"
 	"fmt"
@@ -19,6 +20,8 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 		typeregistrypkg.PkgT[economy.WalletComponent],
 		typeregistrypkg.PkgT[economy.FactoryComponent],
 		typeregistrypkg.PkgT[economy.CostComponent],
+
+		netsyncpkg.ComponentPkg[economy.WalletComponent],
 	}
 	for _, pkg := range pkgs {
 		pkg(b)

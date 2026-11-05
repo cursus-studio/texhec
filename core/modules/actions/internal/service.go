@@ -34,17 +34,16 @@ type service struct {
 func NewService(c ioc.Dic) actions.Service {
 	s := ioc.GetServices[*service](c)
 
-	s.Entity().Render().OnUpsert(s.OnOwnUpsert)
-	s.Own().Render().OnUpsert(s.OnOwnUpsert)
-
-	s.IsEnemy().Render().OnUpsert(s.OnEnemyUpsert)
-	s.CanBeAttacked().Render().OnUpsert(s.OnEnemyUpsert)
+	s.Entity().Render().OnUpsert(s.OnEntityUpsert)
+	s.Own().Render().OnUpsert(s.OnEntityUpsert)
+	s.IsEnemy().Render().OnUpsert(s.OnEntityUpsert)
+	s.CanBeAttacked().Render().OnUpsert(s.OnEntityUpsert)
 
 	s.CanMoveTo().Render().OnUpsert(s.OnCanMoveToUpsert)
 	s.CanDeployAt().Render().OnUpsert(s.OnCanDeployAtUpsert)
 
-	s.CanDeploy().Render().OnUpsert(s.OnCanDeployUpsert)
-	s.CanAttack().Render().OnUpsert(s.OnCanAttackUpsert)
+	s.CanDeploy().Render().OnUpsert(s.OnReachUpsert)
+	s.CanAttack().Render().OnUpsert(s.OnReachUpsert)
 
 	s.CanDeployBlueprint().Render().OnUpsert(s.OnCanDeployBlueprintUpsert)
 	events.Listen(s.EventsBuilder(), s.OnBlueprintClick)

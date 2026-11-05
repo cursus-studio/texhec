@@ -13,14 +13,6 @@ Go                               3             15              2             56
 SUM:                             3             15              2             56
 -------------------------------------------------------------------------------
 ```
-## Types
-### type Service
-Type: `core/modules/fpslogger.Service`
-
-#### method Service Register
-Type: `func() error`
-
-
 ## Dependencies
 `core/game`:
   - `core/game.GameWorld`

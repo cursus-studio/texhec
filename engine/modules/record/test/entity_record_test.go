@@ -15,13 +15,13 @@ func TestEntityForwardRecording(t *testing.T) {
 	entity := s.World.NewEntity()
 	s.ComponentArray.Set(entity, initialState)
 
-	recordingID := s.Record.Entity().StartRecording(s.Config)
+	recordingID := s.Record.StartRecording(s.Config)
 
 	s.ComponentArray.Set(entity, middleState)
-	s.Record.Entity().Stop(s.Record.Entity().StartRecording(s.Config))
+	s.Record.Stop(s.Record.StartRecording(s.Config))
 	s.ComponentArray.Set(entity, finalState)
 
-	recording, ok := s.Record.Entity().Stop(recordingID)
+	recording, ok := s.Record.Stop(recordingID)
 	if !ok {
 		t.Error("expected recording to exist")
 		return
@@ -50,13 +50,13 @@ func TestEntityBackwardsRecording(t *testing.T) {
 	entity := s.World.NewEntity()
 	s.ComponentArray.Set(entity, initialState)
 
-	recordingID := s.Record.Entity().StartBackwardsRecording(s.Config)
+	recordingID := s.Record.StartBackwardsRecording(s.Config)
 
 	s.ComponentArray.Set(entity, middleState)
-	s.Record.Entity().Stop(s.Record.Entity().StartRecording(s.Config))
+	s.Record.Stop(s.Record.StartRecording(s.Config))
 	s.ComponentArray.Set(entity, finalState)
 
-	recording, ok := s.Record.Entity().Stop(recordingID)
+	recording, ok := s.Record.Stop(recordingID)
 	if !ok {
 		t.Error("expected recording to exist")
 		return
@@ -73,7 +73,7 @@ func TestEntityBackwardsRecording(t *testing.T) {
 		return
 	}
 
-	s.Record.Entity().Apply(s.Config, recording)
+	s.Record.Apply(s.Config, recording)
 
 	if c, ok := s.ComponentArray.Get(entity); !ok || c != initialState {
 		t.Errorf("unexpected component on apply. expected %v %t got %v %t", initialState, true, c, ok)
@@ -85,10 +85,12 @@ func TestEntityGetState(t *testing.T) {
 	s := NewSetup()
 	initialState := Component{Counter: 6}
 
+	recordingID := s.Record.StartRecording(s.Config)
+
 	entity := s.World.NewEntity()
 	s.ComponentArray.Set(entity, initialState)
 
-	recording := s.Record.Entity().GetState(s.Config)
+	recording, _ := s.Record.Stop(recordingID)
 
 	if len(recording.Entities.GetIndices()) != 1 || recording.Entities.GetIndices()[0] != entity {
 		t.Errorf("expected array entities to be only entity [%v] not %v", entity, recording.Entities.GetIndices())
@@ -102,7 +104,7 @@ func TestEntityGetState(t *testing.T) {
 	}
 
 	s.ComponentArray.Remove(entity)
-	s.Record.Entity().Apply(s.Config, recording)
+	s.Record.Apply(s.Config, recording)
 	if ei := s.ComponentArray.GetEntities(); len(ei) != 1 {
 		t.Errorf("unexpected entities on apply. expected one entity got %v", ei)
 		return

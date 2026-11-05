@@ -3,6 +3,7 @@ package looppkg
 import (
 	"engine/modules/loop"
 	"engine/modules/loop/internal"
+	netsyncpkg "engine/modules/netsync/pkg"
 	typeregistrypkg "engine/modules/typeregistry/pkg"
 
 	"github.com/ogiusek/ioc/v2"
@@ -22,5 +23,9 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 
 	ioc.Register(b, func(c ioc.Dic) loop.Service {
 		return internal.NewService(c)
+	})
+
+	ioc.Wrap(b, func(c ioc.Dic, config netsyncpkg.Config) {
+		netsyncpkg.AddTickEvent[loop.TickEvent](config)
 	})
 })

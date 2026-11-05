@@ -209,26 +209,26 @@ goos: linux
 goarch: amd64
 pkg: engine/modules/ecs/test
 cpu: Intel(R) Core(TM) i5-8350U CPU @ 1.70GHz
-BenchmarkDirtySetDirty-8               	160513174	         8.075 ns/op
-BenchmarkDirtySetDirtyInversed-8       	167146785	         7.220 ns/op
-BenchmarkDirtySetGet-8                 	611955620	         1.959 ns/op
-BenchmarkDirtySetDirtyAndGet-8         	176902047	         6.762 ns/op
-BenchmarkDirtySetDirtyAnd1Get-8        	138310168	         8.165 ns/op
-Benchmark4SavesWith7Systems-8          	27729162	        41.88 ns/op
-Benchmark16SavesWith7Systems-8         	 6969740	       173.1 ns/op
-Benchmark256SavesWith7Systems-8        	  424767	      2647 ns/op
-Benchmark4096SavesWith7Systems-8       	   28411	     42168 ns/op
-Benchmark16384SavesWith7Systems-8      	    7152	    170510 ns/op
-Benchmark65536SavesWith7Systems-8      	    1773	    680793 ns/op
-Benchmark262144SavesWith7Systems-8     	     444	   2695479 ns/op
-BenchmarkGetComponent-8                	82155733	        14.46 ns/op
-BenchmarkCreateComponents-8            	41404602	        30.42 ns/op
-BenchmarkUpdateComponents-8            	100000000	        10.66 ns/op
-BenchmarkRemoveComponent-8             	79541179	        14.87 ns/op
-BenchmarkRemoveEntityWithComponent-8   	36219610	        34.56 ns/op
-BenchmarkRemoveEntity-8                	69246945	        18.02 ns/op
+BenchmarkDirtySetDirty-8               	160960870	         7.432 ns/op
+BenchmarkDirtySetDirtyInversed-8       	169464208	         6.810 ns/op
+BenchmarkDirtySetGet-8                 	473988548	         2.533 ns/op
+BenchmarkDirtySetDirtyAndGet-8         	174952015	         6.852 ns/op
+BenchmarkDirtySetDirtyAnd1Get-8        	147201364	         8.143 ns/op
+Benchmark4SavesWith7Systems-8          	28698441	        37.96 ns/op
+Benchmark16SavesWith7Systems-8         	 7674924	       158.3 ns/op
+Benchmark256SavesWith7Systems-8        	  494852	      2375 ns/op
+Benchmark4096SavesWith7Systems-8       	   31630	     37944 ns/op
+Benchmark16384SavesWith7Systems-8      	    7890	    151916 ns/op
+Benchmark65536SavesWith7Systems-8      	    1976	    610258 ns/op
+Benchmark262144SavesWith7Systems-8     	     493	   2443931 ns/op
+BenchmarkGetComponent-8                	82264460	        14.59 ns/op
+BenchmarkCreateComponents-8            	45491002	        26.08 ns/op
+BenchmarkUpdateComponents-8            	100000000	        10.08 ns/op
+BenchmarkRemoveComponent-8             	81012231	        15.05 ns/op
+BenchmarkRemoveEntityWithComponent-8   	36389577	        33.11 ns/op
+BenchmarkRemoveEntity-8                	60956052	        17.37 ns/op
 PASS
-ok  	engine/modules/ecs/test	37.589s
+ok  	engine/modules/ecs/test	36.592s
 ```
 ## Lines of code
 ```
@@ -236,194 +236,12 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                              13            225             46            944
+Go                              13            226             46            960
 Markdown                         1             44              0            157
 -------------------------------------------------------------------------------
-SUM:                            14            269             46           1101
+SUM:                            14            270             46           1117
 -------------------------------------------------------------------------------
 ```
-## Types
-### type ApplyEntityEvent
-Type: `engine/modules/ecs.ApplyEntityEvent`
-event wrappers
-
-#### method ApplyEntityEvent ApplyEntity
-Type: `func(entityEmitting engine/modules/ecs.EntityID) (event any)`
-
-### type SystemRegister
-Type: `engine/modules/ecs.SystemRegister`
-systems
-
-#### method SystemRegister Register
-Type: `func() error`
-
-### type DirtySet
-Type: `engine/modules/ecs.DirtySet`
-dirty set
-
-#### method DirtySet Clear
-Type: `func()`
-
-#### method DirtySet Dirty
-Type: `func(engine/modules/ecs/internal/ecstypes.EntityID)`
-
-#### method DirtySet Get
-Type: `func() []engine/modules/ecs/internal/ecstypes.EntityID`
-
-#### method DirtySet Ok
-Type: `func() bool`
-
-#### method DirtySet Release
-Type: `func()`
-
-### type Component
-Type: `engine/modules/ecs.Component`
-
-### type World
-Type: `engine/modules/ecs.World`
-
-#### method World EnsureExists
-Type: `func(engine/modules/ecs/internal/ecstypes.EntityID)`
-
-#### method World EntityExists
-Type: `func(engine/modules/ecs/internal/ecstypes.EntityID) bool`
-
-#### method World GetArrByComp
-Type: `func(engine/modules/ecs/internal/ecstypes.Component) (engine/modules/ecs/internal/ecstypes.AnyComponentArray, bool)`
-
-#### method World GetEntities
-Type: `func() []engine/modules/ecs/internal/ecstypes.EntityID`
-
-#### method World NewEntity
-Type: `func() engine/modules/ecs/internal/ecstypes.EntityID`
-
-#### method World OnArrayInitialization
-Type: `func(func(engine/modules/ecs/internal/ecstypes.AnyComponentArray))`
-
-#### method World RemoveEntity
-Type: `func(engine/modules/ecs/internal/ecstypes.EntityID)`
-
-#### method World WarmUp
-Type: `func()`
-
-### type AnyComponentArray
-Type: `engine/modules/ecs.AnyComponentArray`
-component array
-
-#### method AnyComponentArray AddDependency
-Type: `func(engine/modules/ecs/internal/ecstypes.AnyComponentArray)`
-
-#### method AnyComponentArray AddDirtySet
-Type: `func(engine/modules/ecs/internal/ecstypes.DirtySet)`
-
-#### method AnyComponentArray BeforeGet
-Type: `func(engine/modules/ecs/internal/ecstypes.BeforeGet)`
-
-#### method AnyComponentArray CommitBulk
-Type: `func()`
-
-#### method AnyComponentArray ComponentType
-Type: `func() reflect.Type`
-
-#### method AnyComponentArray GetAny
-Type: `func(entity engine/modules/ecs/internal/ecstypes.EntityID) (engine/modules/ecs/internal/ecstypes.Component, bool)`
-
-#### method AnyComponentArray GetEntities
-Type: `func() []engine/modules/ecs/internal/ecstypes.EntityID`
-
-#### method AnyComponentArray OnMod
-Type: `func(engine/modules/ecs/internal/ecstypes.OnMod)`
-
-#### method AnyComponentArray OnRemove
-Type: `func(engine/modules/ecs/internal/ecstypes.OnMod)`
-
-#### method AnyComponentArray OnUpsert
-Type: `func(engine/modules/ecs/internal/ecstypes.OnMod)`
-
-#### method AnyComponentArray PrepareBulk
-Type: `func()`
-
-#### method AnyComponentArray Remove
-Type: `func(engine/modules/ecs/internal/ecstypes.EntityID)`
-
-#### method AnyComponentArray SetAny
-Type: `func(engine/modules/ecs/internal/ecstypes.EntityID, engine/modules/ecs/internal/ecstypes.Component)`
-
-### type ComponentArray
-Type: `engine/modules/ecs.ComponentArray[Component any]`
-
-#### method ComponentArray AddDependency
-Type: `func(engine/modules/ecs/internal/ecstypes.AnyComponentArray)`
-
-#### method ComponentArray AddDirtySet
-Type: `func(engine/modules/ecs/internal/ecstypes.DirtySet)`
-
-#### method ComponentArray BeforeGet
-Type: `func(engine/modules/ecs/internal/ecstypes.BeforeGet)`
-
-#### method ComponentArray CommitBulk
-Type: `func()`
-
-#### method ComponentArray ComponentType
-Type: `func() reflect.Type`
-
-#### method ComponentArray Get
-Type: `func(entity engine/modules/ecs/internal/ecstypes.EntityID) (Component, bool)`
-
-#### method ComponentArray GetAny
-Type: `func(entity engine/modules/ecs/internal/ecstypes.EntityID) (engine/modules/ecs/internal/ecstypes.Component, bool)`
-
-#### method ComponentArray GetEmpty
-Type: `func() Component`
-
-#### method ComponentArray GetEntities
-Type: `func() []engine/modules/ecs/internal/ecstypes.EntityID`
-
-#### method ComponentArray OnMod
-Type: `func(engine/modules/ecs/internal/ecstypes.OnMod)`
-
-#### method ComponentArray OnRemove
-Type: `func(engine/modules/ecs/internal/ecstypes.OnMod)`
-
-#### method ComponentArray OnUpsert
-Type: `func(engine/modules/ecs/internal/ecstypes.OnMod)`
-
-#### method ComponentArray PrepareBulk
-Type: `func()`
-
-#### method ComponentArray Remove
-Type: `func(engine/modules/ecs/internal/ecstypes.EntityID)`
-
-#### method ComponentArray Set
-Type: `func(engine/modules/ecs/internal/ecstypes.EntityID, Component)`
-
-#### method ComponentArray SetAny
-Type: `func(engine/modules/ecs/internal/ecstypes.EntityID, engine/modules/ecs/internal/ecstypes.Component)`
-
-#### method ComponentArray SetEmpty
-Type: `func(Component)`
-
-## Functions
-### func NewSystemRegister
-Type: `func(l func() error) engine/modules/ecs.SystemRegister`
-
-### func RegisterSystems
-Type: `func(systems ...engine/modules/ecs.SystemRegister) []error`
-
-### func ComponentComparator
-Type: `func[Component any]() func(c1 Component, c2 Component) bool`
-
-### func NewDirtySet
-Type: `func() engine/modules/ecs.DirtySet`
-
-### func NewWorld
-Type: `func() engine/modules/ecs.World`
-
-### func GetComponentArray
-Type: `func[Component any](world engine/modules/ecs.World) engine/modules/ecs.ComponentArray[Component]`
-component array getter
-
-
 ## Dependencies
 `engine/modules/datastructures`:
   - `engine/modules/datastructures.NewSet`

@@ -6,7 +6,7 @@ defines how obstruction map is stored and accessed
 ```
 $ go test ./... -bench=.
 PASS
-ok  	core/modules/obstruction/test	0.013s
+ok  	core/modules/obstruction/test	0.037s
 ```
 ## Lines of code
 ```
@@ -14,80 +14,11 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                               6             55             11            313
+Go                               6             56             11            317
 -------------------------------------------------------------------------------
-SUM:                             6             55             11            313
+SUM:                             6             56             11            317
 -------------------------------------------------------------------------------
 ```
-## Types
-### type Service
-Type: `core/modules/obstruction.Service`
-
-#### method Service Collisions
-Type: `func(core/modules/obstruction.AABB, core/modules/obstruction.Obstruction) []engine/modules/grid.Coords`
-
-#### method Service Component
-Type: `func() engine/modules/ecs.ComponentArray[core/modules/obstruction.Component]`
-
-#### method Service Deployed
-Type: `func() engine/modules/ecs.ComponentArray[core/modules/obstruction.DeployedComponent]`
-
-#### method Service Grid
-Type: `func() engine/modules/grid.ServiceT[core/modules/obstruction.Obstruction]`
-
-#### method Service Obstructions
-Type: `func() engine/modules/datastructures.SparseSet[core/modules/obstruction.Obstruction]`
-
-#### method Service Register
-Type: `func() error`
-
-### type Obstruction
-Type: `core/modules/obstruction.Obstruction`
-mask of ways in which tile is obstructed
-
-### type Component
-Type: `core/modules/obstruction.Component`
-Defines how entity or tile obstruct
-On obstruction collision new entity is removed and warning is logged
-
-#### property Component Obstruction
-Type: `core/modules/obstruction.Obstruction`
-
-### type AABB
-Type: `core/modules/obstruction.AABB`
-aabb on grid
-
-#### property AABB Coords
-Type: `core/modules/tile.PosComponent`
-
-#### property AABB Size
-Type: `core/modules/tile.SizeComponent`
-
-#### property AABB Tiles
-Type: `[]engine/modules/grid.Coords`
-
-### type DeployedComponent
-Type: `core/modules/obstruction.DeployedComponent`
-adding and removing deployed component modifies obstruction component
-
-#### property DeployedComponent UUID
-Type: `engine/modules/uuid.UUID`
-
-## Variables
-### var ErrPositionIsOccupied
-Type: `error`
-
-## Functions
-### func NewObstruction
-Type: `func(obstruction core/modules/obstruction.Obstruction) core/modules/obstruction.Component`
-
-### func NewAABB
-Type: `func(coords core/modules/tile.PosComponent, size core/modules/tile.SizeComponent) core/modules/obstruction.AABB`
-
-### func NewDeployed
-Type: `func(uuid engine/modules/uuid.UUID) core/modules/obstruction.DeployedComponent`
-
-
 ## Dependencies
 `core/game`:
   - `core/game.GameWorld`
@@ -101,13 +32,14 @@ Type: `func(uuid engine/modules/uuid.UUID) core/modules/obstruction.DeployedComp
 
 `core/modules/obstruction`:
   - `core/modules/obstruction.AABB`
-  - `core/modules/obstruction.Component`
   - `core/modules/obstruction.Deployed`
   - `core/modules/obstruction.DeployedComponent`
   - `core/modules/obstruction.Grid`
   - `core/modules/obstruction.NewAABB`
   - `core/modules/obstruction.NewObstruction`
+  - `core/modules/obstruction.Obstrucion`
   - `core/modules/obstruction.Obstruction`
+  - `core/modules/obstruction.ObstructionComponent`
   - `core/modules/obstruction.Service`
   - `core/modules/obstruction.Tiles`
 
@@ -156,12 +88,14 @@ Type: `func(uuid engine/modules/uuid.UUID) core/modules/obstruction.DeployedComp
 `engine/modules/grid/pkg`:
   - `engine/modules/grid/pkg.PkgT`
 
+`engine/modules/netsync/pkg`:
+  - `engine/modules/netsync/pkg.ComponentPkg`
+
 `engine/modules/record`:
   - `engine/modules/record.AddToConfig`
   - `engine/modules/record.ComponentGetter`
   - `engine/modules/record.Config`
   - `engine/modules/record.Entities`
-  - `engine/modules/record.Entity`
   - `engine/modules/record.NewConfig`
   - `engine/modules/record.RecordingID`
   - `engine/modules/record.StartBackwardsRecording`

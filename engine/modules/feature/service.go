@@ -148,9 +148,9 @@ func (c InteractionsComponent) Equal(other InteractionsComponent) bool {
 }
 
 type InteractionsService interface {
+	InteractionsListeners() ecs.ComponentArrayListeners
 	Interactions() InteractionsComponent
 	AllFields(InteractionsComponent) AllFields
-	OnInteractionsMod(func(ecs.EntityID))
 
 	SubmitInteraction(field any)
 	PreviewInteraction(field any)

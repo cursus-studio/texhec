@@ -8,48 +8,12 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                               8             96             14            486
+Go                               9            120             15            598
 Markdown                         1              8              0             27
 -------------------------------------------------------------------------------
-SUM:                             9            104             14            513
+SUM:                            10            128             15            625
 -------------------------------------------------------------------------------
 ```
-## Types
-### type Service
-Type: `core/modules/ui.Service`
-
-#### method Service AnimatedBackground
-Type: `func() engine/modules/ecs.ComponentArray[core/modules/ui.AnimatedBackgroundComponent]`
-
-#### method Service CursorCamera
-Type: `func() engine/modules/ecs.ComponentArray[core/modules/ui.CursorCameraComponent]`
-
-#### method Service HideMenu
-Type: `func()`
-removes all children
-
-#### method Service Register
-Type: `func() error`
-
-#### method Service ShowMenu
-Type: `func() (parents []engine/modules/ecs.EntityID)`
-returns parent to attach ui elements
-potentially with enter animation
-
-#### method Service UiCamera
-Type: `func() engine/modules/ecs.ComponentArray[core/modules/ui.UiCameraComponent]`
-
-### type UiCameraComponent
-Type: `core/modules/ui.UiCameraComponent`
-marker which says module relative to which element to position
-
-### type AnimatedBackgroundComponent
-Type: `core/modules/ui.AnimatedBackgroundComponent`
-
-### type CursorCameraComponent
-Type: `core/modules/ui.CursorCameraComponent`
-
-
 ## Dependencies
 `core/game`:
   - `core/game.Attack`
@@ -58,20 +22,54 @@ Type: `core/modules/ui.CursorCameraComponent`
   - `core/game.Tile`
   - `core/game.Ui`
 
+`core/modules/definitions`:
+  - `core/modules/definitions.Assets`
+  - `core/modules/definitions.Background1`
+  - `core/modules/definitions.Background2`
+  - `core/modules/definitions.BgGroup`
+  - `core/modules/definitions.Blank`
+  - `core/modules/definitions.Btn`
+  - `core/modules/definitions.Cursor`
+  - `core/modules/definitions.GameGroup`
+  - `core/modules/definitions.Hud`
+  - `core/modules/definitions.Settings`
+  - `core/modules/definitions.SquareCollider`
+  - `core/modules/definitions.SquareMesh`
+  - `core/modules/definitions.Text`
+  - `core/modules/definitions.UiGroup`
+
+`core/modules/settings`:
+  - `core/modules/settings.EnterSettingsEvent`
+
 `core/modules/ui`:
   - `core/modules/ui.AnimatedBackground`
   - `core/modules/ui.AnimatedBackgroundComponent`
   - `core/modules/ui.CursorCamera`
   - `core/modules/ui.CursorCameraComponent`
+  - `core/modules/ui.GameCameraComponent`
+  - `core/modules/ui.MaxChunksZoomOut`
   - `core/modules/ui.Service`
   - `core/modules/ui.ShowMenu`
+  - `core/modules/ui.UiCamera`
   - `core/modules/ui.UiCameraComponent`
 
 `engine/modules/assets`:
   - `engine/modules/assets.GetAsset`
 
+`engine/modules/camera`:
+  - `engine/modules/camera.GetViewport`
+  - `engine/modules/camera.Limits`
+  - `engine/modules/camera.Mobile`
+  - `engine/modules/camera.NewCameraLimits`
+  - `engine/modules/camera.NewMobileCamera`
+  - `engine/modules/camera.NewOrtho`
+  - `engine/modules/camera.NewPriority`
+  - `engine/modules/camera.Ortho`
+  - `engine/modules/camera.Priority`
+  - `engine/modules/camera.ShootRay`
+
 `engine/modules/collider`:
-  - `engine/modules/collider.Component`
+  - `engine/modules/collider.Collider`
   - `engine/modules/collider.Direction`
   - `engine/modules/collider.NewCollider`
   - `engine/modules/collider.Pos`
@@ -92,10 +90,16 @@ Type: `core/modules/ui.CursorCameraComponent`
 `engine/modules/feature`:
   - `engine/modules/feature.Features`
   - `engine/modules/feature.Interactions`
+  - `engine/modules/feature.InteractionsListeners`
   - `engine/modules/feature.LockFeatureEvent`
   - `engine/modules/feature.NewLockFeatureEvent`
   - `engine/modules/feature.NewUnlockFeatureEvent`
-  - `engine/modules/feature.OnInteractionsMod`
+
+`engine/modules/groups`:
+  - `engine/modules/groups.EmptyGroups`
+  - `engine/modules/groups.Enable`
+  - `engine/modules/groups.Groups`
+  - `engine/modules/groups.InheritGroups`
 
 `engine/modules/inputs`:
   - `engine/modules/inputs.KeepSelected`
@@ -114,6 +118,9 @@ Type: `core/modules/ui.CursorCameraComponent`
 
 `engine/modules/loop`:
   - `engine/modules/loop.FrameEvent`
+
+`engine/modules/netsync/pkg`:
+  - `engine/modules/netsync/pkg.ComponentPkg`
 
 `engine/modules/render`:
   - `engine/modules/render.Color`
@@ -158,6 +165,10 @@ Type: `core/modules/ui.CursorCameraComponent`
 
 `engine/modules/typeregistry/pkg`:
   - `engine/modules/typeregistry/pkg.PkgT`
+
+`engine/modules/uuid`:
+  - `engine/modules/uuid.NewUUID`
+  - `engine/modules/uuid.UUID`
 
 ### Third Party
 - `github.com/go-gl/mathgl/mgl32`

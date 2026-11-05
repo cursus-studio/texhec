@@ -21,16 +21,16 @@ func getDeadline() time.Time {
 }
 
 func (s *service) OnFrame(loop.FrameEvent) {
-	for _, entity := range slices.Clone(s.Connection().Listener().GetEntities()) {
+	for _, entity := range slices.Clone(s.Listener().GetEntities()) {
 		s.PollListeners(entity)
 	}
-	for _, entity := range slices.Clone(s.Connection().Component().GetEntities()) {
+	for _, entity := range slices.Clone(s.Connection().GetEntities()) {
 		s.PollMessages(entity)
 	}
 }
 
 func (s *service) PollListeners(entity ecs.EntityID) {
-	listener, ok := s.Connection().Listener().Get(entity)
+	listener, ok := s.Listener().Get(entity)
 	if !ok {
 		return
 	}
@@ -42,8 +42,8 @@ func (s *service) PollListeners(entity ecs.EntityID) {
 			clientEntity := s.World().NewEntity()
 			s.Hierarchy().SetParent(clientEntity, entity)
 			conn := s.AddConnection(clientEntity, rawConn)
-			uuid := uuid.New(s.UUID().NewUUID())
-			s.UUID().Component().Set(clientEntity, uuid)
+			uuid := uuid.NewUUID(s.UUID().NewUUID())
+			s.UUID().UUID().Set(clientEntity, uuid)
 			_ = conn.Conn().Send(connection.NewSetConnUUIDDTO(uuid.ID))
 			continue
 		}

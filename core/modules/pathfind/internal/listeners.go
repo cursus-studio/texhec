@@ -20,7 +20,7 @@ func (s *service) FindPath(e pathfind.FindPathEvent) {
 	coords := grid.Coords(e.Coords)
 	to := tile.NewPos(coords.Coords())
 	size, _ := s.Tile().Size().Get(entity)
-	obstruction, _ := s.Obstruction().Component().Get(entity)
+	obstruction, _ := s.Obstruction().Obstrucion().Get(entity)
 	fromCoords, _ := from.Aligned()
 	toCoords, _ := to.Aligned()
 	if _, ok := s.findPath(fromCoords, toCoords, size, obstruction); !ok {

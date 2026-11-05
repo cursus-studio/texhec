@@ -9,11 +9,11 @@ goos: linux
 goarch: amd64
 pkg: core/modules/reach/test
 cpu: Intel(R) Core(TM) i5-8350U CPU @ 1.70GHz
-BenchmarkDist-8                 	100000000	        10.09 ns/op
-Benchmark4TilesWithinReach-8    	12352659	        97.42 ns/op
-Benchmark12TilesWithinReach-8   	 8318912	       142.2 ns/op
+BenchmarkDist-8                 	120405490	         9.943 ns/op
+Benchmark4TilesWithinReach-8    	12106434	        98.63 ns/op
+Benchmark12TilesWithinReach-8   	 8124784	       142.1 ns/op
 PASS
-ok  	core/modules/reach/test	3.423s
+ok  	core/modules/reach/test	3.575s
 ```
 ## Lines of code
 ```
@@ -30,49 +30,6 @@ SUM:                            10             60             27            384
 ## TODO
 Define circle shader for reach
 
-## Types
-### type Service
-Type: `core/modules/reach.Service`
-
-#### method Service Distance
-Type: `func(from core/modules/tile.PosComponent, fromSize core/modules/tile.SizeComponent, to core/modules/tile.PosComponent, toSize core/modules/tile.SizeComponent) core/modules/tile.Coord`
-returns rounded up distance between nearest coordinates
-
-### type ServiceT
-Type: `core/modules/reach.ServiceT[FeatureComponent any]`
-
-#### method ServiceT Component
-Type: `func() engine/modules/ecs.ComponentArray[core/modules/reach.Component[FeatureComponent]]`
-
-#### method ServiceT Reaches
-Type: `func(fromEntity engine/modules/ecs.EntityID, toEntity engine/modules/ecs.EntityID) bool`
-
-#### method ServiceT ReachesCoords
-Type: `func(fromEntity engine/modules/ecs.EntityID, toPos core/modules/tile.PosComponent, toSize core/modules/tile.SizeComponent) bool`
-
-#### method ServiceT TilesFrom
-Type: `func(core/modules/tile.PosComponent, core/modules/tile.SizeComponent, core/modules/reach.Component[FeatureComponent]) []engine/modules/grid.Coords`
-
-#### method ServiceT TilesWithinReach
-Type: `func(entity engine/modules/ecs.EntityID) []engine/modules/grid.Coords`
-
-### type Component
-Type: `core/modules/reach.Component[FeatureComponent any]`
-stores reach distance squared (squared to avoid Sqrt)
-
-#### property Component Reach
-Type: `engine/modules/grid.Coord`
-
-## Variables
-### var ErrOutsideOfReach
-Type: `error`
-
-## Functions
-### func NewReach
-Type: `func[FeatureComponent any](reach engine/modules/grid.Coord) core/modules/reach.Component[FeatureComponent]`
-takes square of distnace
-
-
 ## Dependencies
 `core/game`:
   - `core/game.GameWorld`
@@ -80,10 +37,10 @@ takes square of distnace
   - `core/game.Tile`
 
 `core/modules/reach`:
-  - `core/modules/reach.Component`
   - `core/modules/reach.Distance`
   - `core/modules/reach.NewReach`
   - `core/modules/reach.Reach`
+  - `core/modules/reach.ReachComponent`
   - `core/modules/reach.Service`
   - `core/modules/reach.ServiceT`
   - `core/modules/reach.TilesWithinReach`

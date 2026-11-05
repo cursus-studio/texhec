@@ -10,129 +10,31 @@ Backwards recording can be used to record state before to smoothen changes.
 Forwards recording returns state on recording end.\
 Forwards recording can be used to record changes to send them somewhere else to replicate them.
 
+## Benchmarks
+```
+$ go test ./... -bench=.
+goos: linux
+goarch: amd64
+pkg: engine/modules/record/test
+cpu: Intel(R) Core(TM) i5-8350U CPU @ 1.70GHz
+BenchmarkEntityRecording-8                  	  333686	      3678 ns/op
+BenchmarkCreateNEntitiesEntityRecording-8   	10982412	       128.6 ns/op
+BenchmarkEntityApply1Entities-8             	 7506349	       155.2 ns/op
+BenchmarkEntityApply10Entities-8            	 3837843	       310.2 ns/op
+PASS
+ok  	engine/modules/record/test	6.100s
+```
 ## Lines of code
 ```
 github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                              12            204             44           1035
+Go                               8            126             34            631
 -------------------------------------------------------------------------------
-SUM:                            12            204             44           1035
+SUM:                             8            126             34            631
 -------------------------------------------------------------------------------
 ```
-## Types
-### type Service
-Type: `engine/modules/record.Service`
-
-#### method Service Entity
-Type: `func() engine/modules/record.EntityKeyedRecorder`
-
-#### method Service UUID
-Type: `func() engine/modules/record.UUIDKeyedRecorder`
-
-### type EntityKeyedRecorder
-Type: `engine/modules/record.EntityKeyedRecorder`
-
-#### method EntityKeyedRecorder Apply
-Type: `func(engine/modules/record.Config, ...engine/modules/record.Recording)`
-
-#### method EntityKeyedRecorder GetState
-Type: `func(engine/modules/record.Config) engine/modules/record.Recording`
-gets state as finished recording
-
-#### method EntityKeyedRecorder StartBackwardsRecording
-Type: `func(engine/modules/record.Config) engine/modules/record.RecordingID`
-starts opened recording (opened recording is recorded until stopped)
-applying it rewinds state.
-
-#### method EntityKeyedRecorder StartRecording
-Type: `func(engine/modules/record.Config) engine/modules/record.RecordingID`
-starts opened recording (opened recording is recorded until stopped)
-applying it on previous state will create current state
-
-#### method EntityKeyedRecorder Stop
-Type: `func(engine/modules/record.RecordingID) (r engine/modules/record.Recording, ok bool)`
-finishes recording if open (false is returned if recording isn't started)
-
-### type UUIDKeyedRecorder
-Type: `engine/modules/record.UUIDKeyedRecorder`
-
-#### method UUIDKeyedRecorder Apply
-Type: `func(engine/modules/record.Config, ...engine/modules/record.UUIDRecording)`
-
-#### method UUIDKeyedRecorder GetState
-Type: `func(engine/modules/record.Config) engine/modules/record.UUIDRecording`
-gets state as finished recording
-
-#### method UUIDKeyedRecorder StartBackwardsRecording
-Type: `func(engine/modules/record.Config) engine/modules/record.UUIDRecordingID`
-starts opened recording (opened recording is recorded until stopped)
-applying it rewinds state.
-
-#### method UUIDKeyedRecorder StartRecording
-Type: `func(engine/modules/record.Config) engine/modules/record.UUIDRecordingID`
-starts opened recording (opened recording is recorded until stopped)
-applying it on previous state will create current state
-
-#### method UUIDKeyedRecorder Stop
-Type: `func(engine/modules/record.UUIDRecordingID) (r engine/modules/record.UUIDRecording, ok bool)`
-finishes recording if open (false is returned if recording isn't started)
-
-### type Config
-Type: `engine/modules/record.Config`
-
-#### property Config ComponentsOrder
-Type: `*[]reflect.Type`
-
-#### property Config ComponentsIndices
-Type: `map[reflect.Type]int`
-
-#### property Config RecordedComponents
-Type: `map[reflect.Type]func(engine/modules/ecs.World) engine/modules/ecs.AnyComponentArray`
-
-#### property Config InheritZero
-Type: `map[reflect.Type]func(engine/modules/ecs.World)`
-
-### type ComponentGetter
-Type: `engine/modules/record.ComponentGetter[Component any]`
-
-### type RecordingID
-Type: `engine/modules/record.RecordingID`
-
-### type Recording
-Type: `engine/modules/record.Recording`
-recording cannot be encoded
-
-#### property Recording Entities
-Type: `engine/modules/datastructures.SparseArray[engine/modules/ecs.EntityID, []any]`
-[componentArrayLayoutID]any component
-nil for removed entity
-
-### type UUIDRecordingID
-Type: `engine/modules/record.UUIDRecordingID`
-
-### type UUIDRecording
-Type: `engine/modules/record.UUIDRecording`
-
-#### property UUIDRecording EntitiesOrder
-Type: `[]engine/modules/uuid.UUID`
-map[componentUUID][componentArrayLayoutID]any component
-map[componentUUID]nil is when entity is removed
-
-#### property UUIDRecording Entities
-Type: `map[engine/modules/uuid.UUID][]any`
-[componentArrayLayoutID]any component
-nil for removed entity
-
-## Functions
-### func NewConfig
-Type: `func() engine/modules/record.Config`
-
-### func AddToConfig
-Type: `func[Component any](config engine/modules/record.Config) engine/modules/record.ComponentGetter[Component]`
-
-
 ## Dependencies
 `engine`:
   - `engine.EngineWorld`
@@ -166,29 +68,26 @@ Type: `func[Component any](config engine/modules/record.Config) engine/modules/r
   - `engine/modules/record.ComponentsOrder`
   - `engine/modules/record.Config`
   - `engine/modules/record.Entities`
-  - `engine/modules/record.EntitiesOrder`
-  - `engine/modules/record.EntityKeyedRecorder`
+  - `engine/modules/record.EntityComponents`
   - `engine/modules/record.InheritZero`
+  - `engine/modules/record.Keys`
   - `engine/modules/record.NewConfig`
   - `engine/modules/record.RecordedComponents`
   - `engine/modules/record.Recording`
   - `engine/modules/record.RecordingID`
   - `engine/modules/record.Service`
-  - `engine/modules/record.UUIDKeyedRecorder`
-  - `engine/modules/record.UUIDRecording`
-  - `engine/modules/record.UUIDRecordingID`
+  - `engine/modules/record.UUIDState`
+  - `engine/modules/record.Values`
 
 `engine/modules/typeregistry/pkg`:
   - `engine/modules/typeregistry/pkg.PkgT`
 
 `engine/modules/uuid`:
-  - `engine/modules/uuid.Component`
-  - `engine/modules/uuid.Entity`
-  - `engine/modules/uuid.ID`
-  - `engine/modules/uuid.New`
-  - `engine/modules/uuid.NewUUID`
+  - `engine/modules/uuid.CreateGetEntity`
+  - `engine/modules/uuid.CreateGetUUID`
   - `engine/modules/uuid.Service`
   - `engine/modules/uuid.UUID`
+  - `engine/modules/uuid.UUIDComponent`
 
 `engine/pkg`:
   - `engine/pkg.Pkg`

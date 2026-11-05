@@ -18,4 +18,7 @@ type Service interface {
 	GetMousePos() MousePos
 	Window() *sdl.Window
 	Ctx() sdl.GLContext
+
+	GetClipboard() (string, bool)
+	SetClipboard(string)
 }

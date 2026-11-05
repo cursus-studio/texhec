@@ -77,7 +77,7 @@ func NewSetConnUUIDDTO(uuid uuid.UUID) SetConnUUIDDTO {
 
 type Service interface {
 	ecs.SystemRegister
-	Component() ecs.ComponentArray[ConnectionComponent]
+	Connection() ecs.ComponentArray[ConnectionComponent]
 	Listener() ecs.ComponentArray[ListenerComponent]
 
 	Host(entity ecs.EntityID, addr string) error

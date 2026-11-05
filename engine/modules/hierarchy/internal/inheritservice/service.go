@@ -34,7 +34,7 @@ func (s *service[Component]) Inherit() ecs.ComponentArray[hierarchy.InheritCompo
 
 func (s *service[Component]) calculateGroup(entity ecs.EntityID) (Component, bool) {
 	def := s.component.GetEmpty()
-	parent, ok := s.Hierarchy().Parent(entity)
+	parent, ok := s.Hierarchy().GetParent(entity)
 	if !ok {
 		return def, false
 	}
@@ -53,7 +53,7 @@ type save[Component any] struct {
 func (s *service[Component]) Init() {
 	dirtySet := ecs.NewDirtySet()
 	s.component.AddDependency(s.inherit)
-	s.component.AddDependency(s.Hierarchy().Component())
+	s.component.AddDependency(s.Hierarchy().Parent())
 
 	s.component.AddDirtySet(dirtySet)
 

@@ -11,6 +11,7 @@ import (
 	"engine/modules/entityregistry"
 	featurepkg "engine/modules/feature/pkg"
 	"engine/modules/grid"
+	netsyncpkg "engine/modules/netsync/pkg"
 	typeregistrypkg "engine/modules/typeregistry/pkg"
 	"errors"
 	"fmt"
@@ -23,9 +24,14 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 	pkgs := []ioc.Pkg{
 		typeregistrypkg.PkgT[deploy.DeployEvent],
 		typeregistrypkg.PkgT[deploy.DestroyEvent],
+		typeregistrypkg.PkgT[deploy.DeployCounterComponent],
 		typeregistrypkg.PkgT[internal.BoughtComponent],
 
-		reachpkg.PkgT[deploy.Component],
+		netsyncpkg.ComponentPkg[deploy.DeployCounterComponent],
+		netsyncpkg.EventPkg[deploy.DeployEvent],
+		netsyncpkg.EventPkg[deploy.DestroyEvent],
+
+		reachpkg.PkgT[deploy.DeployComponent],
 	}
 	for _, pkg := range pkgs {
 		pkg(b)
@@ -59,8 +65,8 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 				return
 			}
 			reachVal *= reachVal
-			reachComp := reach.NewReach[deploy.Component](grid.Coord(reachVal))
-			world.Deploy().Reach().Component().Set(entity, reachComp)
+			reachComp := reach.NewReach[deploy.DeployComponent](grid.Coord(reachVal))
+			world.Deploy().Reach().Reach().Set(entity, reachComp)
 		})
 	})
 })

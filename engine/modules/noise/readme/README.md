@@ -7,7 +7,7 @@ extremely useful for generating maps
 ```
 $ go test ./... -bench=.
 PASS
-ok  	engine/modules/noise/test	1.252s
+ok  	engine/modules/noise/test	1.050s
 ```
 ## Lines of code
 ```
@@ -24,51 +24,6 @@ SUM:                            13             96             70            437
 ## TODO
 Improve noise flatenning bell curve.
 Avoid equasions for flattening and instead create 10k sample slice to create a bell curve.
-
-## Types
-### type Service
-Type: `engine/modules/noise.Service`
-
-#### method Service NewNoise
-Type: `func(engine/modules/seed.Seed) engine/modules/noise.Factory`
-
-### type Noise
-Type: `engine/modules/noise.Noise`
-
-#### method Noise Read
-Type: `func(github.com/go-gl/mathgl/mgl64.Vec2) float64`
-returns normalized value <0, 1> with uniform distribution
-
-### type Factory
-Type: `engine/modules/noise.Factory`
-each layer offset is `mgl64.Vec2{math.Pi, math.Pi}.Mul(layerIndex)`
-
-#### method Factory AddPerlin
-Type: `func(...engine/modules/noise.LayerConfig) engine/modules/noise.Factory`
-
-#### method Factory AddValue
-Type: `func(...engine/modules/noise.LayerConfig) engine/modules/noise.Factory`
-
-#### method Factory Build
-Type: `func() engine/modules/noise.Noise`
-
-### type LayerConfig
-Type: `engine/modules/noise.LayerConfig`
-
-#### property LayerConfig CellSize
-Type: `float64`
-default size is 1
-
-#### property LayerConfig Weight
-Type: `float64`
-
-## Functions
-### func NewNoise
-Type: `func(fn func(github.com/go-gl/mathgl/mgl64.Vec2) float64) engine/modules/noise.Noise`
-
-### func NewLayer
-Type: `func(cellSize float64, weight float64) engine/modules/noise.LayerConfig`
-
 
 ## Dependencies
 `engine`:
