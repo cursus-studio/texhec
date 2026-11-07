@@ -13,47 +13,6 @@ Go                               3             24              7             83
 SUM:                             3             24              7             83
 -------------------------------------------------------------------------------
 ```
-## Types
-### type Service
-Type: `engine/modules/scene.Service`
-
-#### method Service Scene
-Type: `func() engine/modules/ecs.EntityID`
-
-#### method Service SetScene
-Type: `func(engine/modules/scene.ID, engine/modules/scene.Scene)`
-
-### type System
-Type: `engine/modules/scene.System`
-change scene should happen after rendering
-because on scene change everything is cleaned up
-
-#### method System Register
-Type: `func() error`
-
-### type ChangeSceneEvent
-Type: `engine/modules/scene.ChangeSceneEvent`
-
-#### property ChangeSceneEvent ID
-Type: `engine/modules/scene.ID`
-
-### type ID
-Type: `engine/modules/scene.ID`
-
-#### property ID ID
-Type: `string`
-
-### type Scene
-Type: `engine/modules/scene.Scene`
-
-## Functions
-### func NewChangeSceneEvent
-Type: `func(ID engine/modules/scene.ID) engine/modules/scene.ChangeSceneEvent`
-
-### func NewSceneId
-Type: `func(id string) engine/modules/scene.ID`
-
-
 ## Dependencies
 `engine`:
   - `engine.EngineWorld`

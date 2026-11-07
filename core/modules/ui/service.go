@@ -12,12 +12,28 @@ type CursorCameraComponent struct{}
 
 //
 
+type MaxChunksZoomOut = uint32
+type GameCameraComponent struct {
+	MaxChunksZoomOut MaxChunksZoomOut
+}
+
+func NewGameCamera(maxChunksZoomOut MaxChunksZoomOut) GameCameraComponent {
+	return GameCameraComponent{maxChunksZoomOut}
+}
+
+//
+
 type Service interface {
 	ecs.SystemRegister
 
 	UiCamera() ecs.ComponentArray[UiCameraComponent]
 	AnimatedBackground() ecs.ComponentArray[AnimatedBackgroundComponent]
 	CursorCamera() ecs.ComponentArray[CursorCameraComponent]
+
+	GameCamera() ecs.ComponentArray[GameCameraComponent]
+
+	AddUICamera(sceneParent ecs.EntityID) ecs.EntityID
+	AddBgCamera(sceneParent ecs.EntityID) ecs.EntityID
 
 	// returns parent to attach ui elements
 	// potentially with enter animation

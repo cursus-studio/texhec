@@ -149,6 +149,9 @@ func (s *interactionsService) ProcessState(
 			interactionsComp = feature.NewInteractions(
 				nil, interactionsComp.PreviewInteraction, nil, false)
 		} else {
+			if len(interactionsComp.Interactions) > 1 {
+				s.interactions.Remove(entity)
+			}
 			field := interactionsComp.Interactions[len(interactionsComp.Interactions)-1]
 			interactionsComp = feature.NewInteractions(
 				[]any{field}, interactionsComp.PreviewInteraction, s.getFieldFeatures(field), false)
@@ -205,10 +208,10 @@ fieldsLoop:
 	for numField := range featureKey.NumField() {
 		featureValue.Field(numField).Set(reflect.ValueOf(allFields[numField]))
 	}
-	s.World.World().RemoveEntity(entity)
+	s.interactions.Remove(entity)
+	s.interactions.Set(entity, feature.NewInteractions(nil, nil, nil, false))
 	for _, entity := range slices.Clone(s.render.GetEntities()) {
 		s.World.World().RemoveEntity(entity)
 	}
-	s.Interactions()
 	events.EmitAny(s.World.Events(), featureValue.Interface())
 }

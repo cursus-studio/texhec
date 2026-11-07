@@ -37,11 +37,11 @@ func NewMapIndex[IndexType comparable](
 func (i *mapRelation[IndexType]) Get(index IndexType) (ecs.EntityID, bool) {
 	for _, entity := range i.dirtySet.Get() {
 		indexType, ok := i.componentIndex(entity)
+		if indexType, ok := i.entities.Get(entity); ok {
+			i.entities.Remove(entity)
+			delete(i.indices, indexType)
+		}
 		if !ok {
-			if indexType, ok := i.entities.Get(entity); ok {
-				i.entities.Remove(entity)
-				delete(i.indices, indexType)
-			}
 			continue
 		}
 

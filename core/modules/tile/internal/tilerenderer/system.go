@@ -119,7 +119,7 @@ func NewSystem(c ioc.Dic) error {
 	s.textures = datastructures.NewSparseArray[uint32, image.Image]()
 
 	s.tilesDirtySet = ecs.NewDirtySet()
-	s.Tile().Component().AddDirtySet(s.tilesDirtySet)
+	s.Tile().Tile().AddDirtySet(s.tilesDirtySet)
 
 	s.gridDirtySet = ecs.NewDirtySet()
 	s.Tile().Grid().Chunk().AddDirtySet(s.gridDirtySet)
@@ -260,7 +260,7 @@ func (s *system) ListenRender(render render.RenderEvent) {
 	{ // reload bioms. it reloads definitions, buffers, texture arrays
 		dirtyTiles := s.tilesDirtySet.Get()
 		for _, entity := range dirtyTiles {
-			tileComp, ok := s.Tile().Component().Get(entity)
+			tileComp, ok := s.Tile().Tile().Get(entity)
 			if !ok {
 				continue
 			}
@@ -388,7 +388,7 @@ func (s *system) ListenRender(render render.RenderEvent) {
 	}
 	s.lodTextureArrays[lod].Bind()
 
-	cameraGroups, _ := s.Groups().Component().Get(render.Camera)
+	cameraGroups, _ := s.Groups().Groups().Get(render.Camera)
 	cameraMatrix := s.Camera().Mat4(render.Camera)
 
 	size := s.Grid().ChunkSize()
@@ -400,7 +400,7 @@ func (s *system) ListenRender(render render.RenderEvent) {
 		if !ok {
 			continue
 		}
-		if groups, _ := s.Groups().Component().Get(entity); !cameraGroups.SharesAnyGroup(groups) {
+		if groups, _ := s.Groups().Groups().Get(entity); !cameraGroups.SharesAnyGroup(groups) {
 			continue
 		}
 		batch.buffer.Bind()

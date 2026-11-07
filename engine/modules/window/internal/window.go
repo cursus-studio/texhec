@@ -106,3 +106,17 @@ func (s *service) Ctx() sdl.GLContext {
 	s.init()
 	return s.context
 }
+
+func (s *service) GetClipboard() (string, bool) {
+	if !sdl.HasClipboardText() {
+		return "", false
+	}
+	text, err := sdl.GetClipboardText()
+	if err != nil || text == "" {
+		return "", false
+	}
+	return text, true
+}
+func (s *service) SetClipboard(text string) {
+	_ = sdl.SetClipboardText(text)
+}

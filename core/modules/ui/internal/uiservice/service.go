@@ -31,6 +31,9 @@ type service struct {
 
 	menuArray            ecs.ComponentArray[menuComponent]
 	childrenWrapperArray ecs.ComponentArray[childrenComponent]
+
+	gameCamera ecs.ComponentArray[ui.GameCameraComponent]
+	camera     ecs.ComponentArray[gameCameraComponent]
 }
 
 func NewService(
@@ -49,8 +52,12 @@ func NewService(
 	s.menuArray = ecs.GetComponentArray[menuComponent](s.World())
 	s.childrenWrapperArray = ecs.GetComponentArray[childrenComponent](s.World())
 
+	s.gameCamera = ecs.GetComponentArray[ui.GameCameraComponent](s.World())
+	s.camera = ecs.GetComponentArray[gameCameraComponent](s.World())
+
 	s.systems = append(s.systems, ecs.NewSystemRegister(func() error {
-		s.Feature().OnInteractionsMod(s.onAvailableFeaturesMod)
+		s.Feature().InteractionsListeners().OnUpsert(s.onAvailableFeaturesUpsert)
+		s.Feature().InteractionsListeners().OnRemove(s.onAvailableFeaturesRemove)
 		events.Listen(s.EventsBuilder(), func(e sdl.MouseButtonEvent) {
 			if e.Button != sdl.BUTTON_RIGHT || e.State != sdl.RELEASED {
 				return
@@ -62,6 +69,13 @@ func NewService(
 				return
 			}
 			s.HideMenu()
+		})
+
+		s.GameCamera().OnUpsert(s.OnGameCameraUpsert)
+		events.Listen(s.EventsBuilder(), func(e sdl.WindowEvent) {
+			if entities := s.GameCamera().GetEntities(); len(entities) != 0 && e.Event == sdl.WINDOWEVENT_RESIZED {
+				s.OnGameCameraUpsert(entities[0])
+			}
 		})
 		return nil
 	}))

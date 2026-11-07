@@ -25,26 +25,6 @@ Go                               4             63             39            568
 SUM:                             4             63             39            568
 -------------------------------------------------------------------------------
 ```
-## Types
-### type Service
-Type: `cicd/modules/pipe.Service`
-
-#### method Service Cloud
-Type: `func(commitHash string) error`
-
-#### method Service Fix
-Type: `func() error`
-
-#### method Service Setup
-Type: `func() error`
-
-#### method Service Sync
-Type: `func() error`
-
-#### method Service Verify
-Type: `func(commitHash string) error`
-
-
 ## Dependencies
 `cicd/modules/git`:
   - `cicd/modules/git.DiffCompare`

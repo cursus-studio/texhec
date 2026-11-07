@@ -5,6 +5,7 @@ import (
 	"core/modules/ui/internal/systems"
 	"core/modules/ui/internal/uiservice"
 	"engine/modules/ecs"
+	netsyncpkg "engine/modules/netsync/pkg"
 	typeregistrypkg "engine/modules/typeregistry/pkg"
 	"time"
 
@@ -35,6 +36,9 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 		typeregistrypkg.PkgT[ui.AnimatedBackgroundComponent],
 		typeregistrypkg.PkgT[ui.CursorCameraComponent],
 		typeregistrypkg.PkgT[ui.UiCameraComponent],
+		typeregistrypkg.PkgT[ui.GameCameraComponent],
+
+		netsyncpkg.ComponentPkg[ui.GameCameraComponent],
 	}
 	for _, pkg := range pkgs {
 		pkg(b)

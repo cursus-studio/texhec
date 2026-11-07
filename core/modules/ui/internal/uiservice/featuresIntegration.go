@@ -7,10 +7,12 @@ import (
 	"engine/modules/text"
 )
 
-func (s *service) onAvailableFeaturesMod(entity ecs.EntityID) {
+func (s *service) onAvailableFeaturesRemove(entity ecs.EntityID) {
+	s.HideMenu()
+}
+func (s *service) onAvailableFeaturesUpsert(entity ecs.EntityID) {
 	availableFeatures := s.Feature().Interactions()
 	if len(availableFeatures.Features) == 0 {
-		s.HideMenu()
 		return
 	}
 	type Button struct {
@@ -38,5 +40,4 @@ func (s *service) onAvailableFeaturesMod(entity ecs.EntityID) {
 			s.Text().Content().Set(btnEntity, text.NewText(btn.text))
 		}
 	}
-
 }

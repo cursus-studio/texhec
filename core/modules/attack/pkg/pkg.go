@@ -11,6 +11,7 @@ import (
 	"engine/modules/entityregistry"
 	featurepkg "engine/modules/feature/pkg"
 	"engine/modules/grid"
+	netsyncpkg "engine/modules/netsync/pkg"
 	typeregistrypkg "engine/modules/typeregistry/pkg"
 	"errors"
 	"fmt"
@@ -26,6 +27,9 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 		typeregistrypkg.PkgT[attack.DamageComponent],
 
 		typeregistrypkg.PkgT[attack.AttackEvent],
+
+		netsyncpkg.ComponentPkg[attack.TargetComponent],
+		netsyncpkg.EventPkg[attack.AttackEvent],
 
 		reachpkg.PkgT[attack.TargetComponent],
 	}
@@ -55,7 +59,7 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 			}
 			reachVal *= reachVal
 			reachComp := reach.NewReach[attack.TargetComponent](grid.Coord(reachVal))
-			world.Attack().Reach().Component().Set(entity, reachComp)
+			world.Attack().Reach().Reach().Set(entity, reachComp)
 		})
 		b.Register("health", func(entity ecs.EntityID, structTagValue string) {
 			val, err := strconv.Atoi(structTagValue)

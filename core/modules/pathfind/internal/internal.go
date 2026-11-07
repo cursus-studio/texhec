@@ -67,7 +67,7 @@ func (s *service) CanMoveTo(entityUUID actions.Entity, rawCoords actions.Coords)
 		return s.Actions().CanMoveTo().Error()
 	}
 	blueprint, _ := s.Tile().Blueprint().Get(entity)
-	blueprintObstruction, _ := s.Obstruction().Component().Get(blueprint)
+	blueprintObstruction, _ := s.Obstruction().Obstrucion().Get(blueprint)
 	coords := grid.Coords(rawCoords)
 	pos := tile.NewPos(coords.Coords())
 	size, _ := s.Tile().Size().Get(entity)
@@ -85,7 +85,7 @@ func abs[Number constraints.Float | constraints.Integer](n Number) Number { retu
 func (s *service) CanStep(
 	pos grid.Coords,
 	size tile.SizeComponent,
-	obstructionComp obstruction.Component,
+	obstructionComp obstruction.ObstructionComponent,
 	step pathfind.StepComponent,
 ) bool {
 	isValidStep := abs(step.X-pos.X)+abs(step.Y-pos.Y) == abs(grid.Coord(1))

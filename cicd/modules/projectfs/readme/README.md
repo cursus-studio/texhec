@@ -13,35 +13,6 @@ Go                               3             22              4            168
 SUM:                             3             22              4            168
 -------------------------------------------------------------------------------
 ```
-## Types
-### type Service
-Type: `cicd/modules/projectfs.Service`
-
-#### method Service AllModules
-Type: `func() ([]string, error)`
-
-#### method Service AllProjects
-Type: `func() ([]string, error)`
-
-#### method Service FilesModules
-Type: `func(files []string) []string`
-
-#### method Service FilesProjects
-Type: `func(files []string) []string`
-
-#### method Service ProjectModules
-Type: `func(project string) []string`
-
-#### method Service ProjectServices
-Type: `func(project string) []string`
-
-#### method Service PxoFiles
-Type: `func() ([]string, error)`
-
-#### method Service Save
-Type: `func(file string, content string) error`
-
-
 ## Dependencies
 `cicd/modules/projectfs`:
   - `cicd/modules/projectfs.Service`

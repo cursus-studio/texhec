@@ -3,8 +3,8 @@ package corepkg
 import (
 	game "core/game"
 	creditsscene "core/game/credits"
-	gamescene "core/game/game"
 	menuscene "core/game/menu"
+	playscene "core/game/play"
 	settingsscene "core/game/settings"
 	actionspkg "core/modules/actions/pkg"
 	attackpkg "core/modules/attack/pkg"
@@ -14,6 +14,7 @@ import (
 	fpsloggerpkg "core/modules/fpslogger/pkg"
 	generationpkg "core/modules/generation/pkg"
 	loadingpkg "core/modules/loading/pkg"
+	lobbypkg "core/modules/lobby/pkg"
 	obstructionpkg "core/modules/obstruction/pkg"
 	pathfindpkg "core/modules/pathfind/pkg"
 	playerpkg "core/modules/player/pkg"
@@ -38,6 +39,7 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 		fpsloggerpkg.Pkg,
 		generationpkg.Pkg,
 		loadingpkg.Pkg,
+		lobbypkg.Pkg,
 		obstructionpkg.Pkg,
 		pathfindpkg.Pkg,
 		playerpkg.Pkg,
@@ -48,7 +50,7 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 
 		game.Pkg,
 		creditsscene.Pkg,
-		gamescene.Pkg,
+		playscene.Pkg,
 		menuscene.Pkg,
 		settingsscene.Pkg,
 		func(b ioc.Builder) {

@@ -15,6 +15,7 @@ type service struct {
 	engine.EngineWorld `inject:""`
 	emitOnFrameArray   ecs.ComponentArray[loop.EmitOnFrameComponent]
 	emitOnTickArray    ecs.ComponentArray[loop.EmitOnTickComponent]
+	lastTick           ecs.ComponentArray[loop.LastTickComponent]
 	Running            bool
 
 	TickDuration,
@@ -23,8 +24,6 @@ type service struct {
 	LastFrameTime time.Time
 	TickProgress  time.Duration
 
-	lastTickUnixNano int64
-
 	Ticker *time.Ticker
 }
 
@@ -32,6 +31,7 @@ func NewService(c ioc.Dic) loop.Service {
 	s := ioc.GetServices[*service](c)
 	s.emitOnFrameArray = ecs.GetComponentArray[loop.EmitOnFrameComponent](s.World())
 	s.emitOnTickArray = ecs.GetComponentArray[loop.EmitOnTickComponent](s.World())
+	s.lastTick = ecs.GetComponentArray[loop.LastTickComponent](s.World())
 	s.Running = false
 
 	// TickDuration is initialized lazily
@@ -47,7 +47,12 @@ func NewService(c ioc.Dic) loop.Service {
 	})
 
 	events.Listen(s.EventsBuilder(), func(loop.TickEvent) {
-		s.lastTickUnixNano = time.Unix(0, s.lastTickUnixNano).Add(s.TickDuration).UnixNano()
+		entity, lastTick, ok := s.lastTick.GetSingleton()
+		if !ok {
+			entity = s.World().NewEntity()
+		}
+		defer s.lastTick.Set(entity, lastTick)
+		lastTick.UnixNano = time.Unix(0, lastTick.UnixNano).Add(s.TickDuration).UnixNano()
 	})
 
 	//
@@ -79,6 +84,11 @@ func NewService(c ioc.Dic) loop.Service {
 	events.Listen(s.EventsBuilder(), s.Configure)
 
 	return s
+}
+
+func (s *service) LastTick() loop.LastTickComponent {
+	_, comp, _ := s.lastTick.GetSingleton()
+	return comp
 }
 
 func (s *service) Run(e loop.ConfigureEvent) {
@@ -116,7 +126,12 @@ func (s *service) Configure(e loop.ConfigureEvent) {
 	s.TickProgress = now.Sub(now.Truncate(s.TickDuration))
 
 	tickTime := now.Add(-s.TickProgress)
-	s.lastTickUnixNano = tickTime.UnixNano()
+	entity, lastTick, ok := s.lastTick.GetSingleton()
+	if !ok {
+		entity = s.World().NewEntity()
+	}
+	defer s.lastTick.Set(entity, lastTick)
+	lastTick.UnixNano = tickTime.UnixNano()
 
 	prev := s.Ticker
 	s.Ticker = time.NewTicker(s.FrameDuration)
@@ -126,12 +141,16 @@ func (s *service) Configure(e loop.ConfigureEvent) {
 }
 
 func (s *service) SyncToUnixNano(lastTickUnix int64) {
-	s.lastTickUnixNano = time.Unix(0, s.lastTickUnixNano).Add(-s.TickDuration).UnixNano()
-	for s.lastTickUnixNano-lastTickUnix != 0 {
+	entity, lastTick, ok := s.lastTick.GetSingleton()
+	if !ok {
+		entity = s.World().NewEntity()
+	}
+	defer s.lastTick.Set(entity, lastTick)
+	lastTick.UnixNano = time.Unix(0, lastTick.UnixNano).Add(-s.TickDuration).UnixNano()
+	for s.LastTick().UnixNano-lastTickUnix != 0 {
 		events.Emit(s.Events(), loop.TickEvent{Delta: s.TickDuration})
 	}
 }
-func (s *service) LastTickUnixNano() int64 { return s.lastTickUnixNano }
 
 func (s *service) Stats() loop.Stats { return s }
 

@@ -15,21 +15,21 @@ var (
 	ErrParentCycle error = errors.New("parent cycle is not allowed")
 )
 
-type Component struct {
+type ParentComponent struct {
 	Parent ecs.EntityID
 }
 
-func NewParent(parent ecs.EntityID) Component { return Component{parent} }
+func NewParent(parent ecs.EntityID) ParentComponent { return ParentComponent{parent} }
 
 //
 
 type Service interface {
-	Component() ecs.ComponentArray[Component]
+	Parent() ecs.ComponentArray[ParentComponent]
 
 	// returns true if is child of any parent doesn't matter the depth
 	IsChildOf(child ecs.EntityID, parent ecs.EntityID) bool
 	SetParent(child ecs.EntityID, parent ecs.EntityID)
-	Parent(child ecs.EntityID) (ecs.EntityID, bool)
+	GetParent(child ecs.EntityID) (ecs.EntityID, bool)
 
 	// from closest to furthest
 	GetParents(child ecs.EntityID) datastructures.SparseSetReader[ecs.EntityID]

@@ -13,16 +13,16 @@ import (
 var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 	pkgs := []ioc.Pkg{
 		typeregistrypkg.PkgT[uuid.UUID],
-		typeregistrypkg.PkgT[uuid.Component],
+		typeregistrypkg.PkgT[uuid.UUIDComponent],
 		typeregistrypkg.PkgT[internal.SeededUUID],
 		relationpkg.MapRelationPkg(
 			func(w ecs.World) ecs.DirtySet {
 				set := ecs.NewDirtySet()
-				ecs.GetComponentArray[uuid.Component](w).AddDirtySet(set)
+				ecs.GetComponentArray[uuid.UUIDComponent](w).AddDirtySet(set)
 				return set
 			},
 			func(w ecs.World) func(entity ecs.EntityID) (indexType uuid.UUID, ok bool) {
-				uniqueArray := ecs.GetComponentArray[uuid.Component](w)
+				uniqueArray := ecs.GetComponentArray[uuid.UUIDComponent](w)
 				return func(entity ecs.EntityID) (indexType uuid.UUID, ok bool) {
 					component, ok := uniqueArray.Get(entity)
 					if !ok {

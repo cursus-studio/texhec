@@ -13,18 +13,18 @@ goos: linux
 goarch: amd64
 pkg: engine/modules/hierarchy/test
 cpu: Intel(R) Core(TM) i5-8350U CPU @ 1.70GHz
-BenchmarkChildren_1-8                          	223990726	         5.403 ns/op
-BenchmarkChildren_10-8                         	220043870	         5.389 ns/op
-BenchmarkChildren_100-8                        	224304896	         5.352 ns/op
-BenchmarkFlatChildren_1_1-8                    	178237136	         6.736 ns/op
-BenchmarkFlatChildren_10_10-8                  	185739192	         6.464 ns/op
-BenchmarkAddChildToParentWithGrandParent-8     	 6815106	       162.5 ns/op
-BenchmarkAddChildToParentWith5GrandParents-8   	 7389226	       149.9 ns/op
-BenchmarkRemoveChild-8                         	 1165906	      1030 ns/op
-BenchmarkRemoveParentWith1Children-8           	   64238	     17186 ns/op
-BenchmarkRemoveParentWith100Children-8         	    9790	    136048 ns/op
+BenchmarkChildren_1-8                          	222155427	         5.443 ns/op
+BenchmarkChildren_10-8                         	219609798	         5.464 ns/op
+BenchmarkChildren_100-8                        	222874813	         5.380 ns/op
+BenchmarkFlatChildren_1_1-8                    	182304591	         6.585 ns/op
+BenchmarkFlatChildren_10_10-8                  	183836434	         6.518 ns/op
+BenchmarkAddChildToParentWithGrandParent-8     	 7330680	       160.6 ns/op
+BenchmarkAddChildToParentWith5GrandParents-8   	 7226611	       164.7 ns/op
+BenchmarkRemoveChild-8                         	  976084	      1141 ns/op
+BenchmarkRemoveParentWith1Children-8           	   63080	     17757 ns/op
+BenchmarkRemoveParentWith100Children-8         	    8671	    139983 ns/op
 PASS
-ok  	engine/modules/hierarchy/test	15.219s
+ok  	engine/modules/hierarchy/test	14.038s
 ```
 ## Lines of code
 ```
@@ -37,69 +37,6 @@ Go                               9            127             22            587
 SUM:                             9            127             22            587
 -------------------------------------------------------------------------------
 ```
-## Types
-### type Service
-Type: `engine/modules/hierarchy.Service`
-
-#### method Service Children
-Type: `func(parent engine/modules/ecs.EntityID) engine/modules/datastructures.SparseSetReader[engine/modules/ecs.EntityID]`
-
-#### method Service Component
-Type: `func() engine/modules/ecs.ComponentArray[engine/modules/hierarchy.Component]`
-
-#### method Service FlatChildren
-Type: `func(parent engine/modules/ecs.EntityID) engine/modules/datastructures.SparseSetReader[engine/modules/ecs.EntityID]`
-includes children of children
-
-#### method Service GetOrderedParents
-Type: `func(child engine/modules/ecs.EntityID) []engine/modules/ecs.EntityID`
-
-#### method Service GetParents
-Type: `func(child engine/modules/ecs.EntityID) engine/modules/datastructures.SparseSetReader[engine/modules/ecs.EntityID]`
-from closest to furthest
-
-#### method Service IsChildOf
-Type: `func(child engine/modules/ecs.EntityID, parent engine/modules/ecs.EntityID) bool`
-returns true if is child of any parent doesn't matter the depth
-
-#### method Service Parent
-Type: `func(child engine/modules/ecs.EntityID) (engine/modules/ecs.EntityID, bool)`
-
-#### method Service SetChildren
-Type: `func(parent engine/modules/ecs.EntityID, children ...engine/modules/ecs.EntityID)`
-maintains order of children and adds component to children
-even if children doesn't exist
-
-#### method Service SetParent
-Type: `func(child engine/modules/ecs.EntityID, parent engine/modules/ecs.EntityID)`
-
-### type ServiceT
-Type: `engine/modules/hierarchy.ServiceT[Component any]`
-
-#### method ServiceT Inherit
-Type: `func() engine/modules/ecs.ComponentArray[engine/modules/hierarchy.InheritComponent[Component]]`
-
-### type Component
-Type: `engine/modules/hierarchy.Component`
-
-#### property Component Parent
-Type: `engine/modules/ecs.EntityID`
-
-### type InheritComponent
-Type: `engine/modules/hierarchy.InheritComponent[Component any]`
-
-## Variables
-### var ErrParentCycle
-Type: `error`
-
-## Functions
-### func NewParent
-Type: `func(parent engine/modules/ecs.EntityID) engine/modules/hierarchy.Component`
-
-### func NewInherit
-Type: `func[Component any]() engine/modules/hierarchy.InheritComponent[Component]`
-
-
 ## Dependencies
 `engine`:
   - `engine.EngineWorld`
@@ -123,10 +60,11 @@ Type: `func[Component any]() engine/modules/hierarchy.InheritComponent[Component
 
 `engine/modules/hierarchy`:
   - `engine/modules/hierarchy.Children`
-  - `engine/modules/hierarchy.Component`
+  - `engine/modules/hierarchy.GetParent`
   - `engine/modules/hierarchy.InheritComponent`
   - `engine/modules/hierarchy.NewParent`
   - `engine/modules/hierarchy.Parent`
+  - `engine/modules/hierarchy.ParentComponent`
   - `engine/modules/hierarchy.Service`
   - `engine/modules/hierarchy.ServiceT`
 

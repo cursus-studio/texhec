@@ -16,18 +16,22 @@ var (
 
 // engine interface
 
-type Component struct {
+type UUIDComponent struct {
 	ID UUID
 }
 
-func New(id UUID) Component {
-	return Component{id}
+func NewUUID(id UUID) UUIDComponent {
+	return UUIDComponent{id}
 }
 
 type Service interface {
 	Factory
-	Component() ecs.ComponentArray[Component]
+	UUID() ecs.ComponentArray[UUIDComponent]
 	Entity(UUID) (ecs.EntityID, bool)
+
+	// creates if doesn't have assigned uuid
+	CreateGetUUID(ecs.EntityID) UUID
+	CreateGetEntity(UUID) ecs.EntityID
 }
 
 //
@@ -58,7 +62,7 @@ func (id *UUID) String() string  { return uuid.UUID(*id).String() }
 func (uuid *UUID) Bytes() []byte { return uuid[:] }
 
 type Factory interface {
-	NewUUID() UUID
-	NewUUIDFromString(string) UUID
+	NewUUID() UUID // isn't deterministic
+	NewDeterministicUUID([]byte) UUID
 	NewUUIDFromAny(any) UUID
 }

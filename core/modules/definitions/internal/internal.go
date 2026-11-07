@@ -120,7 +120,7 @@ func (s *service) Hud() definitions.Hud {
 	btnAspectRatio := btnAsset.AspectRatio()
 	{
 		s.World.Groups().InheritGroups(def.Btn)
-		s.World.Groups().Component().Set(def.Btn, groups.EmptyGroups())
+		s.World.Groups().Groups().Set(def.Btn, groups.EmptyGroups())
 
 		s.World.Transform().AspectRatio().Set(def.Btn, transform.NewAspectRatio(float32(btnAspectRatio.Dx()), float32(btnAspectRatio.Dy()), 0, transform.PrimaryAxisX))
 		s.World.Transform().Inherit().Set(def.Btn, transform.NewInherit(transform.RelativePos|transform.RelativeSizeX))
@@ -130,7 +130,7 @@ func (s *service) Hud() definitions.Hud {
 		s.World.Render().Mesh().Set(def.Btn, render.NewMesh(s.World.Definitions().Assets().SquareMesh))
 		s.World.Render().Texture().Set(def.Btn, render.NewTexture(def.Btn))
 
-		s.World.Collider().Component().Set(def.Btn, collider.NewCollider(s.World.Definitions().Assets().SquareCollider))
+		s.World.Collider().Collider().Set(def.Btn, collider.NewCollider(s.World.Definitions().Assets().SquareCollider))
 		s.World.Inputs().KeepSelected().Set(def.Btn, inputs.KeepSelectedComponent{})
 
 		s.World.Text().Align().Set(def.Btn, text.NewAlign(.5, .5))
@@ -138,7 +138,7 @@ func (s *service) Hud() definitions.Hud {
 	}
 	{
 		s.World.Groups().InheritGroups(def.Text)
-		s.World.Groups().Component().Set(def.Text, groups.EmptyGroups())
+		s.World.Groups().Groups().Set(def.Text, groups.EmptyGroups())
 
 		s.World.Transform().Size().Set(def.Text, transform.NewSize(150, 50, 1))
 		s.World.Transform().AspectRatio().Set(def.Text, transform.NewAspectRatio(float32(btnAspectRatio.Dx()), float32(btnAspectRatio.Dy()), 0, transform.PrimaryAxisX))
@@ -148,7 +148,7 @@ func (s *service) Hud() definitions.Hud {
 		s.World.Render().Texture().Set(def.Text, render.NewTexture(def.Btn))
 		s.World.Render().Color().Set(def.Text, render.NewColor(mgl32.Vec4{0, 0, 0, 0}))
 
-		s.World.Collider().Component().Set(def.Text, collider.NewCollider(s.World.Definitions().Assets().SquareCollider))
+		s.World.Collider().Collider().Set(def.Text, collider.NewCollider(s.World.Definitions().Assets().SquareCollider))
 		s.World.Inputs().KeepSelected().Set(def.Text, inputs.KeepSelectedComponent{})
 
 		s.World.Text().Align().Set(def.Text, text.NewAlign(.5, .5))
@@ -156,7 +156,7 @@ func (s *service) Hud() definitions.Hud {
 	}
 	{
 		s.World.Groups().InheritGroups(def.Input)
-		s.World.Groups().Component().Set(def.Input, groups.EmptyGroups())
+		s.World.Groups().Groups().Set(def.Input, groups.EmptyGroups())
 
 		s.World.Transform().AspectRatio().Set(def.Input, transform.NewAspectRatio(float32(btnAspectRatio.Dx()), float32(btnAspectRatio.Dy()), 0, transform.PrimaryAxisX))
 		s.World.Transform().Inherit().Set(def.Input, transform.NewInherit(transform.RelativePos|transform.RelativeSizeX))
@@ -166,7 +166,7 @@ func (s *service) Hud() definitions.Hud {
 		s.World.Render().Mesh().Set(def.Input, render.NewMesh(s.World.Definitions().Assets().SquareMesh))
 		s.World.Render().Texture().Set(def.Input, render.NewTexture(def.Btn))
 
-		s.World.Collider().Component().Set(def.Input, collider.NewCollider(s.World.Definitions().Assets().SquareCollider))
+		s.World.Collider().Collider().Set(def.Input, collider.NewCollider(s.World.Definitions().Assets().SquareCollider))
 		s.World.Inputs().KeepSelected().Set(def.Input, inputs.KeepSelectedComponent{})
 
 		s.World.Focus().Bubbling().Set(def.Input, focus.NewBubbling(inputs.NewTextInputEvent()))
@@ -194,8 +194,8 @@ func (s *service) Objects() definitions.Objects {
 	def, err := entityregistry.GetRegistry[definitions.Objects](s.World.EntityRegistry())
 	s.World.Logger().Log(err)
 
-	s.World.Deploy().Component().Set(def.Tank, deploy.NewDeploy(def.Tank, def.Farm))
-	s.World.Deploy().Component().Set(def.Farm, deploy.NewDeploy(def.Tank, def.Farm, def.HouseT1, def.HouseT2, def.HouseT3, def.HouseT4))
+	s.World.Deploy().DeployComp().Set(def.Tank, deploy.NewDeploy(def.Tank, def.Farm))
+	s.World.Deploy().DeployComp().Set(def.Farm, deploy.NewDeploy(def.Tank, def.Farm, def.HouseT1, def.HouseT2, def.HouseT3, def.HouseT4))
 	s.objects = &def
 	return def
 }

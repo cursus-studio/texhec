@@ -8,119 +8,15 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                               3             37             12            268
+Go                               3             41             12            304
 Markdown                         2              0              0              3
 -------------------------------------------------------------------------------
-SUM:                             5             37             12            271
+SUM:                             5             41             12            307
 -------------------------------------------------------------------------------
 ```
 ## TODO
 Restrict actions to allow only user to perform his actions.
 Perhaps attach `PlayerComponent` to camera.
-
-## Types
-### type Service
-Type: `core/modules/player.Service`
-
-#### method Service ActingConnection
-Type: `func() engine/modules/ecs.ComponentArray[core/modules/player.ActingConnectionComponent]`
-
-#### method Service ActingPlayer
-Type: `func() engine/modules/ecs.ComponentArray[core/modules/player.ActingPlayerComponent]`
-
-#### method Service GetContext
-Type: `func() core/modules/actions.PlayerContext`
-
-#### method Service IsEnemy
-Type: `func(player core/modules/actions.PlayerContext, entity core/modules/actions.Entity) error`
-
-#### method Service Own
-Type: `func(player core/modules/actions.PlayerContext, entity core/modules/actions.Entity) error`
-returns nil if object is controled
-
-#### method Service Owner
-Type: `func() engine/modules/uuid.LinkService[core/modules/player.OwnerLink]`
-points to player entity
-
-#### method Service Player
-Type: `func() engine/modules/ecs.ComponentArray[core/modules/player.PlayerComponent]`
-attached to player
-
-#### method Service PlayerConnection
-Type: `func() engine/modules/ecs.ComponentArray[core/modules/player.PlayerConnectionComponent]`
-
-#### method Service PlayerUUID
-Type: `func() engine/modules/ecs.ComponentArray[core/modules/player.PlayerUUIDComponent]`
-
-#### method Service PlayersConnection
-Type: `func() engine/modules/ecs.ComponentArray[core/modules/player.PlayersConnectionComponent]`
-attached to host and connection
-
-### type PlayerComponent
-Type: `core/modules/player.PlayerComponent`
-marks that player is performing a move
-
-#### property PlayerComponent Name
-Type: `string`
-
-### type PlayerUUIDComponent
-Type: `core/modules/player.PlayerUUIDComponent`
-
-#### property PlayerUUIDComponent UUID
-Type: `engine/modules/uuid.UUID`
-
-### type ActingPlayerComponent
-Type: `core/modules/player.ActingPlayerComponent`
-
-### type ActingConnectionComponent
-Type: `core/modules/player.ActingConnectionComponent`
-
-#### property ActingConnectionComponent Connection
-Type: `engine/modules/ecs.EntityID`
-
-### type OwnerLink
-Type: `core/modules/player.OwnerLink`
-
-### type AssignActingPlayerDTO
-Type: `core/modules/player.AssignActingPlayerDTO`
-
-#### property AssignActingPlayerDTO MsgCtx
-Type: `engine/modules/connection.MsgCtx`
-
-#### property AssignActingPlayerDTO PlayerUUID
-Type: `engine/modules/uuid.UUID`
-
-### type PlayersConnectionComponent
-Type: `core/modules/player.PlayersConnectionComponent`
-
-### type PlayerConnectionComponent
-Type: `core/modules/player.PlayerConnectionComponent`
-
-#### property PlayerConnectionComponent Player
-Type: `engine/modules/uuid.UUID`
-
-## Functions
-### func NewPlayer
-Type: `func(name string) core/modules/player.PlayerComponent`
-
-### func NewPlayerUUID
-Type: `func(uuid engine/modules/uuid.UUID) core/modules/player.PlayerUUIDComponent`
-
-### func NewActingPlayer
-Type: `func() core/modules/player.ActingPlayerComponent`
-
-### func NewActiongConnection
-Type: `func(entity engine/modules/ecs.EntityID) core/modules/player.ActingConnectionComponent`
-
-### func NewAssignActingPlayerDTO
-Type: `func(playerUUID engine/modules/uuid.UUID) core/modules/player.AssignActingPlayerDTO`
-
-### func NewPlayersConnection
-Type: `func() core/modules/player.PlayersConnectionComponent`
-
-### func NewPlayerConnection
-Type: `func(player engine/modules/uuid.UUID) core/modules/player.PlayerConnectionComponent`
-
 
 ## Dependencies
 `core/game`:
@@ -141,20 +37,28 @@ Type: `func(player engine/modules/uuid.UUID) core/modules/player.PlayerConnectio
   - `core/modules/economy.NewWallet`
   - `core/modules/economy.Wallet`
 
+`core/modules/lobby`:
+  - `core/modules/lobby.NewInputAddPlayerEvent`
+
 `core/modules/player`:
+  - `core/modules/player.AcceptNewConnections`
   - `core/modules/player.ActingConnection`
   - `core/modules/player.ActingConnectionComponent`
+  - `core/modules/player.ActingPlayer`
   - `core/modules/player.ActingPlayerComponent`
   - `core/modules/player.AssignActingPlayerDTO`
+  - `core/modules/player.ColorComponent`
   - `core/modules/player.Connection`
   - `core/modules/player.GetContext`
+  - `core/modules/player.Name`
+  - `core/modules/player.NameComponent`
   - `core/modules/player.NewActingPlayer`
   - `core/modules/player.NewActiongConnection`
   - `core/modules/player.NewAssignActingPlayerDTO`
   - `core/modules/player.NewPlayerConnection`
   - `core/modules/player.NewPlayerUUID`
   - `core/modules/player.OwnerLink`
-  - `core/modules/player.PlayerComponent`
+  - `core/modules/player.PlayerConnection`
   - `core/modules/player.PlayerConnectionComponent`
   - `core/modules/player.PlayerUUID`
   - `core/modules/player.PlayerUUIDComponent`
@@ -163,16 +67,22 @@ Type: `func(player engine/modules/uuid.UUID) core/modules/player.PlayerConnectio
   - `core/modules/player.UUID`
 
 `engine/modules/connection`:
-  - `engine/modules/connection.Component`
   - `engine/modules/connection.Conn`
   - `engine/modules/connection.ConnEntity`
+  - `engine/modules/connection.Connection`
   - `engine/modules/connection.MsgCtx`
   - `engine/modules/connection.Send`
 
+`engine/modules/connection/pkg`:
+  - `engine/modules/connection/pkg.ParentPkg`
+
 `engine/modules/ecs`:
   - `engine/modules/ecs.ComponentArray`
+  - `engine/modules/ecs.DirtySet`
   - `engine/modules/ecs.EntityID`
   - `engine/modules/ecs.GetComponentArray`
+  - `engine/modules/ecs.NewDirtySet`
+  - `engine/modules/ecs.World`
 
 `engine/modules/feature/pkg`:
   - `engine/modules/feature/pkg.Config`
@@ -183,18 +93,25 @@ Type: `func(player engine/modules/uuid.UUID) core/modules/player.PlayerConnectio
 
 `engine/modules/netsync/pkg`:
   - `engine/modules/netsync/pkg.AddGenericEventValidation`
+  - `engine/modules/netsync/pkg.ComponentPkg`
   - `engine/modules/netsync/pkg.Config`
+
+`engine/modules/relation`:
+  - `engine/modules/relation.Service`
+
+`engine/modules/relation/pkg`:
+  - `engine/modules/relation/pkg.MapRelationPkg`
 
 `engine/modules/typeregistry/pkg`:
   - `engine/modules/typeregistry/pkg.PkgT`
 
 `engine/modules/uuid`:
-  - `engine/modules/uuid.Component`
   - `engine/modules/uuid.Entity`
   - `engine/modules/uuid.Get`
   - `engine/modules/uuid.ID`
   - `engine/modules/uuid.LinkService`
-  - `engine/modules/uuid.New`
+  - `engine/modules/uuid.LinkUUIDComponent`
+  - `engine/modules/uuid.NewDeterministicUUID`
   - `engine/modules/uuid.NewUUID`
   - `engine/modules/uuid.UUID`
 
@@ -202,5 +119,6 @@ Type: `func(player engine/modules/uuid.UUID) core/modules/player.PlayerConnectio
   - `engine/modules/uuid/pkg.LinkPkgT`
 
 ### Third Party
+- `github.com/go-gl/mathgl/mgl32`
 - `github.com/ogiusek/events`
 - `github.com/ogiusek/ioc/v2`

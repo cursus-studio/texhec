@@ -18,7 +18,7 @@ type service struct {
 	// shared
 	engine.EngineWorld `inject:""`
 
-	collider ecs.ComponentArray[collider.Component]
+	collider ecs.ComponentArray[collider.ColliderComponent]
 
 	// tracking
 	collidersDirtySet ecs.DirtySet
@@ -34,7 +34,7 @@ func NewService(c ioc.Dic,
 ) collider.Service {
 	s := ioc.GetServices[*service](c)
 
-	s.collider = ecs.GetComponentArray[collider.Component](s.World())
+	s.collider = ecs.GetComponentArray[collider.ColliderComponent](s.World())
 
 	s.collidersDirtySet = ecs.NewDirtySet()
 	s.Transform().AddDirtySet(s.collidersDirtySet)
@@ -123,11 +123,11 @@ func (s *service) Remove(entities ...ecs.EntityID) {
 
 //
 
-func (s *service) Component() ecs.ComponentArray[collider.Component] { return s.collider }
+func (s *service) Collider() ecs.ComponentArray[collider.ColliderComponent] { return s.collider }
 
 func (s *service) CollidesWithRay(entity ecs.EntityID, ray collider.Ray) *collider.ObjectRayCollision {
 	s.ApplyChanges()
-	entityGroups, ok := s.Groups().Component().Get(entity)
+	entityGroups, ok := s.Groups().Groups().Get(entity)
 	if !ok {
 		entityGroups = groups.DefaultGroups()
 	}

@@ -46,7 +46,7 @@ type service struct {
 	engine.EngineWorld `inject:""`
 	ecs.SystemRegister
 
-	cameraArray      ecs.ComponentArray[camera.Component]
+	cameraArray      ecs.ComponentArray[camera.CameraComponent]
 	priorityArray    ecs.ComponentArray[camera.PriorityComponent]
 	projectionsArray ecs.ComponentArray[projectionComponent]
 
@@ -67,7 +67,7 @@ type service struct {
 func NewService(c ioc.Dic, register ecs.SystemRegister) Service {
 	s := ioc.GetServices[*service](c)
 	s.SystemRegister = register
-	s.cameraArray = ecs.GetComponentArray[camera.Component](s.World())
+	s.cameraArray = ecs.GetComponentArray[camera.CameraComponent](s.World())
 	s.priorityArray = ecs.GetComponentArray[camera.PriorityComponent](s.World())
 	s.projectionsArray = ecs.GetComponentArray[projectionComponent](s.World())
 
@@ -126,7 +126,7 @@ func NewService(c ioc.Dic, register ecs.SystemRegister) Service {
 	return s
 }
 
-func (s *service) Component() ecs.ComponentArray[camera.Component] {
+func (s *service) Camera() ecs.ComponentArray[camera.CameraComponent] {
 	return s.cameraArray
 }
 
@@ -164,7 +164,7 @@ func (s *service) DynamicPerspective() ecs.ComponentArray[camera.DynamicPerspect
 
 // returns cameras from smallest to biggest
 func (s *service) OrderedCameras() []ecs.EntityID {
-	cameras := s.Component().GetEntities()
+	cameras := s.Camera().GetEntities()
 	cameras = slices.Clone(cameras)
 	sort.Slice(cameras, func(i, j int) bool {
 		o1, _ := s.priorityArray.Get(cameras[i])
@@ -209,7 +209,7 @@ func (s *service) ShootRay(camera ecs.EntityID, mousePos window.MousePos) collid
 	}
 
 	ray := data.ShootRay(camera, mousePos)
-	groups, _ := s.Groups().Component().Get(camera)
+	groups, _ := s.Groups().Groups().Get(camera)
 	ray.Groups = groups
 	return ray
 }

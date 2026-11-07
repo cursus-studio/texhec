@@ -8,9 +8,11 @@ import (
 	"core/modules/obstruction"
 	"core/modules/reach"
 	"core/modules/tile"
+	"encoding/binary"
 	"engine/modules/ecs"
 	"engine/modules/grid"
 	"engine/modules/loop"
+	"engine/modules/seed"
 	"engine/modules/uuid"
 	"slices"
 
@@ -26,18 +28,20 @@ func NewBought(event deploy.DeployEvent) BoughtComponent { return BoughtComponen
 
 type service struct {
 	game.GameWorld `inject:""`
-	ReachT         reach.ServiceT[deploy.Component] `inject:""`
+	ReachT         reach.ServiceT[deploy.DeployComponent] `inject:""`
 
-	boughtComponent ecs.ComponentArray[BoughtComponent]
-	component       ecs.ComponentArray[deploy.Component]
+	boughtComponent        ecs.ComponentArray[BoughtComponent]
+	deployCounterComponent ecs.ComponentArray[deploy.DeployCounterComponent]
+	component              ecs.ComponentArray[deploy.DeployComponent]
 }
 
 func NewService(c ioc.Dic) deploy.Service {
 	s := ioc.GetServices[*service](c)
-	s.ReachT.Component().SetEmpty(reach.NewReach[deploy.Component](1))
+	s.ReachT.Reach().SetEmpty(reach.NewReach[deploy.DeployComponent](1))
 
 	s.boughtComponent = ecs.GetComponentArray[BoughtComponent](s.World())
-	s.component = ecs.GetComponentArray[deploy.Component](s.World())
+	s.deployCounterComponent = ecs.GetComponentArray[deploy.DeployCounterComponent](s.World())
+	s.component = ecs.GetComponentArray[deploy.DeployComponent](s.World())
 
 	events.Listen(s.EventsBuilder(), s.DeployEvent)
 	events.Listen(s.EventsBuilder(), s.DestroyEvent)
@@ -50,8 +54,11 @@ func (s *service) Register() error {
 	return nil
 }
 
-func (s *service) Component() ecs.ComponentArray[deploy.Component] { return s.component }
-func (s *service) Reach() reach.ServiceT[deploy.Component]         { return s.ReachT }
+func (s *service) DeployCounter() ecs.ComponentArray[deploy.DeployCounterComponent] {
+	return s.deployCounterComponent
+}
+func (s *service) DeployComp() ecs.ComponentArray[deploy.DeployComponent] { return s.component }
+func (s *service) Reach() reach.ServiceT[deploy.DeployComponent]          { return s.ReachT }
 
 //
 
@@ -64,7 +71,7 @@ func (s *service) CanDeploy(entityUUID actions.Entity) error {
 	if !ok {
 		return s.Actions().CanDeploy().Error()
 	}
-	comp, _ := s.Component().Get(entityBlueprint)
+	comp, _ := s.DeployComp().Get(entityBlueprint)
 	if len(comp.Deployable) == 0 {
 		return s.Actions().CanDeploy().Error()
 	}
@@ -83,7 +90,7 @@ func (s *service) CanDeployBlueprint(entityUUID actions.Entity, blueprint action
 	if !ok {
 		return s.Actions().CanDeploy().Error()
 	}
-	comp, _ := s.Component().Get(entityBlueprint)
+	comp, _ := s.DeployComp().Get(entityBlueprint)
 	if !slices.Contains(comp.Deployable, blueprintEntity) {
 		return s.Actions().CanDeployBlueprint().Error()
 	}
@@ -106,7 +113,7 @@ func (s *service) CanDeployAt(by actions.Entity, blueprint actions.Blueprint, co
 		return s.Actions().CanDeployAt().Error()
 	}
 
-	blueprintObstruction, _ := s.Obstruction().Component().Get(blueprintEntity)
+	blueprintObstruction, _ := s.Obstruction().Obstrucion().Get(blueprintEntity)
 
 	aabb := obstruction.NewAABB(pos, size)
 	collisions := s.Obstruction().Collisions(aabb, blueprintObstruction.Obstruction)
@@ -115,6 +122,18 @@ func (s *service) CanDeployAt(by actions.Entity, blueprint actions.Blueprint, co
 		return s.Actions().CanDeployAt().Error()
 	}
 	return nil
+}
+
+//
+
+func (s *service) incCounter() (deploy.DeployCounterComponent, bool) {
+	entity, _, ok := s.Seed().Seed().GetSingleton()
+	if !ok {
+		return deploy.DeployCounterComponent{}, false
+	}
+	comp, _ := s.deployCounterComponent.Get(entity)
+	s.deployCounterComponent.Set(entity, comp.Inc())
+	return comp, true
 }
 
 //
@@ -129,25 +148,34 @@ func (s *service) Deploy(
 	// - is position occuped
 	pos := tile.NewPos(coords.Coords())
 	size, _ := s.Tile().Size().Get(blueprint)
-	obstructionComp, _ := s.Obstruction().Component().Get(blueprint)
+	obstructionComp, _ := s.Obstruction().Obstrucion().Get(blueprint)
 	aabb := obstruction.NewAABB(pos, size)
 	if collisions := s.Obstruction().Collisions(aabb, obstructionComp.Obstruction); len(collisions) != 0 {
 		return 0, obstruction.ErrPositionIsOccupied
 	}
 
-	blueprintUUID, ok := s.UUID().Component().Get(blueprint)
+	blueprintUUID, ok := s.UUID().UUID().Get(blueprint)
 	if !ok {
 		s.Logger().Fatal(tile.ErrBlueprintIsMissingUUID)
 	}
-	ownerUUID, ok := s.UUID().Component().Get(owner)
+	ownerUUID, ok := s.UUID().UUID().Get(owner)
 	if !ok {
 		s.Logger().Fatal(s.Actions().Own().Error())
+	}
+	inc, ok := s.incCounter()
+	if !ok {
+		s.Logger().Fatal(seed.ErrWorldShouldHaveOneSeed)
 	}
 
 	// place
 	deployed := s.World().NewEntity()
 	s.Player().Owner().SetUUID(deployed, ownerUUID.ID)
-	s.Obstruction().Deployed().Set(deployed, obstruction.NewDeployed(s.UUID().NewUUID()))
+
+	uuidBuf := make([]byte, 0, len("deploy:")+4)
+	uuidBuf = append(uuidBuf, "deploy:"...)
+	uuidBuf = binary.LittleEndian.AppendUint32(uuidBuf, inc.I)
+
+	s.Obstruction().Deployed().Set(deployed, obstruction.NewDeployed(s.UUID().NewDeterministicUUID(uuidBuf)))
 	s.Tile().Blueprint().SetUUID(deployed, blueprintUUID.ID)
 	s.Tile().Pos().Set(deployed, pos)
 	return deployed, nil
@@ -189,7 +217,7 @@ func (s *service) OnTick(loop.TickEvent) {
 			continue
 		}
 		bySize, _ := s.Tile().Size().Get(byEntity)
-		reachComp, _ := s.GameWorld.Deploy().Reach().Component().Get(byEntity)
+		reachComp, _ := s.GameWorld.Deploy().Reach().Reach().Get(byEntity)
 
 		// target
 		coords := grid.Coords(event.Coords)
@@ -206,7 +234,7 @@ func (s *service) OnTick(loop.TickEvent) {
 			}
 		}
 		{ // obstruction
-			blueprintObstruction, _ := s.Obstruction().Component().Get(blueprintEntity)
+			blueprintObstruction, _ := s.Obstruction().Obstrucion().Get(blueprintEntity)
 
 			aabb := obstruction.NewAABB(pos, size)
 			collisions := s.Obstruction().Collisions(aabb, blueprintObstruction.Obstruction)
@@ -233,11 +261,11 @@ func (s *service) OnTick(loop.TickEvent) {
 			s.Economy().Wallet().Set(owner, wallet.Pay(cost))
 		}
 
-		blueprintUUID, ok := s.UUID().Component().Get(blueprintEntity)
+		blueprintUUID, ok := s.UUID().UUID().Get(blueprintEntity)
 		if !ok {
 			s.Logger().Fatal(tile.ErrBlueprintIsMissingUUID)
 		}
-		ownerUUID, ok := s.UUID().Component().Get(owner)
+		ownerUUID, ok := s.UUID().UUID().Get(owner)
 		if !ok {
 			s.Logger().Fatal(s.Actions().Own().Error())
 		}

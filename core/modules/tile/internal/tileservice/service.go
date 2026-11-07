@@ -22,7 +22,7 @@ type service struct {
 	ecs.SystemRegister
 	renderer ecs.SystemRegister
 
-	tile ecs.ComponentArray[tile.Component]
+	tile ecs.ComponentArray[tile.TileComponent]
 
 	pos   ecs.ComponentArray[tile.PosComponent]
 	size  ecs.ComponentArray[tile.SizeComponent]
@@ -37,7 +37,7 @@ func NewService(c ioc.Dic, system, renderer ecs.SystemRegister) tile.Service {
 	s.SystemRegister = system
 	s.renderer = renderer
 
-	s.tile = ecs.GetComponentArray[tile.Component](s.World())
+	s.tile = ecs.GetComponentArray[tile.TileComponent](s.World())
 
 	s.pos = ecs.GetComponentArray[tile.PosComponent](s.World())
 	s.size = ecs.GetComponentArray[tile.SizeComponent](s.World())
@@ -54,7 +54,7 @@ func NewService(c ioc.Dic, system, renderer ecs.SystemRegister) tile.Service {
 
 func (s *service) Renderer() ecs.SystemRegister { return s.renderer }
 
-func (s *service) Component() ecs.ComponentArray[tile.Component] {
+func (s *service) Tile() ecs.ComponentArray[tile.TileComponent] {
 	return s.tile
 }
 func (s *service) Grid() grid.ServiceT[tile.ID] { return s.TileGridService }

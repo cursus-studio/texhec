@@ -14,17 +14,6 @@ Go                               3             10              2             40
 SUM:                             3             10              2             40
 -------------------------------------------------------------------------------
 ```
-## Types
-### type Service
-Type: `engine/modules/warmup.Service`
-
-#### method Service WarmUp
-Type: `func()`
-
-### type Event
-Type: `engine/modules/warmup.Event`
-
-
 ## Dependencies
 `engine`:
   - `engine.EngineWorld`

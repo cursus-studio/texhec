@@ -26,7 +26,17 @@ func NewOrthoSys(c ioc.Dic) ecs.SystemRegister {
 	s.Camera().NormalizedViewport().AddDirtySet(s.dirtySet)
 	s.Transform().AbsolutePos().BeforeGet(s.BeforeGet)
 
+	s.Camera().Limits().OnUpsert(s.onLimitsUpsert)
+
 	return nil
+}
+
+func (s *orthoSys) onLimitsUpsert(entity ecs.EntityID) {
+	if ortho, ok := s.Camera().Ortho().Get(entity); ok {
+		limits, _ := s.Camera().Limits().Get(entity)
+		ortho.Zoom = max(min(ortho.Zoom, limits.MaxZoom), limits.MinZoom)
+		s.Camera().Ortho().Set(entity, ortho)
+	}
 }
 
 func (s *orthoSys) BeforeGet() {

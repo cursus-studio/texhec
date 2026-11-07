@@ -96,7 +96,7 @@ func (s *batch) Upsert(entity ecs.EntityID) {
 	model := s.system.Transform().Mat4(entity)
 	color, _ := s.system.Render().Color().Get(entity)
 	textureFrame, _ := s.system.Render().TextureFrame().Get(entity)
-	groups, _ := s.system.Groups().Component().Get(entity)
+	groups, _ := s.system.Groups().Groups().Get(entity)
 
 	frame := int32(textureFrame.GetFrame(s.TextureArray.ImagesCount()))
 

@@ -8,7 +8,7 @@ import (
 )
 
 func (s *service) GetRelativeParentPos(entity ecs.EntityID) mgl32.Vec3 {
-	parent, ok := s.Hierarchy().Component().Get(entity)
+	parent, ok := s.Hierarchy().Parent().Get(entity)
 	if !ok {
 		return mgl32.Vec3{}
 	}
@@ -43,7 +43,7 @@ func (s *service) GetPivotPos(entity ecs.EntityID, size transform.AbsoluteSizeCo
 //
 
 func (s *service) GetRelativeParentRotation(entity ecs.EntityID) mgl32.Quat {
-	parent, ok := s.Hierarchy().Component().Get(entity)
+	parent, ok := s.Hierarchy().Parent().Get(entity)
 	if !ok {
 		return mgl32.QuatIdent()
 	}
@@ -59,7 +59,7 @@ func (s *service) GetRelativeParentRotation(entity ecs.EntityID) mgl32.Quat {
 
 func (s *service) GetRelativeParentSize(entity ecs.EntityID) mgl32.Vec3 {
 	size := s.defaultSize.Size
-	parent, ok := s.Hierarchy().Component().Get(entity)
+	parent, ok := s.Hierarchy().Parent().Get(entity)
 	if !ok {
 		return size
 	}

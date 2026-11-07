@@ -10,99 +10,11 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                               4             38              7            178
+Go                               4             39              8            196
 -------------------------------------------------------------------------------
-SUM:                             4             38              7            178
+SUM:                             4             39              8            196
 -------------------------------------------------------------------------------
 ```
-## Types
-### type Service
-Type: `engine/modules/uuid.Service`
-
-#### method Service Component
-Type: `func() engine/modules/ecs.ComponentArray[engine/modules/uuid.Component]`
-
-#### method Service Entity
-Type: `func(engine/modules/uuid.UUID) (engine/modules/ecs.EntityID, bool)`
-
-#### method Service NewUUID
-Type: `func() engine/modules/uuid.UUID`
-
-#### method Service NewUUIDFromAny
-Type: `func(any) engine/modules/uuid.UUID`
-
-#### method Service NewUUIDFromString
-Type: `func(string) engine/modules/uuid.UUID`
-
-### type LinkService
-Type: `engine/modules/uuid.LinkService[Wrapped any]`
-
-#### method LinkService Cache
-Type: `func() engine/modules/ecs.ComponentArray[engine/modules/uuid.LinkCacheComponent[Wrapped]]`
-
-#### method LinkService Get
-Type: `func(linkSrc engine/modules/ecs.EntityID) (linkDst engine/modules/ecs.EntityID, ok bool)`
-
-#### method LinkService SetUUID
-Type: `func(engine/modules/ecs.EntityID, engine/modules/uuid.UUID)`
-
-#### method LinkService UUID
-Type: `func() engine/modules/ecs.ComponentArray[engine/modules/uuid.LinkUUIDComponent[Wrapped]]`
-
-### type Factory
-Type: `engine/modules/uuid.Factory`
-
-#### method Factory NewUUID
-Type: `func() engine/modules/uuid.UUID`
-
-#### method Factory NewUUIDFromAny
-Type: `func(any) engine/modules/uuid.UUID`
-
-#### method Factory NewUUIDFromString
-Type: `func(string) engine/modules/uuid.UUID`
-
-### type Component
-Type: `engine/modules/uuid.Component`
-
-#### property Component ID
-Type: `engine/modules/uuid.UUID`
-
-### type LinkUUIDComponent
-Type: `engine/modules/uuid.LinkUUIDComponent[Wrappd any]`
-
-#### property LinkUUIDComponent UUID
-Type: `engine/modules/uuid.UUID`
-
-### type LinkCacheComponent
-Type: `engine/modules/uuid.LinkCacheComponent[Wrappd any]`
-
-#### property LinkCacheComponent Entity
-Type: `engine/modules/ecs.EntityID`
-
-### type UUID
-Type: `engine/modules/uuid.UUID`
-
-#### method UUID String
-Type: `func() string`
-
-#### method UUID Bytes
-Type: `func() []byte`
-
-## Variables
-### var ErrMissingUUID
-Type: `error`
-
-## Functions
-### func New
-Type: `func(id engine/modules/uuid.UUID) engine/modules/uuid.Component`
-
-### func NewLinkUUID
-Type: `func[Wrapped any](uuid engine/modules/uuid.UUID) engine/modules/uuid.LinkUUIDComponent[Wrapped]`
-
-### func NewLinkCache
-Type: `func[Wrapped any](entity engine/modules/ecs.EntityID) engine/modules/uuid.LinkCacheComponent[Wrapped]`
-
-
 ## Dependencies
 `engine`:
   - `engine.EngineWorld`
@@ -129,7 +41,6 @@ Type: `func[Wrapped any](entity engine/modules/ecs.EntityID) engine/modules/uuid
   - `engine/modules/typeregistry/pkg.PkgT`
 
 `engine/modules/uuid`:
-  - `engine/modules/uuid.Component`
   - `engine/modules/uuid.Entity`
   - `engine/modules/uuid.ID`
   - `engine/modules/uuid.LinkCacheComponent`
@@ -137,8 +48,10 @@ Type: `func[Wrapped any](entity engine/modules/ecs.EntityID) engine/modules/uuid
   - `engine/modules/uuid.LinkUUIDComponent`
   - `engine/modules/uuid.NewLinkCache`
   - `engine/modules/uuid.NewLinkUUID`
+  - `engine/modules/uuid.NewUUID`
   - `engine/modules/uuid.Service`
   - `engine/modules/uuid.UUID`
+  - `engine/modules/uuid.UUIDComponent`
 
 ### Third Party
 - `github.com/google/uuid`

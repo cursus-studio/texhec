@@ -72,7 +72,7 @@ type Service interface {
 	CanStep(
 		grid.Coords,
 		tile.SizeComponent,
-		obstruction.Component,
+		obstruction.ObstructionComponent,
 		StepComponent,
 	) bool
 }

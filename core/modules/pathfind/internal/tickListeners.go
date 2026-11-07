@@ -48,7 +48,7 @@ func (s *service) StepOnTick(e loop.TickEvent) {
 			continue
 		}
 		size, _ := s.Tile().Size().Get(entity)
-		obstruction, _ := s.Obstruction().Component().Get(entity)
+		obstruction, _ := s.Obstruction().Obstrucion().Get(entity)
 		aligned, isFirstStep := pos.Aligned()
 		if isFirstStep && !s.Pathfind().CanStep(aligned, size, obstruction, step) {
 			s.Pathfind().Step().Remove(entity)
@@ -114,7 +114,7 @@ func (s *service) PathfindOnTick(e loop.TickEvent) {
 			continue
 		}
 		size, _ := s.Tile().Size().Get(entity)
-		obstruction, _ := s.Obstruction().Component().Get(entity)
+		obstruction, _ := s.Obstruction().Obstrucion().Get(entity)
 		fromCoords, _ := from.Aligned()
 		toCoords, _ := to.Aligned()
 		path, ok := s.findPath(fromCoords, toCoords, size, obstruction)

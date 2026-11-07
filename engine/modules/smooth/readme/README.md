@@ -13,49 +13,6 @@ Go                               4             37             13            230
 SUM:                             4             37             13            230
 -------------------------------------------------------------------------------
 ```
-## Types
-### type Service
-Type: `engine/modules/smooth.Service`
-
-#### method Service Start
-Type: `func() engine/modules/ecs.SystemRegister`
-
-#### method Service Stop
-Type: `func() engine/modules/ecs.SystemRegister`
-
-### type ServiceT
-Type: `engine/modules/smooth.ServiceT[StateComponent any]`
-
-#### method ServiceT AddWaypoint
-Type: `func(engine/modules/ecs.EntityID, StateComponent)`
-AddWaypoint appends a state snapshot for the next tick interval.
-Multiple waypoints within a single tick period are distributed evenly across the frame duration.
-
-### type SmoothConstraint
-Type: `engine/modules/smooth.SmoothConstraint[Component any]`
-
-#### method SmoothConstraint Lerp
-Type: `func(Component, float32) Component`
-
-#### method SmoothConstraint Smooth
-Type: `func()`
-this method is a tag that component is smoothed
-each lerpable component with this method will automatically be registered to be smoothed
-
-### type AddWaypointEvent
-Type: `engine/modules/smooth.AddWaypointEvent[StateComponent any]`
-
-#### property AddWaypointEvent Entity
-Type: `engine/modules/ecs.EntityID`
-
-#### property AddWaypointEvent State
-Type: `StateComponent`
-
-## Functions
-### func NewAddWaypointEvent
-Type: `func[StateComponent any](entity engine/modules/ecs.EntityID, state StateComponent) engine/modules/smooth.AddWaypointEvent[StateComponent]`
-
-
 ## Dependencies
 `engine`:
   - `engine.Delay`
@@ -84,7 +41,6 @@ Type: `func[StateComponent any](entity engine/modules/ecs.EntityID, state StateC
   - `engine/modules/record.AddToConfig`
   - `engine/modules/record.Config`
   - `engine/modules/record.Entities`
-  - `engine/modules/record.Entity`
   - `engine/modules/record.NewConfig`
   - `engine/modules/record.RecordingID`
   - `engine/modules/record.StartBackwardsRecording`

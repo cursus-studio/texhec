@@ -25,5 +25,6 @@ func GetComponentArray[Component any](world World) ComponentArray[Component] {
 }
 
 // component array
+type ComponentArrayListeners = ecstypes.ComponentArrayListeners
 type AnyComponentArray = ecstypes.AnyComponentArray
 type ComponentArray[Component any] = ecstypes.ComponentArray[Component]

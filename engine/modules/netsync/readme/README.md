@@ -2,16 +2,22 @@
 ## Architecture
 synchronizes client and server worlds while accounting for permissions
 
+## Benchmarks
+```
+$ go test ./... -bench=.
+PASS
+ok  	engine/modules/netsync/test/prediction_test	0.014s
+```
 ## Lines of code
 ```
 github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                              11            131             62            698
+Go                              14            198             80           1000
 Markdown                         1              2              0              5
 -------------------------------------------------------------------------------
-SUM:                            12            133             62            703
+SUM:                            15            200             80           1005
 -------------------------------------------------------------------------------
 ```
 ## TODO
@@ -23,86 +29,51 @@ transparent events are going to be messed.
 
 
 
-## Types
-### type Service
-Type: `engine/modules/netsync.Service`
-
-#### method Service Client
-Type: `func() engine/modules/ecs.ComponentArray[engine/modules/netsync.ClientComponent]`
-
-#### method Service Clients
-Type: `func() engine/modules/ecs.ComponentArray[engine/modules/netsync.ClientsComponent]`
-
-#### method Service Server
-Type: `func() engine/modules/ecs.ComponentArray[engine/modules/netsync.ServerComponent]`
-
-#### method Service Start
-Type: `func() engine/modules/ecs.SystemRegister`
-
-#### method Service Stop
-Type: `func() engine/modules/ecs.SystemRegister`
-
-### type ValidatedEvent
-Type: `engine/modules/netsync.ValidatedEvent`
-event pointer should implement it
-
-#### method ValidatedEvent SetConnection
-Type: `func(engine/modules/ecs.EntityID)`
-
-### type ServerComponent
-Type: `engine/modules/netsync.ServerComponent`
-entity with this component and with connection component will be one with which we'll synchronize
-
-### type ClientsComponent
-Type: `engine/modules/netsync.ClientsComponent`
-
-### type ClientComponent
-Type: `engine/modules/netsync.ClientComponent`
-entity with this component and connection will get notifications about changes
-
-
 ## Dependencies
 `engine`:
   - `engine.Connection`
   - `engine.EngineWorld`
   - `engine.Events`
   - `engine.EventsBuilder`
-  - `engine.Hierarchy`
   - `engine.Logger`
   - `engine.Loop`
   - `engine.NetSync`
   - `engine.Record`
-  - `engine.UUID`
   - `engine.World`
 
 `engine/modules/connection`:
   - `engine/modules/connection.Close`
-  - `engine/modules/connection.Component`
   - `engine/modules/connection.Conn`
   - `engine/modules/connection.ConnEntity`
+  - `engine/modules/connection.Connection`
   - `engine/modules/connection.MsgCtx`
   - `engine/modules/connection.Send`
 
+`engine/modules/connection/pkg`:
+  - `engine/modules/connection/pkg.ParentPkg`
+
+`engine/modules/datastructures`:
+  - `engine/modules/datastructures.NewSparseArray`
+  - `engine/modules/datastructures.NewStableSparseArray`
+  - `engine/modules/datastructures.SparseArray`
+
 `engine/modules/ecs`:
   - `engine/modules/ecs.ComponentArray`
-  - `engine/modules/ecs.DirtySet`
   - `engine/modules/ecs.EntityID`
   - `engine/modules/ecs.GetComponentArray`
-  - `engine/modules/ecs.NewDirtySet`
   - `engine/modules/ecs.NewSystemRegister`
   - `engine/modules/ecs.SystemRegister`
 
 `engine/modules/loop`:
   - `engine/modules/loop.FrameEvent`
-  - `engine/modules/loop.LastTickUnixNano`
-  - `engine/modules/loop.NewEmitOnTickEvent`
+  - `engine/modules/loop.LastTick`
   - `engine/modules/loop.SyncToUnixNano`
   - `engine/modules/loop.TickEvent`
+  - `engine/modules/loop.UnixNano`
 
 `engine/modules/netsync`:
   - `engine/modules/netsync.Client`
   - `engine/modules/netsync.ClientComponent`
-  - `engine/modules/netsync.Clients`
   - `engine/modules/netsync.ClientsComponent`
   - `engine/modules/netsync.Server`
   - `engine/modules/netsync.ServerComponent`
@@ -111,25 +82,24 @@ entity with this component and connection will get notifications about changes
   - `engine/modules/netsync.ValidatedEvent`
 
 `engine/modules/record`:
+  - `engine/modules/record.AddToConfig`
   - `engine/modules/record.Apply`
+  - `engine/modules/record.ApplyUUIDState`
   - `engine/modules/record.Config`
   - `engine/modules/record.Entities`
-  - `engine/modules/record.GetState`
   - `engine/modules/record.NewConfig`
+  - `engine/modules/record.Peek`
+  - `engine/modules/record.Recording`
+  - `engine/modules/record.RecordingID`
   - `engine/modules/record.StartBackwardsRecording`
   - `engine/modules/record.StartRecording`
   - `engine/modules/record.Stop`
-  - `engine/modules/record.UUID`
-  - `engine/modules/record.UUIDRecording`
-  - `engine/modules/record.UUIDRecordingID`
+  - `engine/modules/record.UUIDState`
 
 `engine/modules/typeregistry/pkg`:
   - `engine/modules/typeregistry/pkg.PkgT`
 
-`engine/modules/uuid`:
-  - `engine/modules/uuid.NewUUID`
-  - `engine/modules/uuid.UUID`
-
 ### Third Party
 - `github.com/ogiusek/events`
 - `github.com/ogiusek/ioc/v2`
+- `github.com/ogiusek/null`

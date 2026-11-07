@@ -27,7 +27,7 @@ type Config interface {
 
 var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 	pkgs := []ioc.Pkg{
-		typeregistrypkg.PkgT[collider.Component],
+		typeregistrypkg.PkgT[collider.ColliderComponent],
 	}
 	for _, pkg := range pkgs {
 		pkg(b)

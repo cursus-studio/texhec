@@ -8,85 +8,11 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                               3             51             16            321
+Go                               3             57             17            357
 -------------------------------------------------------------------------------
-SUM:                             3             51             16            321
+SUM:                             3             57             17            357
 -------------------------------------------------------------------------------
 ```
-## Types
-### type Service
-Type: `core/modules/deploy.Service`
-
-#### method Service CanDeploy
-Type: `func(core/modules/actions.Entity) error`
-
-#### method Service CanDeployAt
-Type: `func(core/modules/actions.Entity, core/modules/actions.Blueprint, core/modules/actions.Coords) error`
-
-#### method Service CanDeployBlueprint
-Type: `func(core/modules/actions.Entity, core/modules/actions.Blueprint) error`
-
-#### method Service Component
-Type: `func() engine/modules/ecs.ComponentArray[core/modules/deploy.Component]`
-
-#### method Service Deploy
-Type: `func(blueprint engine/modules/ecs.EntityID, owner engine/modules/ecs.EntityID, coords engine/modules/grid.Coords) (engine/modules/ecs.EntityID, error)`
-deploy differs from execute event by who deploys.
-execute adds costs and everything where deploy just deploys without any costs (its deployed by system)
-
-#### method Service DeployEvent
-Type: `func(core/modules/deploy.DeployEvent)`
-
-#### method Service DestroyEvent
-Type: `func(core/modules/deploy.DestroyEvent)`
-
-#### method Service Reach
-Type: `func() core/modules/reach.ServiceT[core/modules/deploy.Component]`
-
-#### method Service Register
-Type: `func() error`
-
-### type Component
-Type: `core/modules/deploy.Component`
-
-#### property Component Deployable
-Type: `[]engine/modules/ecs.EntityID`
-
-### type DeployEvent
-Type: `core/modules/deploy.DeployEvent`
-
-#### property DeployEvent PlayerContext
-Type: `core/modules/actions.PlayerContext`
-
-#### property DeployEvent By
-Type: `core/modules/actions.Entity`
-
-#### property DeployEvent Blueprint
-Type: `core/modules/actions.Blueprint`
-
-#### property DeployEvent Coords
-Type: `core/modules/actions.Coords`
-
-### type DestroyEvent
-Type: `core/modules/deploy.DestroyEvent`
-
-#### property DestroyEvent PlayerContext
-Type: `core/modules/actions.PlayerContext`
-
-#### property DestroyEvent Entity
-Type: `core/modules/actions.Entity`
-
-## Functions
-### func NewDeploy
-Type: `func(deployable ...engine/modules/ecs.EntityID) core/modules/deploy.Component`
-
-### func NewDeployEvent
-Type: `func(ctx core/modules/actions.PlayerContext, by engine/modules/uuid.UUID, blueprint engine/modules/uuid.UUID, coords engine/modules/grid.Coords) core/modules/deploy.DeployEvent`
-
-### func NewDestroyEvent
-Type: `func(ctx core/modules/actions.PlayerContext, uuid engine/modules/uuid.UUID) core/modules/deploy.DestroyEvent`
-
-
 ## Dependencies
 `core/game`:
   - `core/game.Actions`
@@ -115,12 +41,15 @@ Type: `func(ctx core/modules/actions.PlayerContext, uuid engine/modules/uuid.UUI
 `core/modules/deploy`:
   - `core/modules/deploy.Blueprint`
   - `core/modules/deploy.By`
-  - `core/modules/deploy.Component`
   - `core/modules/deploy.Coords`
+  - `core/modules/deploy.DeployComponent`
+  - `core/modules/deploy.DeployCounterComponent`
   - `core/modules/deploy.DeployEvent`
   - `core/modules/deploy.Deployable`
   - `core/modules/deploy.DestroyEvent`
   - `core/modules/deploy.Entity`
+  - `core/modules/deploy.I`
+  - `core/modules/deploy.Inc`
   - `core/modules/deploy.PlayerContext`
   - `core/modules/deploy.Reach`
   - `core/modules/deploy.Service`
@@ -134,15 +63,14 @@ Type: `func(ctx core/modules/actions.PlayerContext, uuid engine/modules/uuid.UUI
 
 `core/modules/obstruction`:
   - `core/modules/obstruction.Collisions`
-  - `core/modules/obstruction.Component`
   - `core/modules/obstruction.Deployed`
   - `core/modules/obstruction.ErrPositionIsOccupied`
   - `core/modules/obstruction.NewAABB`
   - `core/modules/obstruction.NewDeployed`
+  - `core/modules/obstruction.Obstrucion`
   - `core/modules/obstruction.Obstruction`
 
 `core/modules/reach`:
-  - `core/modules/reach.Component`
   - `core/modules/reach.Distance`
   - `core/modules/reach.ErrOutsideOfReach`
   - `core/modules/reach.NewReach`
@@ -183,15 +111,22 @@ Type: `func(ctx core/modules/actions.PlayerContext, uuid engine/modules/uuid.UUI
 `engine/modules/loop`:
   - `engine/modules/loop.TickEvent`
 
+`engine/modules/netsync/pkg`:
+  - `engine/modules/netsync/pkg.ComponentPkg`
+  - `engine/modules/netsync/pkg.EventPkg`
+
+`engine/modules/seed`:
+  - `engine/modules/seed.ErrWorldShouldHaveOneSeed`
+  - `engine/modules/seed.Seed`
+
 `engine/modules/typeregistry/pkg`:
   - `engine/modules/typeregistry/pkg.PkgT`
 
 `engine/modules/uuid`:
-  - `engine/modules/uuid.Component`
   - `engine/modules/uuid.Entity`
   - `engine/modules/uuid.Get`
   - `engine/modules/uuid.ID`
-  - `engine/modules/uuid.NewUUID`
+  - `engine/modules/uuid.NewDeterministicUUID`
   - `engine/modules/uuid.NewUUIDFromAny`
   - `engine/modules/uuid.SetUUID`
   - `engine/modules/uuid.UUID`

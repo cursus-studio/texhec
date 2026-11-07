@@ -22,17 +22,6 @@ func NewService(c ioc.Dic) seed.Service {
 func (s *service) Seed() ecs.ComponentArray[seed.SeedComponent] {
 	return s.seed
 }
-func (s *service) WorldSeed() (ecs.EntityID, bool) {
-	seedEntities := s.seed.GetEntities()
-	if len(seedEntities) == 0 {
-		return 0, false
-	}
-	if len(seedEntities) > 1 {
-		s.Logger().Warn(seed.ErrWorldCanHaveOneSeed)
-	}
-	for _, seedEntity := range seedEntities[1:] {
-		s.World().RemoveEntity(seedEntity)
 
-	}
-	return seedEntities[0], true
-}
+// #nosec G115
+func (s *service) GenerateSeed() seed.Seed { return seed.Seed(s.Clock().Now().UnixNano()) }

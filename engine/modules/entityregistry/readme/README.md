@@ -14,7 +14,7 @@ example:
 ```
 $ go test ./... -bench=.
 PASS
-ok  	engine/modules/entityregistry/test	0.015s
+ok  	engine/modules/entityregistry/test	0.017s
 ```
 ## Lines of code
 ```
@@ -27,26 +27,6 @@ Go                               5             31             10            169
 SUM:                             5             31             10            169
 -------------------------------------------------------------------------------
 ```
-## Types
-### type Service
-Type: `engine/modules/entityregistry.Service`
-
-#### method Service Populate
-Type: `func(any) error`
-can return ErrExpectedPointerToAStruct
-
-#### method Service Register
-Type: `func(structTagKey string, handler func(entity engine/modules/ecs.EntityID, structTagValue string))`
-
-## Variables
-### var ErrExpectedPointerToAStruct
-Type: `error`
-
-## Functions
-### func GetRegistry
-Type: `func[Registry any](s engine/modules/entityregistry.Service) (Registry, error)`
-
-
 ## Dependencies
 `engine`:
   - `engine.EngineWorld`
@@ -65,10 +45,10 @@ Type: `func[Registry any](s engine/modules/entityregistry.Service) (Registry, er
   - `engine/modules/entityregistry.Service`
 
 `engine/modules/uuid`:
-  - `engine/modules/uuid.Component`
   - `engine/modules/uuid.Entity`
-  - `engine/modules/uuid.New`
-  - `engine/modules/uuid.NewUUIDFromString`
+  - `engine/modules/uuid.NewDeterministicUUID`
+  - `engine/modules/uuid.NewUUID`
+  - `engine/modules/uuid.UUID`
 
 `engine/pkg`:
   - `engine/pkg.Pkg`

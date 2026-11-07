@@ -101,7 +101,7 @@ func (s *service) Register() error {
 	return nil
 }
 
-func (s *service) Component() ecs.ComponentArray[connection.ConnectionComponent] {
+func (s *service) Connection() ecs.ComponentArray[connection.ConnectionComponent] {
 	return s.connectionArray
 }
 func (s *service) Listener() ecs.ComponentArray[connection.ListenerComponent] {

@@ -142,7 +142,7 @@ func (s *system) ListenRender(render render.RenderEvent) error {
 		camMatrix := s.Camera().Mat4(render.Camera)
 		gl.UniformMatrix4fv(s.locations.Camera, 1, false, &camMatrix[0])
 
-		camGroups, _ := s.Groups().Component().Get(render.Camera)
+		camGroups, _ := s.Groups().Groups().Get(render.Camera)
 		gl.Uniform1ui(s.locations.CameraGroups, camGroups.Mask)
 
 		if err := batch.Render(); err != nil {

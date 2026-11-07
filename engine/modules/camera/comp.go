@@ -6,12 +6,12 @@ import (
 	"github.com/go-gl/mathgl/mgl32"
 )
 
-type Component struct {
+type CameraComponent struct {
 	Projection reflect.Type
 }
 
-func NewCamera[Projection any]() Component {
-	return Component{reflect.TypeFor[Projection]()}
+func NewCamera[Projection any]() CameraComponent {
+	return CameraComponent{reflect.TypeFor[Projection]()}
 }
 
 //
@@ -63,5 +63,3 @@ func (c *NormalizedViewportComponent) Viewport(fullW, fullH int32) (rx, ry, rw, 
 	h := float32(fullH) * c.H
 	return int32(x), int32(y), int32(w), int32(h)
 }
-
-//

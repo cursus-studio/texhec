@@ -24,10 +24,10 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                               8            148             73            992
+Go                               8            148             76            989
 Markdown                         1              1              0              5
 -------------------------------------------------------------------------------
-SUM:                             9            149             73            997
+SUM:                             9            149             76            994
 -------------------------------------------------------------------------------
 ```
 ## TODO
@@ -37,45 +37,6 @@ Extension to preview:
 - ".adoc"
 
 2. Re work module interface to take struct and output string
-
-## Types
-### type Service
-Type: `cicd/modules/docs.Service`
-
-#### method Service DiffModule
-Type: `func(modulePath string) error`
-
-#### method Service DiffProject
-Type: `func(projectPath string) error`
-
-#### method Service DiffTODO
-Type: `func() error`
-
-#### method Service GenerateModule
-Type: `func(modulePath string) error`
-Generates module documentation in `$modulePath/readme/README.md`
-
-#### method Service GenerateProject
-Type: `func(projectPath string) error`
-
-#### method Service GenerateTODO
-Type: `func() error`
-reads TODO.md in all modules
-generates readme/TODO.md
-
-### type Config
-Type: `cicd/modules/docs.Config`
-
-## Variables
-### var ErrMissingPackage
-Type: `error`
-
-### var ErrMissingPackageComments
-Type: `error`
-
-### var ErrInconsistentPackageComments
-Type: `error`
-
 
 ## Dependencies
 `cicd/modules/docs`:
