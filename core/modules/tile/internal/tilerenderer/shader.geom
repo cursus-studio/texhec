@@ -72,9 +72,9 @@ void sort4(inout int a[4]) {
 }
 
 void setBiomes(int index, vec2 coord) {
-  int neighbours[4] = {getTile(coord + vec2(0)), getTile(coord + vec2(1, 0)),
-                       getTile(coord + vec2(0, 1)), getTile(coord + vec2(1))};
-  int biomes[4] = neighbours;
+  int neighbors[4] = {getTile(coord + vec2(0)), getTile(coord + vec2(1, 0)),
+                      getTile(coord + vec2(0, 1)), getTile(coord + vec2(1))};
+  int biomes[4] = neighbors;
   sort4(biomes);
 
   int seed = seed(index);
@@ -82,7 +82,7 @@ void setBiomes(int index, vec2 coord) {
     int base = biomes[i] * 15;
     int mask = 0;
     for (int n = 0; n < 4; n++) {
-      mask |= int(neighbours[n] == biomes[i]) * (1 << n);
+      mask |= int(neighbors[n] == biomes[i]) * (1 << n);
     }
     gs_out.textures[i] = getTexture(seed, base + mask);
   }

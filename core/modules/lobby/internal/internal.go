@@ -11,6 +11,7 @@ import (
 	"engine/modules/grid"
 	"engine/modules/uuid"
 	"fmt"
+	"math"
 	"slices"
 
 	"github.com/ogiusek/events"
@@ -141,22 +142,38 @@ func (s *service) onGenerate(lobby.GenerateEvent) {
 	}
 
 	unitsBatch := batcher.NewBatch(1, func(i int) {
-		for _, playerEntity := range s.Player().Name().GetEntities() {
+		radiansGetter := func(angleNormalized float64) float64 { return angleNormalized * 2 * math.Pi }
+		getCoords := func(coord grid.Coord, angleRad float64, dist float64) grid.Coords {
+			// we take a center
+			// we create an angle using i and maxIndex
+			// and take 2/3 of distance from center in this angle and return a point
+			// caller later will take coords closer to these coords
+			return grid.NewCoords(
+				coord+grid.Coord(dist*math.Cos(angleRad)),
+				coord+grid.Coord(dist*math.Sin(angleRad)))
+		}
+
+		size := grid.Coord(gameCameraComp.MaxChunksZoomOut) * s.Grid().ChunkSize()
+		center := size / 2
+		dist := float64(size) / 3
+		players := s.Player().Name().GetEntities()
+		for i, playerEntity := range players {
 			s.Economy().Wallet().Set(playerEntity, playersInitials.Wallet)
 
 			units := slices.Clone(units)
-		loop:
-			for y := range s.Grid().ChunkSize() {
-				for x := range s.Grid().ChunkSize() {
-					coords := grid.NewCoords(x, y)
-					coords = s.Grid().AbsoluteCoords(grid.NewChunkCoords(0, 0), coords)
-					deployed := units[0]
-					if _, err := s.Deploy().Deploy(deployed, playerEntity, coords); err == nil {
-						units = units[1:]
-					}
-					if len(units) == 0 {
-						break loop
-					}
+
+			normalizedAngle := float64(i) / float64(len(players))
+			pointAngle := radiansGetter(normalizedAngle)
+			coords := getCoords(center, pointAngle, dist)
+			for i := grid.Coord(0); i < size*size; i++ {
+				neighbor := s.Tile().GetNthNeighbor(i)
+				coords := grid.NewCoords(coords.X+neighbor.X, coords.Y+neighbor.Y)
+				deployed := units[0]
+				if _, err := s.Deploy().Deploy(deployed, playerEntity, coords); err == nil {
+					units = units[1:]
+				}
+				if len(units) == 0 {
+					break
 				}
 			}
 		}

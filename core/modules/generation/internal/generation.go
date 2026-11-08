@@ -113,14 +113,14 @@ func (s *service) GenerateOn(event tile.MissingChunkEvent) {
 	})
 
 	// smoothing batch
-	neighbours := []grid.Coords{}
-	neighbourDistance := grid.Coord(3)
-	for x := -neighbourDistance; x <= neighbourDistance; x++ {
-		for y := -neighbourDistance; y <= neighbourDistance; y++ {
+	neighbors := []grid.Coords{}
+	neighborDistance := grid.Coord(3)
+	for x := -neighborDistance; x <= neighborDistance; x++ {
+		for y := -neighborDistance; y <= neighborDistance; y++ {
 			if x == 0 && y == 0 {
 				continue
 			}
-			neighbours = append(neighbours, grid.NewCoords(x, y))
+			neighbors = append(neighbors, grid.NewCoords(x, y))
 		}
 	}
 
@@ -131,8 +131,8 @@ func (s *service) GenerateOn(event tile.MissingChunkEvent) {
 			gridI := grid.Index(i*config.tilesPerJob + j)
 			coords := s.Grid().IndexCoords(gridI)
 			counts := datastructures.NewSparseArray[tile.ID, int]()
-			for _, neighbour := range neighbours {
-				coords := grid.NewCoords(coords.X+neighbour.X, coords.Y+neighbour.Y)
+			for _, neighbor := range neighbors {
+				coords := grid.NewCoords(coords.X+neighbor.X, coords.Y+neighbor.Y)
 				index, ok := s.Grid().CoordsIndex(coords)
 				if !ok {
 					continue

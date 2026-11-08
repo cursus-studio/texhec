@@ -122,12 +122,12 @@ func main() {
 		switch arg {
 		case definitions.MainMenuID.ID:
 			fallthrough
-		// case definitions.GameID.ID:
-		// 	fallthrough
-		// case definitions.GameServerID.ID:
-		// 	fallthrough
-		// case definitions.GameClientID.ID:
-		// 	fallthrough
+		case definitions.PlayID.ID:
+			fallthrough
+		case definitions.PlayGenerateID.ID:
+			fallthrough
+		case definitions.PlayConnectID.ID:
+			fallthrough
 		case definitions.SettingsID.ID:
 			fallthrough
 		case definitions.CreditsID.ID:
@@ -142,3 +142,16 @@ func main() {
 	runtime.LockOSThread()
 	world.Loop().Run(loop.NewConfigureEvent(60, 1))
 }
+
+// TODO
+// merge feature and event to one ?
+
+// 1. add ip setter to lobby
+// 2. make players positions generate closest to a position on a circle
+// 3. create a way to generate TEXHEC chunks instead of adding TEXHEC chunk as a noise
+//    TEXHEC chunks generate instead of a grass
+//    TEXHEC chunk can have different policies depending on choosen generation
+// 3. add proper windows runner
+// 4. add on itch io
+// 5. add AI
+// 6. create real map generation

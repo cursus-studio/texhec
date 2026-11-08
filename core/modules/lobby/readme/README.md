@@ -9,9 +9,9 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                               7            138             48            732
+Go                               7            140             52            743
 -------------------------------------------------------------------------------
-SUM:                             7            138             48            732
+SUM:                             7            140             52            743
 -------------------------------------------------------------------------------
 ```
 ## Dependencies
@@ -21,6 +21,7 @@ SUM:                             7            138             48            732
   - `core/game.Economy`
   - `core/game.GameWorld`
   - `core/game.Player`
+  - `core/game.Tile`
   - `core/game.Ui`
 
 `core/modules/economy`:
@@ -89,6 +90,7 @@ SUM:                             7            138             48            732
   - `core/modules/player.PlayersConnection`
 
 `core/modules/tile`:
+  - `core/modules/tile.GetNthNeighbor`
   - `core/modules/tile.NewMissingChunkEvent`
 
 `core/modules/ui`:
@@ -120,11 +122,13 @@ SUM:                             7            138             48            732
   - `engine/modules/ecs.GetComponentArray`
 
 `engine/modules/grid`:
-  - `engine/modules/grid.AbsoluteCoords`
   - `engine/modules/grid.ChunkSize`
   - `engine/modules/grid.Coord`
+  - `engine/modules/grid.Coords`
   - `engine/modules/grid.NewChunkCoords`
   - `engine/modules/grid.NewCoords`
+  - `engine/modules/grid.X`
+  - `engine/modules/grid.Y`
 
 `engine/modules/groups`:
   - `engine/modules/groups.DefaultGroups`
