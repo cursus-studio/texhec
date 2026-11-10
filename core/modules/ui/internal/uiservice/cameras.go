@@ -20,40 +20,28 @@ type gameCameraComponent struct{}
 
 func (s *service) GameCamera() ecs.ComponentArray[ui.GameCameraComponent] { return s.gameCamera }
 
-func (s *service) GetCamera(gameCameraEntity ecs.EntityID) ecs.EntityID {
-	if entities := s.camera.GetEntities(); len(entities) != 0 {
-		return entities[0]
-	}
-	sceneParent := s.Scene().Scene()
-	s.Hierarchy().SetParent(gameCameraEntity, sceneParent)
-	s.Groups().Groups().Set(gameCameraEntity, groups.EmptyGroups().Enable(definitions.GameGroup))
-
-	gameCamera := s.World().NewEntity()
-	s.Hierarchy().SetParent(gameCamera, sceneParent)
-	s.Camera().Priority().Set(gameCamera, camera.NewPriority(0))
-	s.camera.Set(gameCamera, gameCameraComponent{})
-	s.UUID().UUID().Set(gameCamera, uuid.NewUUID([16]byte{48}))
-	s.Camera().Ortho().Set(gameCamera, camera.NewOrtho(-1000, +1000))
-	s.Groups().Groups().Set(gameCamera, groups.EmptyGroups().Enable(definitions.GameGroup))
-	s.Camera().Mobile().Set(gameCamera, camera.NewMobileCamera())
-	return gameCamera
-}
-
 func (s *service) OnGameCameraUpsert(entity ecs.EntityID) {
-	gameCamera := s.GetCamera(entity)
+	if _, ok := s.camera.Get(entity); !ok {
+		s.Camera().Priority().Set(entity, camera.NewPriority(0))
+		s.camera.Set(entity, gameCameraComponent{})
+		s.UUID().UUID().Set(entity, uuid.NewUUID([16]byte{48}))
+		s.Camera().Ortho().Set(entity, camera.NewOrtho(-1000, +1000))
+		s.Groups().Groups().Set(entity, groups.EmptyGroups().Enable(definitions.GameGroup))
+		s.Camera().Mobile().Set(entity, camera.NewMobileCamera())
+	}
 	gameCameraComp, _ := s.GameCamera().Get(entity)
 
 	tile := s.Grid().GetTileSize().Size[0]
 	tilesPerSide := float32(gameCameraComp.MaxChunksZoomOut * uint32(s.Grid().ChunkSize()))
 	mapSide := tilesPerSide * tile
 
-	x, y, w, h := s.Camera().GetViewport(gameCamera)
+	x, y, w, h := s.Camera().GetViewport(entity)
 	viewW := float32(w - x)
 	viewH := float32(h - y)
 
 	minZoom := max(viewW/mapSide, viewH/mapSide)
 
-	s.Camera().Limits().Set(gameCamera, camera.NewCameraLimits(
+	s.Camera().Limits().Set(entity, camera.NewCameraLimits(
 		minZoom, 10,
 		mgl32.Vec3{0, 0, -1000},
 		mgl32.Vec3{mapSide, mapSide, 1000},

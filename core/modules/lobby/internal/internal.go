@@ -116,6 +116,9 @@ func (s *service) onGenerate(lobby.GenerateEvent) {
 	gameCameraComp, _ := s.GameCamera().Get(gameCameraEntity)
 	playersInitials, _ := s.PlayersInitials().Get(gameCameraEntity)
 
+	uiGameCameraEntity := s.World().NewEntity()
+	s.Hierarchy().SetParent(uiGameCameraEntity, scene)
+
 	clear(s.inputChanges)
 	for _, entity := range s.LobbyUI().GetEntities() {
 		s.World().RemoveEntity(entity)
@@ -123,7 +126,7 @@ func (s *service) onGenerate(lobby.GenerateEvent) {
 
 	s.Ui().AddUICamera(scene)
 	s.Ui().AddBgCamera(scene)
-	s.Ui().GameCamera().Set(gameCameraEntity, ui.NewGameCamera(gameCameraComp.MaxChunksZoomOut))
+	s.Ui().GameCamera().Set(uiGameCameraEntity, ui.NewGameCamera(gameCameraComp.MaxChunksZoomOut))
 
 	for x := range grid.Coord(gameCameraComp.MaxChunksZoomOut) {
 		for y := range grid.Coord(gameCameraComp.MaxChunksZoomOut) {
@@ -165,6 +168,12 @@ func (s *service) onGenerate(lobby.GenerateEvent) {
 			normalizedAngle := float64(i) / float64(len(players))
 			pointAngle := radiansGetter(normalizedAngle)
 			coords := getCoords(center, pointAngle, dist)
+			if _, ok := s.Player().ActingPlayer().Get(playerEntity); ok {
+				originalPos, _ := s.Transform().Pos().Get(uiGameCameraEntity)
+				pos := s.Tile().GetPos(coords)
+				originalPos.Pos[0], originalPos.Pos[1] = pos.Pos[0], pos.Pos[1]
+				s.Transform().Pos().Set(uiGameCameraEntity, pos)
+			}
 			for i := grid.Coord(0); i < size*size; i++ {
 				neighbor := s.Tile().GetNthNeighbor(i)
 				coords := grid.NewCoords(coords.X+neighbor.X, coords.Y+neighbor.Y)

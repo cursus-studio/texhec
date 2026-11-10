@@ -9,9 +9,9 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                               7            140             52            743
+Go                               7            141             52            751
 -------------------------------------------------------------------------------
-SUM:                             7            140             52            743
+SUM:                             7            141             52            751
 -------------------------------------------------------------------------------
 ```
 ## Dependencies
@@ -91,6 +91,7 @@ SUM:                             7            140             52            743
 
 `core/modules/tile`:
   - `core/modules/tile.GetNthNeighbor`
+  - `core/modules/tile.GetPos`
   - `core/modules/tile.NewMissingChunkEvent`
 
 `core/modules/ui`:
