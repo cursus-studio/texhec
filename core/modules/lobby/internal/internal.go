@@ -51,6 +51,7 @@ func NewService(c ioc.Dic) lobby.Service {
 	events.Listen(s.EventsBuilder(), s.OnPasteSeed)
 	events.Listen(s.EventsBuilder(), wrapCall(s.onLobbyUpsert, s.OnSetSeed))
 
+	events.Listen(s.EventsBuilder(), wrapCall(s.onLobbyUpsert, s.OnReloadLobby))
 	events.Listen(s.EventsBuilder(), s.OnInputAddPlayer)
 	events.Listen(s.EventsBuilder(), wrapCall(s.onLobbyUpsert, s.OnAddPlayer))
 	events.Listen(s.EventsBuilder(), wrapCall(s.onLobbyUpsert, s.OnRemovePlayer))

@@ -32,6 +32,7 @@ func (s *service) OnSetSeed(event lobby.SetSeedEvent) {
 	}
 	s.Seed().Seed().Set(seedEntity, seed.NewSeed(event.Seed))
 }
+func (s *service) OnReloadLobby(event lobby.ReloadLobbyEvent) {}
 func (s *service) OnInputAddPlayer(event lobby.InputAddPlayerEvent) {
 	events.Emit(s.Events(), lobby.NewAddPlayerEvent(s.UUID().NewUUID()))
 }

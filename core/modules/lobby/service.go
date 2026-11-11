@@ -43,6 +43,7 @@ func NewReRollSeed() ReRollSeedEvent         { return ReRollSeedEvent{} }
 func NewPasteSeed() PasteSeedEvent           { return PasteSeedEvent{} }
 func NewSetSeed(seed seed.Seed) SetSeedEvent { return SetSeedEvent{seed} }
 
+type ReloadLobbyEvent struct{}
 type InputAddPlayerEvent struct{}                     // isn't deterministic
 type AddPlayerEvent struct{ NewPlayerUUID uuid.UUID } // is [InputAddPlayerEvent] but deterministic
 type RemovePlayerEvent struct{ PlayerUUID uuid.UUID }
@@ -55,6 +56,7 @@ type SetPlayerColorEvent struct {
 	Color      mgl32.Vec3
 }
 
+func NewReloadLobbyEvent() ReloadLobbyEvent                 { return ReloadLobbyEvent{} }
 func NewInputAddPlayerEvent() InputAddPlayerEvent           { return InputAddPlayerEvent{} }
 func NewAddPlayerEvent(uuid uuid.UUID) AddPlayerEvent       { return AddPlayerEvent{uuid} }
 func NewRemovePlayerEvent(uuid uuid.UUID) RemovePlayerEvent { return RemovePlayerEvent{uuid} }

@@ -109,9 +109,10 @@ func (s *service) renderPlayerCard(parent ecs.EntityID, playerEntity ecs.EntityI
 		}
 	})
 
-	// TODO: show the connection assigned to this player once the lobby
-	// knows how connections are mapped onto players.
-	s.newLobbyLabel(card, "CONNECTION: -", lobbyControlWidth, 22, 16)
+	if actingConnection, ok := s.Player().ActingConnection().Get(playerEntity); ok {
+		uuid, _ := s.UUID().UUID().Get(actingConnection.Connection)
+		s.newLobbyLabel(card, fmt.Sprintf("CONNECTION: %v", uuid.ID.String()), lobbyControlWidth, 22, 16)
+	}
 
 	s.newLobbyButton(card, "REMOVE", lobby.NewRemovePlayerEvent(playerUUID.ID), lobbyControlWidth, lobbyControlHeight)
 

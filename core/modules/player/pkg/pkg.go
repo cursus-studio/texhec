@@ -82,6 +82,7 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 				if err := conn.Conn().Send(player.NewAssignActingPlayerDTO(playerUUID)); err != nil {
 					s.Logger().Warn(err)
 				}
+				events.Emit(s.Events(), lobby.NewReloadLobbyEvent())
 			}
 		}),
 	}

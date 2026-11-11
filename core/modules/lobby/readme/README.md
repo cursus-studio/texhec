@@ -9,9 +9,9 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                               7            141             52            751
+Go                               7            141             50            758
 -------------------------------------------------------------------------------
-SUM:                             7            141             52            751
+SUM:                             7            141             50            758
 -------------------------------------------------------------------------------
 ```
 ## Dependencies
@@ -60,6 +60,7 @@ SUM:                             7            141             52            751
   - `core/modules/lobby.PlayerUUID`
   - `core/modules/lobby.PlayersInitialsComponent`
   - `core/modules/lobby.ReRollSeedEvent`
+  - `core/modules/lobby.ReloadLobbyEvent`
   - `core/modules/lobby.RemovePlayerEvent`
   - `core/modules/lobby.RemovePlayersUnitEvent`
   - `core/modules/lobby.Seed`
@@ -79,6 +80,7 @@ SUM:                             7            141             52            751
   - `core/modules/player.ActingConnection`
   - `core/modules/player.ActingPlayer`
   - `core/modules/player.Color`
+  - `core/modules/player.Connection`
   - `core/modules/player.ErrNameCollision`
   - `core/modules/player.Name`
   - `core/modules/player.NameRelation`
@@ -210,6 +212,7 @@ SUM:                             7            141             52            751
   - `engine/modules/uuid.Entity`
   - `engine/modules/uuid.ID`
   - `engine/modules/uuid.NewUUID`
+  - `engine/modules/uuid.String`
   - `engine/modules/uuid.UUID`
 
 ### Third Party

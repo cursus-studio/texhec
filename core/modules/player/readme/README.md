@@ -8,10 +8,10 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                               3             41             12            304
+Go                               3             41             12            305
 Markdown                         2              0              0              3
 -------------------------------------------------------------------------------
-SUM:                             5             41             12            307
+SUM:                             5             41             12            308
 -------------------------------------------------------------------------------
 ```
 ## TODO
@@ -39,6 +39,7 @@ Perhaps attach `PlayerComponent` to camera.
 
 `core/modules/lobby`:
   - `core/modules/lobby.NewInputAddPlayerEvent`
+  - `core/modules/lobby.NewReloadLobbyEvent`
 
 `core/modules/player`:
   - `core/modules/player.AcceptNewConnections`
