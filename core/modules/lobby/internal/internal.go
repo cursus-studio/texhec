@@ -9,14 +9,28 @@ import (
 	"engine/modules/batcher"
 	"engine/modules/ecs"
 	"engine/modules/grid"
+	"engine/modules/render"
 	"engine/modules/uuid"
 	"fmt"
 	"math"
 	"slices"
+	"strings"
 
 	"github.com/ogiusek/events"
 	"github.com/ogiusek/ioc/v2"
 )
+
+type InputEvent[Wrapped any] struct {
+	Entity  ecs.EntityID
+	Wrapped Wrapped
+}
+type InputComponent[Wrapped any] struct{}
+
+type SetPlayerNameInput struct{ Player uuid.UUID }
+type SetPlayerColorInput struct {
+	Player uuid.UUID
+	Swatch ecs.EntityID
+}
 
 type service struct {
 	game.GameWorld  `inject:""`
@@ -25,7 +39,8 @@ type service struct {
 	lobby           ecs.ComponentArray[lobby.LobbyComponent]
 	lobbyUI         ecs.ComponentArray[lobby.LobbyUIComponent]
 
-	inputChanges map[ecs.EntityID]func(string)
+	newName  func(parent ecs.EntityID, initial string, input SetPlayerNameInput) ecs.EntityID
+	newColor func(parent ecs.EntityID, initial string, input SetPlayerColorInput) ecs.EntityID
 }
 
 func wrapCall[Wrapped any](call func(), wrap func(Wrapped)) func(Wrapped) {
@@ -41,9 +56,22 @@ func NewService(c ioc.Dic) lobby.Service {
 	s.gameCamera = ecs.GetComponentArray[lobby.GameCameraComponent](s.World())
 	s.lobby = ecs.GetComponentArray[lobby.LobbyComponent](s.World())
 	s.lobbyUI = ecs.GetComponentArray[lobby.LobbyUIComponent](s.World())
-	s.inputChanges = make(map[ecs.EntityID]func(string))
 
-	s.Inputs().TextInput().OnMod(s.onTextInputMod)
+	s.newName = newLobbyInput(s, func(raw string, input SetPlayerNameInput) {
+		newName := strings.TrimSpace(raw)
+		if newName == "" {
+			return
+		}
+		events.Emit(s.Events(), lobby.NewSetPlayerNameEvent(input.Player, newName))
+	})
+	s.newColor = newLobbyInput(s, func(raw string, input SetPlayerColorInput) {
+		color, err := parseColor(raw)
+		if err != nil {
+			return
+		}
+		s.Render().Color().Set(input.Swatch, render.NewColor(color.Vec4(1)))
+		events.Emit(s.Events(), lobby.NewSetPlayerColorEvent(input.Player, color))
+	})
 
 	s.Lobby().OnUpsert(func(ecs.EntityID) { s.onLobbyUpsert() })
 
@@ -57,7 +85,7 @@ func NewService(c ioc.Dic) lobby.Service {
 	events.Listen(s.EventsBuilder(), wrapCall(s.onLobbyUpsert, s.OnRemovePlayer))
 
 	events.Listen(s.EventsBuilder(), wrapCall(s.onLobbyUpsert, s.OnSetPlayerName))
-	events.Listen(s.EventsBuilder(), wrapCall(s.onLobbyUpsert, s.OnSetPlayerColor))
+	events.Listen(s.EventsBuilder(), s.OnSetPlayerColor)
 	events.Listen(s.EventsBuilder(), wrapCall(s.onLobbyUpsert, s.OnSetPlayersWallet))
 	events.Listen(s.EventsBuilder(), wrapCall(s.onLobbyUpsert, s.OnAddPlayersUnitEvent))
 	events.Listen(s.EventsBuilder(), wrapCall(s.onLobbyUpsert, s.OnRemovePlayersUnitEvent))
@@ -88,7 +116,6 @@ func (s *service) onLobbyUpsert() {
 	if len(s.Lobby().GetEntities()) == 0 {
 		return
 	}
-	clear(s.inputChanges)
 	isServer := len(s.NetSync().Server().GetEntities()) == 0
 
 	if isServer {
@@ -120,7 +147,6 @@ func (s *service) onGenerate(lobby.GenerateEvent) {
 	uiGameCameraEntity := s.World().NewEntity()
 	s.Hierarchy().SetParent(uiGameCameraEntity, scene)
 
-	clear(s.inputChanges)
 	for _, entity := range s.LobbyUI().GetEntities() {
 		s.World().RemoveEntity(entity)
 	}

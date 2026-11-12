@@ -24,10 +24,7 @@ type inputsSystem struct {
 func NewInputsSystem(c ioc.Dic) ecs.SystemRegister {
 	return ecs.NewSystemRegister(func() error {
 		s := ioc.GetServices[*inputsSystem](c)
-		s.Inputs().TextInput().OnMod(func(ei ecs.EntityID) {
-			if !s.World().EntityExists(ei) {
-				return
-			}
+		s.Inputs().TextInput().OnUpsert(func(ei ecs.EntityID) {
 			input, _ := s.Inputs().TextInput().Get(ei)
 
 			res := make([]string, len(input.Lines))
@@ -54,6 +51,7 @@ func (s *inputsSystem) OnTextInputEvent(event inputs.TextInputEvent) {
 		return
 	}
 	input, _ := s.Inputs().TextInput().Get(event.Entity)
+	original := input.Text()
 	if len(input.Lines) == 0 {
 		input.Lines = append(input.Lines, "")
 	}
@@ -125,4 +123,7 @@ func (s *inputsSystem) OnTextInputEvent(event inputs.TextInputEvent) {
 	}
 
 	s.Inputs().TextInput().Set(event.Entity, input)
+	if original != input.Text() {
+		events.EmitAny(s.Events(), input.OnUpdate)
+	}
 }

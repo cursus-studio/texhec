@@ -147,11 +147,10 @@ func main() {
 // merge feature and event to one ?
 
 // 1. add ip setter to lobby
-// 2. make players positions generate closest to a position on a circle
-// 3. create a way to generate TEXHEC chunks instead of adding TEXHEC chunk as a noise
+// 2. create a way to generate TEXHEC chunks instead of adding TEXHEC chunk as a noise
 //    TEXHEC chunks generate instead of a grass
 //    TEXHEC chunk can have different policies depending on choosen generation
-// 3. add proper windows runner
+// 3. add proper way to run TEXHEC on windows
 // 4. add on itch io
 // 5. add AI
 // 6. create real map generation

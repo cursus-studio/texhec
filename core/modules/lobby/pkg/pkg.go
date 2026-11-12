@@ -26,6 +26,7 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 		typeregistrypkg.PkgT[lobby.AddPlayersUnitEvent],
 		typeregistrypkg.PkgT[lobby.RemovePlayersUnitEvent],
 		typeregistrypkg.PkgT[lobby.SetConnectionPlayerEvent],
+		typeregistrypkg.PkgT[lobby.SetPlayersConnectionEvent],
 
 		typeregistrypkg.PkgT[lobby.GenerateEvent],
 
