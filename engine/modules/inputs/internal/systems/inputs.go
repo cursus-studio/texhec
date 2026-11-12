@@ -123,7 +123,7 @@ func (s *inputsSystem) OnTextInputEvent(event inputs.TextInputEvent) {
 	}
 
 	s.Inputs().TextInput().Set(event.Entity, input)
-	if original != input.Text() {
+	if input.OnUpdate != nil && original != input.Text() {
 		events.EmitAny(s.Events(), input.OnUpdate)
 	}
 }
