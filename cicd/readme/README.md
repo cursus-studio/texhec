@@ -7,7 +7,7 @@ This project is responsible for code quality and commit history.
 Hosted on Rasperry Pi and uses prometheus and grafana for monitoring.
 
 ### Commands
-CI/CD tool exposes 5 commands:
+CI/CD tool these commands:
 - #### `go run cicd setup`
 It initializes git hooks.
 
@@ -37,6 +37,13 @@ To send changes using github status api it needs ENV variables:
 
 To see implementation details of documentation or pipeline go to its module readme.
 
+- #### `go run cicd release $version`
+`$version` can be:
+- `vX.Y.Z` just releases exact version
+- `minor` for newest release increases `Z` by 1
+- `major` for newest release increases `Y` by 1
+- `version` for newest release increases `X` by 1
+
 ## Modules
 - [docs](/cicd/modules/docs/readme/README.md)
 - [git](/cicd/modules/git/readme/README.md)
@@ -49,12 +56,12 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                              21            274            122           1959
+Go                              21            276            122           1976
 Groovy                           1              5              1             76
 Dockerfile                       1              9              4             51
-Markdown                         4             10              0             33
+Markdown                         4             11              0             39
 -------------------------------------------------------------------------------
-SUM:                            27            298            127           2119
+SUM:                            27            301            127           2142
 -------------------------------------------------------------------------------
 ```
 ## TODO

@@ -4,7 +4,7 @@ This project is responsible for code quality and commit history.
 Hosted on Rasperry Pi and uses prometheus and grafana for monitoring.
 
 ### Commands
-CI/CD tool exposes 5 commands:
+CI/CD tool these commands:
 - #### `go run cicd setup`
 It initializes git hooks.
 
@@ -33,3 +33,10 @@ To send changes using github status api it needs ENV variables:
 - `CONTEXT`: git status key
 
 To see implementation details of documentation or pipeline go to its module readme.
+
+- #### `go run cicd release $version`
+`$version` can be:
+- `vX.Y.Z` just releases exact version
+- `minor` for newest release increases `Z` by 1
+- `major` for newest release increases `Y` by 1
+- `version` for newest release increases `X` by 1

@@ -538,3 +538,8 @@ func (s *service) Verify(commitHash string) error {
 	}
 	return nil
 }
+
+func (s *service) Release(version string) error {
+	fmt.Printf("Release: \"%v\"\n", version)
+	return nil
+}
