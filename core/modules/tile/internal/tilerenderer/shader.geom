@@ -38,11 +38,11 @@ int getIndex(vec2 coord) {
 int getTile(vec2 coord) { return grid[getIndex(coord)]; }
 int getTile(int index) { return getTile(getCoord(index)); }
 
-int getTexture(int seed, int i) {
-  return int(tileTextures[i].x) + seed % int(tileTextures[i].y);
+int getTexture(uint seed, int i) {
+  return int(tileTextures[i].x) + int(seed % uint(tileTextures[i].y));
 }
 
-int seed(int num) {
+uint seed(int num) {
   uint seed = num;
   seed = seed * 1664525u + 1013904223u;
   seed ^= seed >> 16;
@@ -50,7 +50,7 @@ int seed(int num) {
   seed ^= seed >> 13;
   seed *= 0xc2b2ae35u;
   seed ^= seed >> 16;
-  return int(seed);
+  return seed;
 }
 
 //
@@ -77,7 +77,7 @@ void setBiomes(int index, vec2 coord) {
   int biomes[4] = neighbors;
   sort4(biomes);
 
-  int seed = seed(index);
+  uint seed = seed(index);
   for (int i = 0; i < 4; i++) {
     int base = biomes[i] * 15;
     int mask = 0;

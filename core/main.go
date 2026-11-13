@@ -19,9 +19,8 @@ import (
 	"github.com/veandco/go-sdl2/sdl"
 )
 
-// golangci-lint run --fix
-func main() {
-	print("started main\n")
+func init() {
+	runtime.LockOSThread()
 
 	{ // go tool pprof -http=:8080 ignore.cpu.pprof
 		name := ""
@@ -37,6 +36,13 @@ func main() {
 		}
 		defer pprof.StopCPUProfile()
 	}
+}
+
+// clear && CGO_ENABLED=1 GOOS=windows GOARCH=amd64 CC=x86_64-w64-mingw32-gcc CGO_LDFLAGS="-static -lmingw32 -lSDL2main -lSDL2 -lSDL2_image -lSDL2_mixer -lm -ldinput8 -ldxguid -lsetupapi -lgdi32 -lwinmm -limm32 -lole32 -loleaut32 -lshell32 -lversion -luuid" go -C core build -ldflags="-s -w -extldflags '-static'" -o myapp.exe . && go -C core run . play-generate
+
+// golangci-lint run --fix
+func main() {
+	print("started main\n")
 
 	c := getDic()
 	world := ioc.Get[game.GameWorld](c)
@@ -144,13 +150,10 @@ func main() {
 }
 
 // TODO
-// merge feature and event to one ?
 
-// 1. add ip setter to lobby
-// 2. create a way to generate TEXHEC chunks instead of adding TEXHEC chunk as a noise
+// 1. create a way to generate TEXHEC chunks instead of adding TEXHEC chunk as a noise
 //    TEXHEC chunks generate instead of a grass
 //    TEXHEC chunk can have different policies depending on choosen generation
-// 3. add proper way to run TEXHEC on windows
-// 4. add on itch io
-// 5. add AI
-// 6. create real map generation
+// 2. add proper way to run TEXHEC on windows
+// 3. add on itch io
+// 4. add AI
