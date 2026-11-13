@@ -1,0 +1,50 @@
+name: Trigger Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_type:
+        description: 'Select release type'
+        required: true
+        default: 'minor'
+        type: choice
+        options:
+          - minor
+          - major
+          - version
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Build Cache
+        uses: actions/cache@v4
+        with:
+          path: .cache
+          key: ${{ runner.os }}-ci-cache-${{ hashFiles('cicd/**') }}
+          restore-keys: |
+            ${{ runner.os }}-ci-cache-
+
+      - name: Build CI runner container
+        run: docker build -t ci-runner cicd
+
+      - name: Prepare local cache directory
+        run: |
+          HOST_CACHE="$(pwd)/.cache"
+          mkdir -p "$HOST_CACHE"
+          chmod -R 777 "$HOST_CACHE"
+
+      - name: Run Release Script via Docker
+        run: |
+          docker run --rm \
+            -u "$(id -u):$(id -g)" \
+            -e GOCACHE=/cache/go-cache \
+            -e GOPATH=/cache/go-path \
+            -e GOLANGCI_LINT_CACHE=/cache/golangci-lint \
+            -v "$(pwd)/.cache:/cache" \
+            -v "$(pwd):/app" \
+            -w /app \
+            ci-runner go run cicd release "${{ github.event.inputs.release_type }}"

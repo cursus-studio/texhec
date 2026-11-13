@@ -20,4 +20,5 @@ type Service interface {
 	Fix() error
 	Cloud(commitHash string) error
 	Verify(commitHash string) error
+	Release(version string) error
 }

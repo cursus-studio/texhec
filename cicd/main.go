@@ -74,7 +74,20 @@ func main() {
 		},
 	}
 
-	rootCmd.AddCommand(setupCmd, syncCmd, fixCmd, cloudCmd, verifyCmd)
+	var releaseCmd = &cobra.Command{
+		Use:   "release [arg]",
+		Short: "Run release",
+		Args:  cobra.MaximumNArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			var arg string
+			if len(args) > 0 {
+				arg = args[0]
+			}
+			return w.Pipe().Release(arg)
+		},
+	}
+
+	rootCmd.AddCommand(setupCmd, syncCmd, fixCmd, cloudCmd, verifyCmd, releaseCmd)
 
 	if err := rootCmd.Execute(); err != nil {
 		fmt.Printf("%v\n\nFAILED\n", err)
