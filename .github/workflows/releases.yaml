@@ -19,7 +19,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-
+        with:
+          ref: ${{ github.ref }} # Checks out the branch you selected when triggering
       - name: Set up Docker Build Cache
         uses: actions/cache@v4
         with:
