@@ -9,13 +9,28 @@ import (
 	"engine/modules/batcher"
 	"engine/modules/ecs"
 	"engine/modules/grid"
+	"engine/modules/render"
 	"engine/modules/uuid"
 	"fmt"
+	"math"
 	"slices"
+	"strings"
 
 	"github.com/ogiusek/events"
 	"github.com/ogiusek/ioc/v2"
 )
+
+type InputEvent[Wrapped any] struct {
+	Entity  ecs.EntityID
+	Wrapped Wrapped
+}
+type InputComponent[Wrapped any] struct{}
+
+type SetPlayerNameInput struct{ Player uuid.UUID }
+type SetPlayerColorInput struct {
+	Player uuid.UUID
+	Swatch ecs.EntityID
+}
 
 type service struct {
 	game.GameWorld  `inject:""`
@@ -24,7 +39,8 @@ type service struct {
 	lobby           ecs.ComponentArray[lobby.LobbyComponent]
 	lobbyUI         ecs.ComponentArray[lobby.LobbyUIComponent]
 
-	inputChanges map[ecs.EntityID]func(string)
+	newName  func(parent ecs.EntityID, initial string, input SetPlayerNameInput) ecs.EntityID
+	newColor func(parent ecs.EntityID, initial string, input SetPlayerColorInput) ecs.EntityID
 }
 
 func wrapCall[Wrapped any](call func(), wrap func(Wrapped)) func(Wrapped) {
@@ -40,9 +56,22 @@ func NewService(c ioc.Dic) lobby.Service {
 	s.gameCamera = ecs.GetComponentArray[lobby.GameCameraComponent](s.World())
 	s.lobby = ecs.GetComponentArray[lobby.LobbyComponent](s.World())
 	s.lobbyUI = ecs.GetComponentArray[lobby.LobbyUIComponent](s.World())
-	s.inputChanges = make(map[ecs.EntityID]func(string))
 
-	s.Inputs().TextInput().OnMod(s.onTextInputMod)
+	s.newName = newLobbyInput(s, func(raw string, input SetPlayerNameInput) {
+		newName := strings.TrimSpace(raw)
+		if newName == "" {
+			return
+		}
+		events.Emit(s.Events(), lobby.NewSetPlayerNameEvent(input.Player, newName))
+	})
+	s.newColor = newLobbyInput(s, func(raw string, input SetPlayerColorInput) {
+		color, err := parseColor(raw)
+		if err != nil {
+			return
+		}
+		s.Render().Color().Set(input.Swatch, render.NewColor(color.Vec4(1)))
+		events.Emit(s.Events(), lobby.NewSetPlayerColorEvent(input.Player, color))
+	})
 
 	s.Lobby().OnUpsert(func(ecs.EntityID) { s.onLobbyUpsert() })
 
@@ -50,12 +79,13 @@ func NewService(c ioc.Dic) lobby.Service {
 	events.Listen(s.EventsBuilder(), s.OnPasteSeed)
 	events.Listen(s.EventsBuilder(), wrapCall(s.onLobbyUpsert, s.OnSetSeed))
 
+	events.Listen(s.EventsBuilder(), wrapCall(s.onLobbyUpsert, s.OnReloadLobby))
 	events.Listen(s.EventsBuilder(), s.OnInputAddPlayer)
 	events.Listen(s.EventsBuilder(), wrapCall(s.onLobbyUpsert, s.OnAddPlayer))
 	events.Listen(s.EventsBuilder(), wrapCall(s.onLobbyUpsert, s.OnRemovePlayer))
 
 	events.Listen(s.EventsBuilder(), wrapCall(s.onLobbyUpsert, s.OnSetPlayerName))
-	events.Listen(s.EventsBuilder(), wrapCall(s.onLobbyUpsert, s.OnSetPlayerColor))
+	events.Listen(s.EventsBuilder(), s.OnSetPlayerColor)
 	events.Listen(s.EventsBuilder(), wrapCall(s.onLobbyUpsert, s.OnSetPlayersWallet))
 	events.Listen(s.EventsBuilder(), wrapCall(s.onLobbyUpsert, s.OnAddPlayersUnitEvent))
 	events.Listen(s.EventsBuilder(), wrapCall(s.onLobbyUpsert, s.OnRemovePlayersUnitEvent))
@@ -86,7 +116,6 @@ func (s *service) onLobbyUpsert() {
 	if len(s.Lobby().GetEntities()) == 0 {
 		return
 	}
-	clear(s.inputChanges)
 	isServer := len(s.NetSync().Server().GetEntities()) == 0
 
 	if isServer {
@@ -115,14 +144,16 @@ func (s *service) onGenerate(lobby.GenerateEvent) {
 	gameCameraComp, _ := s.GameCamera().Get(gameCameraEntity)
 	playersInitials, _ := s.PlayersInitials().Get(gameCameraEntity)
 
-	clear(s.inputChanges)
+	uiGameCameraEntity := s.World().NewEntity()
+	s.Hierarchy().SetParent(uiGameCameraEntity, scene)
+
 	for _, entity := range s.LobbyUI().GetEntities() {
 		s.World().RemoveEntity(entity)
 	}
 
 	s.Ui().AddUICamera(scene)
 	s.Ui().AddBgCamera(scene)
-	s.Ui().GameCamera().Set(gameCameraEntity, ui.NewGameCamera(gameCameraComp.MaxChunksZoomOut))
+	s.Ui().GameCamera().Set(uiGameCameraEntity, ui.NewGameCamera(gameCameraComp.MaxChunksZoomOut))
 
 	for x := range grid.Coord(gameCameraComp.MaxChunksZoomOut) {
 		for y := range grid.Coord(gameCameraComp.MaxChunksZoomOut) {
@@ -141,22 +172,44 @@ func (s *service) onGenerate(lobby.GenerateEvent) {
 	}
 
 	unitsBatch := batcher.NewBatch(1, func(i int) {
-		for _, playerEntity := range s.Player().Name().GetEntities() {
+		radiansGetter := func(angleNormalized float64) float64 { return angleNormalized * 2 * math.Pi }
+		getCoords := func(coord grid.Coord, angleRad float64, dist float64) grid.Coords {
+			// we take a center
+			// we create an angle using i and maxIndex
+			// and take 2/3 of distance from center in this angle and return a point
+			// caller later will take coords closer to these coords
+			return grid.NewCoords(
+				coord+grid.Coord(dist*math.Cos(angleRad)),
+				coord+grid.Coord(dist*math.Sin(angleRad)))
+		}
+
+		size := grid.Coord(gameCameraComp.MaxChunksZoomOut) * s.Grid().ChunkSize()
+		center := size / 2
+		dist := float64(size) / 3
+		players := s.Player().Name().GetEntities()
+		for i, playerEntity := range players {
 			s.Economy().Wallet().Set(playerEntity, playersInitials.Wallet)
 
 			units := slices.Clone(units)
-		loop:
-			for y := range s.Grid().ChunkSize() {
-				for x := range s.Grid().ChunkSize() {
-					coords := grid.NewCoords(x, y)
-					coords = s.Grid().AbsoluteCoords(grid.NewChunkCoords(0, 0), coords)
-					deployed := units[0]
-					if _, err := s.Deploy().Deploy(deployed, playerEntity, coords); err == nil {
-						units = units[1:]
-					}
-					if len(units) == 0 {
-						break loop
-					}
+
+			normalizedAngle := float64(i) / float64(len(players))
+			pointAngle := radiansGetter(normalizedAngle)
+			coords := getCoords(center, pointAngle, dist)
+			if _, ok := s.Player().ActingPlayer().Get(playerEntity); ok {
+				originalPos, _ := s.Transform().Pos().Get(uiGameCameraEntity)
+				pos := s.Tile().GetPos(coords)
+				originalPos.Pos[0], originalPos.Pos[1] = pos.Pos[0], pos.Pos[1]
+				s.Transform().Pos().Set(uiGameCameraEntity, pos)
+			}
+			for i := grid.Coord(0); i < size*size; i++ {
+				neighbor := s.Tile().GetNthNeighbor(i)
+				coords := grid.NewCoords(coords.X+neighbor.X, coords.Y+neighbor.Y)
+				deployed := units[0]
+				if _, err := s.Deploy().Deploy(deployed, playerEntity, coords); err == nil {
+					units = units[1:]
+				}
+				if len(units) == 0 {
+					break
 				}
 			}
 		}

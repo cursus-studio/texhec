@@ -19,9 +19,8 @@ import (
 	"github.com/veandco/go-sdl2/sdl"
 )
 
-// golangci-lint run --fix
-func main() {
-	print("started main\n")
+func init() {
+	runtime.LockOSThread()
 
 	{ // go tool pprof -http=:8080 ignore.cpu.pprof
 		name := ""
@@ -37,6 +36,13 @@ func main() {
 		}
 		defer pprof.StopCPUProfile()
 	}
+}
+
+// clear && CGO_ENABLED=1 GOOS=windows GOARCH=amd64 CC=x86_64-w64-mingw32-gcc CGO_LDFLAGS="-static -lmingw32 -lSDL2main -lSDL2 -lSDL2_image -lSDL2_mixer -lm -ldinput8 -ldxguid -lsetupapi -lgdi32 -lwinmm -limm32 -lole32 -loleaut32 -lshell32 -lversion -luuid" go -C core build -ldflags="-s -w -extldflags '-static'" -o myapp.exe . && go -C core run . play-generate
+
+// golangci-lint run --fix
+func main() {
+	print("started main\n")
 
 	c := getDic()
 	world := ioc.Get[game.GameWorld](c)
@@ -122,12 +128,12 @@ func main() {
 		switch arg {
 		case definitions.MainMenuID.ID:
 			fallthrough
-		// case definitions.GameID.ID:
-		// 	fallthrough
-		// case definitions.GameServerID.ID:
-		// 	fallthrough
-		// case definitions.GameClientID.ID:
-		// 	fallthrough
+		case definitions.PlayID.ID:
+			fallthrough
+		case definitions.PlayGenerateID.ID:
+			fallthrough
+		case definitions.PlayConnectID.ID:
+			fallthrough
 		case definitions.SettingsID.ID:
 			fallthrough
 		case definitions.CreditsID.ID:
@@ -142,3 +148,12 @@ func main() {
 	runtime.LockOSThread()
 	world.Loop().Run(loop.NewConfigureEvent(60, 1))
 }
+
+// TODO
+
+// 1. create a way to generate TEXHEC chunks instead of adding TEXHEC chunk as a noise
+//    TEXHEC chunks generate instead of a grass
+//    TEXHEC chunk can have different policies depending on choosen generation
+// 2. add proper way to run TEXHEC on windows
+// 3. add on itch io
+// 4. add AI

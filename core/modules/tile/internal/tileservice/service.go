@@ -9,6 +9,7 @@ import (
 	"engine/modules/relation"
 	"engine/modules/transform"
 	"engine/modules/uuid"
+	"math"
 
 	"github.com/ogiusek/ioc/v2"
 )
@@ -79,4 +80,41 @@ func (s *service) GetPos(coords grid.Coords) transform.PosComponent {
 		size.Y()*(float32(coords.Y)+.5),
 		size.Z(),
 	)
+}
+
+// n k c d k      | ring1: 1  max(1, 8*0) (till 0 index)
+// j 8 4 5 e      | ring2: 8  max(1, 8*1) (till 8 index)
+// b 3 0 1 9      | ring3: 16 max(1, 8*2) (till 24 index)
+// i 7 2 6 f      | ring4: 24 max(1, 8*3) (till 48 index)
+// m h a g l      | ring5: 32 max(1, 8*4) (till 80 index)
+//
+//	| we choose a ring var1
+//	| (element in ring) / 4 = var2
+//	| (element in ring) % 4 = sets var1 and var2 as (+/-x, +/-y)
+func (s *service) GetNthNeighbor(uN grid.Coord) grid.Coords {
+	if uN == 0 {
+		return grid.NewCoords(0, 0)
+	}
+	n := int(uN)
+	root := int(math.Floor(math.Sqrt(float64(n))))
+	if root%2 == 0 {
+		root--
+	}
+
+	index := (root + 1) / 2
+	r := n - root*root
+	side := 2 * index
+
+	segment := r / side
+	offset := r % side
+	switch segment {
+	case 0:
+		return grid.NewCoords(index, -index+1+offset)
+	case 1:
+		return grid.NewCoords(index-offset-1, index)
+	case 2:
+		return grid.NewCoords(-index, index-offset-1)
+	default:
+		return grid.NewCoords(-index+offset+1, -index)
+	}
 }

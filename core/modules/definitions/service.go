@@ -23,14 +23,14 @@ type Service interface {
 }
 
 var (
-	MainMenuID = scene.NewSceneId("main menu")
+	MainMenuID = scene.NewSceneId("main-menu")
 	PlayID     = scene.NewSceneId("play")
 	SettingsID = scene.NewSceneId("settings")
 	CreditsID  = scene.NewSceneId("credits")
 
-	PlayConnectID  = scene.NewSceneId("play connect")
-	PlayGenerateID = scene.NewSceneId("play generate")
-	// PlayLoadID     = scene.NewSceneId("play load")
+	PlayConnectID  = scene.NewSceneId("play-connect")
+	PlayGenerateID = scene.NewSceneId("play-generate")
+	// PlayLoadID     = scene.NewSceneId("play-load")
 )
 
 const (

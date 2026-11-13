@@ -23,6 +23,7 @@ type TextInputComponent struct {
 	Lines []string // split in lines
 	CursorRow,
 	CursorCol int
+	OnUpdate any
 }
 
 func (c *TextInputComponent) Text() string {

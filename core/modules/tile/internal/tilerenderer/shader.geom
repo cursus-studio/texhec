@@ -38,11 +38,11 @@ int getIndex(vec2 coord) {
 int getTile(vec2 coord) { return grid[getIndex(coord)]; }
 int getTile(int index) { return getTile(getCoord(index)); }
 
-int getTexture(int seed, int i) {
-  return int(tileTextures[i].x) + seed % int(tileTextures[i].y);
+int getTexture(uint seed, int i) {
+  return int(tileTextures[i].x) + int(seed % uint(tileTextures[i].y));
 }
 
-int seed(int num) {
+uint seed(int num) {
   uint seed = num;
   seed = seed * 1664525u + 1013904223u;
   seed ^= seed >> 16;
@@ -50,7 +50,7 @@ int seed(int num) {
   seed ^= seed >> 13;
   seed *= 0xc2b2ae35u;
   seed ^= seed >> 16;
-  return int(seed);
+  return seed;
 }
 
 //
@@ -72,17 +72,17 @@ void sort4(inout int a[4]) {
 }
 
 void setBiomes(int index, vec2 coord) {
-  int neighbours[4] = {getTile(coord + vec2(0)), getTile(coord + vec2(1, 0)),
-                       getTile(coord + vec2(0, 1)), getTile(coord + vec2(1))};
-  int biomes[4] = neighbours;
+  int neighbors[4] = {getTile(coord + vec2(0)), getTile(coord + vec2(1, 0)),
+                      getTile(coord + vec2(0, 1)), getTile(coord + vec2(1))};
+  int biomes[4] = neighbors;
   sort4(biomes);
 
-  int seed = seed(index);
+  uint seed = seed(index);
   for (int i = 0; i < 4; i++) {
     int base = biomes[i] * 15;
     int mask = 0;
     for (int n = 0; n < 4; n++) {
-      mask |= int(neighbours[n] == biomes[i]) * (1 << n);
+      mask |= int(neighbors[n] == biomes[i]) * (1 << n);
     }
     gs_out.textures[i] = getTexture(seed, base + mask);
   }

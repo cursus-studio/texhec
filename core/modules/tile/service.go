@@ -182,4 +182,5 @@ type Service interface {
 	NewBiomeAsset(srcImages [6][]image.Image) (BiomeAsset, error)
 
 	GetPos(coords grid.Coords) transform.PosComponent
+	GetNthNeighbor(uN grid.Coord) grid.Coords
 }

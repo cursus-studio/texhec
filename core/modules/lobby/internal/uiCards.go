@@ -89,29 +89,17 @@ func (s *service) renderPlayerCard(parent ecs.EntityID, playerEntity ecs.EntityI
 
 	card := s.newLobbyCard(parent)
 
-	s.newLobbyInput(card, name.Name, func(raw string) {
-		newName := strings.TrimSpace(raw)
-		if newName == "" {
-			return
-		}
-		events.Emit(s.Events(), lobby.NewSetPlayerNameEvent(playerUUID.ID, newName))
-	})
+	s.newName(card, name.Name, SetPlayerNameInput{playerUUID.ID})
 
 	swatch := s.newLobbySwatch(card, color.Color)
-	s.newLobbyInput(card, formatColor(color.Color), func(raw string) {
-		color, err := parseColor(raw)
-		if err != nil {
-			return
-		}
-		events.Emit(s.Events(), lobby.NewSetPlayerColorEvent(playerUUID.ID, color))
-		if updated, ok := s.Player().Color().Get(playerEntity); ok {
-			s.Render().Color().Set(swatch, render.NewColor(updated.Color.Vec4(1)))
-		}
-	})
+	s.newColor(card, formatColor(color.Color), SetPlayerColorInput{playerUUID.ID, swatch})
 
-	// TODO: show the connection assigned to this player once the lobby
-	// knows how connections are mapped onto players.
-	s.newLobbyLabel(card, "CONNECTION: -", lobbyControlWidth, 22, 16)
+	if _, ok := s.Player().ActingPlayer().Get(playerEntity); ok {
+		s.newLobbyLabel(card, "YOU", lobbyControlWidth, 22, 16)
+	} else if actingConnection, ok := s.Player().ActingConnection().Get(playerEntity); ok {
+		uuid, _ := s.UUID().UUID().Get(actingConnection.Connection)
+		s.newLobbyLabel(card, fmt.Sprintf("CONNECTION: %v", uuid.ID.String()), lobbyControlWidth, 22, 16)
+	}
 
 	s.newLobbyButton(card, "REMOVE", lobby.NewRemovePlayerEvent(playerUUID.ID), lobbyControlWidth, lobbyControlHeight)
 
@@ -155,41 +143,30 @@ func (s *service) newLobbyLabel(parent ecs.EntityID, content string, width, heig
 	return label
 }
 
-func (s *service) newLobbyInput(parent ecs.EntityID, initial string, onChange func(string)) ecs.EntityID {
-	input := s.Prototype().Clone(s.Definitions().Hud().Input)
-	s.Hierarchy().SetParent(input, parent)
-	s.Transform().Size().Set(input, transform.NewSize(lobbyControlWidth, lobbyControlHeight, 1))
-	s.Transform().Inherit().Set(input, transform.NewInherit(transform.RelativePos))
-	s.Transform().AspectRatio().Set(input, transform.NewAspectRatio(0, 0, 0, 0))
-	s.Transform().MaxSize().Set(input, transform.NewMaxSize(0, 0, 0))
-	s.Transform().MinSize().Set(input, transform.NewMinSize(0, 0, 0))
-
-	s.Text().Content().Set(input, text.NewText(initial))
-	s.Text().FontSize().Set(input, text.NewFontSize(18))
-
-	s.Inputs().TextInput().Set(input, inputs.TextInputComponent{
-		Lines:     []string{initial},
-		CursorRow: 0,
-		CursorCol: len(initial),
+func newLobbyInput[Wrapped any](
+	s *service,
+	onChange func(string, Wrapped),
+) func(parent ecs.EntityID, initial string, wrapped Wrapped) ecs.EntityID {
+	events.Listen(s.EventsBuilder(), func(event InputEvent[Wrapped]) {
+		input, ok := s.Inputs().TextInput().Get(event.Entity)
+		if !ok {
+			return
+		}
+		onChange(input.Text(), event.Wrapped)
 	})
-	if onChange != nil {
-		s.inputChanges[input] = onChange
-	}
+	return func(parent ecs.EntityID, initial string, wrapped Wrapped) ecs.EntityID {
+		input := s.Prototype().Clone(s.Definitions().Hud().Input)
+		s.Hierarchy().SetParent(input, parent)
 
-	return input
-}
+		s.Inputs().TextInput().Set(input, inputs.TextInputComponent{
+			Lines:     []string{initial},
+			CursorRow: 0,
+			CursorCol: len(initial),
+			OnUpdate:  InputEvent[Wrapped]{input, wrapped},
+		})
 
-func (s *service) onTextInputMod(entity ecs.EntityID) {
-	onChange, ok := s.inputChanges[entity]
-	if !ok {
-		return
+		return input
 	}
-	input, ok := s.Inputs().TextInput().Get(entity)
-	if !ok {
-		delete(s.inputChanges, entity)
-		return
-	}
-	onChange(input.Text())
 }
 
 func (s *service) newLobbyButton(parent ecs.EntityID, label string, onClick any, width, height float32) ecs.EntityID {
@@ -198,12 +175,9 @@ func (s *service) newLobbyButton(parent ecs.EntityID, label string, onClick any,
 	s.Transform().Size().Set(btn, transform.NewSize(width, height, 1))
 	s.Transform().Inherit().Set(btn, transform.NewInherit(transform.RelativePos))
 	s.Transform().AspectRatio().Set(btn, transform.NewAspectRatio(0, 0, 0, 0))
-	s.Transform().MaxSize().Set(btn, transform.NewMaxSize(0, 0, 0))
-	s.Transform().MinSize().Set(btn, transform.NewMinSize(0, 0, 0))
 
 	s.Inputs().LeftClick().Set(btn, inputs.NewLeftClick(onClick))
 	s.Text().Content().Set(btn, text.NewText(strings.ToUpper(label)))
-	s.Text().FontSize().Set(btn, text.NewFontSize(16))
 
 	return btn
 }

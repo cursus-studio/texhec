@@ -41,9 +41,10 @@ func (s *service) PollListeners(entity ecs.EntityID) {
 		if err == nil {
 			clientEntity := s.World().NewEntity()
 			s.Hierarchy().SetParent(clientEntity, entity)
-			conn := s.AddConnection(clientEntity, rawConn)
 			uuid := uuid.NewUUID(s.UUID().NewUUID())
 			s.UUID().UUID().Set(clientEntity, uuid)
+
+			conn := s.AddConnection(clientEntity, rawConn)
 			_ = conn.Conn().Send(connection.NewSetConnUUIDDTO(uuid.ID))
 			continue
 		}

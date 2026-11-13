@@ -16,10 +16,10 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                              12            177             27            821
+Go                              12            177             27            823
 Markdown                         1              0              0              1
 -------------------------------------------------------------------------------
-SUM:                            13            177             27            822
+SUM:                            13            177             27            824
 -------------------------------------------------------------------------------
 ```
 ## TODO
@@ -94,6 +94,7 @@ Implement a proper input cursor and improve focusing and unfocusing on input
   - `engine/modules/inputs.MouseLeave`
   - `engine/modules/inputs.MouseLeaveComponent`
   - `engine/modules/inputs.NewKeyboardEvent`
+  - `engine/modules/inputs.OnUpdate`
   - `engine/modules/inputs.RightClick`
   - `engine/modules/inputs.RightClickComponent`
   - `engine/modules/inputs.Service`
@@ -105,6 +106,7 @@ Implement a proper input cursor and improve focusing and unfocusing on input
   - `engine/modules/inputs.StackedData`
   - `engine/modules/inputs.SynchronizePositionEvent`
   - `engine/modules/inputs.Target`
+  - `engine/modules/inputs.Text`
   - `engine/modules/inputs.TextInput`
   - `engine/modules/inputs.TextInputComponent`
   - `engine/modules/inputs.TextInputEvent`
