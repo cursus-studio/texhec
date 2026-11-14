@@ -540,6 +540,14 @@ func (s *service) Verify(commitHash string) error {
 }
 
 func (s *service) Release(version string) error {
-	fmt.Printf("Release: \"%v\"\n", version)
+	version, err := s.Git().Version(version)
+	if err != nil {
+		return err
+	}
+	title := fmt.Sprintf("%v release", version)
+	files := []string{ /*windows.zip, linux.zip*/ }
+	if err := s.Git().Release(version, title, files); err != nil {
+		return err
+	}
 	return nil
 }

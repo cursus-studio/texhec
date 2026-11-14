@@ -40,9 +40,9 @@ To see implementation details of documentation or pipeline go to its module read
 - #### `go run cicd release $version`
 `$version` can be:
 - `vX.Y.Z` just releases exact version
-- `minor` for newest release increases `Z` by 1
-- `major` for newest release increases `Y` by 1
-- `version` for newest release increases `X` by 1
+- `patch` for newest release increases `Z` by 1
+- `minor` for newest release increases `Y` by 1
+- `major` for newest release increases `X` by 1
 
 ## Modules
 - [docs](/cicd/modules/docs/readme/README.md)
@@ -56,12 +56,12 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                              21            276            122           1976
+Go                              23            284            289           1874
 Groovy                           1              5              1             76
 Dockerfile                       1              9              4             51
 Markdown                         4             11              0             39
 -------------------------------------------------------------------------------
-SUM:                            27            301            127           2142
+SUM:                            29            309            294           2040
 -------------------------------------------------------------------------------
 ```
 ## TODO

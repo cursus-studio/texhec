@@ -4,14 +4,17 @@ on:
   workflow_dispatch:
     inputs:
       release_type:
-        description: 'Select release type'
+        description: 'Select version release type'
         required: true
-        default: 'minor'
         type: choice
         options:
+          - patch
           - minor
           - major
-          - version
+      exact_version:
+        description: 'Exact version (e.g. "v1.2.3", optional override)'
+        required: false
+        type: string
 
 jobs:
   release:
@@ -39,6 +42,9 @@ jobs:
           chmod -R 777 "$HOST_CACHE"
 
       - name: Run Release Script via Docker
+        env:
+          EXACT: ${{ github.event.inputs.exact_version }}
+          TYPE: ${{ github.event.inputs.release_type }}
         run: |
           docker run --rm \
             -u "$(id -u):$(id -g)" \
@@ -48,4 +54,4 @@ jobs:
             -v "$(pwd)/.cache:/cache" \
             -v "$(pwd):/app" \
             -w /app \
-            ci-runner go run cicd release "${{ github.event.inputs.release_type }}"
+            ci-runner go run cicd release "${EXACT:-$TYPE}"

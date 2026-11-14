@@ -20,9 +20,9 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                               4             64             39            573
+Go                               4             64            204            416
 -------------------------------------------------------------------------------
-SUM:                             4             64             39            573
+SUM:                             4             64            204            416
 -------------------------------------------------------------------------------
 ```
 ## Dependencies
@@ -30,8 +30,10 @@ SUM:                             4             64             39            573
   - `cicd/modules/git.DiffCompare`
   - `cicd/modules/git.DiffNotCommited`
   - `cicd/modules/git.Pending`
+  - `cicd/modules/git.Release`
   - `cicd/modules/git.SetStatus`
   - `cicd/modules/git.Stage`
+  - `cicd/modules/git.Version`
 
 `cicd/modules/pipe`:
   - `cicd/modules/pipe.Service`
