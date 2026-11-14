@@ -16,6 +16,9 @@ on:
         required: false
         type: string
 
+permissions:
+  contents: write
+
 jobs:
   release:
     runs-on: ubuntu-latest
@@ -24,6 +27,8 @@ jobs:
         uses: actions/checkout@v4
         with:
           ref: ${{ github.ref }}
+          fetch-depth: 0
+
       - name: Set up Docker Build Cache
         uses: actions/cache@v4
         with:
@@ -38,19 +43,24 @@ jobs:
       - name: Prepare local cache directory
         run: |
           HOST_CACHE="$(pwd)/.cache"
-          mkdir -p "$HOST_CACHE"
+          mkdir -p "$HOST_CACHE/home"
           chmod -R 777 "$HOST_CACHE"
 
       - name: Run Release Script via Docker
         env:
           EXACT: ${{ github.event.inputs.exact_version }}
           TYPE: ${{ github.event.inputs.release_type }}
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
         run: |
           docker run --rm \
             -u "$(id -u):$(id -g)" \
+            -e HOME=/cache/home \
             -e GOCACHE=/cache/go-cache \
             -e GOPATH=/cache/go-path \
             -e GOLANGCI_LINT_CACHE=/cache/golangci-lint \
+            -e GH_TOKEN \
+            -e GH_REPO \
             -v "$(pwd)/.cache:/cache" \
             -v "$(pwd):/app" \
             -w /app \

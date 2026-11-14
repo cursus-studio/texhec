@@ -47,6 +47,17 @@ RUN if [ "$(dpkg --print-architecture)" = "arm64" ]; then \
 RUN curl -sSL -o /usr/bin/cloc https://github.com/AlDanial/cloc/releases/download/v2.08/cloc-2.08.pl \
     && chmod +x /usr/bin/cloc
 
+# GitHub CLI (used by `cicd release` to create GitHub releases/tags)
+RUN mkdir -p -m 755 /etc/apt/keyrings \
+    && curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg \
+        -o /etc/apt/keyrings/githubcli-archive-keyring.gpg \
+    && chmod go+r /etc/apt/keyrings/githubcli-archive-keyring.gpg \
+    && echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" \
+        > /etc/apt/sources.list.d/github-cli.list \
+    && apt-get update \
+    && apt-get install -y --no-install-recommends gh \
+    && rm -rf /var/lib/apt/lists/*
+
 ENV PIXELORAMA_VERSION=v1.1.10
 RUN curl -sSL "https://github.com/Orama-Interactive/Pixelorama/releases/download/${PIXELORAMA_VERSION}/Pixelorama-Linux-64bit.tar.gz" -o pixelorama.tar.gz \
     && mkdir -p /opt/pixelorama \
