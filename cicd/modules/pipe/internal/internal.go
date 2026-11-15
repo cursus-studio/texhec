@@ -545,7 +545,11 @@ func (s *service) Release(version string) error {
 		return err
 	}
 	title := fmt.Sprintf("%v release", version)
-	files := []string{ /*windows.zip, linux.zip*/ }
+	files, cleanUp, err := s.ProjectFS().Compile()
+	defer cleanUp()
+	if err != nil {
+		return err
+	}
 	if err := s.Git().Release(version, title, files); err != nil {
 		return err
 	}
