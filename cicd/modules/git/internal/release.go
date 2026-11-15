@@ -9,12 +9,12 @@ import (
 )
 
 func getLatestTag() (major, minor, patch int) {
-	cmd := exec.Command("git", "describe", "--tags", "--abbrev=0")
+	cmd := exec.Command("git", "tag", "--list", "v*", "--sort=-v:refname")
 	out, err := cmd.Output()
 	if err != nil {
 		return 0, 0, 0
 	}
-	tag := strings.TrimSpace(string(out))
+	tag := strings.Split(strings.TrimSpace(string(out)), "\n")[0]
 	cleanVersion := strings.TrimPrefix(tag, "v")
 	parts := strings.Split(cleanVersion, ".")
 	major, _ = strconv.Atoi(parts[0])
@@ -48,7 +48,7 @@ func (s *service) Release(version, title string, files []string) error {
 	args = append(args, files...)
 	// #nosec G204
 	cmd := exec.Command("gh", args...)
-	out, err := cmd.Output()
+	out, err := cmd.CombinedOutput()
 	if err != nil {
 		return errors.New(string(out))
 	}
