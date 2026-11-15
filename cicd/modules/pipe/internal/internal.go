@@ -544,6 +544,7 @@ func (s *service) Release(version string) error {
 	if err != nil {
 		return err
 	}
+	fmt.Printf("Releasing %v\n", version)
 	title := fmt.Sprintf("%v release", version)
 	files, cleanUp, err := s.ProjectFS().Compile()
 	defer cleanUp()
