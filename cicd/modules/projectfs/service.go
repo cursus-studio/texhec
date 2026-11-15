@@ -14,4 +14,6 @@ type Service interface {
 	PxoFiles() ([]string, error)
 
 	Save(file, content string) error
+
+	Compile() (files []string, cleanUp func(), err error)
 }

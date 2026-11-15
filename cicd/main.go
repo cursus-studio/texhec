@@ -87,6 +87,18 @@ func main() {
 		},
 	}
 
+	// var compileCmd = &cobra.Command{
+	// 	Use:   "compile",
+	// 	Short: "Run release",
+	// 	Args:  cobra.MaximumNArgs(1),
+	// 	RunE: func(cmd *cobra.Command, args []string) error {
+	// 		files, cleanUp, err := w.ProjectFS().Compile()
+	// 		defer cleanUp()
+	// 		fmt.Printf("%v\n", files)
+	// 		return err
+	// 	},
+	// }
+
 	rootCmd.AddCommand(setupCmd, syncCmd, fixCmd, cloudCmd, verifyCmd, releaseCmd)
 
 	if err := rootCmd.Execute(); err != nil {

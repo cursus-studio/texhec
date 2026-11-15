@@ -19,10 +19,12 @@ import (
 	"github.com/veandco/go-sdl2/sdl"
 )
 
+var IsRelease = false
+
 func init() {
 	runtime.LockOSThread()
 
-	{ // go tool pprof -http=:8080 ignore.cpu.pprof
+	if !IsRelease { // go tool pprof -http=:8080 ignore.cpu.pprof
 		name := ""
 		if len(os.Args) > 1 {
 			name = os.Args[1]
@@ -37,8 +39,6 @@ func init() {
 		defer pprof.StopCPUProfile()
 	}
 }
-
-// clear && CGO_ENABLED=1 GOOS=windows GOARCH=amd64 CC=x86_64-w64-mingw32-gcc CGO_LDFLAGS="-static -lmingw32 -lSDL2main -lSDL2 -lSDL2_image -lSDL2_mixer -lm -ldinput8 -ldxguid -lsetupapi -lgdi32 -lwinmm -limm32 -lole32 -loleaut32 -lshell32 -lversion -luuid" go -C core build -ldflags="-s -w -extldflags '-static'" -o myapp.exe . && go -C core run . play-generate
 
 // golangci-lint run --fix
 func main() {

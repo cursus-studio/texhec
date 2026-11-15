@@ -37,6 +37,6 @@ To see implementation details of documentation or pipeline go to its module read
 - #### `go run cicd release $version`
 `$version` can be:
 - `vX.Y.Z` just releases exact version
-- `minor` for newest release increases `Z` by 1
-- `major` for newest release increases `Y` by 1
-- `version` for newest release increases `X` by 1
+- `patch` for newest release increases `Z` by 1
+- `minor` for newest release increases `Y` by 1
+- `major` for newest release increases `X` by 1
