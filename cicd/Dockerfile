@@ -34,7 +34,31 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     # CI/CD shaders
     clang-format \
     glslang-tools \
+    # Windows Cross-Compilation
+    gcc-mingw-w64-x86-64 \
+    g++-mingw-w64-x86-64 \
+    mingw-w64-common \
     && rm -rf /var/lib/apt/lists/*
+
+# windows cross compilation dependencies
+ENV SDL2_VER=2.30.8
+ENV SDL2_IMAGE_VER=2.8.2
+ENV SDL2_MIXER_VER=2.8.0
+RUN mkdir -p /tmp/sdl-mingw && cd /tmp/sdl-mingw \
+    # 1. SDL2 Core
+    && curl -sSLO "https://github.com/libsdl-org/SDL/releases/download/release-${SDL2_VER}/SDL2-devel-${SDL2_VER}-mingw.tar.gz" \
+    && tar -xzf SDL2-devel-${SDL2_VER}-mingw.tar.gz \
+    && cp -r SDL2-${SDL2_VER}/x86_64-w64-mingw32/* /usr/x86_64-w64-mingw32/ \
+    # 2. SDL2_image
+    && curl -sSLO "https://github.com/libsdl-org/SDL_image/releases/download/release-${SDL2_IMAGE_VER}/SDL2_image-devel-${SDL2_IMAGE_VER}-mingw.tar.gz" \
+    && tar -xzf SDL2_image-devel-${SDL2_IMAGE_VER}-mingw.tar.gz \
+    && cp -r SDL2_image-${SDL2_IMAGE_VER}/x86_64-w64-mingw32/* /usr/x86_64-w64-mingw32/ \
+    # 3. SDL2_mixer
+    && curl -sSLO "https://github.com/libsdl-org/SDL_mixer/releases/download/release-${SDL2_MIXER_VER}/SDL2_mixer-devel-${SDL2_MIXER_VER}-mingw.tar.gz" \
+    && tar -xzf SDL2_mixer-devel-${SDL2_MIXER_VER}-mingw.tar.gz \
+    && cp -r SDL2_mixer-${SDL2_MIXER_VER}/x86_64-w64-mingw32/* /usr/x86_64-w64-mingw32/ \
+    # Cleanup
+    && rm -rf /tmp/sdl-mingw
 
 RUN if [ "$(dpkg --print-architecture)" = "arm64" ]; then \
         apt-get update && apt-get install -y --no-install-recommends wget gnupg ca-certificates && \
