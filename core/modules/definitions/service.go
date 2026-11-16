@@ -2,6 +2,7 @@
 package definitions
 
 import (
+	"core/modules/generation"
 	"core/modules/obstruction"
 	"core/modules/tile"
 	"engine/modules/audio"
@@ -21,6 +22,15 @@ type Service interface {
 	Objects() Objects
 	Transitions() Transitions
 }
+
+const (
+	_ generation.ChunkGenerator = iota
+	CenterChunkGenerator
+	RandomChunkGenerator
+)
+
+type CenterChunkGenerateService generation.ChunkGenerateService
+type ChaoticGenerateService generation.ChunkGenerateService
 
 var (
 	MainMenuID = scene.NewSceneId("main-menu")
@@ -100,7 +110,7 @@ type Transitions struct {
 type Tiles struct {
 	Water    ecs.EntityID `path:"tiles/water.biome" tile:"" generate:"35" obstruction:"lowland"`
 	Sand     ecs.EntityID `path:"tiles/sand.biome" tile:"" generate:"15" obstruction:"water"`
-	Texhec   ecs.EntityID `path:"tiles/texhec.biome" tile:"" generate:"5" obstruction:"water"`
+	Texhec   ecs.EntityID `path:"tiles/texhec.biome" tile:"" chunk_generate:"" obstruction:"water"`
 	Grass    ecs.EntityID `path:"tiles/grass.biome" tile:"" generate:"40" obstruction:"water"`
 	Mountain ecs.EntityID `path:"tiles/mountain.biome" tile:"" generate:"5" obstruction:"water lowland"`
 }

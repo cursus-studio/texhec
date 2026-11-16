@@ -7,8 +7,9 @@
 ## Projects
 Pick readme for your niche:
 - ### Devops [CI/CD](/cicd/readme/README.md)
-Runs on both client (using `git hooks`) and server (using `jenkins`).
-Before-commit documentation sections are automatically generated and added to main readmes.
+Contains:
+1. `testing/patching pipeline` which runs locally using `git hooks` (paching for e.g. docs) and in cloud using jenkins (only testing).
+2. `release pipeline` which generates `zip` files to download project on windows or linux using `gh actions`
 
 - ### Low-Level [TEXHEC Engine](/engine/readme/README.md)
 Defines data structures to store whole game state in continuous chunks and game engine foundations.

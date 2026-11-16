@@ -154,6 +154,5 @@ func main() {
 // 1. create a way to generate TEXHEC chunks instead of adding TEXHEC chunk as a noise
 //    TEXHEC chunks generate instead of a grass
 //    TEXHEC chunk can have different policies depending on choosen generation
-// 2. add proper way to run TEXHEC on windows
-// 3. add on itch io
-// 4. add AI
+// 2. add on itch io
+// 3. add AI

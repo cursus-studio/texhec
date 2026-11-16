@@ -9,9 +9,9 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                               7            141             50            758
+Go                               7            139             36            761
 -------------------------------------------------------------------------------
-SUM:                             7            141             50            758
+SUM:                             7            139             36            761
 -------------------------------------------------------------------------------
 ```
 ## Dependencies
@@ -20,14 +20,31 @@ SUM:                             7            141             50            758
   - `core/game.Deploy`
   - `core/game.Economy`
   - `core/game.GameWorld`
+  - `core/game.Generation`
   - `core/game.Player`
   - `core/game.Tile`
   - `core/game.Ui`
+
+`core/modules/definitions`:
+  - `core/modules/definitions.Assets`
+  - `core/modules/definitions.Blank`
+  - `core/modules/definitions.Btn`
+  - `core/modules/definitions.CenterChunkGenerator`
+  - `core/modules/definitions.Farm`
+  - `core/modules/definitions.Hud`
+  - `core/modules/definitions.Input`
+  - `core/modules/definitions.Objects`
+  - `core/modules/definitions.SquareMesh`
+  - `core/modules/definitions.Tank`
 
 `core/modules/economy`:
   - `core/modules/economy.NewWallet`
   - `core/modules/economy.Wallet`
   - `core/modules/economy.WalletComponent`
+
+`core/modules/generation`:
+  - `core/modules/generation.Generator`
+  - `core/modules/generation.NewGenerator`
 
 `core/modules/lobby`:
   - `core/modules/lobby.AcceptNewConnections`

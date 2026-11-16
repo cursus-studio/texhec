@@ -1,7 +1,9 @@
 package internal
 
 import (
+	"core/modules/definitions"
 	"core/modules/economy"
+	"core/modules/generation"
 	"core/modules/lobby"
 	"core/modules/player"
 	"core/modules/ui"
@@ -37,7 +39,8 @@ func (s *service) setupServerLobbyVariables() {
 		s.Definitions().Objects().Farm,
 		s.Definitions().Objects().Tank,
 	}))
-	s.GameCamera().Set(hostEntity, lobby.NewGameCamera(2))
+	s.Generation().Generator().Set(hostEntity, generation.NewGenerator(definitions.CenterChunkGenerator))
+	s.GameCamera().Set(hostEntity, lobby.NewGameCamera(3))
 
 	events.Emit(s.Events(), lobby.NewInputAddPlayerEvent())
 	s.Player().ActingPlayer().Set(s.Player().Name().GetEntities()[0], player.NewActingPlayer())
@@ -67,22 +70,6 @@ func (s *service) renderServerLobby() {
 		Text    string
 		OnClick any
 	}
-
-	// TODO
-	// render:
-	// - world config(seed, initial wallet and units, max camera zoom out)
-	// - player(name, color, controlled by?)
-	// - connections(connection->player)
-
-	// type RemovePlayerEvent struct{ PlayerUUID uuid.UUID }
-	// type SetPlayerNameEvent struct { PlayerUUID uuid.UUID, Name       string }
-	// type SetPlayerColorEvent struct { PlayerUUID uuid.UUID, Color      mgl32.Vec3 }
-	//
-	// type SetPlayersWalletEvent struct{ Wallet economy.WalletComponent }
-	// type AddPlayersUnitEvent struct{ UUID uuid.UUID }
-	// type RemovePlayersUnitEvent struct{ UUID uuid.UUID }
-	//
-	// type SetConnectionPlayerEvent struct{ Player, Connection uuid.UUID }
 
 	buttons := []Button{}
 	if _, comp, _ := s.Player().PlayersConnection().GetSingleton(); comp.AcceptNewConnections {

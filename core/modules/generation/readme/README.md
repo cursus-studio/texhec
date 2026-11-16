@@ -8,10 +8,10 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                               4             40              9            246
+Go                               4             56             12            323
 Markdown                         1              3              0             13
 -------------------------------------------------------------------------------
-SUM:                             5             43              9            259
+SUM:                             5             59             12            336
 -------------------------------------------------------------------------------
 ```
 ## Dependencies
@@ -27,6 +27,11 @@ SUM:                             5             43              9            259
   - `core/modules/definitions.SquareCollider`
 
 `core/modules/generation`:
+  - `core/modules/generation.ChunkGenerateService`
+  - `core/modules/generation.ChunkGenerator`
+  - `core/modules/generation.Generator`
+  - `core/modules/generation.GeneratorComponent`
+  - `core/modules/generation.IsSpecial`
   - `core/modules/generation.Service`
 
 `core/modules/tile`:
@@ -51,9 +56,12 @@ SUM:                             5             43              9            259
 
 `engine/modules/datastructures`:
   - `engine/modules/datastructures.NewSparseArray`
+  - `engine/modules/datastructures.SparseArray`
 
 `engine/modules/ecs`:
+  - `engine/modules/ecs.ComponentArray`
   - `engine/modules/ecs.EntityID`
+  - `engine/modules/ecs.GetComponentArray`
   - `engine/modules/ecs.SystemRegister`
 
 `engine/modules/entityregistry`:
@@ -63,6 +71,7 @@ SUM:                             5             43              9            259
 `engine/modules/grid`:
   - `engine/modules/grid.AbsoluteCoords`
   - `engine/modules/grid.Chunk`
+  - `engine/modules/grid.ChunkCoordsComponent`
   - `engine/modules/grid.ChunkSize`
   - `engine/modules/grid.Coord`
   - `engine/modules/grid.Coords`

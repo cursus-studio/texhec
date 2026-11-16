@@ -8,10 +8,10 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                               3             43              9            336
+Go                               3             46             10            367
 Markdown                         1              1              0              3
 -------------------------------------------------------------------------------
-SUM:                             4             44              9            339
+SUM:                             4             47             10            370
 -------------------------------------------------------------------------------
 ```
 ## TODO
@@ -25,6 +25,7 @@ Create automatic export from `.pxo` to `.png` and/or `.git`
   - `core/game.Definitions`
   - `core/game.Deploy`
   - `core/game.GameWorld`
+  - `core/game.Lobby`
 
 `core/modules/definitions`:
   - `core/modules/definitions.AirspaceObstruction`
@@ -32,6 +33,7 @@ Create automatic export from `.pxo` to `.png` and/or `.git`
   - `core/modules/definitions.Blank`
   - `core/modules/definitions.Border`
   - `core/modules/definitions.Btn`
+  - `core/modules/definitions.CenterChunkGenerator`
   - `core/modules/definitions.EaseOutElastic`
   - `core/modules/definitions.Farm`
   - `core/modules/definitions.HouseT1`
@@ -44,6 +46,7 @@ Create automatic export from `.pxo` to `.png` and/or `.git`
   - `core/modules/definitions.LowlandObstruction`
   - `core/modules/definitions.MyEasing`
   - `core/modules/definitions.Objects`
+  - `core/modules/definitions.RandomChunkGenerator`
   - `core/modules/definitions.Service`
   - `core/modules/definitions.SquareCollider`
   - `core/modules/definitions.SquareMesh`
@@ -56,6 +59,13 @@ Create automatic export from `.pxo` to `.png` and/or `.git`
 `core/modules/deploy`:
   - `core/modules/deploy.DeployComp`
   - `core/modules/deploy.NewDeploy`
+
+`core/modules/generation`:
+  - `core/modules/generation.ChunkGenerateService`
+  - `core/modules/generation.ChunkGenerator`
+
+`core/modules/generation/pkg`:
+  - `core/modules/generation/pkg.GeneratorPkg`
 
 `core/modules/obstruction`:
   - `core/modules/obstruction.Obstruction`
@@ -99,6 +109,12 @@ Create automatic export from `.pxo` to `.png` and/or `.git`
 `engine/modules/graphics`:
   - `engine/modules/graphics.Index`
 
+`engine/modules/grid`:
+  - `engine/modules/grid.ChunkCoordsComponent`
+  - `engine/modules/grid.Coord`
+  - `engine/modules/grid.X`
+  - `engine/modules/grid.Y`
+
 `engine/modules/groups`:
   - `engine/modules/groups.EmptyGroups`
   - `engine/modules/groups.Group`
@@ -127,6 +143,9 @@ Create automatic export from `.pxo` to `.png` and/or `.git`
 
 `engine/modules/scene`:
   - `engine/modules/scene.NewSceneId`
+
+`engine/modules/seed`:
+  - `engine/modules/seed.Seed`
 
 `engine/modules/text`:
   - `engine/modules/text.Align`

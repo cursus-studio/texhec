@@ -6,6 +6,7 @@ import (
 	"core/modules/generation/internal"
 	"engine/modules/ecs"
 	"engine/modules/entityregistry"
+	"engine/modules/grid"
 	"math/bits"
 	"runtime"
 	"strconv"
@@ -21,8 +22,11 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 		s = 1 << max(bits.Len(uint(s))-1, 1)
 		return internal.NewConfig(s)
 	})
-	ioc.Register(b, func(c ioc.Dic) generation.Service {
+	ioc.Register(b, func(c ioc.Dic) internal.Service {
 		return internal.NewService(c)
+	})
+	ioc.Register(b, func(c ioc.Dic) generation.Service {
+		return ioc.Get[internal.Service](c)
 	})
 
 	ioc.Wrap(b, func(c ioc.Dic, r entityregistry.Service) {
@@ -38,5 +42,30 @@ var Pkg = ioc.NewPkg(func(b ioc.Builder) {
 				world.Config.AddChance(entity, chance)
 			}
 		})
+		r.Register("chunk_generate", func(entity ecs.EntityID, structTagValue string) {
+			world := ioc.GetServices[World](c)
+			world.Config.AddChunkGenerate(entity)
+		})
 	})
 })
+
+//
+
+type isSpecialService struct {
+	isSpecial func(grid.ChunkCoordsComponent) bool
+}
+
+func (s *isSpecialService) IsSpecial(coords grid.ChunkCoordsComponent) bool {
+	return s.isSpecial(coords)
+}
+
+func GeneratorPkg(
+	generator generation.ChunkGenerator,
+	isSpecial func(c ioc.Dic) func(grid.ChunkCoordsComponent) bool,
+) ioc.Pkg {
+	return ioc.NewPkg(func(b ioc.Builder) {
+		ioc.Wrap(b, func(c ioc.Dic, s internal.Service) {
+			s.RegisterGenerator(generator, &isSpecialService{isSpecial(c)})
+		})
+	})
+}

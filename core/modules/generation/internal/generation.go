@@ -10,8 +10,6 @@ import (
 	"engine/modules/grid"
 	"engine/modules/groups"
 	"engine/modules/noise"
-	"fmt"
-	"slices"
 
 	"github.com/go-gl/mathgl/mgl64"
 	"github.com/ogiusek/events"
@@ -34,20 +32,6 @@ func (s *service) Register() error {
 	return nil
 }
 
-func (s *service) Chances() (*Config, []tile.ID) {
-	types := []tile.ID{}
-
-	for _, chance := range s.Config.chances {
-		tileComp, ok := s.Tile().Tile().Get(chance.tileType)
-		if !ok {
-			s.Logger().Log(fmt.Errorf("\"%v\" isn't a tile tile and therefor cannot be used in generation", chance.tileType))
-			continue
-		}
-		types = append(types, slices.Repeat([]tile.ID{tileComp.ID}, chance.chance)...)
-	}
-	return s.Config, types
-}
-
 func (s *service) GenerateOn(event tile.MissingChunkEvent) {
 	worldSeedEntity, _, ok := s.Seed().Seed().GetSingleton()
 	if !ok {
@@ -60,18 +44,18 @@ func (s *service) GenerateOn(event tile.MissingChunkEvent) {
 	if !ok {
 		return
 	}
-	config, tileTypes := s.Chances()
+	isSpecial := s.IsSpecial(event.Coords)
 	gridStateComponent := s.Tile().Grid().NewChunk()
 	gridModifiedComponent := s.Tile().Grid().NewChunk()
 
 	obstructGridComponent := s.Obstruction().Grid().NewChunk()
 
-	jobs := int(s.Grid().GetLastIndex()) / config.tilesPerJob
+	jobs := int(s.Grid().GetLastIndex()) / s.Config.tilesPerJob
 
 	// apply batch
 	applyBatch := batcher.NewBatch(jobs, func(i int) {
-		for j := range config.tilesPerJob {
-			gridI := grid.Index(i*config.tilesPerJob + j)
+		for j := range s.Config.tilesPerJob {
+			gridI := grid.Index(i*s.Config.tilesPerJob + j)
 			gridValue := gridModifiedComponent.GetTile(gridI)
 			gridStateComponent.SetTile(gridI, gridValue)
 		}
@@ -101,14 +85,18 @@ func (s *service) GenerateOn(event tile.MissingChunkEvent) {
 	).Build()
 
 	generateBatch := batcher.NewBatch(jobs, func(i int) {
-		for j := range config.tilesPerJob {
-			gridI := grid.Index(i*config.tilesPerJob + j)
+		for j := range s.Config.tilesPerJob {
+			gridI := grid.Index(i*s.Config.tilesPerJob + j)
 			coords := s.Grid().AbsoluteCoords(event.Coords, s.Grid().IndexCoords(gridI))
 			value := noise.Read(mgl64.Vec2{float64(coords.X), float64(coords.Y)})
-			value *= float64(len(tileTypes))
-			value = min(value, float64(len(tileTypes)-1))
-			tileValue := tileTypes[int(value)]
-			gridModifiedComponent.SetTile(gridI, tileValue)
+			value *= float64(len(s.types))
+			value = min(value, float64(len(s.types)-1))
+			tileValue := s.types[int(value)]
+			if !isSpecial || s.special == 0 {
+				gridModifiedComponent.SetTile(gridI, tileValue)
+			} else {
+				gridModifiedComponent.SetTile(gridI, s.special)
+			}
 		}
 	})
 
@@ -127,8 +115,8 @@ func (s *service) GenerateOn(event tile.MissingChunkEvent) {
 	sensitivity := 1.5
 
 	smoothingBatch := batcher.NewBatch(jobs, func(i int) {
-		for j := range config.tilesPerJob {
-			gridI := grid.Index(i*config.tilesPerJob + j)
+		for j := range s.Config.tilesPerJob {
+			gridI := grid.Index(i*s.Config.tilesPerJob + j)
 			coords := s.Grid().IndexCoords(gridI)
 			counts := datastructures.NewSparseArray[tile.ID, int]()
 			for _, neighbor := range neighbors {
@@ -165,8 +153,8 @@ func (s *service) GenerateOn(event tile.MissingChunkEvent) {
 	})
 
 	obstructBatch := batcher.NewBatch(jobs, func(i int) {
-		for j := range config.tilesPerJob {
-			gridI := grid.Index(i*config.tilesPerJob + j)
+		for j := range s.Config.tilesPerJob {
+			gridI := grid.Index(i*s.Config.tilesPerJob + j)
 			tileType := gridStateComponent.GetTile(gridI)
 			entity, ok := s.Tile().GetTile(tileType)
 			if !ok {
