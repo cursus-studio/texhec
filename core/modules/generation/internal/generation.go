@@ -17,6 +17,57 @@ import (
 
 func MapRange(val, min, max float64) float64 { return min + (val * (max - min)) }
 
+type chunkNeighborhood = [3][3]bool
+
+func (s *service) specialChunksAround(coords grid.ChunkCoordsComponent) chunkNeighborhood {
+	var neighborhood chunkNeighborhood
+	for dy := -1; dy <= 1; dy++ {
+		for dx := -1; dx <= 1; dx++ {
+			x, y := coords.X+grid.Coord(dx), coords.Y+grid.Coord(dy)
+			neighborhood[dy+1][dx+1] = s.IsSpecial(grid.NewChunkCoords(grid.Coord(x), grid.Coord(y)))
+		}
+	}
+	return neighborhood
+}
+func isTexhecCoords(coords grid.Coords,
+	chunkCoords grid.ChunkCoordsComponent,
+	neighborhood chunkNeighborhood,
+	chunkSize grid.Coord,
+	isSpecial bool,
+) bool {
+	ownX, ownY := chunkCoords.X, chunkCoords.Y
+
+	cornerX := (coords.X + chunkSize/2) / chunkSize
+	cornerY := (coords.Y + chunkSize/2) / chunkSize
+
+	startX := int(cornerX-ownX) - 1
+	startY := int(cornerY-ownY) - 1
+
+	neighborsSpecial := 0
+	allSpecial := true
+	for dy := startY; dy <= startY+1; dy++ {
+		for dx := startX; dx <= startX+1; dx++ {
+			if dx == 0 && dy == 0 {
+				continue
+			}
+			if neighborhood[dy+1][dx+1] {
+				neighborsSpecial++
+			} else {
+				allSpecial = false
+			}
+		}
+	}
+
+	a := 2*coords.X - (2*ownX*chunkSize + chunkSize)
+	b := 2*coords.Y - (2*ownY*chunkSize + chunkSize)
+	insideCircle := a*a+b*b < chunkSize*chunkSize
+
+	if isSpecial {
+		return neighborsSpecial > 0 || insideCircle
+	}
+	return allSpecial && !insideCircle
+}
+
 func (s *service) Register() error {
 	events.Listen(s.EventsBuilder(), s.GenerateOn)
 	s.Grid().Coords().OnUpsert(func(chunkEntity ecs.EntityID) {
@@ -84,6 +135,9 @@ func (s *service) GenerateOn(event tile.MissingChunkEvent) {
 		noise.NewLayer(020*multiplier, .05),
 	).Build()
 
+	chunkSize := s.Grid().ChunkSize()
+	neighborhood := s.specialChunksAround(event.Coords)
+
 	generateBatch := batcher.NewBatch(jobs, func(i int) {
 		for j := range s.Config.tilesPerJob {
 			gridI := grid.Index(i*s.Config.tilesPerJob + j)
@@ -92,11 +146,11 @@ func (s *service) GenerateOn(event tile.MissingChunkEvent) {
 			value *= float64(len(s.types))
 			value = min(value, float64(len(s.types)-1))
 			tileValue := s.types[int(value)]
-			if !isSpecial || s.special == 0 {
+			if s.special == 0 || !isTexhecCoords(coords, event.Coords, neighborhood, chunkSize, isSpecial) {
 				gridModifiedComponent.SetTile(gridI, tileValue)
-			} else {
-				gridModifiedComponent.SetTile(gridI, s.special)
+				continue
 			}
+			gridModifiedComponent.SetTile(gridI, s.special)
 		}
 	})
 

@@ -151,8 +151,7 @@ func main() {
 
 // TODO
 
-// 1. create a way to generate TEXHEC chunks instead of adding TEXHEC chunk as a noise
-//    TEXHEC chunks generate instead of a grass
-//    TEXHEC chunk can have different policies depending on choosen generation
-// 2. add on itch io
-// 3. add AI
+// 1. fix pathfinding
+// 2. add texhec buildings
+// 3. add on itch io
+// 4. add AI
