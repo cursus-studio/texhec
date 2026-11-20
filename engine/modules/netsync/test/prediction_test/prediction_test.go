@@ -74,6 +74,48 @@ func TestPredictions(t *testing.T) {
 		w.AssertWorldState(lastCompValue, Queued(0), Flushed{})
 	}
 
+	// client sends a normal event and then a tick event.
+	// server confirms the tick event before the normal event (ticks can be emited out of order):
+	// - client emits [prediction.ClientEvent] and sends it to [prediction.Service.QueuePrediction]
+	//   creates [prediction.Prediction]
+	// - client emits tick [prediction.ClientEvent] and sends it to [prediction.Service.QueuePrediction]
+	//   creates [prediction.Prediction]
+	// - client emits [prediction.ClientEvent] and sends it to [prediction.Service.QueuePrediction]
+	//   creates [prediction.Prediction]
+	// - server sends tick [prediction.ServerEvent] to [prediction.Service.QueueServerEvent]
+	//   confirms the tick [prediction.Prediction] out of order
+	// - server rejects the first [prediction.ClientEvent] and removes the normal [prediction.Prediction] in order.
+	//   the confirmed tick must stay applied even though its prediction was dequeued earlier
+	// - server responds to [prediction.ClientEvent] and removes the normal [prediction.Prediction] in order
+	{
+		events.Emit(w.Events(), IncreaseToNextOddEvent{})
+		firstPredictionID := w.AssertWorldState(
+			lastCompValue.NextOdd(), Queued(1), Flushed{IncreaseToNextOddEvent{}})[0]
+
+		events.Emit(w.Events(), IncreaseByFiveTickEvent{})
+		w.AssertWorldState(lastCompValue.NextOdd().IncrementByFive(), Queued(2), Flushed{})
+
+		// tick prediction is confirmed out of order, no re-application is needed
+		w.Prediction.QueueServerEvent(prediction.ServerEvent{Event: IncreaseByFiveTickEvent{}})
+		w.AssertWorldState(lastCompValue.IncrementByFive().NextOdd(), Queued(1), Flushed{})
+
+		events.Emit(w.Events(), IncreaseToNextEvenEvent{})
+		secondPredictionID := w.AssertWorldState(
+			lastCompValue.IncrementByFive().NextOdd().NextEven(), Queued(2),
+			Flushed{IncreaseToNextEvenEvent{}})[0]
+
+		// rejecting the first normal event must keep the confirmed tick applied
+		err := w.Prediction.ServerResponseToPrediction(firstPredictionID, true)
+		w.AssertSuccess(err)
+		w.AssertWorldState(lastCompValue.IncrementByFive().NextOdd().NextEven(), Queued(1), Flushed{})
+
+		err = w.Prediction.ServerResponseToPrediction(secondPredictionID, true)
+		w.AssertSuccess(err)
+		w.AssertWorldState(lastCompValue.IncrementByFive().NextOdd().NextEven(), Queued(0), Flushed{})
+
+		lastCompValue = lastCompValue.IncrementByFive().NextOdd().NextEven()
+	}
+
 	// client prediction in between ticks
 	{
 		events.Emit(w.Events(), IncreaseByTenEvent{})

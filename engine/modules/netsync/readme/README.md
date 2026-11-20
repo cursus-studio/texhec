@@ -6,7 +6,7 @@ synchronizes client and server worlds while accounting for permissions
 ```
 $ go test ./... -bench=.
 PASS
-ok  	engine/modules/netsync/test/prediction_test	0.014s
+ok  	engine/modules/netsync/test/prediction_test	0.017s
 ```
 ## Lines of code
 ```
@@ -14,10 +14,10 @@ github.com/AlDanial/cloc
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Go                              14            198             80           1000
+Go                              14            205             94           1033
 Markdown                         1              2              0              5
 -------------------------------------------------------------------------------
-SUM:                            15            200             80           1005
+SUM:                            15            207             94           1038
 -------------------------------------------------------------------------------
 ```
 ## TODO

@@ -23,6 +23,7 @@ type ValueComponent struct {
 type IncreaseToNextEvenEvent struct{}
 type IncreaseToNextOddEvent struct{}
 type IncreaseByTenEvent struct{}
+type IncreaseByFiveTickEvent struct{}
 
 func NewValue(value int) ValueComponent { return ValueComponent{value} }
 
@@ -36,6 +37,10 @@ func (c ValueComponent) NextOdd() ValueComponent {
 }
 func (c ValueComponent) IncrementByTen() ValueComponent {
 	c.Value += 10
+	return c
+}
+func (c ValueComponent) IncrementByFive() ValueComponent {
+	c.Value += 5
 	return c
 }
 
@@ -62,9 +67,10 @@ type Component int
 type Queued int
 type Flushed []prediction.Event
 
-func (c Component) NextEven() Component       { return c + 2 - (c & 1) }
-func (c Component) NextOdd() Component        { return c + 1 + (c & 1) }
-func (c Component) IncrementByTen() Component { return c + 10 }
+func (c Component) NextEven() Component        { return c + 2 - (c & 1) }
+func (c Component) NextOdd() Component         { return c + 1 + (c & 1) }
+func (c Component) IncrementByTen() Component  { return c + 10 }
+func (c Component) IncrementByFive() Component { return c + 5 }
 
 func (w World) AssertWorldState(expectedValue Component, expectedQueued Queued, expectedFlushed Flushed) []prediction.ClientEventID {
 	w.T.Helper()
@@ -126,6 +132,7 @@ var Pkg = ioc.NewPkgT(func(b ioc.Builder, t *testing.T) {
 		netsyncpkg.AddEvent[IncreaseToNextEvenEvent](config)
 		netsyncpkg.AddEvent[IncreaseToNextOddEvent](config)
 		netsyncpkg.AddTickEvent[IncreaseByTenEvent](config)
+		netsyncpkg.AddTickEvent[IncreaseByFiveTickEvent](config)
 		config.SetMaxPredictions(MaxPredictions)
 	})
 	ioc.Register(b, func(c ioc.Dic) World {
@@ -151,6 +158,11 @@ var Pkg = ioc.NewPkgT(func(b ioc.Builder, t *testing.T) {
 			entity := w.GetEntity()
 			comp, _ := w.componentArray.Get(entity)
 			w.componentArray.Set(entity, comp.IncrementByTen())
+		})
+		events.Listen(w.EventsBuilder(), func(IncreaseByFiveTickEvent) {
+			entity := w.GetEntity()
+			comp, _ := w.componentArray.Get(entity)
+			w.componentArray.Set(entity, comp.IncrementByFive())
 		})
 		w.AssertSuccess(w.NetSync().Stop().Register())
 		return w

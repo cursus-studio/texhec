@@ -101,6 +101,7 @@ func NewService(c ioc.Dic) Service {
 }
 
 func (s *service) ReApplyPredictions(predictions []Prediction) {
+	slices.Reverse(predictions)
 	for _, prediction := range predictions {
 		s.EventID.QueueID(prediction.ID)
 		events.EmitAny(s.World.Events(), prediction.Event)
@@ -199,8 +200,7 @@ func (s *service) QueueServerEvent(event ServerEvent) {
 
 	predictions := s.UndoPredictions()
 	predictionIndex := slices.IndexFunc(predictions, func(prediction Prediction) bool {
-		return reflect.DeepEqual(prediction.Event, event)
-		// return prediction.Event == event
+		return reflect.DeepEqual(prediction.Event, event.Event)
 	})
 	if predictionIndex != -1 {
 		predictions = append(predictions[:predictionIndex], predictions[predictionIndex+1:]...)
